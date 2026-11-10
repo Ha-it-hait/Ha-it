@@ -218,7 +218,8 @@ button{font-family:inherit}
 .profrod{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #eadfc6;border-radius:14px;padding:8px;margin-top:10px}.profrod canvas{width:100px;height:60px;background:linear-gradient(#eef5f7,#dfeaf0);border-radius:10px}.profrod b{display:block;font-size:15px}.profrod small{color:#e0a21b;letter-spacing:1px}
 .proftank{position:relative;height:min(300px,40vh);border-radius:14px;overflow:hidden;border:4px solid #cfe6ee;margin-top:10px}#profCv{position:absolute;inset:0;width:100%;height:100%;display:block}
 .mapbox{width:min(560px,100%);background:#fffaf0;color:#3a3326;border-radius:22px;padding:12px;box-shadow:0 24px 70px rgba(0,0,0,.35);animation:pop .3s cubic-bezier(.2,1.4,.4,1)}
-.mapwrap{position:relative;width:100%;aspect-ratio:1/1;max-height:70vh;margin:8px auto 0;border-radius:16px;overflow:hidden;background:#3f8bc9}#mapCv{width:100%;height:100%;display:block}
+.mapbox{max-height:94vh;overflow:auto;touch-action:pan-y;overscroll-behavior:contain}
+.mapwrap{position:relative;width:100%;aspect-ratio:1/1;max-height:62vh;max-width:62vh;margin:8px auto 0;border-radius:16px;overflow:hidden;background:#3f8bc9}#mapCv{width:100%;height:100%;display:block}
 #mapInfo{font-size:12.5px;color:#7a6f5a;margin-top:8px;text-align:center;font-weight:700}
 .auth{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,rgba(143,211,240,.92),rgba(201,239,230,.92));padding:16px;overflow:auto}
 .auth .card{text-align:left}.auth .logo{font-size:42px;text-align:center}.auth h2{margin:2px 0 2px;text-align:center;font-size:21px}.auth .sub{text-align:center;font-size:13px;color:#8a7f6a;margin-bottom:6px}
@@ -231,6 +232,10 @@ button{font-family:inherit}
 .lbl.npc .nm{background:linear-gradient(90deg,#2a1f5e,#4a2f8e);color:#ffe29a;font-size:12.5px}
 @media (max-width:520px){.lbtn{width:50px;height:50px;font-size:21px}.lbtn.bag{bottom:calc(max(14px,env(safe-area-inset-bottom)) + 140px)}.lbtn.chat{bottom:calc(max(14px,env(safe-area-inset-bottom)) + 196px)}.ctxbtn{bottom:calc(max(14px,env(safe-area-inset-bottom)) + 256px);height:52px;font-size:14px;padding:0 14px}.ctxbtn kbd{display:none}}
 @media (max-width:520px){.irow canvas{width:66px;height:40px}.irow.rod canvas{width:72px;height:44px}.irow .itx small{font-size:11.5px}.card.wide{padding:14px 12px}}
+.maplist{margin-top:8px;display:flex;flex-direction:column;gap:6px}.mlh{font-size:12.5px;font-weight:800;color:#5a8f6a;text-align:center}
+.mrow{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #eadfc6;border-radius:12px;padding:7px 8px 7px 10px;cursor:pointer}
+.mrow i{width:16px;height:16px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px #2b3b52;flex:none}.mrow b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}
+.mrow small{flex:1;font-size:12px;color:#8a7f6a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mrow button{border:0;background:#5aa0e6;color:#fff;font-weight:900;border-radius:10px;height:32px;padding:0 10px;cursor:pointer;font-size:12.5px;white-space:nowrap;flex:none}
 
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/utils/BufferGeometryUtils.js":"./vendor/BufferGeometryUtils.js"}}</script>
@@ -312,7 +317,7 @@ button{font-family:inherit}
   <button class="primary small ghost" id="profMute"></button></div></div>
 <div class="overlay hidden" id="map"><div class="mapbox">
   <div class="mhead"><b>🗺️ 섬 지도</b><button class="x" id="mapX" style="margin-left:auto">✕</button></div>
-  <div class="mapwrap"><canvas id="mapCv"></canvas></div><div id="mapInfo"></div></div></div>
+  <div class="mapwrap"><canvas id="mapCv"></canvas></div><div id="mapInfo"></div><div id="mapList" class="maplist"></div></div></div>
 <div class="auth hidden" id="auth"><div class="card">
   <div class="logo">🏝️</div><h2>아몰랑아일랜드</h2><div class="sub">같이 낚시하고 힐링해요</div>
   <div class="quick hidden" id="authQuick"><button class="primary" id="authQuickBtn">▶ 계속하기</button><div class="or">또는</div></div>
@@ -1896,7 +1901,7 @@ function buildMapBase(){let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(let z=-110;z<=110;
  c.lineCap='round';c.lineJoin='round';c.strokeStyle='rgba(214,180,120,.9)';c.lineWidth=N*0.012;for(const pl of PATHS){c.beginPath();pl.forEach(([x,z],k)=>{const p=w2m(x,z,N);k?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]);});c.stroke();}
  mapBase=cv;}
 function w2m(x,z,N){return[(x-mapB.x0)/mapB.span*N,(z-mapB.z0)/mapB.span*N];}
-function openMap(){if(!entered)return;closeEmoPanel();closeChat();if(!mapBase)buildMapBase();mapOpen=true;$('map').classList.remove('hidden');cancelAnimationFrame(mapRAF);mapRAF=requestAnimationFrame(drawMap);}
+function openMap(){if(!entered)return;closeEmoPanel();closeChat();if(!mapBase)buildMapBase();mapOpen=true;mapListKey=null;mapListT=0;$('map').classList.remove('hidden');cancelAnimationFrame(mapRAF);mapRAF=requestAnimationFrame(drawMap);}
 function closeMap(){mapOpen=false;$('map').classList.add('hidden');cancelAnimationFrame(mapRAF);}
 function drawMap(){if(!mapOpen)return;const cv=$('mapCv');const r=cv.getBoundingClientRect();const dpr=Math.min(2,devicePixelRatio||1);const S2=Math.round(Math.min(r.width,r.height)*dpr);if(cv.width!==S2){cv.width=cv.height=S2;}
  const c=cv.getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,S2,S2);c.drawImage(mapBase,0,0,S2,S2);const N=S2;const fs=Math.max(11,N*0.032);
@@ -1904,11 +1909,27 @@ function drawMap(){if(!mapOpen)return;const cv=$('mapCv');const r=cv.getBounding
  icon(PLAZA.x,PLAZA.z,'🔥','모닥불 · 요리');icon(SHOP.x,SHOP.z,'🐉','용왕님 상점',1,true);icon(0,DOCK.z1-2,'⛵','나무 부두');icon(POND.x,POND.z,'🪷','연못');const rv=RIVER[3];icon(rv[0],rv[1],'🏞️','강');icon(HILL.x,HILL.z-1.5,'🗼','등대');
  for(const h of[[-15,-3],[16,-8],[-9,-19]])icon(h[0],h[1],'🏠','',0.8);
  for(const A of ANIMS){const p=w2m(A.x,A.z,N);c.fillStyle='rgba(140,90,50,.85)';c.beginPath();c.arc(p[0],p[1],N*0.006,0,7);c.fill();}
- for(const rr of remote.values()){if(rr.leaving)continue;const p=w2m(rr.pos.x,rr.pos.z,N);c.fillStyle='#fff';c.strokeStyle='#2b3b52';c.lineWidth=2;c.beginPath();c.arc(p[0],p[1],N*0.012,0,7);c.fill();c.stroke();}
+ const others=[...remote.values()].filter(x=>!x.leaving&&x.char);const now=performance.now();
+ for(const rr of others){const q=w2m(rr.pos.x,rr.pos.z,N);const col=COLORS[(rr.look&&rr.look.cc)|0]||'#fff';const foc=mapFocus&&mapFocus.peer===rr.peer&&now<mapFocus.until;
+  if(foc){const k=(now/600)%1;c.strokeStyle=`rgba(255,90,120,${1-k})`;c.lineWidth=3;c.beginPath();c.arc(q[0],q[1],N*(0.02+0.05*k),0,7);c.stroke();}
+  c.save();c.translate(q[0],q[1]);c.rotate(Math.PI-rr.yaw);c.fillStyle='#2b3b52';c.beginPath();c.moveTo(0,-N*0.026);c.lineTo(N*0.009,-N*0.012);c.lineTo(-N*0.009,-N*0.012);c.closePath();c.fill();c.restore();
+  const r0=Math.max(N*0.015,6.5*dpr);c.fillStyle=col;c.strokeStyle='#fff';c.lineWidth=2.5*dpr;c.beginPath();c.arc(q[0],q[1],r0,0,7);c.fill();c.stroke();c.strokeStyle='#2b3b52';c.lineWidth=1.2*dpr;c.beginPath();c.arc(q[0],q[1],r0+1.6*dpr,0,7);c.stroke();
+  const act=rr.ckSt===1?'🍳':rr.m===1?'🎣':'';const lab=(act?act+' ':'')+rr.name;c.font=`800 ${fs*0.72}px sans-serif`;c.textAlign='center';c.textBaseline='middle';c.lineWidth=3.5;c.strokeStyle='rgba(255,255,255,.95)';c.strokeText(lab,q[0],q[1]-N*0.034);c.fillStyle=foc?'#d6335a':'#2b3b52';c.fillText(lab,q[0],q[1]-N*0.034);}
  const p=w2m(P.pos.x,P.pos.z,N);const pulse=1+0.25*Math.sin(performance.now()/180);c.fillStyle='rgba(255,207,90,.35)';c.beginPath();c.arc(p[0],p[1],N*0.03*pulse,0,7);c.fill();
  c.save();c.translate(p[0],p[1]);c.rotate(Math.PI-P.yaw);c.fillStyle='#ffcf5a';c.strokeStyle='#5a3d08';c.lineWidth=2.5;c.beginPath();c.moveTo(0,-N*0.028);c.lineTo(N*0.018,N*0.016);c.lineTo(0,N*0.008);c.lineTo(-N*0.018,N*0.016);c.closePath();c.fill();c.stroke();c.restore();
  c.font=`900 ${fs*0.85}px sans-serif`;c.textAlign='center';c.lineWidth=3.5;c.strokeStyle='#5a3d08';c.strokeText('나',p[0],p[1]-N*0.045);c.fillStyle='#ffe9a0';c.fillText('나',p[0],p[1]-N*0.045);
- $('mapInfo').textContent=`🙂 나 · ⚪ 다른 사람 ${[...remote.values()].filter(x=>!x.leaving).length}명 · 🟤 동물 친구들`;mapRAF=requestAnimationFrame(drawMap);}
+ $('mapInfo').textContent=`🟡 나 · 🔵 다른 사람 ${others.length}명 (옷 색깔) · 🟤 동물 친구들`;if(now-mapListT>400){mapListT=now;renderMapList(others);}mapRAF=requestAnimationFrame(drawMap);}
+let mapFocus=null,mapListT=0,mapListKey='';
+function renderMapList(others){const box=$('mapList');const where=netMode==='ws'?`${wsIsland}번 섬`:'이 섬';
+ const key=others.map(r=>r.peer+'|'+r.name).join(',');
+ if(key!==mapListKey){mapListKey=key;box.innerHTML='';const h=document.createElement('div');h.className='mlh';h.textContent=others.length?`👥 ${where}에 있는 사람 ${others.length}명 · 이름을 누르면 지도에서 반짝여요`:`${where}에는 지금 나 혼자예요. 링크를 공유해 친구를 불러 보세요!`;box.appendChild(h);
+  for(const r of others){const row=document.createElement('div');row.className='mrow';row.dataset.peer=r.peer;const dot=document.createElement('i');dot.style.background=COLORS[(r.look&&r.look.cc)|0]||'#fff';
+   const nm=document.createElement('b');nm.textContent=r.name;const st=document.createElement('small');st.className='mst';const go=document.createElement('button');go.textContent='🚶 옆으로 가기';
+   row.onclick=e=>{if(e.target===go)return;mapFocus={peer:r.peer,until:performance.now()+3500};sfx.pop();};go.onclick=()=>goNearPeer(r.peer);row.append(dot,nm,st,go);box.appendChild(row);}}
+ for(const row of box.querySelectorAll('.mrow')){const r=remote.get(row.dataset.peer);if(!r)continue;const dd=Math.round(Math.hypot(r.pos.x-P.pos.x,r.pos.z-P.pos.z));const act=r.ckSt===1?'🍳 요리 중':r.m===1?'🎣 낚시 중':'🚶 산책 중';row.querySelector('.mst').textContent=`${act} · ${dd}m`;}}
+function goNearPeer(peer){const r=remote.get(peer);if(!r||!entered)return;if(cookSt&&cookSt.stage===1){toast('요리 중에는 움직일 수 없어요');return;}if(mode==='fish')exitFish();
+ for(let rad=1.6;rad<5;rad+=0.6)for(let k=0;k<12;k++){const a=k/12*Math.PI*2+r.yaw;const x=r.pos.x+Math.sin(a)*rad,z=r.pos.z+Math.cos(a)*rad;if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);P.yaw=Math.atan2(r.pos.x-x,r.pos.z-z);camYaw=P.yaw+Math.PI;camPos.set(x-Math.sin(P.yaw)*8,P.pos.y+5,z-Math.cos(P.yaw)*8);markPresence();closeMap();toast(`🚶 ${r.name} 님 옆으로 왔어요`,2400);sendEmote('👋',false);return;}}
+ toast('그 근처로는 갈 수 없어요');}
 
 /* ---------- 3D 눌러서 고르기 (상점·다른 사람) ---------- */
 const RAY=new THREE.Raycaster();const _ndc=new THREE.Vector2();let tapD=null;
