@@ -1,15 +1,19 @@
 // 아몰랑아일랜드 실시간 서버 — Cloudflare Worker + Durable Object (WebSocket Hibernation)
-// 섬(방) 하나당 정원 CAP명. 꽉 차면 클라이언트가 다음 섬 번호로 자동 이동한다.
+// - Island: 섬(방) 하나당 정원 CAP명. 상태 중계 + 채팅(최근 50개만 보관) + 수조 구경 요청 중계
+// - Vault : 아이디/비밀번호 계정과 저장 데이터 (전체 섬 공용, 인스턴스 1개)
 import { DurableObject } from 'cloudflare:workers';
 
 const CAP = 40;          // 섬 하나 정원
 const MAX_ISLANDS = 30;  // 섬 개수 상한
-const MAX_MSG = 2048;    // 메시지 최대 크기(바이트)
+const MAX_MSG = 4096;    // 메시지 최대 크기(바이트)
 const MAX_RATE = 20;     // 접속자 1명당 초당 최대 메시지 수
+const CHAT_KEEP = 50;    // 섬마다 보관하는 최근 채팅 수 (넘으면 오래된 것부터 삭제)
+const CHAT_LEN = 60;     // 채팅 한 줄 최대 글자 수
+const CHAT_GAP = 1500;   // 같은 사람이 채팅을 보낼 수 있는 최소 간격(ms)
 
-// 클라이언트와 같은 목록 (자유 텍스트는 받지 않는다 — 이름도 단어 번호로만 주고받음)
-const EMOJI = new Set(["👋", "🙇", "🙏", "🤝", "✌️", "🫡", "🙌", "👀", "😊", "😆", "🥹", "😌", "😴", "🤔", "😮", "😭", "😤", "🥶", "🫠", "😎", "🤣", "😇", "🥳", "😑", "👍", "👏", "🔥", "💪", "🎉", "✨", "❤️", "💯", "🎣", "🐟", "🐠", "🐡", "🦑", "🦀", "🐙", "🦈", "🐳", "🌊", "⚓", "🪝", "☕", "🍜", "🍙", "🍎", "🍊", "🍑", "🌸", "🌳", "🏕️", "🔥", "🌙", "⭐", "🌧️", "🍀", "🦋", "🐚"]);
-const SPECIES = new Set(["goby", "halfbeak", "jack", "mackerel", "rockfish", "greenling", "schlegeli", "porgy", "bass", "flounder", "starfish", "chub", "crucian", "loach", "carp", "catfish", "mandarin", "goldfish", "filefish", "puffer", "redbream", "oplegnathus", "hairtail", "mullet", "dodari", "stingray", "moray", "tuna", "sunfish", "octopus", "squid", "webfoot", "seahorse", "bluecrab", "snowcrab", "prawn", "spinylobster", "jellyfish", "urchin", "catshark", "blueshark", "hammerhead", "whaleshark", "clownfish", "bluetang", "emperorangel", "butterfly", "mandarinfish", "lionfish", "parrotfish", "boxfish", "medaka", "minnow", "kkeokji", "sweetfish", "masu", "snakehead", "eel", "crayfish", "freshshrimp", "turtle", "koi", "guppy", "betta", "arowana"]);
+const EMOJI = new Set(["👋", "🙇", "🙏", "🤝", "✌️", "🫡", "🙌", "👀", "😊", "😆", "🥹", "😌", "😴", "🤔", "😮", "😭", "😤", "🥶", "🫠", "😎", "🤣", "😇", "🥳", "😑", "👍", "👏", "🔥", "💪", "🎉", "✨", "❤️", "💯", "🎣", "🐟", "🐠", "🐡", "🦑", "🦀", "🐙", "🦈", "🐳", "🌊", "⚓", "🪝", "☕", "🍜", "🍙", "🍎", "🍊", "🍑", "🌸", "🌳", "🏕️", "🔥", "🌙", "⭐", "🌧️", "🍀", "🦋", "🐚", "😋"]);
+const SPECIES_LIST = ["goby", "halfbeak", "jack", "mackerel", "rockfish", "greenling", "schlegeli", "porgy", "bass", "flounder", "starfish", "chub", "crucian", "loach", "carp", "catfish", "mandarin", "goldfish", "filefish", "puffer", "redbream", "oplegnathus", "hairtail", "mullet", "dodari", "stingray", "moray", "tuna", "sunfish", "octopus", "squid", "webfoot", "seahorse", "bluecrab", "snowcrab", "prawn", "spinylobster", "jellyfish", "urchin", "catshark", "blueshark", "hammerhead", "whaleshark", "clownfish", "bluetang", "emperorangel", "butterfly", "mandarinfish", "lionfish", "parrotfish", "boxfish", "medaka", "minnow", "kkeokji", "sweetfish", "masu", "snakehead", "eel", "crayfish", "freshshrimp", "turtle", "koi", "guppy", "betta", "arowana"];
+const SPECIES = new Set(SPECIES_LIST);
 const N_ADJ = 40, N_NOUN = 40;
 const STATES = new Set(['idle', 'cast', 'wait', 'bite', 'fight']);
 
@@ -18,11 +22,31 @@ const r2 = v => Math.round(v * 100) / 100;
 const idx = (v, mod) => Math.abs(v | 0) % mod;
 const arr = (x, k) => (Array.isArray(x) && x.length === k ? x : null);
 
+// ---------- 채팅 필터 (욕설·연락처·링크 가리기) ----------
+const BAD = ['씨발', '시발', '씨빨', '시빨', 'ㅅㅂ', 'ㅆㅂ', '병신', '븅신', 'ㅂㅅ', '개새끼', '개새', '새끼', '좆', '존나', '졸라', 'ㅈㄴ', '지랄', 'ㅈㄹ', '미친놈', '미친년', '닥쳐', '꺼져', '애미', '에미', '느금', '니미', '엠창', '섹스', '야동', '자살', 'fuck', 'shit', 'bitch', 'sex', 'porn'];
+function cleanChat(s) {
+  s = String(s ?? '').replace(/[\u0000-\u001f\u007f​-‏‪-‮⁠-⁤]/g, '').replace(/\s+/g, ' ').trim();
+  s = Array.from(s).slice(0, CHAT_LEN).join('');
+  if (!s) return '';
+  // 링크·도메인
+  s = s.replace(/(https?:\/\/|www\.)\S*/gi, '(링크)').replace(/\b[\w-]+\.(com|net|org|kr|co|io|me|gg|xyz|ly|link|site|shop)\b\S*/gi, '(링크)');
+  // 전화번호·긴 숫자
+  s = s.replace(/\d[\d\s.-]{7,}\d/g, '(숫자)');
+  // 욕설 (띄어쓰기·기호를 끼워 넣은 경우도 잡는다)
+  const plain = s.toLowerCase();
+  for (const w of BAD) {
+    const re = new RegExp(Array.from(w).map(ch => ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('[\\s._\\-~*!0-9]*'), 'gi');
+    if (re.test(plain)) s = s.replace(re, m => '♡'.repeat(Math.min(4, Array.from(m).length)));
+  }
+  return s;
+}
+
 // 받은 상태값을 알려진 필드·범위로만 다시 만든다 (악성 입력 차단)
 function sanitize(d) {
   if (!d || typeof d !== 'object') return null;
   const p = arr(d.p, 4); if (!p) return null;
   const n = arr(d.n, 2) || [0, 0], lk = arr(d.lk, 4) || [0, 0, 0, 0], f = arr(d.f, 2) || [0, 0];
+  const ck = arr(d.ck, 5);
   return {
     v: 3,
     n: [idx(n[0], N_ADJ), idx(n[1], N_NOUN)],
@@ -36,6 +60,19 @@ function sanitize(d) {
     cid: idx(d.cid, 1e9), cs: SPECIES.has(d.cs) ? d.cs : '', cz: r2(num(d.cz, 0, 1000, 0)),
     j: num(d.j, 0, 1e13, 0),
     ai: idx(d.ai, 16), ak: d.ak === 1 ? 1 : 0, an: idx(d.an, 1e9),
+    rd: num(d.rd | 0, 1, 5, 1),
+    ck: ck ? [idx(ck[0], 3), idx(ck[1], 40), r2(num(ck[2], -120, 120, 0)), r2(num(ck[3], -120, 120, 0)), r2(num(ck[4], -50, 50, 0))] : [0, 0, 0, 0, 0],
+  };
+}
+// 수조 자랑용 프로필
+function sanitizeProfile(d) {
+  if (!d || typeof d !== 'object') return null;
+  const k = Array.isArray(d.k) ? d.k.slice(0, 30) : [];
+  return {
+    r: num(d.r | 0, 1, 5, 1),
+    k: k.filter(x => Array.isArray(x) && x.length === 2).map(x => [idx(x[0], SPECIES_LIST.length), r2(num(x[1], 0.5, 1000, 10))]),
+    m: num(d.m | 0, 0, 1e9, 0),
+    b: num(d.b | 0, 0, 65, 0),
   };
 }
 
@@ -44,11 +81,18 @@ export class Island extends DurableObject {
     super(ctx, env);
     // 'ping' → 'pong' 자동 응답: 객체를 깨우지 않아 비용이 들지 않는다
     this.ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping', 'pong'));
+    this.sql = ctx.storage.sql;
+    this.sql.exec('CREATE TABLE IF NOT EXISTS chat(id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER, a INTEGER, b INTEGER, m TEXT)');
+  }
+
+  recentChat() {
+    return this.sql.exec('SELECT ts, a, b, m FROM chat ORDER BY id DESC LIMIT ?', CHAT_KEEP).toArray().reverse()
+      .map(r => ({ ts: r.ts, n: [r.a, r.b], m: r.m }));
   }
 
   async fetch(request) {
     if (request.headers.get('Upgrade') !== 'websocket') return new Response('Expected WebSocket', { status: 426 });
-    const live = this.ctx.getWebSockets().filter(w => { const a = w.deserializeAttachment(); return a && !a.full; });
+    const live = this.ctx.getWebSockets().filter(w => { const a = w.deserializeAttachment(); return a && !a.full && !a.gone; });
     const { 0: client, 1: server } = new WebSocketPair();
     if (live.length >= CAP) {
       this.ctx.acceptWebSocket(server);
@@ -59,10 +103,10 @@ export class Island extends DurableObject {
     }
     this.ctx.acceptWebSocket(server);
     const id = crypto.randomUUID().replace(/-/g, '').slice(0, 10);
-    server.serializeAttachment({ id, p: null, sec: 0, cnt: 0 });
+    server.serializeAttachment({ id, p: null, sec: 0, cnt: 0, lc: 0 });
     const peers = [];
     for (const w of live) { const a = w.deserializeAttachment(); if (a && a.p) peers.push({ id: a.id, p: a.p }); }
-    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP }));
+    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat() }));
     return new Response(null, { status: 101, webSocket: client });
   }
 
@@ -73,13 +117,37 @@ export class Island extends DurableObject {
     const sec = Math.floor(Date.now() / 1000);
     if (a.sec !== sec) { a.sec = sec; a.cnt = 0; }
     if (++a.cnt > MAX_RATE) { ws.serializeAttachment(a); return; }
-    let m; try { m = JSON.parse(msg); } catch { return; }
-    if (m && m.t === 'p') {
+    let m; try { m = JSON.parse(msg); } catch { ws.serializeAttachment(a); return; }
+    if (!m || typeof m !== 'object') { ws.serializeAttachment(a); return; }
+    if (m.t === 'p') {
       const p = sanitize(m.d);
-      if (!p) { ws.serializeAttachment(a); return; }
-      a.p = p; ws.serializeAttachment(a);
-      this.broadcast({ t: 'p', id: a.id, p }, ws);
-    } else ws.serializeAttachment(a);
+      if (p) { a.p = p; ws.serializeAttachment(a); this.broadcast({ t: 'p', id: a.id, p }, ws); return; }
+    } else if (m.t === 'c') {
+      const now = Date.now();
+      const text = cleanChat(m.m);
+      if (text && a.p && now - (a.lc || 0) >= CHAT_GAP) {
+        a.lc = now; ws.serializeAttachment(a);
+        const n = a.p.n;
+        this.sql.exec('INSERT INTO chat(ts, a, b, m) VALUES (?, ?, ?, ?)', now, n[0], n[1], text);
+        this.sql.exec('DELETE FROM chat WHERE id NOT IN (SELECT id FROM chat ORDER BY id DESC LIMIT ?)', CHAT_KEEP);
+        this.broadcast({ t: 'c', id: a.id, n, m: text, ts: now }, null);
+        return;
+      }
+    } else if (m.t === 'gp' && typeof m.id === 'string') {
+      // 다른 사람의 수조를 보고 싶다는 요청 → 그 사람에게 전달
+      const target = this.findWs(m.id);
+      if (target) { try { target.send(JSON.stringify({ t: 'gp', from: a.id })); } catch {} }
+    } else if (m.t === 'pf' && typeof m.to === 'string') {
+      const target = this.findWs(m.to);
+      const d = sanitizeProfile(m.d);
+      if (target && d) { try { target.send(JSON.stringify({ t: 'pf', id: a.id, d })); } catch {} }
+    }
+    ws.serializeAttachment(a);
+  }
+
+  findWs(id) {
+    for (const w of this.ctx.getWebSockets()) { const a = w.deserializeAttachment(); if (a && a.id === id && !a.full && !a.gone) return w; }
+    return null;
   }
 
   webSocketClose(ws, code) { this.leave(ws); try { ws.close(code === 1005 || code === 1006 ? 1000 : code, 'bye'); } catch {} }
@@ -101,11 +169,111 @@ export class Island extends DurableObject {
   }
 }
 
+// ---------- 계정 / 저장 ----------
+const ID_RE = /^[a-z0-9가-힣_]{3,12}$/;
+const PW_MIN = 4, PW_MAX = 40;
+const SAVE_MAX = 60000;            // 저장 데이터 최대 크기(바이트)
+const SESSION_DAYS = 60;
+const PBKDF2_ITER = 50000;
+const enc = new TextEncoder();
+const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+const randHex = n => hex(crypto.getRandomValues(new Uint8Array(n)));
+async function hashPw(pw, saltHex) {
+  const key = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveBits']);
+  const salt = new Uint8Array(saltHex.match(/../g).map(h => parseInt(h, 16)));
+  return hex(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: PBKDF2_ITER }, key, 256));
+}
+function sameStr(a, b) { if (a.length !== b.length) return false; let r = 0; for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i); return r === 0; }
+const J = (obj, status = 200) => Response.json(obj, { status, headers: { 'cache-control': 'no-store' } });
+
+export class Vault extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.sql = ctx.storage.sql;
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY, salt TEXT, hash TEXT, data TEXT, created INTEGER, updated INTEGER, fails INTEGER DEFAULT 0, lock_until INTEGER DEFAULT 0);
+      CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, id TEXT, exp INTEGER);`);
+    this.regByIp = new Map();
+  }
+  newSession(id) {
+    const token = randHex(24), exp = Date.now() + SESSION_DAYS * 864e5;
+    this.sql.exec('INSERT INTO sessions(token, id, exp) VALUES (?, ?, ?)', token, id, exp);
+    return token;
+  }
+  who(token) {
+    if (typeof token !== 'string' || !/^[0-9a-f]{48}$/.test(token)) return null;
+    const r = this.sql.exec('SELECT id, exp FROM sessions WHERE token = ?', token).toArray()[0];
+    if (!r || r.exp < Date.now()) return null;
+    return r.id;
+  }
+  async fetch(request) {
+    const url = new URL(request.url);
+    const op = url.pathname.split('/').pop();
+    let body = {};
+    try { const text = await request.text(); if (text.length > SAVE_MAX + 2000) return J({ error: '데이터가 너무 커요' }, 413); body = text ? JSON.parse(text) : {}; } catch { return J({ error: '잘못된 요청' }, 400); }
+    const now = Date.now();
+    const ip = request.headers.get('x-ip') || '';
+
+    if (op === 'register' || op === 'login') {
+      const id = String(body.id ?? '').trim().toLowerCase();
+      const pw = String(body.pw ?? '');
+      if (!ID_RE.test(id)) return J({ error: '아이디는 한글·영문 소문자·숫자·_ 로 3~12자예요' }, 400);
+      if (pw.length < PW_MIN || pw.length > PW_MAX) return J({ error: `비밀번호는 ${PW_MIN}~${PW_MAX}자예요` }, 400);
+      const row = this.sql.exec('SELECT * FROM users WHERE id = ?', id).toArray()[0];
+      if (op === 'register') {
+        if (row) return J({ error: '이미 있는 아이디예요. 다른 아이디를 써 주세요' }, 409);
+        const list = (this.regByIp.get(ip) || []).filter(x => now - x < 3600e3);
+        if (list.length >= 5) return J({ error: '같은 곳에서 계정을 너무 많이 만들었어요. 1시간 뒤에 다시 해 주세요' }, 429);
+        list.push(now); this.regByIp.set(ip, list);
+        const salt = randHex(16), hash = await hashPw(pw, salt);
+        this.sql.exec('INSERT INTO users(id, salt, hash, data, created, updated) VALUES (?, ?, ?, NULL, ?, ?)', id, salt, hash, now, now);
+        return J({ ok: true, id, token: this.newSession(id), data: null });
+      }
+      if (!row) return J({ error: '아이디 또는 비밀번호가 맞지 않아요' }, 401);
+      if (row.lock_until > now) return J({ error: `비밀번호를 여러 번 틀렸어요. ${Math.ceil((row.lock_until - now) / 60000)}분 뒤에 다시 해 주세요` }, 429);
+      const hash = await hashPw(pw, row.salt);
+      if (!sameStr(hash, row.hash)) {
+        const fails = (row.fails || 0) + 1;
+        this.sql.exec('UPDATE users SET fails = ?, lock_until = ? WHERE id = ?', fails >= 5 ? 0 : fails, fails >= 5 ? now + 5 * 60e3 : 0, id);
+        return J({ error: '아이디 또는 비밀번호가 맞지 않아요' }, 401);
+      }
+      this.sql.exec('UPDATE users SET fails = 0, lock_until = 0 WHERE id = ?', id);
+      if (Math.random() < 0.05) this.sql.exec('DELETE FROM sessions WHERE exp < ?', now);
+      let data = null; try { data = row.data ? JSON.parse(row.data) : null; } catch { data = null; }
+      return J({ ok: true, id, token: this.newSession(id), data });
+    }
+    const id = this.who(body.token);
+    if (!id) return J({ error: '다시 로그인해 주세요' }, 401);
+    if (op === 'load') {
+      const row = this.sql.exec('SELECT data FROM users WHERE id = ?', id).toArray()[0];
+      let data = null; try { data = row && row.data ? JSON.parse(row.data) : null; } catch { data = null; }
+      return J({ ok: true, id, data });
+    }
+    if (op === 'save') {
+      const d = body.data;
+      if (!d || typeof d !== 'object' || Array.isArray(d)) return J({ error: '잘못된 데이터' }, 400);
+      const s = JSON.stringify(d);
+      if (s.length > SAVE_MAX) return J({ error: '데이터가 너무 커요' }, 413);
+      this.sql.exec('UPDATE users SET data = ?, updated = ? WHERE id = ?', s, now, id);
+      return J({ ok: true, at: now });
+    }
+    if (op === 'logout') { this.sql.exec('DELETE FROM sessions WHERE token = ?', body.token); return J({ ok: true }); }
+    return J({ error: 'not found' }, 404);
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/api/hello') {
-      return Response.json({ monggeul: true, cap: CAP }, { headers: { 'cache-control': 'no-store' } });
+      return Response.json({ monggeul: true, cap: CAP, accounts: true }, { headers: { 'cache-control': 'no-store' } });
+    }
+    if (url.pathname.startsWith('/api/acct/')) {
+      if (request.method !== 'POST') return J({ error: 'POST only' }, 405);
+      const op = url.pathname.slice('/api/acct/'.length);
+      if (!['register', 'login', 'load', 'save', 'logout'].includes(op)) return J({ error: 'not found' }, 404);
+      const stub = env.VAULT.get(env.VAULT.idFromName('vault'));
+      const headers = new Headers({ 'content-type': 'application/json', 'x-ip': request.headers.get('cf-connecting-ip') || '' });
+      return stub.fetch(new Request('https://vault/' + op, { method: 'POST', headers, body: request.body }));
     }
     if (url.pathname === '/ws') {
       let n = parseInt(url.searchParams.get('island') || '1', 10);
