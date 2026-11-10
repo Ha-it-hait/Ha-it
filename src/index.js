@@ -41,6 +41,19 @@ function cleanChat(s) {
   return s;
 }
 
+// 직접 정한 닉네임 검사 (2~10자, 한글·영문·숫자·띄어쓰기·_, 금지어 없음). 통과 못 하면 '' → 랜덤 이름으로 보인다
+const NICK_BAN = ['용왕', '운영자', '관리자', '운영진', 'admin', 'gm', 'system', '시스템', 'claude'];
+function cleanNick(v) {
+  if (typeof v !== 'string') return '';
+  const s = v.replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u2064]/g, '').replace(/\s+/g, ' ').trim();
+  const len = Array.from(s).length;
+  if (len < 2 || len > 10 || !/^[가-힣a-zA-Z0-9 _]+$/.test(s)) return '';
+  const low = s.toLowerCase().replace(/[\s_]/g, '');
+  if (NICK_BAN.some(w => low.includes(w))) return '';
+  if (cleanChat(s) !== s) return '';
+  return s;
+}
+
 // 받은 상태값을 알려진 필드·범위로만 다시 만든다 (악성 입력 차단)
 function sanitize(d) {
   if (!d || typeof d !== 'object') return null;
@@ -50,6 +63,7 @@ function sanitize(d) {
   return {
     v: 3,
     n: [idx(n[0], N_ADJ), idx(n[1], N_NOUN)],
+    nk: cleanNick(d.nk),
     lk: [idx(lk[0], 7), idx(lk[1], 12), idx(lk[2], 5), idx(lk[3], 12)],
     p: [r2(num(p[0], -120, 120, 0)), r2(num(p[1], -120, 120, 0)), r2(num(p[2], -50, 50, 0)), r2(num(p[3], 0, 3, 0))],
     m: d.m === 1 ? 1 : 0,
@@ -82,12 +96,13 @@ export class Island extends DurableObject {
     // 'ping' → 'pong' 자동 응답: 객체를 깨우지 않아 비용이 들지 않는다
     this.ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping', 'pong'));
     this.sql = ctx.storage.sql;
-    this.sql.exec('CREATE TABLE IF NOT EXISTS chat(id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER, a INTEGER, b INTEGER, m TEXT)');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS chat2(id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER, a INTEGER, b INTEGER, nk TEXT, m TEXT)');
+    this.sql.exec('DROP TABLE IF EXISTS chat'); // 예전 형식 채팅 표는 정리
   }
 
   recentChat() {
-    return this.sql.exec('SELECT ts, a, b, m FROM chat ORDER BY id DESC LIMIT ?', CHAT_KEEP).toArray().reverse()
-      .map(r => ({ ts: r.ts, n: [r.a, r.b], m: r.m }));
+    return this.sql.exec('SELECT ts, a, b, nk, m FROM chat2 ORDER BY id DESC LIMIT ?', CHAT_KEEP).toArray().reverse()
+      .map(r => ({ ts: r.ts, n: [r.a, r.b], nk: r.nk || '', m: r.m }));
   }
 
   async fetch(request) {
@@ -127,10 +142,10 @@ export class Island extends DurableObject {
       const text = cleanChat(m.m);
       if (text && a.p && now - (a.lc || 0) >= CHAT_GAP) {
         a.lc = now; ws.serializeAttachment(a);
-        const n = a.p.n;
-        this.sql.exec('INSERT INTO chat(ts, a, b, m) VALUES (?, ?, ?, ?)', now, n[0], n[1], text);
-        this.sql.exec('DELETE FROM chat WHERE id NOT IN (SELECT id FROM chat ORDER BY id DESC LIMIT ?)', CHAT_KEEP);
-        this.broadcast({ t: 'c', id: a.id, n, m: text, ts: now }, null);
+        const n = a.p.n, nk = a.p.nk || '';
+        this.sql.exec('INSERT INTO chat2(ts, a, b, nk, m) VALUES (?, ?, ?, ?, ?)', now, n[0], n[1], nk, text);
+        this.sql.exec('DELETE FROM chat2 WHERE id NOT IN (SELECT id FROM chat2 ORDER BY id DESC LIMIT ?)', CHAT_KEEP);
+        this.broadcast({ t: 'c', id: a.id, n, nk, m: text, ts: now }, null);
         return;
       }
     } else if (m.t === 'gp' && typeof m.id === 'string') {
@@ -271,9 +286,14 @@ export default {
       if (request.method !== 'POST') return J({ error: 'POST only' }, 405);
       const op = url.pathname.slice('/api/acct/'.length);
       if (!['register', 'login', 'load', 'save', 'logout'].includes(op)) return J({ error: 'not found' }, 404);
-      const stub = env.VAULT.get(env.VAULT.idFromName('vault'));
-      const headers = new Headers({ 'content-type': 'application/json', 'x-ip': request.headers.get('cf-connecting-ip') || '' });
-      return stub.fetch(new Request('https://vault/' + op, { method: 'POST', headers, body: request.body }));
+      if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
+      try {
+        const stub = env.VAULT.get(env.VAULT.idFromName('vault'));
+        const headers = new Headers({ 'content-type': 'application/json', 'x-ip': request.headers.get('cf-connecting-ip') || '' });
+        return await stub.fetch(new Request('https://vault/' + op, { method: 'POST', headers, body: await request.text() }));
+      } catch (e) {
+        return J({ error: '계정 서버 오류: ' + String(e && e.message || e).slice(0, 120) }, 500);
+      }
     }
     if (url.pathname === '/ws') {
       let n = parseInt(url.searchParams.get('island') || '1', 10);

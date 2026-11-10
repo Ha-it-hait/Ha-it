@@ -86,7 +86,10 @@ button{font-family:inherit}
 .closet .cs{font-size:12.5px;color:#8a7f6a;margin-top:3px;line-height:1.45}
 .namebox{margin:14px 0 4px;background:#f3ead6;border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:10px}
 .namebox .nl{font-size:11.5px;color:#8a7f6a;font-weight:800;white-space:nowrap}
-.namebox .nmv{flex:1;font-size:17px;font-weight:900;color:#4a3410}
+.namebox .nmv{flex:1;font-size:17px;font-weight:900;color:#4a3410;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nickrow{display:flex;gap:6px;margin-top:8px}.nickrow input{flex:1;min-width:0;height:42px;border-radius:12px;border:2px solid #eadfc6;padding:0 12px;font-size:16px;font-family:inherit;background:#fff;color:#2a2f45;outline:none;user-select:text;-webkit-user-select:text}
+.nickrow input:focus{border-color:#ffb020}.nickrow button{height:42px;padding:0 14px;border-radius:12px;border:0;background:#4cc38a;color:#fff;font-weight:900;font-size:14px;cursor:pointer;white-space:nowrap}
+.nickmsg{font-size:11.5px;color:#8a7f6a;margin:5px 2px 0;line-height:1.4}.nickmsg.bad{color:#e0444f;font-weight:800}.nickmsg.good{color:#2f9e68;font-weight:800}
 .reroll{border:0;background:#ffcf5a;color:#5a3d08;font-weight:900;border-radius:12px;height:36px;padding:0 12px;cursor:pointer;font-size:13px;white-space:nowrap}
 .opt{margin-top:12px}
 .opt .ol{font-size:12px;font-weight:900;color:#8a7f6a;margin-bottom:6px}
@@ -266,7 +269,9 @@ button{font-family:inherit}
 <div id="closet" class="closet hidden">
   <div class="ct" id="closetTitle">아몰랑아일랜드에 오신 걸 환영해요</div>
   <div class="cs" id="closetSub">같이 낚시하고 힐링하는 작은 섬이에요. 💬 채팅과 이모티콘으로 인사해 보세요.<br>물고기를 팔아 몰랑을 모으고, 더 좋은 낚싯대로 전설의 물고기에 도전해요!</div>
-  <div class="namebox"><div class="nl">내 이름</div><div class="nmv" id="myName"></div><button id="reroll" class="reroll">🎲 다시 뽑기</button></div>
+  <div class="namebox"><div class="nl">내 닉네임</div><div class="nmv" id="myName"></div><button id="reroll" class="reroll">🎲 랜덤</button></div>
+  <div class="nickrow"><input id="nickIn" maxlength="10" placeholder="닉네임 직접 정하기 (2~10자)" autocomplete="off" spellcheck="false" enterkeyhint="done"><button id="nickSave">정하기</button></div>
+  <div class="nickmsg" id="nickMsg">한글·영문·숫자 2~10자 · 아이디와는 따로예요 · 🎲를 누르면 랜덤 이름으로 돌아가요</div>
   <div class="opt"><div class="ol">모자</div><div class="chips" id="hatChips"></div></div>
   <div class="opt"><div class="ol">모자 색</div><div class="sw" id="hatColors"></div></div>
   <div class="opt"><div class="ol">옷</div><div class="chips" id="clothChips"></div></div>
@@ -975,9 +980,9 @@ const CLOTH_NAMES=['패딩','우비','낚시조끼','후드티','멜빵바지'];
 const COLORS=['#ff8a65','#ef5350','#ffca28','#9ccc65','#4fc3f7','#5c6bc0','#ba68c8','#f48fb1','#4db6ac','#fffdf5','#8d6e63','#37474f'];
 let LOOK={hat:Math.floor(Math.random()*6),hc:Math.floor(Math.random()*COLORS.length),cloth:Math.floor(Math.random()*CLOTH_NAMES.length),cc:Math.floor(Math.random()*COLORS.length)};
 let NAME={a:Math.floor(Math.random()*ADJ.length),b:Math.floor(Math.random()*NOUN.length)};
-try{const s=JSON.parse(localStorage.getItem('monggeul-me')||'null');if(s&&s.look&&s.name){const L=s.look;if([L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK=L;if(Number.isInteger(s.name.a)&&Number.isInteger(s.name.b))NAME=s.name;}}catch(e){}
+try{const s=JSON.parse(localStorage.getItem('monggeul-me')||'null');if(s&&s.look&&s.name){const L=s.look;if([L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK=L;if(Number.isInteger(s.name.a)&&Number.isInteger(s.name.b))NAME={a:s.name.a,b:s.name.b,nk:typeof s.name.nk==='string'?s.name.nk.slice(0,10):''};}}catch(e){}
 function saveMe(){try{localStorage.setItem('monggeul-me',JSON.stringify({look:LOOK,name:NAME}));}catch(e){}markSave();}
-function nameOf(n){return`${ADJ[Math.abs(n.a|0)%ADJ.length]} ${NOUN[Math.abs(n.b|0)%NOUN.length]}`;}
+function nameOf(n){if(n&&typeof n.nk==='string'&&n.nk)return n.nk;return`${ADJ[Math.abs(n.a|0)%ADJ.length]} ${NOUN[Math.abs(n.b|0)%NOUN.length]}`;}
 
 /* ---------- renderer ---------- */
 const isTouch=matchMedia('(pointer:coarse)').matches;
@@ -1831,10 +1836,10 @@ function sendChat(){const inp=$('chatIn');const raw=inp.value;const text=cleanCh
  showBubble(P.label,text,false,10);P.hopT=t;sfx.pop();
  if(netMode==='ws'&&ws&&ws.readyState===1){ws.send(JSON.stringify({t:'c',m:text}));}
  else{chatSeq++;ME.cm=[chatSeq,text];ME.cl=[...(ME.cl||[]),[now,text]].slice(-5);markPresence();chatAdd({ts:now,pid:'me',name:nameOf(NAME),text,me:true});}}
-function onChatMsg(m){const me=m.id===wsMyId;const name=Array.isArray(m.n)?nameOf({a:m.n[0],b:m.n[1]}):'누군가';const text=String(m.m||'').slice(0,80);
+function onChatMsg(m){const me=m.id===wsMyId;const mk=checkNick(typeof m.nk==='string'?m.nk:'');const name=Array.isArray(m.n)?nameOf({a:m.n[0],b:m.n[1],nk:mk.ok?mk.nick:''}):'누군가';const text=String(m.m||'').slice(0,80);
  chatAdd({ts:+m.ts||Date.now(),pid:me?'me':String(m.id),name,text,me});
  if(me){showBubble(P.label,text,false,10);}else{const r=remote.get(String(m.id));if(r&&!mutedPeers.has(String(m.id))){showBubble(r.label,text,false,10);r.hopT=t;}}}
-function onChatHistory(list){if(!Array.isArray(list))return;for(const m of list){if(!m)continue;chatLog.push({ts:+m.ts||0,pid:'h'+m.ts,name:Array.isArray(m.n)?nameOf({a:m.n[0],b:m.n[1]}):'누군가',text:String(m.m||'').slice(0,80),me:false});}
+function onChatHistory(list){if(!Array.isArray(list))return;for(const m of list){if(!m)continue;chatLog.push({ts:+m.ts||0,pid:'h'+m.ts,name:Array.isArray(m.n)?nameOf({a:m.n[0],b:m.n[1],nk:checkNick(typeof m.nk==='string'?m.nk:'').ok?m.nk.trim().replace(/\s+/g,' '):''}):'누군가',text:String(m.m||'').slice(0,80),me:false});}
  chatLog.sort((a,b)=>a.ts-b.ts);const seen=new Set();chatLog=chatLog.filter(e=>{const k=e.ts+'|'+e.text;if(seen.has(k))return false;seen.add(k);return true;}).slice(-CHAT_KEEP);if(chatOpen)renderChat();}
 
 /* ---------- 다른 사람: 낚싯대·요리·채팅·프로필 (공통) ---------- */
@@ -1850,7 +1855,7 @@ function v2Peer(r,pr,isNew){
   if(isNew||r.cmSeq===undefined){r.cmSeq=seq;if(Array.isArray(pr.cl))for(const e of pr.cl.slice(-5))if(Array.isArray(e))chatAdd({ts:+e[0]||0,pid:r.peer,name:r.name,text:cleanChat(e[1]),me:false});}
   else if(seq!==r.cmSeq){r.cmSeq=seq;const text=cleanChat(cm[1]);if(text){chatAdd({ts:Date.now(),pid:r.peer,name:r.name,text,me:false});if(!mutedPeers.has(r.peer)){showBubble(r.label,text,false,10);r.hopT=t;}}}}}
 function myProfile(){return{r:GS.rod,k:tank.slice(0,30).map(o=>[SP_IDX.get(o.id)??0,o.s]),b:Object.keys(book).length};}
-function v2Presence(o){o.rd=GS.rod;o.ck=ME.ck||[0,0,0,0,0];if(netMode!=='ws'){o.cm=ME.cm||[0,''];o.cl=ME.cl||[];o.pf=myProfile();}return o;}
+function v2Presence(o){o.rd=GS.rod;o.nk=NAME.nk||'';o.ck=ME.ck||[0,0,0,0,0];if(netMode!=='ws'){o.cm=ME.cm||[0,''];o.cl=ME.cl||[];o.pf=myProfile();}return o;}
 function onNetMsg(m){if(m.t==='c'){onChatMsg(m);return true;}
  if(m.t==='gp'&&m.from){try{ws.send(JSON.stringify({t:'pf',to:String(m.from),d:myProfile()}));}catch(e){}return true;}
  if(m.t==='pf'&&m.id){if(profPeer===String(m.id))showProfData(m.d);return true;}return false;}
@@ -1927,7 +1932,7 @@ function loveAll(){const o={};for(const d of ANIM_DEFS){try{const n=+localStorag
 function collectSave(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,stats:GS.stats}};}
 function applySave(d){if(!d||typeof d!=='object')return false;
  const L=d.look;if(L&&[L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK={hat:clamp(L.hat,0,6),hc:clamp(L.hc,0,COLORS.length-1),cloth:clamp(L.cloth,0,4),cc:clamp(L.cc,0,COLORS.length-1)};
- if(d.name&&Number.isInteger(d.name.a)&&Number.isInteger(d.name.b))NAME={a:d.name.a,b:d.name.b};
+ if(d.name&&Number.isInteger(d.name.a)&&Number.isInteger(d.name.b)){const ck=checkNick(d.name.nk||'');NAME={a:d.name.a,b:d.name.b,nk:ck.ok?ck.nick:''};}
  if(d.book&&typeof d.book==='object'){const nb={};for(const[k,v]of Object.entries(d.book))if(SP_BY[k]&&v&&Number.isFinite(+v.n)&&Number.isFinite(+v.best))nb[k]={n:Math.max(1,+v.n|0),best:+v.best};book=nb;}
  if(Array.isArray(d.tank))tank=d.tank.filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,TANK_MAX).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now()}));
  if(d.love&&typeof d.love==='object')for(const[k,v]of Object.entries(d.love))try{localStorage.setItem('monggeul-love-'+k,String(v|0));}catch(e){}
@@ -1958,7 +1963,7 @@ function showAuth(){const s=(()=>{try{return JSON.parse(localStorage.getItem(ACC
  $('auth').classList.remove('hidden');$('authQuick').classList.toggle('hidden',!(s&&s.token&&s.id));if(s&&s.id)$('authQuickBtn').textContent=`▶ ‘${s.id}’(으)로 계속하기`;renderAuthTab();}
 function renderAuthTab(){document.querySelectorAll('#auth .tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===authTab));$('authPw2Row').classList.toggle('hidden',authTab!=='register');
  $('authGo').textContent=authTab==='login'?'로그인하고 섬으로':'아이디 만들기';$('authNote').innerHTML=authTab==='register'?'지금 이 기기에서 모은 기록(물고기·수조·옷 등)이 새 아이디에 담겨요.<br>⚠ 비밀번호 찾기 기능이 없어요. 꼭 기억해 두세요. 다른 사이트와 같은 비밀번호는 쓰지 마세요.':'아이디와 비밀번호를 넣으면 지난번 기록(옷·물고기·몰랑·장비·수조)을 그대로 불러와요.';$('authErr').textContent='';}
-async function authCall(op,body){const r=await fetch('/api/acct/'+op,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});let j={};try{j=await r.json();}catch(e){}if(!r.ok)throw new Error(j.error||'서버와 연결하지 못했어요');return j;}
+async function authCall(op,body){let r;try{r=await fetch('/api/acct/'+op,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});}catch(e){throw new Error('인터넷 연결을 확인해 주세요');}let j={};try{j=await r.json();}catch(e){}if(!r.ok)throw new Error(j.error||(r.status===404||r.status===405?'서버 파일(src/index.js)이 아직 예전 버전이에요 (오류 '+r.status+')':'서버와 연결하지 못했어요 (오류 '+r.status+')'));return j;}
 async function authSubmit(){const id=$('authId').value.trim().toLowerCase(),pw=$('authPw').value,pw2=$('authPw2').value;const err=$('authErr');err.textContent='';
  if(!/^[a-z0-9가-힣_]{3,12}$/.test(id)){err.textContent='아이디는 한글·영문 소문자·숫자·_ 로 3~12자예요';return;}if(pw.length<4){err.textContent='비밀번호는 4자 이상이에요';return;}
  if(authTab==='register'&&pw!==pw2){err.textContent='비밀번호 확인이 달라요';return;}
@@ -2150,7 +2155,7 @@ function applyPeers(list){
   r.leaving=false;
   const lk=Array.isArray(pr.lk)?pr.lk:[0,0,0,0];r.look={hat:Math.abs(lk[0]|0)%7,hc:Math.abs(lk[1]|0)%COLORS.length,cloth:Math.abs(lk[2]|0)%5,cc:Math.abs(lk[3]|0)%COLORS.length};
   const key=[r.look.hat,r.look.hc,r.look.cloth,r.look.cc].join(',');if(key!==r.lookKey){if(r.char)scene.remove(r.char.root);r.char=makeCharacter(r.look);scene.add(r.char.root);r.lookKey=key;}
-  const n=Array.isArray(pr.n)?pr.n:[0,0];r.name=nameOf({a:n[0],b:n[1]});r.label.nm.textContent=r.name;
+  const n=Array.isArray(pr.n)?pr.n:[0,0];const nck=checkNick(typeof pr.nk==='string'?pr.nk:'');r.name=nameOf({a:n[0],b:n[1],nk:nck.ok?nck.nick:''});r.label.nm.textContent=r.name;
   const pp=Array.isArray(pr.p)?pr.p:[0,0,0,0];r.tx=num(pp[0],0,-120,120);r.tz=num(pp[1],0,-120,120);r.tyaw=num(pp[2],0,-50,50);r.tjy=num(pp[3],0,0,3);
   if(!r.init){r.pos.set(r.tx,groundY(r.tx,r.tz),r.tz);r.yaw=r.tyaw;r.init=true;}
   r.m=pr.m===1?1:0;const prev=r.st;r.st=['idle','cast','wait','bite','fight'].includes(pr.st)?pr.st:'idle';
@@ -2204,7 +2209,16 @@ function openCloset(first){if(mode==='fish')exitFish();mode='closet';$('closet')
 function updScrollHint(){const c=$('closet'),h=$('scrollHint');if(!h)return;h.classList.toggle('off',c.scrollTop+c.clientHeight>=c.scrollHeight-40);}
 $('closet').addEventListener('scroll',updScrollHint,{passive:true});window.addEventListener('resize',updScrollHint);
 function closeCloset(){$('closet').classList.add('hidden');mode='walk';setViewOffset();camYaw=P.yaw+Math.PI;refreshHint();refreshAct();}
-$('reroll').addEventListener('click',()=>{NAME={a:Math.floor(Math.random()*ADJ.length),b:Math.floor(Math.random()*NOUN.length)};saveMe();$('myName').textContent=nameOf(NAME);P.label.nm.textContent=nameOf(NAME);markPresence();sfx.pop();});
+function checkNick(raw){let s=String(raw??'').replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u2064]/g,'').replace(/\s+/g,' ').trim();if(!s)return{ok:false,nick:'',err:''};
+ const len=Array.from(s).length;if(len<2||len>10)return{ok:false,nick:s,err:'닉네임은 2~10자로 정해 주세요'};
+ if(!/^[가-힣a-zA-Z0-9 _]+$/.test(s))return{ok:false,nick:s,err:'한글(완성된 글자)·영문·숫자·띄어쓰기·_ 만 쓸 수 있어요'};
+ const low=s.toLowerCase().replace(/[\s_]/g,'');for(const w of['용왕','운영자','관리자','운영진','admin','gm','system','시스템','claude'])if(low.includes(w))return{ok:false,nick:s,err:`‘${w}’이(가) 들어간 닉네임은 쓸 수 없어요`};
+ if(cleanChat(s)!==s)return{ok:false,nick:s,err:'쓸 수 없는 단어가 들어 있어요'};return{ok:true,nick:s,err:''};}
+function nickMsg(t,cls){const m=$('nickMsg');m.textContent=t;m.className='nickmsg'+(cls?' '+cls:'');}
+function saveNick(){const ck=checkNick($('nickIn').value);if(!ck.ok){nickMsg(ck.err||'닉네임을 입력해 주세요','bad');return;}
+ NAME={a:NAME.a,b:NAME.b,nk:ck.nick};saveMe();$('myName').textContent=nameOf(NAME);P.label.nm.textContent=nameOf(NAME);markPresence();sfx.pop();$('nickIn').value='';$('nickIn').blur();nickMsg(`‘${ck.nick}’(으)로 정했어요! 머리 위와 채팅에 이 이름이 보여요`,'good');}
+$('nickSave').addEventListener('click',saveNick);$('nickIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveNick();}});
+$('reroll').addEventListener('click',()=>{nickMsg('랜덤 이름으로 바꿨어요. 직접 정하려면 위 칸에 입력해요','');NAME={a:Math.floor(Math.random()*ADJ.length),b:Math.floor(Math.random()*NOUN.length)};saveMe();$('myName').textContent=nameOf(NAME);P.label.nm.textContent=nameOf(NAME);markPresence();sfx.pop();});
 $('go').addEventListener('click',()=>{const first=!entered;entered=true;initAudio();applySound();$('tankBtn').classList.remove('hidden');$('bagBtn').classList.remove('hidden');$('chatBtn').classList.remove('hidden');closeCloset();if(first){sendEmote('👋',false);let seen=false;try{seen=localStorage.getItem('monggeul-guided')==='1';localStorage.setItem('monggeul-guided','1');}catch(e){}if(!seen)setTimeout(openHelp,700);else toast('어서 와요! ❓를 누르면 낚시하는 법이 나와요');}markPresence();});
 $('bCloset').addEventListener('click',()=>{if(!entered)return;openCloset(false);});
 $('actBtn').addEventListener('click',()=>{initAudio();if(mode==='fish')exitFish();else if(canFish)enterFish();});
@@ -2335,7 +2349,7 @@ $('authGo').addEventListener('click',authSubmit);$('authGuest').addEventListener
 ['authId','authPw','authPw2'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();authSubmit();}}));
 cv.addEventListener('pointerdown',e=>{tapD={x:e.clientX,y:e.clientY,t:performance.now(),id:e.pointerId};});
 cv.addEventListener('pointerup',e=>{const d0=tapD;tapD=null;if(!d0||d0.id!==e.pointerId)return;if(Math.hypot(e.clientX-d0.x,e.clientY-d0.y)>9||performance.now()-d0.t>380)return;if(!entered||mode!=='walk'||modalOpen())return;onTap(e.clientX,e.clientY);});
-async function boot(){loadLocalGS();setCharRod(P.char,GS.rod);await detectNet();if(netMode==='ws'){showAuth();}else{openCloset(true);initCloud();}connectRoom();}
+async function boot(){{const ck=checkNick(NAME.nk||'');NAME.nk=ck.ok?ck.nick:'';}loadLocalGS();setCharRod(P.char,GS.rod);await detectNet();if(netMode==='ws'){showAuth();}else{openCloset(true);initCloud();}connectRoom();}
 /* ---------- start ---------- */
 $('petBtn').addEventListener('click',()=>interact(0));$('hugBtn').addEventListener('click',()=>interact(1));
 buildWorld();buildShop();initHearts();buildAnimals();buildWater();skyMesh=buildSky();initRipples();initDrops();
