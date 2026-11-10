@@ -1,0 +1,13 @@
+{
+  "name": "monggeul-island",
+  "version": "1.0.0",
+  "description": "아몰랑아일랜드 - 같이 낚시하고 힐링해요 (Cloudflare Workers)",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.158.0"
+  },
+  "private": true
+}
