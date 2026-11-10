@@ -158,6 +158,12 @@ button{font-family:inherit}
 .steps kbd{font-family:inherit;font-size:11.5px;background:#efe5cf;border-radius:5px;padding:1px 6px;font-weight:800}
 .tips{margin:0;padding-left:18px;font-size:13px;line-height:1.6;color:#5a5040}
 .go3 button{flex:1}
+.bform{background:#fff;border:1px solid #eadfc6;border-radius:14px;padding:10px;margin-top:8px}.bform textarea{width:100%;border:0;resize:none;font-size:15px;font-family:inherit;color:#2a2f45;background:transparent;outline:none;line-height:1.5;user-select:text;-webkit-user-select:text}
+.bform .brow{display:flex;align-items:center;gap:8px}.bform .brow small{flex:1;font-size:11.5px;color:#a89d86}.bform .brow .primary{width:auto;padding:0 18px;margin-top:0}
+#boardX,#cookX{margin-left:auto}
+.aerr2{color:#e0444f;font-size:12.5px;font-weight:800;min-height:0;margin-top:4px}
+.bpost{background:#fff;border:1px solid #eadfc6;border-radius:12px;padding:9px 11px;margin-top:7px}.bpost .bt{display:flex;align-items:center;gap:8px}.bpost .bt b{font-size:13.5px;color:#5a3d08}.bpost .bt small{font-size:11px;color:#a89d86;flex:1}
+.bpost .bt button{border:0;background:#f3ecdc;color:#8a5a32;border-radius:8px;height:26px;padding:0 9px;font-size:11.5px;font-weight:800;cursor:pointer}.bpost p{margin:4px 0 0;font-size:14px;line-height:1.55;color:#3a3326;white-space:pre-wrap;word-break:break-all;user-select:text;-webkit-user-select:text}
 .hud .s2{font-size:12px;font-weight:800;margin-top:3px;opacity:.95}
 .hud .s2.buff{color:#ffe08a}
 .lbtn{position:fixed;left:max(14px,env(safe-area-inset-left));width:56px;height:56px;border-radius:28px;border:3px solid #fff;color:#fff;font-size:23px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:0 6px 16px rgba(0,0,0,.22);z-index:4;cursor:pointer;padding:0}
@@ -315,6 +321,11 @@ button{font-family:inherit}
   <div class="proftank"><canvas id="profCv"></canvas></div>
   <div class="bsub" id="profInfo" style="margin-top:8px"></div>
   <button class="primary small ghost" id="profMute"></button></div></div>
+<div class="overlay hidden" id="boardM"><div class="card wide">
+  <div class="mhead"><b>📋 아몰랑아일랜드 게시판</b><button class="x" id="boardX">✕</button></div>
+  <div class="bsub">게임 업데이트 요청사항을 자유롭게 적어 주세요 ✍️ 닉네임과 함께 모두에게 보여요.</div>
+  <div class="bform"><textarea id="boardIn" maxlength="200" rows="3" placeholder="예) 낚싯대 색깔을 고를 수 있으면 좋겠어요!"></textarea><div class="brow"><small id="boardCnt">0 / 200</small><button class="primary small" id="boardGo">✍️ 남기기</button></div><div class="aerr2" id="boardErr"></div></div>
+  <div id="boardList"></div></div></div>
 <div class="overlay hidden" id="map"><div class="mapbox">
   <div class="mhead"><b>🗺️ 섬 지도</b><button class="x" id="mapX" style="margin-left:auto">✕</button></div>
   <div class="mapwrap"><canvas id="mapCv"></canvas></div><div id="mapInfo"></div><div id="mapList" class="maplist"></div></div></div>
@@ -382,6 +393,7 @@ button{font-family:inherit}
     <ul class="tips">
       <li>왼쪽의 💬 버튼으로 같은 섬 사람들과 채팅해요. 글은 머리 위에 10초 동안 떠요. 최근 50개만 남고 오래된 건 지워져요.</li>
       <li>다른 사람 캐릭터를 누르면 그 사람의 낚싯대와 수조를 구경할 수 있어요. 불편한 사람의 채팅은 거기서 숨길 수 있어요.</li>
+      <li>모닥불 옆 📋 게시판을 누르면 게임 업데이트 요청사항을 남길 수 있어요.</li>
       <li>🗺️ 지도에서 섬 전체와 내 위치를 볼 수 있어요. (PC: Enter 채팅 · B 가방 · M 지도 · R 상점/요리)</li>
     </ul>
     <div class="btitle">🐾 동물 친구들</div>
@@ -1204,8 +1216,8 @@ function buildWorld(){
  const bd=new THREE.Group();bd.position.set(PLAZA.x+6.2,1.2,PLAZA.z-3.5);bd.rotation.y=-0.9;scene.add(bd);
  for(const s of[-1,1])addMesh(new THREE.CylinderGeometry(0.07,0.07,1.9,6),stdMat('#6b4a33'),s*0.8,0.95,0,bd);
  addMesh(new THREE.BoxGeometry(1.9,1.1,0.1),stdMat('#b9875a'),0,1.35,0,bd);
- const note=canvasTex(256,140,(x,w,h)=>{x.fillStyle='#fffdf3';x.fillRect(0,0,w,h);x.fillStyle='#5a4a33';x.font='bold 26px sans-serif';x.textAlign='center';x.fillText('아몰랑아일랜드 게시판',w/2,46);x.font='22px sans-serif';x.fillText('같이 낚시하고 힐링해요 🎣',w/2,92);x.fillText('쓰레기는 되가져가기!',w/2,124);});
- addMesh(new THREE.PlaneGeometry(1.6,0.85),new THREE.MeshStandardMaterial({map:note,roughness:0.9}),0,1.36,0.06,bd);OBST.push({x:PLAZA.x+6.2,z:PLAZA.z-3.5,r:1.0});
+ const note=canvasTex(256,140,(x,w,h)=>{x.fillStyle='#fffdf3';x.fillRect(0,0,w,h);x.fillStyle='#5a4a33';x.font='bold 26px sans-serif';x.textAlign='center';x.fillText('아몰랑아일랜드 게시판',w/2,44);x.font='bold 21px sans-serif';x.fillStyle='#c0392b';x.fillText('게임 업데이트 요청사항',w/2,88);x.fillText('적어주세요 ✍️',w/2,120);});
+ addMesh(new THREE.PlaneGeometry(1.6,0.85),new THREE.MeshStandardMaterial({map:note,roughness:0.9,emissive:'#ffffff',emissiveMap:note,emissiveIntensity:0.12}),0,1.36,0.06,bd);BOARD_G=bd;bd.traverse(o=>{o.userData.pick='board';});OBST.push({x:PLAZA.x+6.2,z:PLAZA.z-3.5,r:1.0});
  // lighthouse on hill
  const lh=new THREE.Group();const lx=HILL.x,lz=HILL.z-1.5;lh.position.set(lx,terrainH(lx,lz)-0.1,lz);scene.add(lh);
  for(let i=0;i<5;i++){const r0=1.25-i*0.11,r1=1.25-(i+1)*0.11;addMesh(new THREE.CylinderGeometry(r1,r0,1.3,20),stdMat(i%2?'#ffffff':'#e8524a',0.6),0,0.65+i*1.3,0,lh);}
@@ -1906,7 +1918,7 @@ function closeMap(){mapOpen=false;$('map').classList.add('hidden');cancelAnimati
 function drawMap(){if(!mapOpen)return;const cv=$('mapCv');const r=cv.getBoundingClientRect();const dpr=Math.min(2,devicePixelRatio||1);const S2=Math.round(Math.min(r.width,r.height)*dpr);if(cv.width!==S2){cv.width=cv.height=S2;}
  const c=cv.getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,S2,S2);c.drawImage(mapBase,0,0,S2,S2);const N=S2;const fs=Math.max(11,N*0.032);
  const icon=(x,z,em,label,sz=1,up=false)=>{const p=w2m(x,z,N);c.font=`${fs*1.25*sz}px sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillText(em,p[0],p[1]);if(label){const ly=p[1]+(up?-fs*1.1:fs*1.05);c.font=`800 ${fs*0.78}px sans-serif`;c.lineWidth=3;c.strokeStyle='rgba(255,255,255,.9)';c.strokeText(label,p[0],ly);c.fillStyle='#2b3b52';c.fillText(label,p[0],ly);}};
- icon(PLAZA.x,PLAZA.z,'🔥','모닥불 · 요리');icon(SHOP.x,SHOP.z,'🐉','용왕님 상점',1,true);icon(0,DOCK.z1-2,'⛵','나무 부두');icon(POND.x,POND.z,'🪷','연못');const rv=RIVER[3];icon(rv[0],rv[1],'🏞️','강');icon(HILL.x,HILL.z-1.5,'🗼','등대');
+ icon(PLAZA.x,PLAZA.z,'🔥','모닥불 · 요리');if(BOARD_G)icon(BOARD_G.position.x,BOARD_G.position.z,'📋','게시판',0.85,true);icon(SHOP.x,SHOP.z,'🐉','용왕님 상점',1,true);icon(0,DOCK.z1-2,'⛵','나무 부두');icon(POND.x,POND.z,'🪷','연못');const rv=RIVER[3];icon(rv[0],rv[1],'🏞️','강');icon(HILL.x,HILL.z-1.5,'🗼','등대');
  for(const h of[[-15,-3],[16,-8],[-9,-19]])icon(h[0],h[1],'🏠','',0.8);
  for(const A of ANIMS){const p=w2m(A.x,A.z,N);c.fillStyle='rgba(140,90,50,.85)';c.beginPath();c.arc(p[0],p[1],N*0.006,0,7);c.fill();}
  const others=[...remote.values()].filter(x=>!x.leaving&&x.char);const now=performance.now();
@@ -1933,18 +1945,19 @@ function goNearPeer(peer){const r=remote.get(peer);if(!r||!entered)return;if(coo
 
 /* ---------- 3D 눌러서 고르기 (상점·다른 사람) ---------- */
 const RAY=new THREE.Raycaster();const _ndc=new THREE.Vector2();let tapD=null;
-function pickAt(cx,cy){_ndc.set(cx/W*2-1,-(cy/H)*2+1);RAY.setFromCamera(_ndc,camera);const objs=[SHOP.g];for(const r of remote.values())if(r.char&&!r.leaving)objs.push(r.char.root);
- const hits=RAY.intersectObjects(objs,true);for(const h of hits){let o=h.object;while(o){if(o.userData&&o.userData.peer)return{peer:o.userData.peer};if(o.userData&&o.userData.pick==='shop')return{shop:true};o=o.parent;}}return null;}
+function pickAt(cx,cy){_ndc.set(cx/W*2-1,-(cy/H)*2+1);RAY.setFromCamera(_ndc,camera);const objs=[SHOP.g];if(BOARD_G)objs.push(BOARD_G);for(const r of remote.values())if(r.char&&!r.leaving)objs.push(r.char.root);
+ const hits=RAY.intersectObjects(objs,true);for(const h of hits){let o=h.object;while(o){if(o.userData&&o.userData.peer)return{peer:o.userData.peer};if(o.userData&&o.userData.pick==='shop')return{shop:true};if(o.userData&&o.userData.pick==='board')return{board:true};o=o.parent;}}return null;}
 function onTap(cx,cy){const hit=pickAt(cx,cy);if(!hit)return false;
  if(hit.shop){const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);if(dd<9)openShop();else toast('🐉 용왕님 상점이에요. 가까이 가면 들어갈 수 있어요',2400);return true;}
+ if(hit.board){const dd=Math.hypot(P.pos.x-BOARD_G.position.x,P.pos.z-BOARD_G.position.z);if(dd<10)openBoard();else toast('📋 게시판이에요. 가까이 가면 요청사항을 남길 수 있어요',2400);return true;}
  if(hit.peer){const r=remote.get(hit.peer);if(r){openProfile(r);return true;}}return false;}
 
 /* ---------- 상황 버튼 (상점·요리) ---------- */
 let ctxKind='';
-function refreshCtx(){let want='';if(entered&&mode==='walk'&&!modalOpen()){const ds=Math.hypot(P.pos.x-SHOP.front.x,P.pos.z-SHOP.front.z);if(ds<3.2||Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z)<4.2)want='shop';else if(nearCampfire()&&!(cookSt&&cookSt.stage===1))want='cook';}
+function refreshCtx(){let want='';if(entered&&mode==='walk'&&!modalOpen()){const ds=Math.hypot(P.pos.x-SHOP.front.x,P.pos.z-SHOP.front.z);if(ds<3.2||Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z)<4.2)want='shop';else if(nearBoard())want='board';else if(nearCampfire()&&!(cookSt&&cookSt.stage===1))want='cook';}
  if(want===ctxKind)return;ctxKind=want;const b=$('ctxBtn');if(!want){b.classList.add('hidden');return;}b.classList.remove('hidden');
- b.innerHTML=want==='shop'?`<b>🐉</b>용왕님 상점${isTouch?'':' <kbd>R</kbd>'}`:`<b>🍳</b>요리하기${isTouch?'':' <kbd>R</kbd>'}`;b.className='ctxbtn '+want;}
-function doCtx(){if(ctxKind==='shop')openShop();else if(ctxKind==='cook')openCook();}
+ b.innerHTML=want==='shop'?`<b>🐉</b>용왕님 상점${isTouch?'':' <kbd>R</kbd>'}`:want==='board'?`<b>📋</b>게시판${isTouch?'':' <kbd>R</kbd>'}`:`<b>🍳</b>요리하기${isTouch?'':' <kbd>R</kbd>'}`;b.className='ctxbtn '+want;}
+function doCtx(){if(ctxKind==='board')openBoard();else if(ctxKind==='shop')openShop();else if(ctxKind==='cook')openCook();}
 
 /* ---------- 저장 · 계정 ---------- */
 const SAVE_KEY='monggeul-save-v2',ACCT_KEY='monggeul-acct',GUEST_BAK='monggeul-guest-backup';
@@ -2007,6 +2020,39 @@ function updV2(dt){const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt
  for(const r of remote.values()){if(r.cookT)animTable(r.cookT,r.ckSt,dt);}
  v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}`+(bl>0?` · 🍳 +1★ ${fmtLeft(bl)}`:'');$('hudG').classList.toggle('buff',bl>0);
   if(GS._buffWas&&bl<=0)toast('🍳 요리 효과가 끝났어요',2400);GS._buffWas=bl>0;saveTick();}}
+
+/* ---------- 게시판 (업데이트 요청) ---------- */
+var BOARD_G=null;let boardPosts=[],boardBusy=false,boardDb=null,boardUnsub=null;const BOARD_LEN=200;const ADMIN_KEY=(()=>{const m=location.hash.match(/admin=([^&]+)/);return m?decodeURIComponent(m[1]):'';})();
+function boardMine(){try{return JSON.parse(localStorage.getItem('monggeul-board-mine')||'{}')||{};}catch(e){return{};}}
+function cleanBoard(s){s=String(s??'').replace(/\r/g,'').replace(/[\u0000-\u0009\u000b-\u001f\u007f​-‏‪-‮⁠-⁤]/g,'').replace(/[ ]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();s=Array.from(s).slice(0,BOARD_LEN).join('');if(!s)return'';
+ const parts=s.split('\n').map(line=>{const t=line;if(!t.trim())return t;return t.replace(/(https?:\/\/|www\.)\S*/gi,'(링크)').replace(/\b[\w-]+\.(com|net|org|kr|co|io|me|gg|xyz|ly|link|site|shop)\b\S*/gi,'(링크)').replace(/\d[\d .-]{7,}\d/g,'(숫자)');});
+ let out=parts.join('\n');for(const w of BADW){const re=new RegExp(Array.from(w).map(ch=>ch.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('[\\s._\\-~*!0-9]*'),'gi');if(re.test(out))out=out.replace(re,m=>'♡'.repeat(Math.min(4,Array.from(m).length)));}return out;}
+function nearBoard(){return BOARD_G&&Math.hypot(P.pos.x-BOARD_G.position.x,P.pos.z-BOARD_G.position.z)<3.4;}
+async function openBoard(){if(!entered)return;closeEmoPanel();closeChat();$('boardM').classList.remove('hidden');$('boardErr').textContent='';updBoardCount();renderBoard(true);await loadBoard();}
+function closeBoard(){$('boardM').classList.add('hidden');}
+function updBoardCount(){const n=Array.from($('boardIn').value).length;$('boardCnt').textContent=`${n} / ${BOARD_LEN}`;}
+async function loadBoard(){
+ if(netMode==='ws'){try{const r=await fetch('/api/board/list',{cache:'no-store'});const j=await r.json();if(!r.ok)throw new Error(j.error||'불러오지 못했어요');boardPosts=j.posts||[];renderBoard(false,j.total);}catch(e){$('boardErr').textContent=e.message==='Failed to fetch'?'인터넷 연결을 확인해 주세요':e.message;renderBoard(false);}return;}
+ try{if(!boardDb){if(!(window.claude&&typeof window.claude.use==='function'))throw 0;boardDb=await window.claude.use('db');if(!boardDb)throw 0;}
+  if(!boardUnsub){boardUnsub=boardDb.collection('board').orderBy('ts','desc').limit(100).onSnapshot(snap=>{boardPosts=snap.docs.map(d=>Object.assign({id:d.id},d.data()));if(!$('boardM').classList.contains('hidden'))renderBoard(false);},()=>{boardUnsub=null;});}
+ }catch(e){$('boardErr').textContent='이 화면에서는 게시판을 쓸 수 없어요 (공개 서버 버전에서 이용해 주세요)';renderBoard(false);}}
+function renderBoard(loading,total){const box=$('boardList');box.innerHTML='';const mine=boardMine();
+ if(loading&&!boardPosts.length){const d=document.createElement('div');d.className='empty';d.textContent='불러오는 중…';box.appendChild(d);return;}
+ if(!boardPosts.length){const d=document.createElement('div');d.className='empty';d.innerHTML='아직 요청사항이 없어요.<br>첫 번째로 남겨 주세요! ✍️';box.appendChild(d);return;}
+ const h=document.createElement('div');h.className='bsub';h.textContent=`요청사항 ${total||boardPosts.length}개 · 최신순${(total||0)>100?' (최근 100개)':''}`;box.appendChild(h);
+ for(const p of boardPosts){const d=document.createElement('div');d.className='bpost';const top=document.createElement('div');top.className='bt';const nm=document.createElement('b');nm.textContent=String(p.name||'익명의 낚시꾼').slice(0,12);
+  const tm=new Date(+p.ts||0);const ti=document.createElement('small');ti.textContent=`${tm.getMonth()+1}/${tm.getDate()} ${tm.getHours()}:${String(tm.getMinutes()).padStart(2,'0')}`;top.append(nm,ti);
+  const canDel=(netMode==='ws'&&(mine[p.id]||ADMIN_KEY))||(netMode!=='ws'&&mine[p.id]);if(canDel){const del=document.createElement('button');del.textContent=mine[p.id]?'지우기':'🛡 관리자 삭제';del.onclick=()=>delPost(p.id);top.appendChild(del);}
+  const tx=document.createElement('p');tx.textContent=String(p.text||'');d.append(top,tx);box.appendChild(d);}}
+async function postBoard(){if(boardBusy)return;const raw=$('boardIn').value;const text=cleanBoard(raw);const err=$('boardErr');err.textContent='';if(Array.from(text).length<2){err.textContent='두 글자 이상 적어 주세요';return;}
+ boardBusy=true;$('boardGo').disabled=true;const name=nameOf(NAME);
+ try{if(netMode==='ws'){const r=await fetch('/api/board/post',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text,name})});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'등록하지 못했어요 (오류 '+r.status+')');
+   const mine=boardMine();mine[j.post.id]=j.dk;try{localStorage.setItem('monggeul-board-mine',JSON.stringify(mine));}catch(e){}boardPosts=[j.post,...boardPosts].slice(0,100);renderBoard(false);}
+  else{if(!boardDb)throw new Error('이 화면에서는 게시판을 쓸 수 없어요');const ref=await boardDb.collection('board').add({ts:Date.now(),name,text});const mine=boardMine();mine[ref.id]=1;try{localStorage.setItem('monggeul-board-mine',JSON.stringify(mine));}catch(e){}}
+  $('boardIn').value='';updBoardCount();sfx.pop();toast('📋 요청사항을 남겼어요. 고마워요!',2400);}
+ catch(e){err.textContent=e.message==='Failed to fetch'?'인터넷 연결을 확인해 주세요':e.message;}finally{boardBusy=false;$('boardGo').disabled=false;}}
+async function delPost(id){const mine=boardMine();try{if(netMode==='ws'){const r=await fetch('/api/board/del',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id,dk:mine[id]||'',admin:ADMIN_KEY})});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'지우지 못했어요');}
+ else{await boardDb.collection('board').doc(String(id)).delete();}delete mine[id];try{localStorage.setItem('monggeul-board-mine',JSON.stringify(mine));}catch(e){}boardPosts=boardPosts.filter(p=>p.id!==id);renderBoard(false);toast('글을 지웠어요');}catch(e){$('boardErr').textContent=e.message;}}
 
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
@@ -2214,7 +2260,7 @@ let toastTimer=0;
 function toast(msg,ms=2600){const el=$('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),ms);}
 function updateHUD(){const ph=PHASES[phaseOf(hourNow())];const cl=cycleLeft();const tm=timeMode==='real'?(cl.isDay?`밤까지 ${cl.txt}`:`아침까지 ${cl.txt}`):'미리보기';
  const who=roomState==='online'?(netMode==='ws'?`${wsIsland}번 섬 · ${peopleCount()}명`:`이 섬에 ${peopleCount()}명`):roomState==='connecting'?'연결 중…':'혼자 모드';$('hudS').textContent=W<520?`${ph.em} ${ph.ko}${timeMode==='real'?' '+cl.txt:''} · ${who}`:`${ph.em} ${ph.ko} · ${tm} · ${who}`;}
-function modalOpen(){return tankOpen||!!profPeer||mapOpen||['shop','bag','cook','auth'].some(id=>!$(id).classList.contains('hidden'))||!$('catch').classList.contains('hidden')||!$('book').classList.contains('hidden')||!$('help').classList.contains('hidden');}
+function modalOpen(){return tankOpen||!!profPeer||mapOpen||['shop','bag','cook','auth','boardM'].some(id=>!$(id).classList.contains('hidden'))||!$('catch').classList.contains('hidden')||!$('book').classList.contains('hidden')||!$('help').classList.contains('hidden');}
 function sendEmote(e,remember=true){if(!EMOJI_SET.has(e))return;initAudio();sfx.pop();showBubble(P.label,e,true,2.8);P.hopT=t;ME.eid++;ME.e=e;markPresence();
  if(remember){recentEmoji=[e,...recentEmoji.filter(x=>x!==e)].slice(0,5);try{localStorage.setItem('monggeul-emoji',JSON.stringify(recentEmoji));}catch(_){}buildEmoteBar();}}
 function buildEmoteBar(){const bar=$('emotes');bar.innerHTML='';recentEmoji.forEach(e=>{const b=document.createElement('button');b.textContent=e;b.addEventListener('click',()=>{if(!entered)return;closeEmoPanel();sendEmote(e,false);});bar.appendChild(b);});
@@ -2291,7 +2337,7 @@ const endPtr=e=>{if(e.pointerId===joy.id){joy.id=null;joy.x=joy.y=0;$('joy').cla
 cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
 cv.addEventListener('wheel',e=>{e.preventDefault();if(mode==='walk')camDist=clamp(camDist*(1+Math.sign(e.deltaY)*0.1),4,20);},{passive:false});
 window.addEventListener('keydown',e=>{const tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA')){if(e.code==='Escape'){closeChat();tg.blur();}return;}
- if(e.code==='Escape'){if(closeChat())return;for(const id of['shop','bag','cook','map','prof'])if(!$(id).classList.contains('hidden')){({shop:closeShop,bag:closeBag,cook:closeCook,map:closeMap,prof:closeProfile})[id]();return;}}
+ if(e.code==='Escape'){if(closeChat())return;for(const id of['shop','bag','cook','map','prof','boardM'])if(!$(id).classList.contains('hidden')){({shop:closeShop,bag:closeBag,cook:closeCook,map:closeMap,prof:closeProfile,boardM:closeBoard})[id]();return;}}
  if(!entered||mode==='closet')return;
  if(e.code==='Enter'||e.code==='NumpadEnter'){e.preventDefault();openChat();setTimeout(()=>$('chatIn').focus(),30);return;}
  if(!modalOpen()){if(e.code==='KeyB'){openBag();return;}if(e.code==='KeyM'){openMap();return;}if(e.code==='KeyR'){doCtx();return;}}
@@ -2350,6 +2396,7 @@ function frame(now){
  requestAnimationFrame(frame);
 }
 /* ---------- v2 handlers ---------- */
+$('boardX').addEventListener('click',closeBoard);$('boardM').addEventListener('click',e=>{if(e.target.id==='boardM')closeBoard();});$('boardGo').addEventListener('click',postBoard);$('boardIn').addEventListener('input',updBoardCount);
 $('bMap').addEventListener('click',openMap);$('mapX').addEventListener('click',closeMap);$('map').addEventListener('click',e=>{if(e.target.id==='map')closeMap();});
 $('bagBtn').addEventListener('click',()=>{initAudio();openBag();});$('bagX').addEventListener('click',closeBag);$('bag').addEventListener('click',e=>{if(e.target.id==='bag')closeBag();});
 document.querySelectorAll('#bag .tabs button').forEach(b=>b.addEventListener('click',()=>{bagTab=b.dataset.tab;renderBag();}));

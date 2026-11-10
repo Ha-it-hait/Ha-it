@@ -24,21 +24,29 @@ const arr = (x, k) => (Array.isArray(x) && x.length === k ? x : null);
 
 // ---------- 채팅 필터 (욕설·연락처·링크 가리기) ----------
 const BAD = ['씨발', '시발', '씨빨', '시빨', 'ㅅㅂ', 'ㅆㅂ', '병신', '븅신', 'ㅂㅅ', '개새끼', '개새', '새끼', '좆', '존나', '졸라', 'ㅈㄴ', '지랄', 'ㅈㄹ', '미친놈', '미친년', '닥쳐', '꺼져', '애미', '에미', '느금', '니미', '엠창', '섹스', '야동', '자살', 'fuck', 'shit', 'bitch', 'sex', 'porn'];
-function cleanChat(s) {
-  s = String(s ?? '').replace(/[\u0000-\u001f\u007f​-‏‪-‮⁠-⁤]/g, '').replace(/\s+/g, ' ').trim();
-  s = Array.from(s).slice(0, CHAT_LEN).join('');
-  if (!s) return '';
+function maskText(s) {
   // 링크·도메인
   s = s.replace(/(https?:\/\/|www\.)\S*/gi, '(링크)').replace(/\b[\w-]+\.(com|net|org|kr|co|io|me|gg|xyz|ly|link|site|shop)\b\S*/gi, '(링크)');
   // 전화번호·긴 숫자
-  s = s.replace(/\d[\d\s.-]{7,}\d/g, '(숫자)');
+  s = s.replace(/\d[\d .-]{7,}\d/g, '(숫자)');
   // 욕설 (띄어쓰기·기호를 끼워 넣은 경우도 잡는다)
-  const plain = s.toLowerCase();
   for (const w of BAD) {
     const re = new RegExp(Array.from(w).map(ch => ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('[\\s._\\-~*!0-9]*'), 'gi');
-    if (re.test(plain)) s = s.replace(re, m => '♡'.repeat(Math.min(4, Array.from(m).length)));
+    if (re.test(s)) s = s.replace(re, m => '♡'.repeat(Math.min(4, Array.from(m).length)));
   }
   return s;
+}
+function cleanChat(s) {
+  s = String(s ?? '').replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u2064]/g, '').replace(/\s+/g, ' ').trim();
+  s = Array.from(s).slice(0, CHAT_LEN).join('');
+  return s ? maskText(s) : '';
+}
+const BOARD_LEN = 200, BOARD_KEEP = 300;
+function cleanBoard(s) {
+  s = String(s ?? '').replace(/\r/g, '').replace(/[\u0000-\u0009\u000b-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u2064]/g, '')
+    .replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+  s = Array.from(s).slice(0, BOARD_LEN).join('');
+  return s ? maskText(s) : '';
 }
 
 // 직접 정한 닉네임 검사 (2~10자, 한글·영문·숫자·띄어쓰기·_, 금지어 없음). 통과 못 하면 '' → 랜덤 이름으로 보인다
@@ -208,6 +216,7 @@ export class Vault extends DurableObject {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY, salt TEXT, hash TEXT, data TEXT, created INTEGER, updated INTEGER, fails INTEGER DEFAULT 0, lock_until INTEGER DEFAULT 0);
       CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, id TEXT, exp INTEGER);`);
     this.regByIp = new Map();
+    this.sql.exec('CREATE TABLE IF NOT EXISTS board(id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER, name TEXT, text TEXT, dk TEXT, ip TEXT)');
   }
   newSession(id) {
     const token = randHex(24), exp = Date.now() + SESSION_DAYS * 864e5;
@@ -228,6 +237,34 @@ export class Vault extends DurableObject {
     const now = Date.now();
     const ip = request.headers.get('x-ip') || '';
 
+    if (op === 'board-list') {
+      const rows = this.sql.exec('SELECT id, ts, name, text FROM board ORDER BY id DESC LIMIT 100').toArray();
+      const total = this.sql.exec('SELECT COUNT(*) AS n FROM board').toArray()[0].n;
+      return J({ ok: true, posts: rows, total });
+    }
+    if (op === 'board-post') {
+      const text = cleanBoard(body.text);
+      if (Array.from(text).length < 2) return J({ error: '두 글자 이상 적어 주세요' }, 400);
+      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const ipKey = ip.slice(0, 64);
+      const last = this.sql.exec('SELECT MAX(ts) AS t, COUNT(*) AS n FROM board WHERE ip = ? AND ts > ?', ipKey, now - 86400e3).toArray()[0];
+      if (last && last.t && now - last.t < 20e3) return J({ error: '조금 천천히 남겨 주세요 (20초에 1개)' }, 429);
+      if (last && last.n >= 30) return J({ error: '오늘은 글을 많이 남겼어요. 내일 다시 남겨 주세요' }, 429);
+      const dk = randHex(12);
+      this.sql.exec('INSERT INTO board(ts, name, text, dk, ip) VALUES (?, ?, ?, ?, ?)', now, name, text, dk, ip.slice(0, 64));
+      this.sql.exec('DELETE FROM board WHERE id NOT IN (SELECT id FROM board ORDER BY id DESC LIMIT ?)', BOARD_KEEP);
+      const id = this.sql.exec('SELECT last_insert_rowid() AS id').toArray()[0].id;
+      return J({ ok: true, post: { id, ts: now, name, text }, dk });
+    }
+    if (op === 'board-del') {
+      const id = body.id | 0;
+      const row = this.sql.exec('SELECT dk FROM board WHERE id = ?', id).toArray()[0];
+      if (!row) return J({ ok: true });
+      const admin = this.env.ADMIN_KEY && typeof body.admin === 'string' && sameStr(body.admin, String(this.env.ADMIN_KEY));
+      if (!admin && !(typeof body.dk === 'string' && sameStr(body.dk, row.dk))) return J({ error: '내가 쓴 글만 지울 수 있어요' }, 403);
+      this.sql.exec('DELETE FROM board WHERE id = ?', id);
+      return J({ ok: true });
+    }
     if (op === 'register' || op === 'login') {
       const id = String(body.id ?? '').trim().toLowerCase();
       const pw = String(body.pw ?? '');
@@ -280,17 +317,18 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/api/hello') {
-      return Response.json({ monggeul: true, cap: CAP, accounts: true }, { headers: { 'cache-control': 'no-store' } });
+      return Response.json({ monggeul: true, cap: CAP, accounts: true, board: true }, { headers: { 'cache-control': 'no-store' } });
     }
-    if (url.pathname.startsWith('/api/acct/')) {
-      if (request.method !== 'POST') return J({ error: 'POST only' }, 405);
-      const op = url.pathname.slice('/api/acct/'.length);
-      if (!['register', 'login', 'load', 'save', 'logout'].includes(op)) return J({ error: 'not found' }, 404);
+    if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/')) {
+      const isBoard = url.pathname.startsWith('/api/board/');
+      const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : url.pathname.slice('/api/acct/'.length);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del'].includes(op)) return J({ error: 'not found' }, 404);
+      if (op !== 'board-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {
         const stub = env.VAULT.get(env.VAULT.idFromName('vault'));
         const headers = new Headers({ 'content-type': 'application/json', 'x-ip': request.headers.get('cf-connecting-ip') || '' });
-        return await stub.fetch(new Request('https://vault/' + op, { method: 'POST', headers, body: await request.text() }));
+        return await stub.fetch(new Request('https://vault/' + op, { method: 'POST', headers, body: request.method === 'POST' ? await request.text() : '{}' }));
       } catch (e) {
         return J({ error: '계정 서버 오류: ' + String(e && e.message || e).slice(0, 120) }, 500);
       }
