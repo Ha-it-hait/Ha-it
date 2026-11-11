@@ -29,7 +29,7 @@ Cloudflare 무료 플랜으로 운영할 수 있습니다.
 2. **Node.js 설치:** https://nodejs.org 에서 LTS 버전을 받아 설치합니다.
    - Wrangler 공식 지원 OS: Windows 11, macOS 13.5 이상, 최신 Linux. Windows 10은 공식 지원 대상이 아닙니다.
    - Windows PowerShell에서 `npx`가 "스크립트를 실행할 수 없으므로" 오류를 내면, PowerShell 대신 **명령 프롬프트(cmd)** 를 쓰세요.
-3. **압축 풀기:** 이 zip 파일을 풀고, 풀린 `monggeul-island` 폴더에서 터미널을 엽니다.
+3. **압축 풀기:** 이 zip 파일을 풀고, 풀린 `amollang-island` 폴더에서 터미널을 엽니다.
    - Windows: 폴더 빈 곳을 우클릭하고 "터미널에서 열기"를 누릅니다.
    - Mac: 폴더를 터미널 아이콘으로 끌어다 놓습니다.
 4. **아래 3줄을 차례로 입력합니다.**
@@ -40,7 +40,7 @@ Cloudflare 무료 플랜으로 운영할 수 있습니다.
    ```
    - `wrangler login`을 입력하면 브라우저가 열립니다. Cloudflare 로그인 후 "Allow"를 누릅니다.
    - 처음 배포할 때 `workers.dev` 하위 주소 이름을 정하라고 물으면 원하는 영문 이름을 입력합니다.
-5. 배포가 끝나면 `https://monggeul-island.<내이름>.workers.dev` 같은 **주소가 출력됩니다. 이 주소가 공유할 링크입니다.**
+5. 배포가 끝나면 `https://amollang-island.<내이름>.workers.dev` 같은 **주소가 출력됩니다. 이 주소가 공유할 링크입니다.**
 
 수정한 뒤 다시 올릴 때는 `npx wrangler deploy` 한 줄만 입력하면 됩니다.
 
@@ -48,7 +48,7 @@ Cloudflare 무료 플랜으로 운영할 수 있습니다.
 
 1. GitHub에 새 저장소를 만들고, 이 폴더의 파일을 웹에서 끌어다 올립니다. `node_modules` 폴더는 빼고 올립니다.
 2. Cloudflare 대시보드에서 **Workers & Pages → Create → Import a repository**를 고르고, 방금 만든 저장소를 선택해 배포합니다.
-   - Worker 이름은 `wrangler.jsonc`의 `name`(`monggeul-island`)과 **똑같이** 적어야 합니다. 다르면 빌드가 실패합니다.
+   - Worker 이름은 `wrangler.jsonc`의 `name`(`amollang-island`)과 **똑같이** 적어야 합니다. 다르면 빌드가 실패합니다.
    - Build command는 비워 두고, Deploy command는 기본값 `npx wrangler deploy`를 그대로 둡니다.
 3. 그다음부터는 GitHub에 파일을 올릴 때마다 자동으로 다시 배포됩니다.
 
