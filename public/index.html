@@ -189,7 +189,9 @@ body.cine .petbox,body.cine .ctxbtn,body.cine .hint,body.cine .emotes,body.cine 
 @keyframes chatping{0%{transform:scale(1)}40%{transform:scale(1.25) rotate(-8deg)}100%{transform:scale(1)}}
 .ctxbtn{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(max(14px,env(safe-area-inset-bottom)) + 166px);height:58px;padding:0 18px;border-radius:29px;border:3px solid #fff;background:#3fb7a5;color:#fff;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.25);z-index:4;display:flex;align-items:center;gap:7px;animation:pop .3s cubic-bezier(.2,1.6,.4,1);white-space:nowrap}
 .ctxbtn b{font-size:24px}.ctxbtn.boat{background:#2b8fd6}.ctxbtn small.fare{font-size:12px;background:rgba(255,255,255,.25);border-radius:999px;padding:2px 8px;margin-left:4px}.ctxbtn.unboat{background:#f0883a}.ctxbtn.hof{background:linear-gradient(135deg,#e2a92a,#f6d36a);color:#4a3300}
-.hofcard{background:linear-gradient(#fffaf0,#fff6e2)}.hofsum{background:#fff1c8;border-radius:12px;padding:8px 12px;font-size:13px;color:#6a4a10;margin:4px 0 8px}.hofsum b{color:#b07800}
+.hofcard{background:linear-gradient(#fffaf0,#fff6e2)}.colk{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#3a2a08,#6a4a10);color:#fff3c8;border-radius:16px;padding:10px 14px;margin:6px 0 6px;box-shadow:inset 0 0 0 2px #f2c14e,0 4px 14px rgba(160,110,20,.25)}.colk .cr{font-size:34px;filter:drop-shadow(0 0 6px rgba(255,210,90,.8))}.colk div{display:flex;flex-direction:column;min-width:0}.colk small{font-size:11.5px;color:#e8cf8a;font-weight:700}.colk b{font-size:20px;color:#ffe08a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.colk em{font-style:normal;font-weight:800;font-size:13px;color:#fff}.colk.me{box-shadow:inset 0 0 0 3px #ffe08a,0 0 18px rgba(255,210,90,.6)}.colk.empty b{font-size:16px}
+.colr{display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;font-weight:800;color:#7a5a18;margin:0 2px 6px}
+.hofsum{background:#fff1c8;border-radius:12px;padding:8px 12px;font-size:13px;color:#6a4a10;margin:4px 0 8px}.hofsum b{color:#b07800}
 .hoftabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}.hoftabs button{border:1.5px solid #e8cf8a;background:#fff;border-radius:999px;padding:5px 12px;font-weight:800;font-size:13px;color:#8a6a20;cursor:pointer}.hoftabs button.on{background:#f2c14e;color:#3a2a00;border-color:#d9a520}
 #hofList{max-height:56vh;overflow:auto;touch-action:pan-y;overscroll-behavior:contain}
 .hofh{display:flex;align-items:baseline;gap:8px;margin:12px 2px 6px;padding-bottom:4px;border-bottom:2px solid #f0dca0}.hofh b{color:#e0a21b;letter-spacing:1px;font-size:15px}.hofh span{font-weight:900;color:#5a4318}.hofh small{margin-left:auto;color:#a08a5a;font-weight:700}
@@ -355,7 +357,7 @@ body.cine .boatbadge{opacity:0}
 <div class="overlay hidden" id="hofM"><div class="card wide hofcard">
   <div class="mhead"><b>🏆 명예의 전당</b><button class="x" id="hofX">✕</button></div>
   <div class="bsub">생물마다 <b>가장 큰 크기</b>를 잡은 낚시꾼의 이름이 새겨져요. 더 큰 걸 잡으면 내 이름으로 바뀌어요!</div>
-  <div class="hofsum" id="hofSum"></div><div class="hoftabs" id="hofTabs"></div>
+  <div id="hofKing"></div><div class="hofsum" id="hofSum"></div><div class="hoftabs" id="hofTabs"></div>
   <div id="hofList"></div></div></div>
 <div class="overlay hidden" id="boardM"><div class="card wide">
   <div class="mhead"><b>📋 아몰랑아일랜드 게시판</b><button class="x" id="boardX">✕</button></div>
@@ -2141,7 +2143,7 @@ function closeMap(){$('toast').style.zIndex='';mapOpen=false;$('map').classList.
 function drawMap(){if(!mapOpen)return;const cv=$('mapCv');const r=cv.getBoundingClientRect();const dpr=Math.min(2,devicePixelRatio||1);const S2=Math.round(Math.min(r.width,r.height)*dpr);if(cv.width!==S2){cv.width=cv.height=S2;}
  const c=cv.getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,S2,S2);c.drawImage(mapBase,0,0,S2,S2);const N=S2;const fs=Math.max(11,N*0.032);
  const icon=(x,z,em,label,sz=1,up=false)=>{const p=w2m(x,z,N);c.font=`${fs*1.25*sz}px sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillText(em,p[0],p[1]);if(label){const ly=p[1]+(up?-fs*1.1:fs*1.05);c.font=`800 ${fs*0.78}px sans-serif`;c.lineWidth=3;c.strokeStyle='rgba(255,255,255,.9)';c.strokeText(label,p[0],ly);c.fillStyle='#2b3b52';c.fillText(label,p[0],ly);}};
- icon(PLAZA.x,PLAZA.z,'🔥','모닥불 · 요리');if(BOARD_G)icon(BOARD_G.position.x,BOARD_G.position.z,'📋','게시판',0.85,true);icon(SHOP.x,SHOP.z,'🐉','용왕님 상점',1,true);icon(0,DOCK.z1-2,'⚓','나무 부두',0.9);for(const d of DOCKS)if(!d.main)icon(d.ux*(d.s1-2),d.uz*(d.s1-2),d.boat?'🚤':'⚓',d.boat?'배 타는 부두':'부두',d.boat?1:0.8);icon(POND.x,POND.z,'🪷','연못');const rv=RIVER[3];icon(rv[0],rv[1],'🏞️','강');icon(HILL.x,HILL.z-1.5,'🗼','등대');
+ icon(PLAZA.x,PLAZA.z,'🔥','모닥불 · 요리');if(BOARD_G)icon(BOARD_G.position.x,BOARD_G.position.z,'📋','게시판',0.85,true);icon(SHOP.x,SHOP.z,'🐉','용왕님 상점',1,true);icon(0,DOCK.z1-2,'⚓','부두',0.8);for(const d of DOCKS)if(!d.main)icon(d.ux*(d.s1-2),d.uz*(d.s1-2),d.boat?'🚤':'⚓',d.boat?'배 타는 부두':'부두',d.boat?1:0.8);icon(POND.x,POND.z,'🪷','연못');const rv=RIVER[3];icon(rv[0],rv[1],'🏞️','강');icon(HILL.x,HILL.z-1.5,'🗼','등대');
  for(const h of[[-15,-3],[16,-8],[-9,-19]])icon(h[0],h[1],'🏠','',0.8);
  for(const A of ANIMS){const p=w2m(A.x,A.z,N);c.fillStyle='rgba(140,90,50,.85)';c.beginPath();c.arc(p[0],p[1],N*0.006,0,7);c.fill();}
  const others=[...remote.values()].filter(x=>!x.leaving&&x.char);const now=performance.now();
@@ -2422,11 +2424,13 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=6?`★6 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위 · 난이도 높음`;}
-const NEWS_VER='2026-11-11h';
+const NEWS_VER='2026-11-11i';
 const NEWS=[
  {d:'11월 11일',t:'🏆 명예의 전당 · 생물 150종',n:true,i:[
   '🐋 생물이 <b>70종 → 150종</b>으로 늘었어요! ★1 8종 · ★2 10종 · ★3 10종 · ★4 12종 · <b>★5 20종 · ★6 20종</b>이 새로 왔어요. (고래·바다거북·대왕오징어·백상아리·청새치·킹크랩·황쏘가리 등)',
   '🏆 모닥불 옆에 반짝이는 <b>금빛 명예의 전당</b>이 생겼어요. 생물마다 가장 큰 크기를 잡은 사람의 이름이 새겨지고, 더 큰 걸 잡으면 이름이 바뀌어요.',
+  '👑 명예의 전당 맨 위에 <b>도감왕</b>(가장 많은 종류를 잡은 낚시꾼)이 보여요. 2·3등도 함께 나와요.',
+  '🗺️ 지도의 "나무 부두"를 "부두"로 바꿨어요. (부두 3곳 · 배 타는 부두 1곳)',
   '📜 명예의 전당에서 ★별로 모든 생물을 볼 수 있어요. 아직 아무도 못 잡은 생물은 "아직 아무도 잡지 못했어요"로 표시돼요.']},
  {d:'11월 11일',t:'⛵ 선상낚시 · 거리별 물고기',i:[
   '🎯 바다는 <b>해안에서 멀리 던질수록</b> 크고 ★ 높은 물고기가 잘 나와요. 가까운 물가는 작고 흔한 물고기 위주예요. 육지에서는 <b>부두 끝에서 가장 멀리</b> 던지는 게 최고!',
@@ -2589,9 +2593,9 @@ function hofName(){return nameOf(NAME);}
 async function hofLoad(force){
  if(HOF.loading)return;if(!force&&HOF.ok&&HOF.mode==='ws'&&performance.now()-HOF.lastLoad<15000)return;HOF.loading=true;
  try{
-  if(netMode==='ws'){const r=await fetch('/api/hof/list',{cache:'no-store'});const j=await r.json();if(!r.ok||!j.ok)throw 0;const m={};for(const e of j.list||[])if(e&&SP_BY[e.id])m[e.id]={s:+e.s,n:String(e.n||''),ts:+e.ts||0};HOF.map=m;HOF.ok=true;HOF.mode='ws';HOF.lastLoad=performance.now();}
+  if(netMode==='ws'){const r=await fetch('/api/hof/list',{cache:'no-store'});const j=await r.json();if(!r.ok||!j.ok)throw 0;if(Array.isArray(j.top))COL.top=j.top;const m={};for(const e of j.list||[])if(e&&SP_BY[e.id])m[e.id]={s:+e.s,n:String(e.n||''),ts:+e.ts||0};HOF.map=m;HOF.ok=true;HOF.mode='ws';HOF.lastLoad=performance.now();}
   else{if(!HOF.db){if(!(window.claude&&typeof window.claude.use==='function'))throw 0;HOF.db=await window.claude.use('db');if(!HOF.db)throw 0;}
-   if(!HOF.unsub){await new Promise((res,rej)=>{const tm=setTimeout(()=>rej(0),10000);HOF.unsub=HOF.db.collection('hof').onSnapshot(snap=>{clearTimeout(tm);const m={};for(const d of snap.docs){const v=d.data()||{};if(SP_BY[d.id])m[d.id]={s:+v.s||0,n:String(v.n||''),ts:+v.ts||0};}HOF.map=m;HOF.ok=true;HOF.mode='db';hofRefresh();res();},e=>{clearTimeout(tm);HOF.unsub=null;rej(e);});});}}
+   if(!HOF.unsub){await new Promise((res,rej)=>{const tm=setTimeout(()=>rej(0),10000);HOF.unsub=HOF.db.collection('hof').onSnapshot(snap=>{clearTimeout(tm);const m={};for(const d of snap.docs){const v=d.data()||{};if(SP_BY[d.id])m[d.id]={s:+v.s||0,n:String(v.n||''),ts:+v.ts||0};}HOF.map=m;HOF.ok=true;HOF.mode='db';colWatch();hofRefresh();res();},e=>{clearTimeout(tm);HOF.unsub=null;rej(e);});});}}
  }catch(e){if(!HOF.ok)HOF.mode='';}finally{HOF.loading=false;hofRefresh();}}
 async function hofSubmit(sp,size){
  const id=sp.id,s=Math.round(size*10)/10;const cur=HOF.map[id];if(cur&&cur.s>=s)return;const name=hofName();
@@ -2627,22 +2631,22 @@ function drawHofTex(){const cv=HOF.cv;if(!cv)return;const c=cv.getContext('2d');
  c.font='900 70px sans-serif';const gg=c.createLinearGradient(0,140,0,210);gg.addColorStop(0,'#fff6c8');gg.addColorStop(1,'#f2b928');c.fillStyle=gg;c.fillText('명예의 전당',W2/2,178);
  c.fillStyle='#d9b45a';c.font='700 26px sans-serif';c.fillText('HALL OF FAME',W2/2,232);
  c.fillStyle='#fff1c0';c.font='800 34px sans-serif';c.fillText(HOF.ok?`기록된 생물 ${hofCount()} / ${SPECIES.length}종`:`생물 ${SPECIES.length}종의 최고 기록`,W2/2,300);
- const recent=Object.entries(HOF.map).filter(([k])=>SP_BY[k]).sort((a,b)=>b[1].ts-a[1].ts).slice(0,4);
+ const recent=Object.entries(HOF.map).filter(([k])=>SP_BY[k]).sort((a,b)=>b[1].ts-a[1].ts).slice(0,3);
  c.font='800 26px sans-serif';c.fillStyle='#ffd76a';c.fillText('✨ 최근 신기록',W2/2,370);
  c.font='700 25px sans-serif';c.fillStyle='#fff4d6';
  if(!recent.length){c.fillText('아직 기록이 없어요',W2/2,420);c.fillText('첫 주인공이 되어 보세요!',W2/2,462);}
  recent.forEach(([k,v],i)=>{const t=`${SP_BY[k].name} ${fmtSize(v.s)} · ${String(v.n).slice(0,10)}`;c.fillText(t,W2/2,418+i*44);});
- c.fillStyle='#d9b45a';c.font='700 24px sans-serif';c.fillText('가까이 가서 눌러 보세요',W2/2,H2-60);
+ const k0=COL.top.find(e=>e&&e.c>0);c.fillStyle='#ffd76a';c.font='900 27px sans-serif';c.fillText(k0?`👑 도감왕 ${String(k0.n).slice(0,10)} · ${k0.c}종`:'👑 도감왕 자리가 비어 있어요',W2/2,H2-88);c.fillStyle='#d9b45a';c.font='700 23px sans-serif';c.fillText('가까이 가서 눌러 보세요',W2/2,H2-50);
  if(HOF.tex)HOF.tex.needsUpdate=true;}
 function nearHof(){return HOF.g&&Math.hypot(P.pos.x-HOF_POS.x,P.pos.z-HOF_POS.z)<4.2;}
 function updHof(dt){if(!HOF.g)return;const k=0.5+0.5*Math.sin(t*2.2);HOF.gold.emissiveIntensity=0.35+0.25*k;HOF.orb.position.y=4.95+Math.sin(t*1.6)*0.08;HOF.light.intensity=1.1+0.6*k;
  const sp=HOF.spark,b=sp.userData.base,a=sp.geometry.attributes.position;for(let i=0;i<b.length;i++){const q=b[i];const yy=(q[1]+t*0.35+q[3])%5;a.setXYZ(i,q[0]+Math.sin(t+q[3])*0.15,0.3+yy,q[2]);}a.needsUpdate=true;sp.material.opacity=0.55+0.4*Math.abs(Math.sin(t*3));
- const key=HOF.ok+'|'+hofCount()+'|'+Object.values(HOF.map).reduce((m,v)=>Math.max(m,v.ts||0),0);if(key!==HOF.lastKey){HOF.lastKey=key;drawHofTex();}}
+ const key=HOF.ok+'|'+hofCount()+'|'+(COL.top[0]?COL.top[0].n+COL.top[0].c:'')+'|'+Object.values(HOF.map).reduce((m,v)=>Math.max(m,v.ts||0),0);if(key!==HOF.lastKey){HOF.lastKey=key;drawHofTex();}}
 /* 목록 창 */
 function hofRefresh(){if(!$('hofM')||$('hofM').classList.contains('hidden'))return;renderHof();}
 async function openHof(){if(!entered)return;closeEmoPanel();closeChat();$('hofM').classList.remove('hidden');renderHof();await hofLoad(true);renderHof();}
 function closeHof(){$('hofM').classList.add('hidden');}
-function renderHof(){const box=$('hofList');const tabs=$('hofTabs');const me=hofName();
+function renderHof(){$('hofKing').innerHTML=colHTML();const box=$('hofList');const tabs=$('hofTabs');const me=hofName();
  const n=hofCount();$('hofSum').innerHTML=HOF.ok?`기록된 생물 <b>${n}</b> / ${SPECIES.length}종 · 아직 주인을 기다리는 생물 <b>${SPECIES.length-n}</b>종`:(HOF.loading?'불러오는 중…':'⚠️ 이 화면에서는 모두의 기록을 불러올 수 없어요. 공개 서버 버전에서 함께 기록을 겨뤄요! (아래는 생물 목록과 내 최고 기록)');
  if(!tabs.dataset.built){tabs.dataset.built=1;for(const k of['all',6,5,4,3,2,1]){const b=document.createElement('button');b.dataset.t=k;b.textContent=k==='all'?'전체':'★'+k;b.onclick=()=>{HOF.tab=String(k);renderHof();box.scrollTop=0;};tabs.appendChild(b);}}
  for(const b of tabs.children)b.classList.toggle('on',b.dataset.t===String(HOF.tab));
@@ -2656,6 +2660,22 @@ function renderHof(){const box=$('hofList');const tabs=$('hofTabs');const me=hof
    if(rec){const d=new Date(rec.ts||0);rc.innerHTML=`<b></b><span></span><small></small>`;rc.children[0].textContent=fmtSize(rec.s);rc.children[1].textContent=(rec.n===me?'👑 ':'🏅 ')+String(rec.n).slice(0,12);rc.children[2].textContent=rec.ts?`${d.getMonth()+1}/${d.getDate()}`:'';}
    else rc.innerHTML='<span class="nobody">— 아직 아무도 잡지 못했어요</span>';
    row.append(cv,nm,rc);box.appendChild(row);}}}
+
+/* ---------- v11: 도감왕 (가장 많은 종류를 잡은 사람) ---------- */
+const COL={top:[],sent:-1,key:'',lastT:-99,busy:false};
+function colKey(){if(netMode==='ws'&&acct&&acct.id)return'a_'+acct.id;try{let k=localStorage.getItem('monggeul-pkey');if(!k||!/^g_[a-z0-9]{12,20}$/.test(k)){k='g_';for(let i=0;i<16;i++)k+='abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random()*36)];localStorage.setItem('monggeul-pkey',k);}return k;}catch(e){return'';}}
+function bookCount(){return Object.keys(book).filter(k=>SP_BY[k]).length;}
+async function colSync(force){const c=bookCount();if(c<=0||COL.busy)return;const name=hofName();const sig=c+'|'+name+'|'+(acct&&acct.id||'');if(!force&&COL.sent===sig)return;COL.busy=true;
+ try{if(netMode==='ws'){const key=colKey();if(!key)return;const r=await fetch('/api/hof/collect',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key,name,c,token:acct&&acct.token||''})});const j=await r.json().catch(()=>({}));if(r.ok&&j.ok){COL.sent=sig;if(Array.isArray(j.top))COL.top=j.top;}}
+  else{if(!HOF.db)await hofLoad(true);if(!HOF.db)return;let uid='';try{const u=await window.claude.use('user');uid=u?await u.id():'';}catch(e){}if(!uid)return;
+   const ref=HOF.db.collection('collectors').doc(String(uid));const snap=await ref.get();const old=snap&&snap.exists?snap.data():null;if(old&&+old.c===c&&old.n===name)COL.sent=sig;else{await ref.set({n:name,c,ts:old&&+old.c>=c?+old.ts:Date.now()});COL.sent=sig;}}
+ }catch(e){}finally{COL.busy=false;hofRefresh();}}
+function colWatch(){if(COL.unsub||!HOF.db)return;try{COL.unsub=HOF.db.collection('collectors').onSnapshot(snap=>{const a=[];for(const d of snap.docs){const v=d.data()||{};a.push({n:String(v.n||''),c:+v.c||0,ts:+v.ts||0});}a.sort((x,y)=>y.c-x.c||x.ts-y.ts);const seen=new Set();COL.top=a.filter(e=>!seen.has(e.n)&&seen.add(e.n)).slice(0,3);hofRefresh();},()=>{COL.unsub=null;});}catch(e){}}
+function colHTML(){const t=COL.top.filter(e=>e&&e.c>0);const me=hofName();
+ if(!t.length)return`<div class="colk empty"><span class="cr">👑</span><div><b>도감왕</b><small>${HOF.ok?'아직 아무도 없어요. 가장 많은 종류를 잡으면 이 자리에 이름이 올라가요!':'공개 서버 버전에서 모두와 겨룰 수 있어요'}</small></div></div>`;
+ const e=t[0];const rest=t.slice(1).map((x,i)=>`<span>${['🥈','🥉'][i]} ${esc(x.n.slice(0,12))} · ${x.c}종</span>`).join('');
+ return`<div class="colk${e.n===me?' me':''}"><span class="cr">👑</span><div><small>도감왕 · 가장 많은 종류를 잡은 낚시꾼</small><b>${esc(e.n.slice(0,12))}</b><em>${e.c} / ${SPECIES.length}종</em></div></div>${rest?`<div class="colr">${rest}</div>`:''}`;}
+function esc(s){return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
@@ -2750,7 +2770,7 @@ function updateFight(dt){
  rippleAcc+=dt;if(rippleAcc>0.3){rippleAcc=0;fishPos(_a);ripple(_a.x,_a.z,surge?1.2:0.7);}
 }
 function landed(){setF('caught');holding=false;myLine.visible=false;myFloat.visible=false;const rec=recordCatch(fish);sfx.catch();showBubble(P.label,`${fish.sp.name} ${fmtSize(fish.size)}`,false,6);
- ME.cid++;ME.cs=fish.sp.id;ME.cz=fish.size;P.hopT=t;markPresence();markSave();showCatch(fish,rec);hofSubmit(fish.sp,fish.size);}
+ ME.cid++;ME.cs=fish.sp.id;ME.cz=fish.size;P.hopT=t;markPresence();markSave();showCatch(fish,rec);hofSubmit(fish.sp,fish.size);if(rec.isNew)colSync();}
 function press(){
  if(!entered||mode==='closet'||modalOpen())return;if(closeEmoPanel())return;initAudio();
  if(mode!=='fish')return;
@@ -2992,7 +3012,7 @@ function updateEnv(dt){
 let last=performance.now(),hudAcc=0,audAcc=0,uiAcc=0;
 function frame(now){
  const dt=Math.min(0.05,Math.max(0,(now-last)/1000));last=now;t+=dt;
- updatePlayer(dt);updateFishing(dt);updateRemote(dt);updEffects(dt);updateCamera(dt);updFollow(dt);updateAnimals(dt);updHearts(dt);updV2(dt);updateEnv(dt);updV3(dt);updV7(dt);updHof(dt);if(entered&&!HOF.started){HOF.started=1;hofLoad();}if(entered&&netMode==='ws'&&HOF.ok&&performance.now()-HOF.lastLoad>90000)hofLoad();
+ updatePlayer(dt);updateFishing(dt);updateRemote(dt);updEffects(dt);updateCamera(dt);updFollow(dt);updateAnimals(dt);updHearts(dt);updV2(dt);updateEnv(dt);updV3(dt);updV7(dt);updHof(dt);if(entered&&!HOF.started){HOF.started=1;hofLoad().then(()=>setTimeout(()=>colSync(),4000));}if(entered&&HOF.started&&t-COL.lastT>60){COL.lastT=t;colSync();}if(entered&&netMode==='ws'&&HOF.ok&&performance.now()-HOF.lastLoad>90000)hofLoad();
  if(mode==='closet')P.label.el.style.display='none';else placeLabel(P.label,P.pos.x,P.pos.y+P.jy+labelH(LOOK.hat),P.pos.z);
  if(!tankOpen)renderer.render(scene,camera);flushPresence();
  uiAcc+=dt;if(uiAcc>0.15){uiAcc=0;refreshHint();refreshAct();}

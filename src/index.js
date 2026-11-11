@@ -250,6 +250,7 @@ export class Vault extends DurableObject {
     this.regByIp = new Map();
     this.sql.exec('CREATE TABLE IF NOT EXISTS hof(id TEXT PRIMARY KEY, s REAL, n TEXT, ts INTEGER, ip TEXT)');
     this.hofByIp = new Map();
+    this.sql.exec('CREATE TABLE IF NOT EXISTS collectors(k TEXT PRIMARY KEY, n TEXT, c INTEGER, ts INTEGER, ip TEXT)');
     this.sql.exec('CREATE TABLE IF NOT EXISTS board(id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER, name TEXT, text TEXT, dk TEXT, ip TEXT)');
   }
   newSession(id) {
@@ -263,6 +264,7 @@ export class Vault extends DurableObject {
     if (!r || r.exp < Date.now()) return null;
     return r.id;
   }
+  colTop() { return this.sql.exec('SELECT n, MAX(c) AS c, MIN(ts) AS ts FROM collectors GROUP BY n ORDER BY c DESC, ts ASC LIMIT 3').toArray(); }
   async fetch(request) {
     const url = new URL(request.url);
     const op = url.pathname.split('/').pop();
@@ -273,7 +275,7 @@ export class Vault extends DurableObject {
 
     if (op === 'hof-list') {
       const list = this.sql.exec('SELECT id, s, n, ts FROM hof').toArray();
-      return J({ ok: true, list });
+      return J({ ok: true, list, top: this.colTop() });
     }
     if (op === 'hof-submit') {
       const id = String(body.id || '');
@@ -290,6 +292,24 @@ export class Vault extends DurableObject {
       if (row && row.s >= sz) return J({ ok: true, top: false, rec: { s: row.s, n: row.n, ts: row.ts } });
       this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip) VALUES (?, ?, ?, ?, ?)', id, sz, name, now, ipKey);
       return J({ ok: true, top: true, name, prev: row ? { s: row.s, n: row.n } : null });
+    }
+    if (op === 'hof-collect') {
+      // 도감왕: 도감에 등록한 생물 종류 수. 계정(a_아이디)은 로그인 토큰이 맞아야만 기록
+      const k = String(body.key || '');
+      if (!/^(a_[a-z0-9가-힣_]{3,12}|g_[a-z0-9]{12,20})$/.test(k)) return J({ error: '잘못된 요청' }, 400);
+      if (k.startsWith('a_') && this.who(body.token) !== k.slice(2)) return J({ error: '다시 로그인해 주세요' }, 401);
+      const c = Math.floor(Number(body.c));
+      if (!Number.isFinite(c) || c < 1 || c > SPECIES_LIST.length) return J({ error: '잘못된 숫자' }, 400);
+      const ipKey = ip.slice(0, 64);
+      const lst = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
+      if (lst.length >= 30) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
+      lst.push(now); this.hofByIp.set(ipKey, lst);
+      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const row = this.sql.exec('SELECT c FROM collectors WHERE k = ?', k).toArray()[0];
+      if (!row) this.sql.exec('INSERT INTO collectors(k, n, c, ts, ip) VALUES (?, ?, ?, ?, ?)', k, name, c, now, ipKey);
+      else if (c > row.c) this.sql.exec('UPDATE collectors SET n = ?, c = ?, ts = ?, ip = ? WHERE k = ?', name, c, now, ipKey, k);
+      else this.sql.exec('UPDATE collectors SET n = ? WHERE k = ?', name, k);
+      return J({ ok: true, top: this.colTop() });
     }
     if (op === 'board-list') {
       const rows = this.sql.exec('SELECT id, ts, name, text FROM board ORDER BY id DESC LIMIT 100').toArray();
@@ -376,7 +396,7 @@ export default {
     if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
       const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
       const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit'].includes(op)) return J({ error: 'not found' }, 404);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect'].includes(op)) return J({ error: 'not found' }, 404);
       if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {
