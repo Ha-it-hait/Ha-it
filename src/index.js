@@ -12,7 +12,9 @@ const CHAT_LEN = 60;     // 채팅 한 줄 최대 글자 수
 const CHAT_GAP = 1500;   // 같은 사람이 채팅을 보낼 수 있는 최소 간격(ms)
 
 const EMOJI = new Set(["👋", "🙇", "🙏", "🤝", "✌️", "🫡", "🙌", "👀", "😊", "😆", "🥹", "😌", "😴", "🤔", "😮", "😭", "😤", "🥶", "🫠", "😎", "🤣", "😇", "🥳", "😑", "👍", "👏", "🔥", "💪", "🎉", "✨", "❤️", "💯", "🎣", "🐟", "🐠", "🐡", "🦑", "🦀", "🐙", "🦈", "🐳", "🌊", "⚓", "🪝", "☕", "🍜", "🍙", "🍎", "🍊", "🍑", "🌸", "🌳", "🏕️", "🔥", "🌙", "⭐", "🌧️", "🍀", "🦋", "🐚", "😋"]);
-const SPECIES_LIST = ["goby", "halfbeak", "jack", "mackerel", "rockfish", "greenling", "schlegeli", "porgy", "bass", "flounder", "starfish", "chub", "crucian", "loach", "carp", "catfish", "mandarin", "goldfish", "filefish", "puffer", "redbream", "oplegnathus", "hairtail", "mullet", "dodari", "stingray", "moray", "tuna", "sunfish", "octopus", "squid", "webfoot", "seahorse", "bluecrab", "snowcrab", "prawn", "spinylobster", "jellyfish", "urchin", "catshark", "blueshark", "hammerhead", "whaleshark", "clownfish", "bluetang", "emperorangel", "butterfly", "mandarinfish", "lionfish", "parrotfish", "boxfish", "medaka", "minnow", "kkeokji", "sweetfish", "masu", "snakehead", "eel", "crayfish", "freshshrimp", "turtle", "koi", "guppy", "betta", "arowana", "seal", "dolphin", "orca", "seaotter", "otter"];
+const SPECIES_LIST = ["goby", "halfbeak", "jack", "mackerel", "rockfish", "greenling", "schlegeli", "porgy", "bass", "flounder", "starfish", "chub", "crucian", "loach", "carp", "catfish", "mandarin", "goldfish", "filefish", "puffer", "redbream", "oplegnathus", "hairtail", "mullet", "dodari", "stingray", "moray", "tuna", "sunfish", "octopus", "squid", "webfoot", "seahorse", "bluecrab", "snowcrab", "prawn", "spinylobster", "jellyfish", "urchin", "catshark", "blueshark", "hammerhead", "whaleshark", "clownfish", "bluetang", "emperorangel", "butterfly", "mandarinfish", "lionfish", "parrotfish", "boxfish", "medaka", "minnow", "kkeokji", "sweetfish", "masu", "snakehead", "eel", "crayfish", "freshshrimp", "turtle", "koi", "guppy", "betta", "arowana", "seal", "dolphin", "orca", "seaotter", "otter", "anchovy", "bekasquid", "hermitcrab", "seacucumber", "sandlance", "shorecrab", "bitterling", "topmouth", "gizzardshad", "yellowcroaker", "saury", "herring", "flatfish", "wrasse", "sillago", "damsel", "darkchub", "sandgudgeon", "monkfish", "scorpionfish", "spanishmack", "croaker", "cuttlefish", "conger", "gurnard", "yellowtang", "bagrid", "skygager", "amberjack", "yellowtail", "kobudai", "bigfinsquid", "hairycrab", "sevenband", "lobster", "moorishidol", "triggerfish", "leopardshark", "lenok", "stickleback", "giantgrouper", "marlin", "swordfish", "sailfish", "kingcrab", "giantoctopus", "dumbo", "vampiresquid", "opah", "tigershark", "greatwhite", "thresher", "footballfish", "napoleon", "chimaera", "giantmoray", "sturgeon", "giantcatfish", "mutae", "goldkoi", "humpback", "bluewhale", "spermwhale", "beluga", "narwhal", "sealion", "walrus", "dugong", "manatee", "leatherback", "greenturtle", "giantsquid", "oarfish", "coelacanth", "mantaray", "leafyseadragon", "goldmandarin", "eoreumchi", "arapaima", "mihojonggae"];
+// 생물별 최대 크기(cm): 명예의 전당 기록 검증용
+const SPECIES_MAX = {"goby": 24.0, "halfbeak": 35.0, "jack": 30.0, "mackerel": 38.0, "rockfish": 28.0, "greenling": 35.0, "schlegeli": 45.0, "porgy": 55.0, "bass": 80.0, "flounder": 80.0, "starfish": 20.0, "chub": 16.0, "crucian": 32.0, "loach": 18.0, "carp": 80.0, "catfish": 70.0, "mandarin": 45.0, "goldfish": 16.0, "filefish": 30.0, "puffer": 40.0, "redbream": 80.0, "oplegnathus": 60.0, "hairtail": 150.0, "mullet": 60.0, "dodari": 35.0, "stingray": 120.0, "moray": 120.0, "tuna": 250.0, "sunfish": 300.0, "octopus": 90.0, "squid": 45.0, "webfoot": 20.0, "seahorse": 18.0, "bluecrab": 25.0, "snowcrab": 40.0, "prawn": 25.0, "spinylobster": 40.0, "jellyfish": 35.0, "urchin": 12.0, "catshark": 60.0, "blueshark": 300.0, "hammerhead": 400.0, "whaleshark": 900.0, "clownfish": 11.0, "bluetang": 30.0, "emperorangel": 40.0, "butterfly": 20.0, "mandarinfish": 8.0, "lionfish": 35.0, "parrotfish": 60.0, "boxfish": 20.0, "medaka": 4.0, "minnow": 15.0, "kkeokji": 20.0, "sweetfish": 28.0, "masu": 40.0, "snakehead": 90.0, "eel": 90.0, "crayfish": 12.0, "freshshrimp": 4.0, "turtle": 30.0, "koi": 80.0, "guppy": 6.0, "betta": 7.0, "arowana": 100.0, "seal": 200.0, "dolphin": 260.0, "orca": 300.0, "seaotter": 145.0, "otter": 120.0, "anchovy": 14.0, "bekasquid": 15.0, "hermitcrab": 8.0, "seacucumber": 30.0, "sandlance": 18.0, "shorecrab": 6.0, "bitterling": 9.0, "topmouth": 12.0, "gizzardshad": 30.0, "yellowcroaker": 30.0, "saury": 35.0, "herring": 35.0, "flatfish": 35.0, "wrasse": 25.0, "sillago": 30.0, "damsel": 12.0, "darkchub": 20.0, "sandgudgeon": 25.0, "monkfish": 100.0, "scorpionfish": 30.0, "spanishmack": 100.0, "croaker": 90.0, "cuttlefish": 35.0, "conger": 100.0, "gurnard": 40.0, "yellowtang": 20.0, "bagrid": 30.0, "skygager": 80.0, "amberjack": 130.0, "yellowtail": 100.0, "kobudai": 90.0, "bigfinsquid": 50.0, "hairycrab": 15.0, "sevenband": 80.0, "lobster": 50.0, "moorishidol": 25.0, "triggerfish": 30.0, "leopardshark": 180.0, "lenok": 70.0, "stickleback": 8.0, "giantgrouper": 250.0, "marlin": 400.0, "swordfish": 350.0, "sailfish": 300.0, "kingcrab": 80.0, "giantoctopus": 300.0, "dumbo": 30.0, "vampiresquid": 30.0, "opah": 180.0, "tigershark": 450.0, "greatwhite": 550.0, "thresher": 450.0, "footballfish": 60.0, "napoleon": 200.0, "chimaera": 120.0, "giantmoray": 300.0, "sturgeon": 250.0, "giantcatfish": 250.0, "mutae": 200.0, "goldkoi": 90.0, "humpback": 700.0, "bluewhale": 950.0, "spermwhale": 600.0, "beluga": 450.0, "narwhal": 500.0, "sealion": 250.0, "walrus": 350.0, "dugong": 320.0, "manatee": 380.0, "leatherback": 200.0, "greenturtle": 130.0, "giantsquid": 950.0, "oarfish": 800.0, "coelacanth": 200.0, "mantaray": 600.0, "leafyseadragon": 35.0, "goldmandarin": 50.0, "eoreumchi": 45.0, "arapaima": 300.0, "mihojonggae": 10.0};
 const SPECIES = new Set(SPECIES_LIST);
 const N_ADJ = 40, N_NOUN = 40;
 const STATES = new Set(['idle', 'cast', 'wait', 'bite', 'fight']);
@@ -246,6 +248,8 @@ export class Vault extends DurableObject {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY, salt TEXT, hash TEXT, data TEXT, created INTEGER, updated INTEGER, fails INTEGER DEFAULT 0, lock_until INTEGER DEFAULT 0);
       CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, id TEXT, exp INTEGER);`);
     this.regByIp = new Map();
+    this.sql.exec('CREATE TABLE IF NOT EXISTS hof(id TEXT PRIMARY KEY, s REAL, n TEXT, ts INTEGER, ip TEXT)');
+    this.hofByIp = new Map();
     this.sql.exec('CREATE TABLE IF NOT EXISTS board(id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER, name TEXT, text TEXT, dk TEXT, ip TEXT)');
   }
   newSession(id) {
@@ -267,6 +271,26 @@ export class Vault extends DurableObject {
     const now = Date.now();
     const ip = request.headers.get('x-ip') || '';
 
+    if (op === 'hof-list') {
+      const list = this.sql.exec('SELECT id, s, n, ts FROM hof').toArray();
+      return J({ ok: true, list });
+    }
+    if (op === 'hof-submit') {
+      const id = String(body.id || '');
+      const mx = SPECIES_MAX[id];
+      if (!mx) return J({ error: '알 수 없는 생물이에요' }, 400);
+      const sz = Math.round(Number(body.s) * 10) / 10;
+      if (!Number.isFinite(sz) || sz <= 0 || sz > mx + 0.05) return J({ error: '크기가 이상해요' }, 400);
+      const ipKey = ip.slice(0, 64);
+      const list = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
+      if (list.length >= 30) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
+      list.push(now); this.hofByIp.set(ipKey, list);
+      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const row = this.sql.exec('SELECT s, n, ts FROM hof WHERE id = ?', id).toArray()[0];
+      if (row && row.s >= sz) return J({ ok: true, top: false, rec: { s: row.s, n: row.n, ts: row.ts } });
+      this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip) VALUES (?, ?, ?, ?, ?)', id, sz, name, now, ipKey);
+      return J({ ok: true, top: true, name, prev: row ? { s: row.s, n: row.n } : null });
+    }
     if (op === 'board-list') {
       const rows = this.sql.exec('SELECT id, ts, name, text FROM board ORDER BY id DESC LIMIT 100').toArray();
       const total = this.sql.exec('SELECT COUNT(*) AS n FROM board').toArray()[0].n;
@@ -347,13 +371,13 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/api/hello') {
-      return Response.json({ monggeul: true, cap: CAP, accounts: true, board: true }, { headers: { 'cache-control': 'no-store' } });
+      return Response.json({ monggeul: true, cap: CAP, accounts: true, board: true, hof: true }, { headers: { 'cache-control': 'no-store' } });
     }
-    if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/')) {
-      const isBoard = url.pathname.startsWith('/api/board/');
-      const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del'].includes(op)) return J({ error: 'not found' }, 404);
-      if (op !== 'board-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
+    if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
+      const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
+      const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit'].includes(op)) return J({ error: 'not found' }, 404);
+      if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {
         const stub = env.VAULT.get(env.VAULT.idFromName('vault'));

@@ -188,7 +188,15 @@ body.cine .petbox,body.cine .ctxbtn,body.cine .hint,body.cine .emotes,body.cine 
 @keyframes glowp{from{box-shadow:0 0 0 0 rgba(255,122,168,.7),0 6px 16px rgba(0,0,0,.22)}to{box-shadow:0 0 0 10px rgba(255,122,168,0),0 6px 16px rgba(0,0,0,.22)}}
 @keyframes chatping{0%{transform:scale(1)}40%{transform:scale(1.25) rotate(-8deg)}100%{transform:scale(1)}}
 .ctxbtn{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(max(14px,env(safe-area-inset-bottom)) + 166px);height:58px;padding:0 18px;border-radius:29px;border:3px solid #fff;background:#3fb7a5;color:#fff;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.25);z-index:4;display:flex;align-items:center;gap:7px;animation:pop .3s cubic-bezier(.2,1.6,.4,1);white-space:nowrap}
-.ctxbtn b{font-size:24px}.ctxbtn.boat{background:#2b8fd6}.ctxbtn small.fare{font-size:12px;background:rgba(255,255,255,.25);border-radius:999px;padding:2px 8px;margin-left:4px}.ctxbtn.unboat{background:#f0883a}.ctxbtn.boat.arm{background:#e0a21b;animation:armp .6s infinite alternate}@keyframes armp{to{transform:scale(1.06)}}
+.ctxbtn b{font-size:24px}.ctxbtn.boat{background:#2b8fd6}.ctxbtn small.fare{font-size:12px;background:rgba(255,255,255,.25);border-radius:999px;padding:2px 8px;margin-left:4px}.ctxbtn.unboat{background:#f0883a}.ctxbtn.hof{background:linear-gradient(135deg,#e2a92a,#f6d36a);color:#4a3300}
+.hofcard{background:linear-gradient(#fffaf0,#fff6e2)}.hofsum{background:#fff1c8;border-radius:12px;padding:8px 12px;font-size:13px;color:#6a4a10;margin:4px 0 8px}.hofsum b{color:#b07800}
+.hoftabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}.hoftabs button{border:1.5px solid #e8cf8a;background:#fff;border-radius:999px;padding:5px 12px;font-weight:800;font-size:13px;color:#8a6a20;cursor:pointer}.hoftabs button.on{background:#f2c14e;color:#3a2a00;border-color:#d9a520}
+#hofList{max-height:56vh;overflow:auto;touch-action:pan-y;overscroll-behavior:contain}
+.hofh{display:flex;align-items:baseline;gap:8px;margin:12px 2px 6px;padding-bottom:4px;border-bottom:2px solid #f0dca0}.hofh b{color:#e0a21b;letter-spacing:1px;font-size:15px}.hofh span{font-weight:900;color:#5a4318}.hofh small{margin-left:auto;color:#a08a5a;font-weight:700}
+.hofh.s6 b,.hofh.s6 span{color:#c2410c}.hofh.s5 span{color:#a16207}
+.hofr{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px;background:#fffdf6;margin:4px 0;box-shadow:0 1px 0 rgba(160,120,40,.12)}.hofr canvas{width:72px;height:36px;flex:none}.hofr.none{opacity:.72;background:#f7f3ea}.hofr.mine{background:#fff3c4;box-shadow:inset 0 0 0 2px #f2c14e}
+.hofr .hn{flex:1;min-width:0;display:flex;flex-direction:column}.hofr .hn b{font-size:14px;color:#3a3326}.hofr .hn small{font-size:11px;color:#9a8a6a}
+.hofr .hrec{display:flex;flex-direction:column;align-items:flex-end;text-align:right}.hofr .hrec b{color:#b07800;font-size:14px}.hofr .hrec span{font-size:12.5px;font-weight:800;color:#5a4318;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hofr .hrec small{font-size:10.5px;color:#a08a6a}.hofr .nobody{font-size:12px;color:#a09070;font-weight:700}.ctxbtn.boat.arm{background:#e0a21b;animation:armp .6s infinite alternate}@keyframes armp{to{transform:scale(1.06)}}
 .boatbadge{position:fixed;left:50%;transform:translateX(-50%);top:calc(max(10px,env(safe-area-inset-top)) + 64px);background:rgba(30,70,120,.78);color:#fff;font-size:12.5px;font-weight:800;padding:6px 14px;border-radius:999px;z-index:3;pointer-events:none;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}.boatbadge.far{background:rgba(20,30,110,.88);box-shadow:0 0 0 2px #ffd34a}.boatbadge b{color:#ffd34a}.boatbadge small{opacity:.8;font-weight:700}
 .mrow button.off{background:#cfd6de!important;color:#5a6470!important;box-shadow:none!important}
 body.cine .boatbadge{opacity:0}
@@ -344,6 +352,11 @@ body.cine .boatbadge{opacity:0}
   <div class="bsub">아몰랑아일랜드에 새로 생긴 것들이에요. 원하는 기능은 📋 게시판에 남겨 주세요!</div>
   <div id="newsList"></div>
   <button class="primary" id="newsOk" style="margin-top:10px">확인했어요!</button></div></div>
+<div class="overlay hidden" id="hofM"><div class="card wide hofcard">
+  <div class="mhead"><b>🏆 명예의 전당</b><button class="x" id="hofX">✕</button></div>
+  <div class="bsub">생물마다 <b>가장 큰 크기</b>를 잡은 낚시꾼의 이름이 새겨져요. 더 큰 걸 잡으면 내 이름으로 바뀌어요!</div>
+  <div class="hofsum" id="hofSum"></div><div class="hoftabs" id="hofTabs"></div>
+  <div id="hofList"></div></div></div>
 <div class="overlay hidden" id="boardM"><div class="card wide">
   <div class="mhead"><b>📋 아몰랑아일랜드 게시판</b><button class="x" id="boardX">✕</button></div>
   <div class="bsub">게임 업데이트 요청사항을 자유롭게 적어 주세요 ✍️ 닉네임과 함께 모두에게 보여요.</div>
@@ -406,6 +419,8 @@ body.cine .boatbadge{opacity:0}
       <li>처음엔 ★1 대나무 낚싯대예요. 물고기를 팔아 모은 <b>몰랑</b>으로 🐉 용왕님 상점에서 ★2~★6 낚싯대를 사요. ★6은 신화급이에요!</li>
       <li>낚싯대 ★가 물고기보다 높으면 훨씬 쉽게 끌려와요. 📖 도감에서 물고기별 ★와 필요한 낚싯대를 볼 수 있어요.</li>
     </ul>
+    <div class="btitle">🏆 명예의 전당</div>
+    <ul class="tips"><li>모닥불 옆 <b>금빛 비석</b>이 명예의 전당이에요. 생물마다 <b>가장 큰 크기를 잡은 사람</b>의 이름이 새겨지고, 더 큰 걸 잡으면 내 이름으로 바뀌어요. 아직 아무도 못 잡은 생물도 모두 볼 수 있어요.</li></ul>
     <div class="btitle">⛵ 선상낚시</div>
     <ul class="tips">
       <li>섬 가장자리의 <b>🚤 배 타는 부두</b> 끝에 배가 묶여 있어요. 가까이 가면 <em>⛵ 선상낚시 하기</em> 버튼이 떠요. <b>★5 낚싯대를 가진 사람</b>부터 탈 수 있고, 탈 때마다 <b>배삯 1,000몰랑</b>을 내요. 한 사람당 배 1척이에요.</li>
@@ -558,6 +573,86 @@ const SPECIES=[
  {id:'orca',hab:'sea',grp:'myth',name:'아기 범고래',w:0.25,time:['any'],min:200,max:300,str:1,r:6,minP:.85,shape:'orca',h:.32,c1:'#16181f',c2:'#ffffff',pat:'none',eye:.1,flavor:'바다의 최강자 범고래의 아기. 엄마 곁을 떠나 잠깐 놀러 왔나 봐요.',hint:'바다, 끝까지 멀리(부두 끝·배) · 신화(★6)'},
  {id:'seaotter',hab:'sea',grp:'myth',name:'해달',w:0.4,time:['day','dawn','dusk'],min:100,max:145,str:.7,r:6,minP:0,near:true,shape:'seaotter',h:.33,c1:'#6b4a33',c2:'#d9c2a3',pat:'none',eye:.12,flavor:'배 위에 조개를 올려놓고 돌로 톡톡! 잘 때는 친구와 손을 잡고 떠다녀요.',hint:'새벽~해질녘 바다, 해안에서 30m쯤 · 신화(★6)'},
  {id:'otter',hab:'fresh',grp:'myth',name:'수달',w:0.4,time:['dawn','dusk','night'],min:60,max:120,str:.7,r:6,minP:0,riverPref:true,shape:'otter',h:.24,c1:'#5b3f2b',c2:'#c9ab88',pat:'none',eye:.12,flavor:'천연기념물로 보호받는 우리 강의 수영 선수. 물속에서 수염으로 물고기를 찾아요.',hint:'강(연못에서도 가끔), 새벽·저녁·밤, 멀리 · 신화(★6)'},
+ {id:"anchovy",hab:"sea",grp:"sea",name:"멸치",w:18,time:['any'],min:6,max:14,str:0.03,r:1,minP:0,shape:"fish",h:0.2,c1:"#5f7f95",c2:"#eef4f7",pat:"line",eye:0.22,flavor:"작아도 바다의 주인공. 떼 지어 반짝반짝 몰려다녀요.",hint:"바다, 가까운 물가에 많아요"},
+ {id:"bekasquid",hab:"sea",grp:"critter",name:"꼴뚜기",w:10,time:['night','dusk'],min:6,max:15,str:0.06,r:1,minP:0,shape:"squid",h:1,c1:"#e8b9a8",c2:"#fff1ea",pat:"dots",eye:0.1,flavor:"“어물전 망신은 꼴뚜기가 시킨다”지만 알고 보면 귀여운 꼬마 오징어.",hint:"해질녘·밤 바다, 가까운 물가에 많아요"},
+ {id:"hermitcrab",hab:"sea",grp:"critter",name:"소라게",w:9,time:['any'],min:3,max:8,str:0.03,r:1,minP:0,shape:"crab",h:1,c1:"#d9874a",c2:"#f6c79a",pat:"none",eye:0.1,flavor:"빈 소라 껍데기를 집 삼아 이고 다니는 이사 전문가.",near:true,hint:"바다, 발밑"},
+ {id:"seacucumber",hab:"sea",grp:"critter",name:"해삼",w:7,time:['any'],min:10,max:30,str:0.04,r:1,minP:0,shape:"eel",h:0.2,c1:"#4a3a32",c2:"#8a6e5a",pat:"spots",eye:0.1,flavor:"느릿느릿 바닥을 기어 다니는 바다의 청소부. 오돌토돌한 돌기가 매력.",near:true,hint:"바다, 발밑"},
+ {id:"sandlance",hab:"sea",grp:"sea",name:"까나리",w:14,time:['day','dawn'],min:8,max:18,str:0.05,r:1,minP:0,shape:"fish",h:0.13,c1:"#6f8fa0",c2:"#f1f5f7",pat:"line",eye:0.2,flavor:"모래 속에 쏙 숨었다가 튀어나오는 가늘고 긴 은빛 물고기.",hint:"새벽·낮 바다, 가까운 물가에 많아요"},
+ {id:"shorecrab",hab:"sea",grp:"critter",name:"칠게",w:10,time:['any'],min:3,max:6,str:0.03,r:1,minP:0,shape:"crab",h:1,c1:"#7a6a4a",c2:"#c8b48a",pat:"none",eye:0.1,flavor:"갯벌 구멍에서 눈자루를 쫑긋 세우고 두리번두리번.",near:true,hint:"바다, 발밑"},
+ {id:"bitterling",hab:"fresh",grp:"fresh",name:"납자루",w:14,time:['day','dawn'],min:4,max:9,str:0.05,r:1,minP:0,shape:"fish",h:0.38,c1:"#7a8a9a",c2:"#f0d0d8",pat:"none",eye:0.2,flavor:"조개 속에 알을 낳는 신기한 꼬마. 봄이면 혼인색으로 반짝여요.",hint:"새벽·낮 강·연못"},
+ {id:"topmouth",hab:"fresh",grp:"fresh",name:"참붕어",w:16,time:['any'],min:5,max:12,str:0.06,r:1,minP:0,shape:"fish",h:0.3,c1:"#7a7656",c2:"#e2dcbc",pat:"line",eye:0.18,flavor:"붕어랑 닮았지만 훨씬 작고 날렵한 연못 친구.",hint:"강·연못"},
+ {id:"gizzardshad",hab:"sea",grp:"sea",name:"전어",w:10,time:['dusk','night'],min:15,max:30,str:0.25,r:2,minP:0,shape:"fish",h:0.34,c1:"#4f6f85",c2:"#eef2f4",pat:"dots",eye:0.16,flavor:"“가을 전어 굽는 냄새에 집 나간 며느리도 돌아온다”는 그 물고기.",hint:"해질녘·밤 바다"},
+ {id:"yellowcroaker",hab:"sea",grp:"sea",name:"참조기",w:8,time:['night','dawn'],min:15,max:30,str:0.25,r:2,minP:0.1,shape:"fish",h:0.28,c1:"#c9a64a",c2:"#fff2c0",pat:"none",eye:0.16,flavor:"노릇노릇 황금빛. 말리면 귀한 굴비가 돼요.",hint:"새벽·밤 바다, 발밑만 아니면 어디서나"},
+ {id:"saury",hab:"sea",grp:"sea",name:"꽁치",w:9,time:['night'],min:20,max:35,str:0.22,r:2,minP:0,shape:"beak",h:0.13,c1:"#2f5a80",c2:"#eef3f7",pat:"line",eye:0.2,flavor:"길쭉한 몸에 뾰족한 주둥이. 가을밤 불빛에 모여들어요.",hint:"밤 바다"},
+ {id:"herring",hab:"sea",grp:"sea",name:"청어",w:9,time:['dawn','day'],min:20,max:35,str:0.28,r:2,minP:0,shape:"fish",h:0.26,c1:"#3a6a8a",c2:"#eaf1f5",pat:"none",eye:0.16,flavor:"겨울 바다의 은빛 떼. 말리면 과메기가 돼요.",hint:"새벽·낮 바다"},
+ {id:"flatfish",hab:"sea",grp:"sea",name:"참가자미",w:8,time:['any'],min:15,max:35,str:0.3,r:2,minP:0.1,shape:"flat",h:0.5,c1:"#6f6046",c2:"#b3a07a",pat:"spots",eye:0.1,flavor:"납작한 몸 한쪽에 두 눈이 쏠려 있는 바닥 친구.",hint:"바다, 발밑만 아니면 어디서나"},
+ {id:"wrasse",hab:"sea",grp:"sea",name:"용치놀래기",w:9,time:['day'],min:10,max:25,str:0.2,r:2,minP:0,shape:"fish",h:0.25,c1:"#3fa07a",c2:"#f2c0a0",pat:"line",eye:0.17,flavor:"알록달록 무지개 옷. 밤에는 모래 속에 들어가 잠을 자요.",hint:"낮 바다"},
+ {id:"sillago",hab:"sea",grp:"sea",name:"보리멸",w:9,time:['day','dusk'],min:15,max:30,str:0.22,r:2,minP:0,shape:"fish",h:0.2,c1:"#c9b58a",c2:"#f7f1e2",pat:"none",eye:0.17,flavor:"모래사장의 미녀. 날씬한 몸매가 보리 이삭을 닮았대요.",hint:"낮·해질녘 바다"},
+ {id:"damsel",hab:"sea",grp:"tropical",name:"자리돔",w:6,time:['day'],min:6,max:12,str:0.1,r:2,minP:0,shape:"fish",h:0.48,c1:"#4a5a7a",c2:"#a9b4c9",pat:"none",eye:0.2,flavor:"제주 바다를 떼 지어 누비는 작은 물고기. 물회로 유명해요.",hint:"낮 바다"},
+ {id:"darkchub",hab:"fresh",grp:"fresh",name:"갈겨니",w:12,time:['day','dawn'],min:10,max:20,str:0.14,r:2,minP:0,shape:"fish",h:0.24,c1:"#5a6a50",c2:"#eef0e0",pat:"line",eye:0.2,flavor:"피라미의 사촌. 큰 눈과 옆구리의 검은 줄이 특징이에요.",riverOnly:true,hint:"새벽·낮 강"},
+ {id:"sandgudgeon",hab:"fresh",grp:"fresh",name:"모래무지",w:10,time:['any'],min:10,max:25,str:0.12,r:2,minP:0,shape:"fish",h:0.2,c1:"#a8956a",c2:"#efe6cc",pat:"spots",eye:0.16,flavor:"모래를 입에 넣었다 뱉으며 먹이를 찾는 모래 속 숨바꼭질 선수.",hint:"강·연못"},
+ {id:"monkfish",hab:"sea",grp:"sea",name:"아귀",w:4,time:['night','dusk'],min:40,max:100,str:0.55,r:3,minP:0.2,shape:"fish",h:0.5,c1:"#5a4a3a",c2:"#a8957a",pat:"spots",eye:0.08,flavor:"커다란 입을 쩍! 머리 위 낚싯대로 먹이를 꾀어내는 바다의 낚시꾼.",lure:true,hint:"해질녘·밤 바다, 조금 멀리"},
+ {id:"scorpionfish",hab:"sea",grp:"sea",name:"쏨뱅이",w:5,time:['night'],min:15,max:30,str:0.35,r:3,minP:0.1,shape:"fish",h:0.36,c1:"#b0503a",c2:"#f0b090",pat:"spots",eye:0.16,flavor:"울퉁불퉁 바위를 닮은 위장의 달인. 지느러미 가시 조심!",hint:"밤 바다, 조금 멀리"},
+ {id:"spanishmack",hab:"sea",grp:"sea",name:"삼치",w:5,time:['dawn','dusk'],min:40,max:100,str:0.6,r:3,minP:0.25,shape:"fish",h:0.2,c1:"#3a6a8a",c2:"#eef3f6",pat:"dots",eye:0.13,flavor:"날카로운 이빨로 먹이를 낚아채는 바다의 단거리 선수.",hint:"새벽·해질녘 바다, 멀리"},
+ {id:"croaker",hab:"sea",grp:"sea",name:"민어",w:4,time:['dusk','night'],min:40,max:90,str:0.6,r:3,minP:0.3,shape:"fish",h:0.3,c1:"#7a7066",c2:"#e9e2d6",pat:"none",eye:0.13,flavor:"“백성의 물고기”라는 이름처럼 예로부터 사랑받은 여름 보양식.",hint:"해질녘·밤 바다, 멀리"},
+ {id:"cuttlefish",hab:"sea",grp:"critter",name:"갑오징어",w:5,time:['dawn','day'],min:15,max:35,str:0.3,r:3,minP:0.1,shape:"squid",h:1,c1:"#b89a7a",c2:"#f0e2cc",pat:"spots",eye:0.1,flavor:"몸속에 단단한 뼈(갑)가 있는 오징어. 피부 색을 순식간에 바꿔요.",hint:"새벽·낮 바다, 조금 멀리"},
+ {id:"conger",hab:"sea",grp:"sea",name:"붕장어",w:5,time:['night'],min:40,max:100,str:0.5,r:3,minP:0.15,shape:"eel",h:0.12,c1:"#6a6656",c2:"#d8d2bc",pat:"dots",eye:0.15,flavor:"흔히 “아나고”라 불리는 밤의 장어. 옆구리에 하얀 점선이 있어요.",hint:"밤 바다, 조금 멀리"},
+ {id:"gurnard",hab:"sea",grp:"sea",name:"성대",w:4,time:['day'],min:20,max:40,str:0.35,r:3,minP:0.2,shape:"fish",h:0.3,c1:"#c0503a",c2:"#f5c0a0",pat:"none",eye:0.15,flavor:"커다란 파란 가슴지느러미를 날개처럼 펼치고 바닥을 걸어 다녀요.",hint:"낮 바다, 조금 멀리"},
+ {id:"yellowtang",hab:"sea",grp:"tropical",name:"노랑탱",w:3,time:['day'],min:10,max:20,str:0.15,r:3,minP:0,shape:"disc",h:1,c1:"#ffd23a",c2:"#ffe680",pat:"none",eye:0.14,flavor:"레몬처럼 샛노란 열대어. 꼬리 쪽에 하얀 칼날이 숨어 있어요.",hint:"낮 바다, 조금 멀리"},
+ {id:"bagrid",hab:"fresh",grp:"fresh",name:"동자개",w:6,time:['night','dusk'],min:15,max:30,str:0.35,r:3,minP:0.1,shape:"fish",h:0.24,c1:"#7a6a3a",c2:"#e6d090",pat:"spots",eye:0.1,flavor:"잡으면 “빠가빠가” 소리를 내서 빠가사리라고도 불려요.",whisker:true,hint:"해질녘·밤 강·연못, 조금 멀리"},
+ {id:"skygager",hab:"fresh",grp:"fresh",name:"강준치",w:5,time:['dusk','dawn'],min:40,max:80,str:0.5,r:3,minP:0.2,shape:"fish",h:0.26,c1:"#7a8a96",c2:"#f2f4f6",pat:"none",eye:0.14,flavor:"주둥이가 위로 휘어진 강의 은빛 사냥꾼.",riverPref:true,hint:"새벽·해질녘 강·연못, 조금 멀리"},
+ {id:"amberjack",hab:"sea",grp:"sea",name:"부시리",w:2.5,time:['day','dawn'],min:60,max:130,str:0.85,r:4,minP:0.45,shape:"fish",h:0.26,c1:"#3a5f7a",c2:"#eef2f0",pat:"line",eye:0.12,flavor:"엄청난 힘으로 낚싯대를 휘게 만드는 바다의 로켓.",hint:"새벽·낮 바다, 멀리"},
+ {id:"yellowtail",hab:"sea",grp:"sea",name:"방어",w:2.5,time:['dawn','dusk'],min:50,max:100,str:0.8,r:4,minP:0.4,shape:"fish",h:0.27,c1:"#3d6a8c",c2:"#eef2ee",pat:"line",eye:0.12,flavor:"겨울이 제철인 통통한 등푸른 대물. 클수록 맛있대요.",hint:"새벽·해질녘 바다, 멀리"},
+ {id:"kobudai",hab:"sea",grp:"sea",name:"혹돔",w:2,time:['day'],min:50,max:90,str:0.75,r:4,minP:0.35,shape:"fish",h:0.4,c1:"#d07a7a",c2:"#f5d0c8",pat:"none",eye:0.1,flavor:"이마에 커다란 혹이 불룩! 단단한 이빨로 소라도 깨 먹어요.",hint:"낮 바다, 멀리 · 가끔"},
+ {id:"bigfinsquid",hab:"sea",grp:"critter",name:"무늬오징어",w:2.5,time:['night','dusk'],min:25,max:50,str:0.55,r:4,minP:0.3,shape:"squid",h:1,c1:"#c9a090",c2:"#f6e6dc",pat:"dots",eye:0.1,flavor:"투명한 몸에 무지갯빛 무늬. 에깅 낚시꾼들의 꿈의 오징어.",hint:"해질녘·밤 바다, 멀리"},
+ {id:"hairycrab",hab:"sea",grp:"critter",name:"털게",w:2.5,time:['night','dawn'],min:8,max:15,str:0.25,r:4,minP:0.2,shape:"crab",h:1,c1:"#9a5a3a",c2:"#d89a70",pat:"dots",eye:0.1,flavor:"온몸이 보송보송한 털로 덮인 귀한 게.",hint:"새벽·밤 바다, 조금 멀리"},
+ {id:"sevenband",hab:"sea",grp:"sea",name:"능성어",w:2,time:['night'],min:40,max:80,str:0.75,r:4,minP:0.4,shape:"fish",h:0.38,c1:"#5a5f60",c2:"#c8c8c0",pat:"bands",eye:0.12,flavor:"일곱 줄 무늬를 두른 갯바위의 숨은 강자.",hint:"밤 바다, 멀리 · 가끔"},
+ {id:"lobster",hab:"sea",grp:"critter",name:"바닷가재",w:1.8,time:['night'],min:25,max:50,str:0.5,r:4,minP:0.35,shape:"lobster",h:1,c1:"#2f4f7a",c2:"#6f8fb0",pat:"dots",eye:0.1,flavor:"커다란 집게발 두 개. 삶으면 새빨갛게 변하는 파란 기사.",hint:"밤 바다, 멀리 · 가끔"},
+ {id:"moorishidol",hab:"sea",grp:"tropical",name:"깃대돔",w:1.8,time:['day'],min:15,max:25,str:0.2,r:4,minP:0.2,shape:"disc",h:1,c1:"#f2f0e6",c2:"#ffe68a",pat:"idol",eye:0.14,flavor:"긴 깃발 같은 등지느러미를 휘날리는 열대 바다의 신사.",hint:"낮 바다, 조금 멀리 · 가끔"},
+ {id:"triggerfish",hab:"sea",grp:"tropical",name:"피카소트리거피시",w:1.8,time:['day'],min:15,max:30,str:0.3,r:4,minP:0.25,shape:"fish",h:0.42,c1:"#d8cfb2",c2:"#f4ecd8",pat:"bands",eye:0.14,flavor:"피카소가 붓으로 그린 듯한 얼굴. 화나면 등 가시를 바짝 세워요.",hint:"낮 바다, 멀리 · 가끔"},
+ {id:"leopardshark",hab:"sea",grp:"shark",name:"표범상어",w:1.5,time:['day','dusk'],min:100,max:180,str:0.8,r:4,minP:0.5,shape:"shark",h:1,c1:"#b8a07a",c2:"#f2e8d4",pat:"spots",eye:0.1,flavor:"표범 같은 점무늬를 가진 순한 상어. 다가와 같이 놀기도 해요.",hint:"낮·해질녘 바다, 멀리 · 가끔"},
+ {id:"lenok",hab:"fresh",grp:"fresh",name:"열목어",w:2,time:['dawn','day'],min:30,max:70,str:0.6,r:4,minP:0.3,shape:"fish",h:0.26,c1:"#6a5a4a",c2:"#e8d0c0",pat:"spots",eye:0.13,flavor:"눈이 붉은 차가운 계곡의 귀한 물고기. 아주 맑고 찬 물에만 살아요.",riverOnly:true,hint:"새벽·낮 강, 멀리 · 가끔"},
+ {id:"stickleback",hab:"fresh",grp:"fresh",name:"가시고기",w:2,time:['day','dawn'],min:4,max:8,str:0.05,r:4,minP:0,shape:"fish",h:0.3,c1:"#5a6a4a",c2:"#d8e0c0",pat:"none",eye:0.2,flavor:"아빠가 둥지를 짓고 알을 지키는 다정한 꼬마. 등에 가시가 있어요.",riverOnly:true,hint:"새벽·낮 강, 조금 멀리 · 가끔"},
+ {id:"giantgrouper",hab:"sea",grp:"sea",name:"대왕바리",w:0.5,time:['any'],min:120,max:250,str:0.95,r:5,minP:0.7,shape:"fish",h:0.42,c1:"#5a5040",c2:"#b8a888",pat:"spots",eye:0.08,flavor:"커다란 입으로 무엇이든 꿀꺽! 바다 속 동굴의 주인.",hint:"바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"marlin",hab:"sea",grp:"sea",name:"청새치",w:0.45,time:['day','dawn'],min:200,max:400,str:1,r:5,minP:0.85,shape:"beak",h:0.22,c1:"#1f3f6f",c2:"#e8eef6",pat:"bands",eye:0.12,flavor:"창 같은 주둥이로 바다를 가르는 “바다의 검객”.",hint:"새벽·낮 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"swordfish",hab:"sea",grp:"sea",name:"황새치",w:0.45,time:['night'],min:150,max:350,str:1,r:5,minP:0.8,shape:"beak",h:0.2,c1:"#3a3f4a",c2:"#d8dce2",pat:"none",eye:0.14,flavor:"칼처럼 넓적한 주둥이. 밤이 되면 깊은 바다에서 올라와요.",hint:"밤 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"sailfish",hab:"sea",grp:"sea",name:"돛새치",w:0.45,time:['day'],min:150,max:300,str:1,r:5,minP:0.8,shape:"beak",h:0.2,c1:"#1f4f8f",c2:"#eaf0f8",pat:"dots",eye:0.12,flavor:"등에 커다란 돛을 펼치는, 바다에서 가장 빠른 물고기!",sail:true,hint:"낮 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"kingcrab",hab:"sea",grp:"critter",name:"킹크랩",w:0.5,time:['night','dawn'],min:40,max:80,str:0.5,r:5,minP:0.55,shape:"crab",h:1,c1:"#c0402a",c2:"#f09a70",pat:"dots",eye:0.1,flavor:"다리를 쫙 펴면 1미터가 넘는 게의 왕.",longLegs:true,hint:"새벽·밤 바다, 아주 멀리(약 30m~) · 아주 가끔"},
+ {id:"giantoctopus",hab:"sea",grp:"critter",name:"대왕문어",w:0.45,time:['night'],min:100,max:300,str:0.9,r:5,minP:0.6,shape:"octo",h:1,c1:"#b0402a",c2:"#f0907a",pat:"none",eye:0.1,flavor:"다리를 펼치면 어른 키보다 커요. 세상에서 가장 큰 문어.",hint:"밤 바다, 아주 멀리(약 30m~) · 아주 가끔"},
+ {id:"dumbo",hab:"sea",grp:"critter",name:"덤보문어",w:0.4,time:['any'],min:15,max:30,str:0.2,r:5,minP:0.75,shape:"octo",h:1,c1:"#f0a0b0",c2:"#ffe0e6",pat:"none",eye:0.1,flavor:"귀처럼 생긴 지느러미를 팔랑이는 깊은 바다의 아기 코끼리.",hint:"바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"vampiresquid",hab:"sea",grp:"critter",name:"흡혈오징어",w:0.4,time:['night'],min:15,max:30,str:0.2,r:5,minP:0.75,shape:"squid",h:1,c1:"#6a1a2a",c2:"#c06070",pat:"dots",eye:0.1,flavor:"이름은 무섭지만 바다눈(작은 부스러기)을 먹는 얌전한 심해 생물.",hint:"밤 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"opah",hab:"sea",grp:"sea",name:"붉평치",w:0.45,time:['day','dawn'],min:80,max:180,str:0.85,r:5,minP:0.7,shape:"disc",h:1,c1:"#c0505a",c2:"#f0c0c0",pat:"none",eye:0.1,flavor:"온몸이 따뜻한 유일한 물고기. 동그란 몸에 새빨간 지느러미.",hint:"새벽·낮 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"tigershark",hab:"sea",grp:"shark",name:"뱀상어",w:0.4,time:['dusk','night'],min:250,max:450,str:1,r:5,minP:0.85,shape:"shark",h:1,c1:"#6a7060",c2:"#e8e8dc",pat:"bands",eye:0.1,flavor:"호랑이 줄무늬를 가진 상어. 무엇이든 먹어 치우는 바다의 대식가.",hint:"해질녘·밤 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"greatwhite",hab:"sea",grp:"shark",name:"백상아리",w:0.3,time:['day','dawn'],min:300,max:550,str:1,r:5,minP:0.9,shape:"shark",h:1,c1:"#6f7a86",c2:"#f4f6f8",pat:"none",eye:0.1,flavor:"바다의 최상위 포식자. 조심조심… 사진만 찍고 보내 주세요.",hint:"새벽·낮 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"thresher",hab:"sea",grp:"shark",name:"환도상어",w:0.35,time:['dawn','dusk'],min:250,max:450,str:1,r:5,minP:0.85,shape:"shark",h:1,c1:"#5a6a8a",c2:"#eef0f4",pat:"none",eye:0.1,flavor:"몸만큼 긴 꼬리를 채찍처럼 휘둘러 먹이를 사냥해요.",hint:"새벽·해질녘 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"footballfish",hab:"sea",grp:"sea",name:"초롱아귀",w:0.35,time:['night'],min:20,max:60,str:0.4,r:5,minP:0.8,shape:"fish",h:0.55,c1:"#2a2430",c2:"#5a4a5a",pat:"none",eye:0.06,flavor:"깜깜한 심해에서 머리의 초롱불을 반짝반짝 켜고 기다려요.",lure:true,hint:"밤 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"napoleon",hab:"sea",grp:"tropical",name:"나폴레옹피시",w:0.4,time:['day'],min:100,max:200,str:0.9,r:5,minP:0.7,shape:"fish",h:0.42,c1:"#2f8a7a",c2:"#a8e0d0",pat:"scales",eye:0.1,flavor:"이마가 불룩 튀어나온 산호초의 거인. 정식 이름은 험프헤드 놀래기.",hint:"낮 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"chimaera",hab:"sea",grp:"shark",name:"은상어",w:0.35,time:['night'],min:60,max:120,str:0.6,r:5,minP:0.8,shape:"shark",h:1,c1:"#9aa0b0",c2:"#f0f2f6",pat:"none",eye:0.1,flavor:"상어와 가오리의 먼 친척. 커다란 눈으로 심해를 떠다니는 “유령상어”.",hint:"밤 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"giantmoray",hab:"sea",grp:"sea",name:"대왕곰치",w:0.4,time:['night'],min:150,max:300,str:0.9,r:5,minP:0.6,shape:"eel",h:0.15,c1:"#5a6a3a",c2:"#a0a87a",pat:"spots",eye:0.15,flavor:"사람 키보다 긴 거대한 곰치. 바위 굴에서 고개만 쏙 내밀어요.",hint:"밤 바다, 아주 멀리(약 30m~) · 아주 가끔"},
+ {id:"sturgeon",hab:"fresh",grp:"fresh",name:"철갑상어",w:0.45,time:['dawn','dusk'],min:100,max:250,str:0.9,r:5,minP:0.6,shape:"fish",h:0.18,c1:"#5a5f60",c2:"#c8ccc8",pat:"scales",eye:0.12,flavor:"공룡 시대부터 살아온 강의 고대 물고기. 등에 갑옷 같은 비늘판이 있어요.",riverOnly:true,hint:"새벽·해질녘 강, 끝까지 멀리 · 아주 가끔"},
+ {id:"giantcatfish",hab:"fresh",grp:"fresh",name:"메콩대왕메기",w:0.4,time:['night'],min:150,max:250,str:1,r:5,minP:0.7,shape:"fish",h:0.26,c1:"#6a6a66",c2:"#c8c6bc",pat:"none",eye:0.07,flavor:"세상에서 가장 큰 민물고기 중 하나. 이 강까지 어떻게 왔을까?",riverOnly:true,whisker:true,hint:"밤 강, 끝까지 멀리 · 아주 가끔"},
+ {id:"mutae",hab:"fresh",grp:"fresh",name:"무태장어",w:0.45,time:['night'],min:100,max:200,str:0.85,r:5,minP:0.5,shape:"eel",h:0.14,c1:"#6a5a3a",c2:"#c8b080",pat:"spots",eye:0.15,flavor:"몸에 얼룩무늬가 있는 거대한 장어. 천연기념물이에요.",riverOnly:true,hint:"밤 강, 멀리 · 아주 가끔"},
+ {id:"goldkoi",hab:"fresh",grp:"fresh",name:"황금 비단잉어",w:0.5,time:['any'],min:40,max:90,str:0.55,r:5,minP:0.3,shape:"fish",h:0.32,c1:"#f5c040",c2:"#ffe8a0",pat:"scales",eye:0.12,flavor:"온몸이 황금빛으로 번쩍! 연못의 행운을 몰고 다녀요.",pondOnly:true,hint:"연못, 멀리 · 아주 가끔"},
+ {id:"humpback",hab:"sea",grp:"myth",name:"아기 혹등고래",w:0.14,time:['dawn','day','dusk'],min:400,max:700,str:1,r:6,minP:0.9,shape:"dolphin",h:0.28,c1:"#2a3240",c2:"#c0c8d0",pat:"none",eye:0.1,flavor:"노래하는 고래! 커다란 가슴지느러미로 바다를 날 듯 헤엄쳐요.",hint:"새벽~해질녘 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"bluewhale",hab:"sea",grp:"myth",name:"아기 대왕고래",w:0.1,time:['day'],min:600,max:950,str:1,r:6,minP:0.95,shape:"dolphin",h:0.28,c1:"#3a5a7a",c2:"#a8c0d0",pat:"none",eye:0.1,flavor:"지구에서 가장 큰 동물, 대왕고래의 아기. 아기인데도 버스만 해요!",hint:"낮 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"spermwhale",hab:"sea",grp:"myth",name:"아기 향유고래",w:0.12,time:['night','dawn'],min:350,max:600,str:1,r:6,minP:0.9,shape:"dolphin",h:0.28,c1:"#3a3a40",c2:"#8a8a90",pat:"none",eye:0.1,flavor:"네모난 큰 머리로 깊은 바다까지 잠수하는 고래. 대왕오징어의 라이벌!",hint:"새벽·밤 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"beluga",hab:"sea",grp:"myth",name:"벨루가",w:0.16,time:['any'],min:300,max:450,str:0.95,r:6,minP:0.8,shape:"dolphin",h:0.28,c1:"#eef2f4",c2:"#ffffff",pat:"none",eye:0.1,flavor:"새하얀 몸에 동그란 이마. 여러 소리를 내서 “바다의 카나리아”라 불려요.",hint:"바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"narwhal",hab:"sea",grp:"myth",name:"일각고래",w:0.12,time:['night','dawn'],min:350,max:500,str:1,r:6,minP:0.9,shape:"dolphin",h:0.28,c1:"#7a8088",c2:"#d8dce0",pat:"none",eye:0.1,flavor:"머리에 긴 뿔(사실은 이빨!)이 난 바다의 유니콘.",tusk:true,hint:"새벽·밤 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"sealion",hab:"sea",grp:"myth",name:"바다사자",w:0.18,time:['day','dusk'],min:150,max:250,str:0.9,r:6,minP:0.55,shape:"seal",h:0.36,c1:"#7a5a3a",c2:"#c8a880",pat:"spots",eye:0.12,flavor:"물개보다 크고 귀가 쏙 나와 있어요. 우렁찬 목소리로 “어흥”!",hint:"낮·해질녘 바다, 아주 멀리(약 30m~) · 신화(★6)"},
+ {id:"walrus",hab:"sea",grp:"myth",name:"바다코끼리",w:0.12,time:['dawn','dusk'],min:250,max:350,str:1,r:6,minP:0.75,shape:"seal",h:0.36,c1:"#a8785a",c2:"#d8b090",pat:"spots",eye:0.12,flavor:"커다란 엄니와 덥수룩한 수염. 엄니로 얼음 위에 몸을 끌어올려요.",tusk:true,hint:"새벽·해질녘 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"dugong",hab:"sea",grp:"myth",name:"듀공",w:0.14,time:['day'],min:250,max:320,str:0.85,r:6,minP:0.6,shape:"seal",h:0.36,c1:"#9a9a96",c2:"#d8d6d0",pat:"spots",eye:0.12,flavor:"바다풀을 뜯어 먹는 순한 “바다의 소”. 인어 전설의 주인공이래요.",hint:"낮 바다, 아주 멀리(약 30m~) · 신화(★6)"},
+ {id:"manatee",hab:"sea",grp:"myth",name:"매너티",w:0.12,time:['day','dusk'],min:280,max:380,str:0.85,r:6,minP:0.7,shape:"seal",h:0.36,c1:"#7a7a74",c2:"#b8b6ae",pat:"spots",eye:0.12,flavor:"둥근 꼬리로 느긋하게 헤엄치는 덩치 큰 순둥이.",hint:"낮·해질녘 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"leatherback",hab:"sea",grp:"myth",name:"장수거북",w:0.12,time:['night'],min:130,max:200,str:0.9,r:6,minP:0.8,shape:"turtle",h:1,c1:"#2a3038",c2:"#9aa0a8",pat:"none",eye:0.1,flavor:"등딱지 대신 가죽으로 덮인 세상에서 가장 큰 거북. 소중히 놓아주세요.",hint:"밤 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"greenturtle",hab:"sea",grp:"myth",name:"푸른바다거북",w:0.16,time:['day','dawn'],min:80,max:130,str:0.7,r:6,minP:0.5,shape:"turtle",h:1,c1:"#5a7a4a",c2:"#a8b878",pat:"none",eye:0.1,flavor:"제주 바다에도 찾아오는 바다거북. 해초를 먹어서 살이 초록빛이래요.",hint:"새벽·낮 바다, 멀리 · 신화(★6)"},
+ {id:"giantsquid",hab:"sea",grp:"myth",name:"대왕오징어",w:0.1,time:['night'],min:500,max:950,str:1,r:6,minP:0.95,shape:"squid",h:1,c1:"#b0402a",c2:"#f0a090",pat:"dots",eye:0.1,flavor:"전설 속 크라켄의 정체! 눈알이 축구공만 해요.",hint:"밤 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"oarfish",hab:"sea",grp:"myth",name:"산갈치",w:0.12,time:['night'],min:300,max:800,str:0.9,r:6,minP:0.9,shape:"eel",h:0.1,c1:"#d0d8e0",c2:"#ffffff",pat:"none",eye:0.2,flavor:"붉은 갈기를 휘날리는 은빛 리본. 용궁의 사신이라는 전설이 있어요.",silver:true,hint:"밤 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"coelacanth",hab:"sea",grp:"myth",name:"실러캔스",w:0.1,time:['night'],min:150,max:200,str:0.9,r:6,minP:0.95,shape:"fish",h:0.32,c1:"#2f3f6a",c2:"#5a6a9a",pat:"spots",eye:0.1,flavor:"4억 년 전부터 모습이 거의 그대로인 “살아 있는 화석”.",hint:"밤 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"mantaray",hab:"sea",grp:"myth",name:"쥐가오리",w:0.14,time:['day','dusk'],min:300,max:600,str:1,r:6,minP:0.85,shape:"ray",h:1,c1:"#2a2a32",c2:"#f0f0f0",pat:"none",eye:0.1,flavor:"날개를 펼치면 7미터! 바다 속을 하늘 날듯 우아하게 날아다녀요.",hint:"낮·해질녘 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
+ {id:"leafyseadragon",hab:"sea",grp:"myth",name:"나뭇잎해룡",w:0.12,time:['day'],min:20,max:35,str:0.1,r:6,minP:0.5,shape:"seahorse",h:1,c1:"#b8c050",c2:"#e8e090",pat:"none",eye:0.1,flavor:"온몸에 나뭇잎 같은 장식이 달린 해마의 친척. 해초인 척 둥실둥실.",hint:"낮 바다, 멀리 · 신화(★6)"},
+ {id:"goldmandarin",hab:"fresh",grp:"myth",name:"황쏘가리",w:0.12,time:['night','dusk'],min:25,max:50,str:0.7,r:6,minP:0.3,shape:"fish",h:0.3,c1:"#f0b030",c2:"#ffe090",pat:"none",eye:0.14,flavor:"온몸이 황금빛인 쏘가리. 천연기념물로 지정된 강의 보물이에요.",riverOnly:true,hint:"해질녘·밤 강, 멀리 · 신화(★6)"},
+ {id:"eoreumchi",hab:"fresh",grp:"myth",name:"어름치",w:0.12,time:['dawn','day'],min:20,max:45,str:0.5,r:6,minP:0.2,shape:"fish",h:0.26,c1:"#7a8a9a",c2:"#eef0f2",pat:"dots",eye:0.14,flavor:"알을 지키려고 자갈로 탑을 쌓는 똑똑한 물고기. 천연기념물이에요.",riverOnly:true,hint:"새벽·낮 강, 조금 멀리 · 신화(★6)"},
+ {id:"arapaima",hab:"fresh",grp:"myth",name:"피라루쿠",w:0.1,time:['day','dusk'],min:200,max:300,str:1,r:6,minP:0.7,shape:"fish",h:0.2,c1:"#4a5a4a",c2:"#d06a4a",pat:"scales",eye:0.1,flavor:"아마존에서 온 세계 최대급 민물고기. 숨을 쉬러 수면 위로 올라와요.",riverOnly:true,hint:"낮·해질녘 강, 끝까지 멀리 · 신화(★6)"},
+ {id:"mihojonggae",hab:"fresh",grp:"myth",name:"미호종개",w:0.12,time:['any'],min:5,max:10,str:0.05,r:6,minP:0,shape:"fish",h:0.13,c1:"#c8b070",c2:"#f2e6c0",pat:"spots",eye:0.16,flavor:"금강 줄기에만 사는 아주 귀한 작은 물고기. 천연기념물이라 꼭 놓아주세요.",riverOnly:true,hint:"강, 조금 멀리 · 신화(★6)"}
 ];
 SPECIES.forEach(sp=>{if(!sp.grp)sp.grp=sp.hab==='fresh'?'fresh':(sp.id==='starfish'?'critter':'sea');});
 function pickFish(p,hab){
@@ -719,7 +814,7 @@ function soundIcon(){const b=$('bSound');if(b)b.textContent=['🔊','🔉','🔇
 /* ---------- fish drawing ---------- */
 function drawFishBase(c,sp,x,y,L,sil){
  c.save();c.translate(x,y);const dark='#2a3048';
- if(CREATURE[sp.shape]){CREATURE[sp.shape](c,sp,L);c.restore();return;}
+ if(CREATURE[sp.shape]){CREATURE[sp.shape](c,sp,L);fishExtra(c,sp,L,0);c.restore();return;}
  if(sp.shape==='star'){
   const R=L*0.45,r=R*0.42;c.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r:R;c.lineTo(Math.cos(a)*rr,Math.sin(a)*rr);}c.closePath();
   c.lineJoin='round';c.lineWidth=R*0.12;c.strokeStyle=sil?dark:sp.c1;c.fillStyle=sil?dark:sp.c1;c.stroke();c.fill();
@@ -770,8 +865,8 @@ function drawFishBase(c,sp,x,y,L,sil){
  c.strokeStyle='rgba(0,0,0,.2)';c.lineWidth=Math.max(1,L*0.008);c.beginPath();c.moveTo(-L*0.3,-h*0.32);c.quadraticCurveTo(-L*0.25,0,-L*0.3,h*0.3);c.stroke();
  const er=h*sp.eye*0.8+L*0.006,ex=-L*0.385,ey=-h*0.1;
  c.fillStyle='#f6f2e4';c.beginPath();c.arc(ex,ey,er,0,7);c.fill();c.fillStyle='#14161d';c.beginPath();c.arc(ex,ey,er*0.62,0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(ex-er*0.25,ey-er*0.25,er*0.2,0,7);c.fill();
- if(sp.id==='catfish'){c.strokeStyle='#2a2622';c.lineWidth=Math.max(1,L*0.007);c.lineCap='round';for(const[dx,dy,ex,ey]of[[-0.47,0.02,-0.66,0.16],[-0.47,0.04,-0.62,0.26],[-0.46,-0.02,-0.64,-0.1]]){c.beginPath();c.moveTo(L*dx,h*dy);c.quadraticCurveTo(L*(dx+ex)/2,h*(dy+ey)/2+h*0.1,L*ex,h*ey);c.stroke();}}
- if(sp.shape==='beak'){c.strokeStyle=mixHex(sp.c1,'#000000',0.2);c.lineWidth=Math.max(1.5,h*0.12);c.lineCap='round';c.beginPath();c.moveTo(-L*0.47,h*0.06);c.lineTo(-L*0.6,h*0.1);c.stroke();}
+ if(sp.id==='catfish'||sp.whisker){c.strokeStyle='#2a2622';c.lineWidth=Math.max(1,L*0.007);c.lineCap='round';for(const[dx,dy,ex,ey]of[[-0.47,0.02,-0.66,0.16],[-0.47,0.04,-0.62,0.26],[-0.46,-0.02,-0.64,-0.1]]){c.beginPath();c.moveTo(L*dx,h*dy);c.quadraticCurveTo(L*(dx+ex)/2,h*(dy+ey)/2+h*0.1,L*ex,h*ey);c.stroke();}}
+ fishExtra(c,sp,L,h);if(sp.shape==='beak'){c.strokeStyle=mixHex(sp.c1,'#000000',0.2);c.lineWidth=Math.max(1.5,h*0.12);c.lineCap='round';c.beginPath();c.moveTo(-L*0.47,h*0.06);c.lineTo(-L*0.6,h*0.1);c.stroke();}
  c.restore();
 }
 
@@ -971,6 +1066,7 @@ CREATURE.disc=(c,sp,L)=>{const R=L*0.28;
  c.save();c.clip(b);
  if(sp.pat==='emperor'){c.strokeStyle='#ffd23a';c.lineWidth=L*0.018;for(let i=-6;i<8;i++){c.beginPath();c.moveTo(-R*1.3+i*R*0.25,-R*1.1);c.quadraticCurveTo(-R*0.9+i*R*0.25,0,-R*1.2+i*R*0.25,R*1.1);c.stroke();}c.fillStyle='#ffd23a';c.fillRect(-R*1.3,-R*1.1,R*0.33,R*2.2);c.fillStyle='#1a1f3a';c.fillRect(-R*0.97,-R*1.1,R*0.2,R*2.2);}
  if(sp.pat==='tang'){c.fillStyle='#14204a';c.beginPath();c.moveTo(-R*0.6,-R*0.55);c.bezierCurveTo(0,-R*0.95,R*0.6,-R*0.3,R*0.85,R*0.1);c.bezierCurveTo(R*0.5,-R*0.1,R*0.1,-R*0.2,-R*0.1,R*0.25);c.bezierCurveTo(-R*0.4,-R*0.1,-R*0.6,-R*0.3,-R*0.6,-R*0.55);c.fill();}
+ if(sp.pat==='idol'){c.fillStyle='#1a1a22';c.fillRect(-R*0.78,-R*1.2,R*0.42,R*2.4);c.fillRect(R*0.22,-R*1.2,R*0.36,R*2.4);c.fillStyle='rgba(255,196,60,.85)';c.fillRect(R*0.58,-R*1.2,R*0.4,R*2.4);}
  if(sp.pat==='butterfly'){c.strokeStyle='rgba(180,140,40,.35)';LW(c,L*0.006);for(let i=0;i<9;i++){c.beginPath();c.moveTo(-R+i*R*0.25,-R);c.lineTo(-R*0.6+i*R*0.25,R);c.stroke();}c.fillStyle='#2a2a33';c.fillRect(-R*0.95,-R*1.1,R*0.18,R*2.2);c.beginPath();c.arc(R*0.55,-R*0.35,R*0.14,0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(R*0.55,-R*0.35,R*0.06,0,7);c.fill();}
  c.restore();
  eyeDot(c,-R*0.82,-R*0.12,L*0.025);c.strokeStyle='rgba(60,40,40,.5)';LW(c,L*0.005);c.beginPath();c.arc(-R*1.2,R*0.1,L*0.012,-0.5,1.5);c.stroke();};
@@ -1873,9 +1969,9 @@ const FANTASY=[
  {name:'꿈나라 파르페',sec:30,min:6,cols:['#ffb3d1','#fff3e0','#8fd3ff','#ffe36e']},
 ];
 const DISH_CODES=['sashimi','grill','stew','cgrill','steam',...FANTASY.map((_,i)=>'f'+i)];
-const CRUST=new Set(['bluecrab','snowcrab','prawn','spinylobster','crayfish','freshshrimp']);
-const FANCY_FOOD=new Set(['jellyfish','urchin','starfish','seahorse','clownfish','bluetang','emperorangel','butterfly','mandarinfish','lionfish','boxfish','guppy','betta','goldfish','koi','arowana','parrotfish','catshark','blueshark','hammerhead','sunfish']);
-const PROTECTED=new Set(['turtle','whaleshark','seal','dolphin','orca','seaotter','otter']);
+const CRUST=new Set(['hermitcrab','shorecrab','hairycrab','lobster','kingcrab','bluecrab','snowcrab','prawn','spinylobster','crayfish','freshshrimp']);
+const FANCY_FOOD=new Set(['yellowtang','moorishidol','triggerfish','leopardshark','dumbo','vampiresquid','tigershark','greatwhite','thresher','footballfish','napoleon','chimaera','giantmoray','goldkoi','jellyfish','urchin','starfish','seahorse','clownfish','bluetang','emperorangel','butterfly','mandarinfish','lionfish','boxfish','guppy','betta','goldfish','koi','arowana','parrotfish','catshark','blueshark','hammerhead','sunfish']);
+const PROTECTED=new Set(['humpback','bluewhale','spermwhale','beluga','narwhal','sealion','walrus','dugong','manatee','leatherback','greenturtle','giantsquid','oarfish','coelacanth','mantaray','leafyseadragon','goldmandarin','eoreumchi','arapaima','mihojonggae','mutae','lenok','turtle','whaleshark','seal','dolphin','orca','seaotter','otter']);
 function dishesFor(id){if(PROTECTED.has(id))return[];if(CRUST.has(id))return['cgrill','steam'];if(FANCY_FOOD.has(id))return['fantasy'];return['sashimi','grill','stew'];}
 function foodInfo(f){if(f.k&&f.k[0]==='f'){const F=FANTASY[+f.k.slice(1)]||FANTASY[0];return{name:F.name,em:'✨',sec:F.sec,min:F.min,code:f.k};}const D=DISH[f.k]||DISH.grill;return{name:D.name,em:D.em,sec:D.sec,min:D.min,code:f.k};}
 function eatFood(info){const dur=info.min*60000;const until=Date.now()+dur;GS.buffUntil=Math.max(GS.buffUntil||0,until);markSave();updateHUD();
@@ -2073,19 +2169,20 @@ function goNearPeer(peer){const r=remote.get(peer);if(!r||!entered)return;if(BOA
 
 /* ---------- 3D 눌러서 고르기 (상점·다른 사람) ---------- */
 const RAY=new THREE.Raycaster();const _ndc=new THREE.Vector2();let tapD=null;
-function pickAt(cx,cy){_ndc.set(cx/W*2-1,-(cy/H)*2+1);RAY.setFromCamera(_ndc,camera);const objs=[SHOP.g];if(BOARD_G)objs.push(BOARD_G);for(const r of remote.values())if(r.char&&!r.leaving)objs.push(r.char.root);
- const hits=RAY.intersectObjects(objs,true);for(const h of hits){let o=h.object;while(o){if(o.userData&&o.userData.peer)return{peer:o.userData.peer};if(o.userData&&o.userData.pick==='shop')return{shop:true};if(o.userData&&o.userData.pick==='board')return{board:true};o=o.parent;}}return null;}
+function pickAt(cx,cy){_ndc.set(cx/W*2-1,-(cy/H)*2+1);RAY.setFromCamera(_ndc,camera);const objs=[SHOP.g];if(BOARD_G)objs.push(BOARD_G);if(HOF.g)objs.push(HOF.g);for(const r of remote.values())if(r.char&&!r.leaving)objs.push(r.char.root);
+ const hits=RAY.intersectObjects(objs,true);for(const h of hits){let o=h.object;while(o){if(o.userData&&o.userData.peer)return{peer:o.userData.peer};if(o.userData&&o.userData.pick==='shop')return{shop:true};if(o.userData&&o.userData.pick==='board')return{board:true};if(o.userData&&o.userData.pick==='hof')return{hof:true};o=o.parent;}}return null;}
 function onTap(cx,cy){const hit=pickAt(cx,cy);if(!hit)return false;
  if(hit.shop){const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);if(dd<9)openShop();else toast('🐉 용왕님 상점이에요. 가까이 가면 들어갈 수 있어요',2400);return true;}
+ if(hit.hof){const dd=Math.hypot(P.pos.x-HOF_POS.x,P.pos.z-HOF_POS.z);if(dd<14)openHof();else toast('🏆 명예의 전당이에요. 가까이 가면 기록을 볼 수 있어요',2400);return true;}
  if(hit.board){const dd=Math.hypot(P.pos.x-BOARD_G.position.x,P.pos.z-BOARD_G.position.z);if(dd<10)openBoard();else toast('📋 게시판이에요. 가까이 가면 요청사항을 남길 수 있어요',2400);return true;}
  if(hit.peer){const r=remote.get(hit.peer);if(r){openProfile(r);return true;}}return false;}
 
 /* ---------- 상황 버튼 (상점·요리) ---------- */
 let ctxKind='';
-function refreshCtx(){let want='';if(entered&&mode==='walk'&&!modalOpen()&&(BOAT.on||nearMoor())){want=BOAT.on?(nearBoatDock()?'unboat':''):'boat';}else if(entered&&mode==='walk'&&!modalOpen()){const ds=Math.hypot(P.pos.x-SHOP.front.x,P.pos.z-SHOP.front.z);if(ds<3.2||Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z)<4.2)want='shop';else if(nearBoard())want='board';else if(nearCampfire()&&!(cookSt&&cookSt.stage===1))want='cook';}
+function refreshCtx(){let want='';if(entered&&mode==='walk'&&!modalOpen()&&(BOAT.on||nearMoor())){want=BOAT.on?(nearBoatDock()?'unboat':''):'boat';}else if(entered&&mode==='walk'&&!modalOpen()){const ds=Math.hypot(P.pos.x-SHOP.front.x,P.pos.z-SHOP.front.z);if(ds<3.2||Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z)<4.2)want='shop';else if(nearBoard())want='board';else if(nearHof())want='hof';else if(nearCampfire()&&!(cookSt&&cookSt.stage===1))want='cook';}
  if(want===ctxKind)return;ctxKind=want;const b=$('ctxBtn');if(!want){b.classList.add('hidden');return;}b.classList.remove('hidden');
- const kb=isTouch?'':' <kbd>R</kbd>';b.innerHTML=want==='boat'?(BOAT.armT>t?`<b>💰</b>${fmtM(BOAT_FARE)}몰랑 내고 타기${kb}`:`<b>⛵</b>선상낚시 하기 <small class=fare>🪙${fmtM(BOAT_FARE)}</small>${kb}`):want==='unboat'?`<b>🛬</b>배 내리기${kb}`:want==='shop'?`<b>🐉</b>용왕님 상점${isTouch?'':' <kbd>R</kbd>'}`:want==='board'?`<b>📋</b>게시판${isTouch?'':' <kbd>R</kbd>'}`:`<b>🍳</b>요리하기${isTouch?'':' <kbd>R</kbd>'}`;b.className='ctxbtn '+want+(want==='boat'&&BOAT.armT>t?' arm':'');}
-function doCtx(){if(ctxKind==='boat'){boardBoat();return;}if(ctxKind==='unboat'){leaveBoat();return;}if(ctxKind==='board')openBoard();else if(ctxKind==='shop')openShop();else if(ctxKind==='cook')openCook();}
+ const kb=isTouch?'':' <kbd>R</kbd>';b.innerHTML=want==='boat'?(BOAT.armT>t?`<b>💰</b>${fmtM(BOAT_FARE)}몰랑 내고 타기${kb}`:`<b>⛵</b>선상낚시 하기 <small class=fare>🪙${fmtM(BOAT_FARE)}</small>${kb}`):want==='unboat'?`<b>🛬</b>배 내리기${kb}`:want==='hof'?`<b>🏆</b>명예의 전당${kb}`:want==='shop'?`<b>🐉</b>용왕님 상점${isTouch?'':' <kbd>R</kbd>'}`:want==='board'?`<b>📋</b>게시판${isTouch?'':' <kbd>R</kbd>'}`:`<b>🍳</b>요리하기${isTouch?'':' <kbd>R</kbd>'}`;b.className='ctxbtn '+want+(want==='boat'&&BOAT.armT>t?' arm':'');}
+function doCtx(){if(ctxKind==='boat'){boardBoat();return;}if(ctxKind==='unboat'){leaveBoat();return;}if(ctxKind==='hof'){openHof();return;}if(ctxKind==='board')openBoard();else if(ctxKind==='shop')openShop();else if(ctxKind==='cook')openCook();}
 
 /* ---------- 저장 · 계정 ---------- */
 const SAVE_KEY='monggeul-save-v2',ACCT_KEY='monggeul-acct',GUEST_BAK='monggeul-guest-backup';
@@ -2325,9 +2422,13 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=6?`★6 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위 · 난이도 높음`;}
-const NEWS_VER='2026-11-11g';
+const NEWS_VER='2026-11-11h';
 const NEWS=[
- {d:'11월 11일',t:'⛵ 선상낚시 · 거리별 물고기',n:true,i:[
+ {d:'11월 11일',t:'🏆 명예의 전당 · 생물 150종',n:true,i:[
+  '🐋 생물이 <b>70종 → 150종</b>으로 늘었어요! ★1 8종 · ★2 10종 · ★3 10종 · ★4 12종 · <b>★5 20종 · ★6 20종</b>이 새로 왔어요. (고래·바다거북·대왕오징어·백상아리·청새치·킹크랩·황쏘가리 등)',
+  '🏆 모닥불 옆에 반짝이는 <b>금빛 명예의 전당</b>이 생겼어요. 생물마다 가장 큰 크기를 잡은 사람의 이름이 새겨지고, 더 큰 걸 잡으면 이름이 바뀌어요.',
+  '📜 명예의 전당에서 ★별로 모든 생물을 볼 수 있어요. 아직 아무도 못 잡은 생물은 "아직 아무도 잡지 못했어요"로 표시돼요.']},
+ {d:'11월 11일',t:'⛵ 선상낚시 · 거리별 물고기',i:[
   '🎯 바다는 <b>해안에서 멀리 던질수록</b> 크고 ★ 높은 물고기가 잘 나와요. 가까운 물가는 작고 흔한 물고기 위주예요. 육지에서는 <b>부두 끝에서 가장 멀리</b> 던지는 게 최고!',
   '🚤 지도 오른쪽 아래에 <b>배 타는 부두</b>가 생겼어요. 끝에 묶인 배 옆에서 <b>⛵ 선상낚시 하기</b>를 누르면 배를 타요. (★5 낚싯대를 가진 사람부터 · 배삯 1,000몰랑 · 한 사람당 1척)',
   '🌊 배를 조종해 섬 주변을 다니며 어디서든 낚시해요. <b>빨간 부표 밖 먼 바다</b>에서는 ★4 이상 물고기가 2배 더 잘 나와요. 주황 부표 밖으로는 나갈 수 없어요.',
@@ -2471,6 +2572,91 @@ function updV7(dt){if(BOAT.armT&&t>BOAT.armT){BOAT.armT=0;ctxKind='';}
  if(BOAT.on){BOAT.mesh.visible=true;syncBoat(BOAT.mesh,P.pos.x,P.pos.z,P.yaw,t);P.char.sit=true;
   const far=Math.hypot(P.pos.x,P.pos.z)>FAR_R;if(far!==BOAT.far){BOAT.far=far;updBoatBadge();if(t>BOAT.farT){BOAT.farT=t+3;toast(far?'🌊 먼 바다에 들어왔어요! 이제 ★4 이상 물고기가 2배 더 잘 나와요':'🏝️ 섬 근처 바다로 돌아왔어요',3000);if(far)sfx.pop();}}}}
 
+/* ---------- v10: 생물 장식(엄니·초롱·돛) · 명예의 전당 ---------- */
+function fishExtra(c,sp,L,h){
+ if(sp.tusk&&sp.shape==='dolphin'){const hh=L*0.2;c.strokeStyle='#f3ead2';c.lineCap='round';LW(c,L*0.014);c.beginPath();c.moveTo(-L*0.47,hh*0.12);c.lineTo(-L*0.64,-hh*0.05);c.stroke();c.strokeStyle='rgba(150,130,90,.6)';LW(c,L*0.004);for(let i=0;i<5;i++){const x=-L*0.5-i*L*0.028,y=hh*0.09-i*hh*0.035;c.beginPath();c.moveTo(x,y-L*0.008);c.lineTo(x-L*0.01,y+L*0.008);c.stroke();}}
+ if(sp.tusk&&sp.shape==='seal'){const hh=L*0.26;c.strokeStyle='#f6eedb';c.lineCap='round';LW(c,L*0.018);for(const s of[-1,1]){c.beginPath();c.moveTo(-L*0.39+s*L*0.022,-hh*0.1);c.quadraticCurveTo(-L*0.4+s*L*0.03,hh*0.3,-L*0.37+s*L*0.02,hh*0.62);c.stroke();}}
+ if(sp.lure&&h){c.strokeStyle=mixHex(sp.c1,'#000000',0.2);LW(c,L*0.008);c.lineCap='round';c.beginPath();c.moveTo(-L*0.33,-h*0.42);c.quadraticCurveTo(-L*0.36,-h*1.15,-L*0.52,-h*0.9);c.stroke();
+  const g=c.createRadialGradient(-L*0.52,-h*0.9,0,-L*0.52,-h*0.9,L*0.07);g.addColorStop(0,'rgba(255,255,200,1)');g.addColorStop(0.35,'rgba(255,230,120,.8)');g.addColorStop(1,'rgba(255,220,100,0)');c.fillStyle=g;c.beginPath();c.arc(-L*0.52,-h*0.9,L*0.07,0,7);c.fill();}
+ if(sp.sail&&h){c.save();c.globalCompositeOperation='destination-over';const p=new Path2D();p.moveTo(-L*0.34,-h*0.38);p.quadraticCurveTo(-L*0.25,-h*1.95,L*0.02,-h*1.7);p.quadraticCurveTo(L*0.12,-h*1.2,L*0.2,-h*0.32);p.closePath();c.fillStyle=mixHex(sp.c1,'#000000',0.1);c.fill(p);c.restore();
+  c.save();c.globalAlpha=0.5;c.strokeStyle='#0d2240';LW(c,L*0.004);for(let i=0;i<7;i++){const x=-L*0.3+i*L*0.07;c.beginPath();c.moveTo(x,-h*0.4);c.lineTo(x+L*0.02,-h*(1.75-Math.abs(i-2.5)*0.22));c.stroke();}c.restore();}
+ if(sp.pat==='idol'&&sp.shape==='disc'){c.strokeStyle='#f6f2e6';c.lineCap='round';LW(c,L*0.014);c.beginPath();c.moveTo(-L*0.02,-L*0.26);c.quadraticCurveTo(L*0.2,-L*0.62,L*0.48,-L*0.44);c.stroke();}
+}
+/* 명예의 전당 */
+const HOF={map:{},ok:false,mode:'',db:null,unsub:null,loading:false,lastLoad:0,tab:'all',g:null,tex:null,cv:null,mat:null,spark:null,lastKey:''};
+const HOF_POS={x:5.6,z:12.2};
+function hofName(){return nameOf(NAME);}
+async function hofLoad(force){
+ if(HOF.loading)return;if(!force&&HOF.ok&&HOF.mode==='ws'&&performance.now()-HOF.lastLoad<15000)return;HOF.loading=true;
+ try{
+  if(netMode==='ws'){const r=await fetch('/api/hof/list',{cache:'no-store'});const j=await r.json();if(!r.ok||!j.ok)throw 0;const m={};for(const e of j.list||[])if(e&&SP_BY[e.id])m[e.id]={s:+e.s,n:String(e.n||''),ts:+e.ts||0};HOF.map=m;HOF.ok=true;HOF.mode='ws';HOF.lastLoad=performance.now();}
+  else{if(!HOF.db){if(!(window.claude&&typeof window.claude.use==='function'))throw 0;HOF.db=await window.claude.use('db');if(!HOF.db)throw 0;}
+   if(!HOF.unsub){await new Promise((res,rej)=>{const tm=setTimeout(()=>rej(0),10000);HOF.unsub=HOF.db.collection('hof').onSnapshot(snap=>{clearTimeout(tm);const m={};for(const d of snap.docs){const v=d.data()||{};if(SP_BY[d.id])m[d.id]={s:+v.s||0,n:String(v.n||''),ts:+v.ts||0};}HOF.map=m;HOF.ok=true;HOF.mode='db';hofRefresh();res();},e=>{clearTimeout(tm);HOF.unsub=null;rej(e);});});}}
+ }catch(e){if(!HOF.ok)HOF.mode='';}finally{HOF.loading=false;hofRefresh();}}
+async function hofSubmit(sp,size){
+ const id=sp.id,s=Math.round(size*10)/10;const cur=HOF.map[id];if(cur&&cur.s>=s)return;const name=hofName();
+ try{
+  if(netMode==='ws'){const r=await fetch('/api/hof/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id,s,name})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)return;
+   if(j.top){HOF.map[id]={s,n:j.name||name,ts:Date.now()};hofCheer(sp,s,j.prev);}else if(j.rec)HOF.map[id]={s:+j.rec.s,n:String(j.rec.n||''),ts:+j.rec.ts||0};}
+  else{if(!HOF.db)await hofLoad(true);if(!HOF.db)return;const ref=HOF.db.collection('hof').doc(id);const snap=await ref.get();const old=snap&&snap.exists?snap.data():null;if(old&&+old.s>=s)return;
+   await ref.set({s,n:name,ts:Date.now()});HOF.map[id]={s,n:name,ts:Date.now()};hofCheer(sp,s,old?{s:+old.s,n:old.n}:null);}
+  hofRefresh();}catch(e){}}
+function hofCheer(sp,s,prev){sfx.catch&&sfx.catch();toast(`🏆 명예의 전당 신기록! ${sp.name} ${fmtSize(s)}${prev?` (이전 ${String(prev.n||'').slice(0,12)} ${fmtSize(+prev.s)})`:' · 첫 기록이에요!'}`,4600);showBubble(P.label,'🏆',true,3);}
+/* 3D 비석 */
+function buildHof(){const g=new THREE.Group();const y0=groundY(HOF_POS.x,HOF_POS.z);g.position.set(HOF_POS.x,y0,HOF_POS.z);g.rotation.y=Math.atan2(PLAZA.x-HOF_POS.x,PLAZA.z-HOF_POS.z);scene.add(g);HOF.g=g;
+ const gold=new THREE.MeshStandardMaterial({color:'#f2c14e',metalness:0.55,roughness:0.28,emissive:'#7a5200',emissiveIntensity:0.45});HOF.gold=gold;
+ const stone=stdMat('#4a4f5a',0.6),stone2=stdMat('#5c6370',0.55);
+ addMesh(new THREE.BoxGeometry(3.6,0.35,2.0),stone,0,0.17,0,g);addMesh(new THREE.BoxGeometry(3.1,0.3,1.6),stone2,0,0.48,0,g);
+ addMesh(new THREE.BoxGeometry(2.5,3.3,0.5),gold,0,2.28,0,g);
+ const top=addMesh(new THREE.CylinderGeometry(0,1.4,0.7,4),gold,0,4.28,0,g);top.rotation.y=Math.PI/4;top.scale.set(1,1,0.36);
+ const orb=addMesh(new THREE.SphereGeometry(0.34,20,14),new THREE.MeshStandardMaterial({color:'#fff2b0',emissive:'#ffcc33',emissiveIntensity:1.1,roughness:0.2}),0,4.95,0,g);HOF.orb=orb;
+ for(const s of[-1,1]){addMesh(new THREE.BoxGeometry(0.22,3.5,0.62),gold,s*1.32,2.3,0,g);addMesh(new THREE.SphereGeometry(0.2,12,10),gold,s*1.32,4.15,0,g);}
+ const cv=document.createElement('canvas');cv.width=512;cv.height=640;HOF.cv=cv;const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;HOF.tex=tex;
+ const pm=new THREE.MeshStandardMaterial({map:tex,emissive:'#ffffff',emissiveMap:tex,emissiveIntensity:0.35,roughness:0.5,metalness:0.2});
+ for(const s of[1,-1]){const pl=addMesh(new THREE.PlaneGeometry(2.2,2.75),pm,0,2.3,s*0.26,g);if(s<0)pl.rotation.y=Math.PI;}
+ const lt=new THREE.PointLight('#ffd27a',1.4,9,1.6);lt.position.set(0,3.2,1.4);g.add(lt);HOF.light=lt;
+ const N=46,pos=new Float32Array(N*3),base=[];for(let i=0;i<N;i++){const a=Math.random()*Math.PI*2,r=1.2+Math.random()*1.3;base.push([Math.cos(a)*r,0.4+Math.random()*4.6,Math.sin(a)*r*0.7,Math.random()*6]);}
+ const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(pos,3));const sm=new THREE.PointsMaterial({color:'#ffe9a0',size:0.16,transparent:true,opacity:0.9,depthWrite:false,blending:THREE.AdditiveBlending});
+ const sp=new THREE.Points(sg,sm);sp.userData.base=base;g.add(sp);HOF.spark=sp;
+ g.traverse(o=>{o.userData.pick='hof';});OBST.push({x:HOF_POS.x,z:HOF_POS.z,r:1.9});drawHofTex();}
+function hofCount(){return Object.keys(HOF.map).filter(k=>SP_BY[k]).length;}
+function drawHofTex(){const cv=HOF.cv;if(!cv)return;const c=cv.getContext('2d');const W2=512,H2=640;
+ const g=c.createLinearGradient(0,0,0,H2);g.addColorStop(0,'#3a2a08');g.addColorStop(1,'#1e1604');c.fillStyle=g;c.fillRect(0,0,W2,H2);
+ c.strokeStyle='#ffd76a';c.lineWidth=10;c.strokeRect(14,14,W2-28,H2-28);c.lineWidth=3;c.strokeRect(30,30,W2-60,H2-60);
+ c.textAlign='center';c.textBaseline='middle';c.fillStyle='#ffe9a8';c.font='900 64px sans-serif';c.fillText('🏆',W2/2,92);
+ c.font='900 70px sans-serif';const gg=c.createLinearGradient(0,140,0,210);gg.addColorStop(0,'#fff6c8');gg.addColorStop(1,'#f2b928');c.fillStyle=gg;c.fillText('명예의 전당',W2/2,178);
+ c.fillStyle='#d9b45a';c.font='700 26px sans-serif';c.fillText('HALL OF FAME',W2/2,232);
+ c.fillStyle='#fff1c0';c.font='800 34px sans-serif';c.fillText(HOF.ok?`기록된 생물 ${hofCount()} / ${SPECIES.length}종`:`생물 ${SPECIES.length}종의 최고 기록`,W2/2,300);
+ const recent=Object.entries(HOF.map).filter(([k])=>SP_BY[k]).sort((a,b)=>b[1].ts-a[1].ts).slice(0,4);
+ c.font='800 26px sans-serif';c.fillStyle='#ffd76a';c.fillText('✨ 최근 신기록',W2/2,370);
+ c.font='700 25px sans-serif';c.fillStyle='#fff4d6';
+ if(!recent.length){c.fillText('아직 기록이 없어요',W2/2,420);c.fillText('첫 주인공이 되어 보세요!',W2/2,462);}
+ recent.forEach(([k,v],i)=>{const t=`${SP_BY[k].name} ${fmtSize(v.s)} · ${String(v.n).slice(0,10)}`;c.fillText(t,W2/2,418+i*44);});
+ c.fillStyle='#d9b45a';c.font='700 24px sans-serif';c.fillText('가까이 가서 눌러 보세요',W2/2,H2-60);
+ if(HOF.tex)HOF.tex.needsUpdate=true;}
+function nearHof(){return HOF.g&&Math.hypot(P.pos.x-HOF_POS.x,P.pos.z-HOF_POS.z)<4.2;}
+function updHof(dt){if(!HOF.g)return;const k=0.5+0.5*Math.sin(t*2.2);HOF.gold.emissiveIntensity=0.35+0.25*k;HOF.orb.position.y=4.95+Math.sin(t*1.6)*0.08;HOF.light.intensity=1.1+0.6*k;
+ const sp=HOF.spark,b=sp.userData.base,a=sp.geometry.attributes.position;for(let i=0;i<b.length;i++){const q=b[i];const yy=(q[1]+t*0.35+q[3])%5;a.setXYZ(i,q[0]+Math.sin(t+q[3])*0.15,0.3+yy,q[2]);}a.needsUpdate=true;sp.material.opacity=0.55+0.4*Math.abs(Math.sin(t*3));
+ const key=HOF.ok+'|'+hofCount()+'|'+Object.values(HOF.map).reduce((m,v)=>Math.max(m,v.ts||0),0);if(key!==HOF.lastKey){HOF.lastKey=key;drawHofTex();}}
+/* 목록 창 */
+function hofRefresh(){if(!$('hofM')||$('hofM').classList.contains('hidden'))return;renderHof();}
+async function openHof(){if(!entered)return;closeEmoPanel();closeChat();$('hofM').classList.remove('hidden');renderHof();await hofLoad(true);renderHof();}
+function closeHof(){$('hofM').classList.add('hidden');}
+function renderHof(){const box=$('hofList');const tabs=$('hofTabs');const me=hofName();
+ const n=hofCount();$('hofSum').innerHTML=HOF.ok?`기록된 생물 <b>${n}</b> / ${SPECIES.length}종 · 아직 주인을 기다리는 생물 <b>${SPECIES.length-n}</b>종`:(HOF.loading?'불러오는 중…':'⚠️ 이 화면에서는 모두의 기록을 불러올 수 없어요. 공개 서버 버전에서 함께 기록을 겨뤄요! (아래는 생물 목록과 내 최고 기록)');
+ if(!tabs.dataset.built){tabs.dataset.built=1;for(const k of['all',6,5,4,3,2,1]){const b=document.createElement('button');b.dataset.t=k;b.textContent=k==='all'?'전체':'★'+k;b.onclick=()=>{HOF.tab=String(k);renderHof();box.scrollTop=0;};tabs.appendChild(b);}}
+ for(const b of tabs.children)b.classList.toggle('on',b.dataset.t===String(HOF.tab));
+ box.innerHTML='';const stars=HOF.tab==='all'?[6,5,4,3,2,1]:[+HOF.tab];
+ for(const st of stars){const list=SPECIES.filter(sp=>starOf(sp)===st);const got=list.filter(sp=>HOF.map[sp.id]).length;
+  const h=document.createElement('div');h.className='hofh s'+st;h.innerHTML=`<b>${'★'.repeat(st)}</b><span>${st===6?'신화':st===5?'전설':st===4?'희귀':st===3?'고급':st===2?'보통':'흔함'} · ${list.length}종</span><small>${got}종 기록됨</small>`;box.appendChild(h);
+  for(const sp of list.sort((a,b)=>(HOF.map[b.id]?1:0)-(HOF.map[a.id]?1:0)||a.name.localeCompare(b.name,'ko'))){const rec=HOF.map[sp.id];const row=document.createElement('div');row.className='hofr'+(rec?'':' none')+(rec&&rec.n===me?' mine':'');
+   const cv=document.createElement('canvas');cv.width=120;cv.height=60;drawFish(cv.getContext('2d'),sp,60+(sp.shape==='beak'?6:0),30,fishL(sp,96,24),!rec);
+   const nm=document.createElement('div');nm.className='hn';nm.innerHTML=`<b></b><small></small>`;nm.firstChild.textContent=sp.name;const mb=book[sp.id];nm.lastChild.textContent=mb?`내 최고 ${fmtSize(mb.best)}`:'';
+   const rc=document.createElement('div');rc.className='hrec';
+   if(rec){const d=new Date(rec.ts||0);rc.innerHTML=`<b></b><span></span><small></small>`;rc.children[0].textContent=fmtSize(rec.s);rc.children[1].textContent=(rec.n===me?'👑 ':'🏅 ')+String(rec.n).slice(0,12);rc.children[2].textContent=rec.ts?`${d.getMonth()+1}/${d.getDate()}`:'';}
+   else rc.innerHTML='<span class="nobody">— 아직 아무도 잡지 못했어요</span>';
+   row.append(cv,nm,rc);box.appendChild(row);}}}
+
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
@@ -2564,7 +2750,7 @@ function updateFight(dt){
  rippleAcc+=dt;if(rippleAcc>0.3){rippleAcc=0;fishPos(_a);ripple(_a.x,_a.z,surge?1.2:0.7);}
 }
 function landed(){setF('caught');holding=false;myLine.visible=false;myFloat.visible=false;const rec=recordCatch(fish);sfx.catch();showBubble(P.label,`${fish.sp.name} ${fmtSize(fish.size)}`,false,6);
- ME.cid++;ME.cs=fish.sp.id;ME.cz=fish.size;P.hopT=t;markPresence();markSave();showCatch(fish,rec);}
+ ME.cid++;ME.cs=fish.sp.id;ME.cz=fish.size;P.hopT=t;markPresence();markSave();showCatch(fish,rec);hofSubmit(fish.sp,fish.size);}
 function press(){
  if(!entered||mode==='closet'||modalOpen())return;if(closeEmoPanel())return;initAudio();
  if(mode!=='fish')return;
@@ -2679,7 +2865,7 @@ let toastTimer=0;
 function toast(msg,ms=2600){const el=$('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),ms);}
 function updateHUD(){const ph=PHASES[phaseOf(hourNow())];const cl=cycleLeft();const tm=timeMode==='real'?(cl.isDay?`밤까지 ${cl.txt}`:`아침까지 ${cl.txt}`):'미리보기';
  const who=roomState==='online'?(netMode==='ws'?`${wsIsland}번 섬 · ${peopleCount()}명`:`이 섬에 ${peopleCount()}명`):roomState==='connecting'?'연결 중…':'혼자 모드';$('hudS').textContent=W<520?`${ph.em} ${ph.ko}${timeMode==='real'?' '+cl.txt:''} · ${who}`:`${ph.em} ${ph.ko} · ${tm} · ${who}`;}
-function modalOpen(){return tankOpen||!!profPeer||mapOpen||['shop','bag','cook','auth','boardM','newsM'].some(id=>!$(id).classList.contains('hidden'))||!$('catch').classList.contains('hidden')||!$('book').classList.contains('hidden')||!$('help').classList.contains('hidden');}
+function modalOpen(){return tankOpen||!!profPeer||mapOpen||['shop','bag','cook','auth','boardM','newsM','hofM'].some(id=>!$(id).classList.contains('hidden'))||!$('catch').classList.contains('hidden')||!$('book').classList.contains('hidden')||!$('help').classList.contains('hidden');}
 function sendEmote(e,remember=true){if(!EMOJI_SET.has(e))return;initAudio();sfx.pop();showBubble(P.label,e,true,2.8);P.hopT=t;ME.eid++;ME.e=e;markPresence();
  if(remember){recentEmoji=[e,...recentEmoji.filter(x=>x!==e)].slice(0,5);try{localStorage.setItem('monggeul-emoji',JSON.stringify(recentEmoji));}catch(_){}buildEmoteBar();}}
 function buildEmoteBar(){const bar=$('emotes');bar.innerHTML='';recentEmoji.forEach(e=>{const b=document.createElement('button');b.textContent=e;b.addEventListener('click',()=>{if(!entered)return;closeEmoPanel();sendEmote(e,false);});bar.appendChild(b);});
@@ -2756,7 +2942,7 @@ const endPtr=e=>{if(e.pointerId===joy.id){joy.id=null;joy.x=joy.y=0;$('joy').cla
 cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
 cv.addEventListener('wheel',e=>{e.preventDefault();if(mode==='walk')camDist=clamp(camDist*(1+Math.sign(e.deltaY)*0.1),4,20);},{passive:false});
 window.addEventListener('keydown',e=>{const tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA')){if(e.code==='Escape'){closeChat();tg.blur();}return;}
- if(e.code==='Escape'){if(closeChat())return;for(const id of['shop','bag','cook','map','prof','boardM','newsM'])if(!$(id).classList.contains('hidden')){({shop:closeShop,bag:closeBag,cook:closeCook,map:closeMap,prof:closeProfile,boardM:closeBoard,newsM:closeNews})[id]();return;}}
+ if(e.code==='Escape'){if(closeChat())return;for(const id of['shop','bag','cook','map','prof','boardM','newsM','hofM'])if(!$(id).classList.contains('hidden')){({shop:closeShop,bag:closeBag,cook:closeCook,map:closeMap,prof:closeProfile,boardM:closeBoard,newsM:closeNews,hofM:closeHof})[id]();return;}}
  if(!entered||mode==='closet')return;
  if(e.code==='Enter'||e.code==='NumpadEnter'){e.preventDefault();openChat();setTimeout(()=>$('chatIn').focus(),30);return;}
  if(!modalOpen()){if(e.code==='KeyB'){openBag();return;}if(e.code==='KeyM'){openMap();return;}if(e.code==='KeyR'){doCtx();return;}}
@@ -2806,7 +2992,7 @@ function updateEnv(dt){
 let last=performance.now(),hudAcc=0,audAcc=0,uiAcc=0;
 function frame(now){
  const dt=Math.min(0.05,Math.max(0,(now-last)/1000));last=now;t+=dt;
- updatePlayer(dt);updateFishing(dt);updateRemote(dt);updEffects(dt);updateCamera(dt);updFollow(dt);updateAnimals(dt);updHearts(dt);updV2(dt);updateEnv(dt);updV3(dt);updV7(dt);
+ updatePlayer(dt);updateFishing(dt);updateRemote(dt);updEffects(dt);updateCamera(dt);updFollow(dt);updateAnimals(dt);updHearts(dt);updV2(dt);updateEnv(dt);updV3(dt);updV7(dt);updHof(dt);if(entered&&!HOF.started){HOF.started=1;hofLoad();}if(entered&&netMode==='ws'&&HOF.ok&&performance.now()-HOF.lastLoad>90000)hofLoad();
  if(mode==='closet')P.label.el.style.display='none';else placeLabel(P.label,P.pos.x,P.pos.y+P.jy+labelH(LOOK.hat),P.pos.z);
  if(!tankOpen)renderer.render(scene,camera);flushPresence();
  uiAcc+=dt;if(uiAcc>0.15){uiAcc=0;refreshHint();refreshAct();}
@@ -2817,6 +3003,7 @@ function frame(now){
 /* ---------- v2 handlers ---------- */
 $('boardX').addEventListener('click',closeBoard);$('boardM').addEventListener('click',e=>{if(e.target.id==='boardM')closeBoard();});$('boardGo').addEventListener('click',postBoard);$('boardIn').addEventListener('input',updBoardCount);
 $('bNews').addEventListener('click',openNews);$('newsX').addEventListener('click',closeNews);$('newsOk').addEventListener('click',closeNews);$('newsM').addEventListener('click',e=>{if(e.target.id==='newsM')closeNews();});updNewsDot();
+$('hofX').addEventListener('click',closeHof);$('hofM').addEventListener('click',e=>{if(e.target.id==='hofM')closeHof();});
 $('bMap').addEventListener('click',openMap);$('mapX').addEventListener('click',closeMap);$('map').addEventListener('click',e=>{if(e.target.id==='map')closeMap();});
 $('bagBtn').addEventListener('click',()=>{initAudio();openBag();});$('bagX').addEventListener('click',closeBag);$('bag').addEventListener('click',e=>{if(e.target.id==='bag')closeBag();});
 document.querySelectorAll('#bag .tabs button').forEach(b=>b.addEventListener('click',()=>{bagTab=b.dataset.tab;renderBag();}));
@@ -2840,7 +3027,7 @@ cv.addEventListener('pointerup',e=>{const d0=tapD;tapD=null;if(!d0||d0.id!==e.po
 async function boot(){{const ck=checkNick(NAME.nk||'');NAME.nk=ck.ok?ck.nick:'';}loadLocalGS();setCharRod(P.char,GS.rod);await detectNet();if(netMode==='ws'){showAuth();}else{openCloset(true);initCloud();}connectRoom();}
 /* ---------- start ---------- */
 $('petBtn').addEventListener('click',()=>interact(0));$('hugBtn').addEventListener('click',()=>interact(1));
-buildWorld();buildShop();initV3();initV7();initHearts();buildAnimals();buildWater();skyMesh=buildSky();initRipples();initDrops();
+buildWorld();buildShop();initV3();initV7();buildHof();initHearts();buildAnimals();buildWater();skyMesh=buildSky();initRipples();initDrops();
 myFloat=makeFloat('#ff4d4d');myLine=makeLine();
 P.label=makeLabel(true);spawn();rebuildMe();
 S=skyAt(hourNow());updateEnv(0);
