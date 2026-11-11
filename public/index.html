@@ -1799,7 +1799,7 @@ const RODS=[null,
  {lv:6,name:'신화급 불빠따 낚싯대',price:30000,c1:'#ff5a1f',c2:'#ffd23f',desc:'🔥 신화급! 전국 개미들의 “제발 떡상 가즈아” 기원이 모이고 모여 활활 불타오르는 방망이 낚싯대. 한 번 휘두르면 차트도 물고기도 수직 상승 📈 끝에 달린 빨간 양봉이 위로만 솟아요. ★6 신화의 바다 친구들까지 낚아요. (※ 실제 주가와는 아무 상관 없어요)'},
  {lv:7,name:'럭키비키 일곱 빛깔 무지개 낚싯대',price:177777,c1:'#ff4d4d',c2:'#a65cff',desc:'🌈 비 갠 하늘에 걸린 무지개다리를 한 가닥 떼어 만든 낚싯대. 일곱 빛깔이 모두 모여야 비로소 ★7 무지개 전설에 닿을 수 있대요. 들고 다니면 무지개 꼬리가 따라오고, 던지면 찌를 따라 무지개다리가 놓여요.'},
 ];
-var GS={money:0,rods:[1],rod:1,packs:[],pack:0,bag:[],food:[],buffUntil:0,stats:{sold:0,cooked:0,earned:0}};
+var GS={money:0,rods:[1],rod:1,packs:[],pack:0,bag:[],food:[],buffUntil:0,ease:0,easeUntil:0,stats:{sold:0,cooked:0,earned:0}};
 const BAG_MAX=30,FOOD_MAX=20,BAG_KEEP_MAX=120;
 var saveDirty=false;
 function markSave(){saveDirty=true;}
@@ -1950,7 +1950,7 @@ function openBag(tab){if(!entered)return;closeEmoPanel();closeChat();if(tab)bagT
 function closeBag(){$('bag').classList.add('hidden');}
 function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
  document.querySelectorAll('#bag .tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===bagTab));const box=$('bagBody');box.innerHTML='';
- const bl=buffLeft();$('bagBuff').textContent=bl>0?`🍳 요리 효과 +1★ · ${fmtLeft(bl)} 남음 → ${starRangeTxt(effStar())}`:`🎣 ${starRangeTxt(effStar())}`;
+ const bl=buffLeft();$('bagBuff').textContent=(bl>0||easeNow()>0)?`${buffShort()} 남음 → ${starRangeTxt(effStar())}`:`🎣 ${starRangeTxt(effStar())}`;
  if(bagTab==='fish'){
   const head=document.createElement('div');head.className='bsub';head.textContent=`${PACKS[GS.pack|0].em} ${PACKS[GS.pack|0].name} · 물고기 ${GS.bag.length} / ${bagCap()}마리 · 용왕님 상점에서 팔거나 모닥불에서 요리할 수 있어요`;box.appendChild(head);
   if(!GS.bag.length){const e=document.createElement('div');e.className='empty';e.innerHTML='가방이 비어 있어요.<br>물고기를 잡은 뒤 <b>‘🎒 가방에 넣기’</b>를 눌러 보세요.';box.appendChild(e);}
@@ -1977,11 +1977,11 @@ function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
   if(acct){const lo=document.createElement('button');lo.className='primary small ghost';lo.textContent='로그아웃';lo.onclick=logout;box.appendChild(lo);}}
  if(bagTab==='pets'){const head=document.createElement('div');head.className='bsub';head.textContent=`동물과 교감(쓰다듬기·껴안기)할 때마다 친밀도 💕+1. 친밀도 ${FOLLOW_MIN} 이상이면 따라다녀요. 같은 동물을 더 아끼는 사람이 있으면 그 사람을 따라가고, 한 사람에게는 가장 친한 동물 1마리만 따라와요.`;box.appendChild(head);const w=document.createElement('div');w.innerHTML=loveListHTML();box.appendChild(w);}
  if(bagTab==='food'){
-  const head=document.createElement('div');head.className='bsub';head.textContent=`음식 ${GS.food.length} / ${FOOD_MAX}개 · 먹으면 정해진 시간 동안 낚시 능력 ★+1`;box.appendChild(head);
+  const head=document.createElement('div');head.className='bsub';head.textContent=`음식 ${GS.food.length} / ${FOOD_MAX}개 · 먹으면 낚시 능력 ★+1 + 낚시 난이도가 쉬워져요 (재료 ★가 높을수록 더 쉽게, 오래 걸린 요리일수록 더 오래)`;box.appendChild(head);
   if(!GS.food.length){const e=document.createElement('div');e.className='empty';e.innerHTML='담아 둔 음식이 없어요.<br>모닥불에서 <b>🍳 요리하기</b>를 해 보세요.';box.appendChild(e);}
   const list=document.createElement('div');list.className='ilist';
   GS.food.forEach(f=>{const info=foodInfo(f);const row=document.createElement('div');row.className='irow';const ic=document.createElement('div');ic.className='fic';ic.textContent=info.em;
-   const tx=document.createElement('div');tx.className='itx';tx.innerHTML=`<b>${info.name}</b><small>${SP_BY[f.s]?SP_BY[f.s].name+' 요리 · ':''}먹으면 ★+1 · ${info.min}분</small>`;
+   const tx=document.createElement('div');tx.className='itx';tx.innerHTML=`<b>${info.name}</b><small>${SP_BY[f.s]?`★${info.st} ${SP_BY[f.s].name} 요리 · `:''}먹으면 ${effTxt(info)}</small>`;
    const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');b.textContent='😋 먹기';b.onclick=()=>{GS.food=GS.food.filter(x=>x!==f);eatFood(info);renderBag();};acts.appendChild(b);
    row.append(ic,tx,acts);list.appendChild(row);});box.appendChild(list);}}
 function itemRow(sp,size,sub){const row=document.createElement('div');row.className='irow';const c=document.createElement('canvas');c.width=120;c.height=72;
@@ -2035,7 +2035,7 @@ function sellItems(items){let sum=0,n=0;const set=new Set(items);for(const it of
 function bookGuideHTML(){const E=effStar(),bl=buffLeft();
  return`<div class="guide"><b>🎣 낚싯대와 물고기의 ★</b><p>물고기의 ★(희귀도)는 잡기 어려운 정도예요. <em>내 낚싯대 ★와 같거나 낮은</em> 물고기는 편하게, <em>★1 높은 물고기</em>는 힘들지만 노력하면 잡을 수 있어요. ★2 이상 높으면 줄을 끊고 달아나요.</p>
  <p>지금: <em>${RODS[GS.rod].name} (★${GS.rod})</em>${bl>0?` + 요리 효과 ★1 (${fmtLeft(bl)} 남음)`:''} → <em>${starRangeTxt(E)}</em></p>
- <p>낚싯대 ★가 물고기 ★보다 높을수록 훨씬 쉽게 끌려와요. ★가 같으면 <em>줄이 빨개질 때 잠깐 손을 떼는</em> 요령이 필요해요. 몰랑은 🐉 용왕님 상점에서 물고기를 팔아 모으고, 요리를 먹으면 잠깐 ★+1 효과를 받아요.</p>
+ <p>낚싯대 ★가 물고기 ★보다 높을수록 훨씬 쉽게 끌려와요. ★가 같으면 <em>줄이 빨개질 때 잠깐 손을 떼는</em> 요령이 필요해요. 몰랑은 🐉 용왕님 상점에서 물고기를 팔아 모으고, 요리를 먹으면 ★+1 효과와 함께 낚시 난이도가 쉬워져요(재료 ★가 높을수록 더 쉽게, 오래 걸린 요리일수록 더 오래).</p>
  <p>🌈 <em>★7 무지개 전설</em>: 배 타고 먼 바다(또는 강·연못 끝까지 멀리)에서만 아주 드물게 나와요. 30분마다 3분 동안 <b>무지개가 뜨면 4배</b>! 오래 못 만나면 <b>전설의 기운</b>이 쌓여 최대 3배까지 올라가요. 지금 전설의 기운 <em>${legGauge()}%</em> (×${legPity().toFixed(1)}) · ${rainbowOn()?`🌈 무지개 이벤트 중 (${mmss(rainbowLeftMs())} 남음)`:`다음 무지개까지 ${mmss(rainbowLeftMs())}`}</p>
  <p>📐 <em>물고기 크기</em>: 생물마다 <b>최소~최대 크기</b>가 정해져 있고(각 칸의 📏), 그 사이에서 무작위로 잡혀요. <em>멀리 던질수록 큰 개체</em>가 나올 확률이 높아요. 같은 생물이라도 클수록 상점 가격이 올라가요. 최대 크기는 최소 크기보다 값을 약 1.75배 받아요. 잡은 생물은 📏 아래 막대로 내 최고 기록이 최대 크기의 어디쯤인지 보여줘요. 명예의 전당은 생물별 가장 큰 기록을 겨뤄요.</p>
  <p>📏 <em>거리 힌트</em> (바다는 해안선에서 찌까지 거리): 가까운 물가 0~10m · 조금 멀리 10m~ · 멀리 15~25m~ · 아주 멀리 약 30m(해안에서 끝까지 던지기) · 끝까지 멀리 35m~(부두 끝이나 배). 강·연못은 던지는 힘 기준이에요.</p></div>`;}
@@ -2065,10 +2065,12 @@ const CRUST=new Set(['hermitcrab','shorecrab','hairycrab','lobster','kingcrab','
 const FANCY_FOOD=new Set(['rainbowwhale','auroraray','rainbowflyer','prismjelly','rainbowseahorse','chaeunryong','chilbokoi','rainbowtrout','yellowtang','moorishidol','triggerfish','leopardshark','dumbo','vampiresquid','tigershark','greatwhite','thresher','footballfish','napoleon','chimaera','giantmoray','goldkoi','jellyfish','urchin','starfish','seahorse','clownfish','bluetang','emperorangel','butterfly','mandarinfish','lionfish','boxfish','guppy','betta','goldfish','koi','arowana','parrotfish','catshark','blueshark','hammerhead','sunfish']);
 const PROTECTED=new Set(['humpback','bluewhale','spermwhale','beluga','narwhal','sealion','walrus','dugong','manatee','leatherback','greenturtle','giantsquid','oarfish','coelacanth','mantaray','leafyseadragon','goldmandarin','eoreumchi','arapaima','mihojonggae','mutae','lenok','turtle','whaleshark','seal','dolphin','orca','seaotter','otter']);
 function dishesFor(id){if(PROTECTED.has(id))return[];if(CRUST.has(id))return['cgrill','steam'];if(FANCY_FOOD.has(id))return['fantasy'];return['sashimi','grill','stew'];}
-function foodInfo(f){if(f.k&&f.k[0]==='f'){const F=FANTASY[+f.k.slice(1)]||FANTASY[0];return{name:F.name,em:'✨',sec:F.sec,min:F.min,code:f.k};}const D=DISH[f.k]||DISH.grill;return{name:D.name,em:D.em,sec:D.sec,min:D.min,code:f.k};}
-function eatFood(info){const dur=info.min*60000;const until=Date.now()+dur;GS.buffUntil=Math.max(GS.buffUntil||0,until);markSave();updateHUD();
+function foodInfo(f){return foodEff(foodInfo0(f),f.s);}
+function foodInfo0(f){if(f.k&&f.k[0]==='f'){const F=FANTASY[+f.k.slice(1)]||FANTASY[0];return{name:F.name,em:'✨',sec:F.sec,min:F.min,code:f.k};}const D=DISH[f.k]||DISH.grill;return{name:D.name,em:D.em,sec:D.sec,min:D.min,code:f.k};}
+function eatFood(info){if(info.dmin==null)foodEff(info,info.s);const dur=info.dmin*60000;const until=Date.now()+dur;GS.buffUntil=Math.max(GS.buffUntil||0,until);
+ const ce=easeNow();if(info.ease>ce){GS.ease=info.ease;GS.easeUntil=until;}else if(info.ease===ce)GS.easeUntil=Math.max(GS.easeUntil||0,until);markSave();updateHUD();
  showBubble(P.label,'😋',true,2.5);P.hopT=t;burstHearts(P.pos.x,P.pos.y+2,P.pos.z,5);tone(784,0,0.12,0.05,'triangle');tone(1046.5,0.12,0.2,0.05,'triangle');
- toast(`😋 ${info.name} 냠냠! ${info.min}분 동안 낚시 능력 ★+1 → ${starRangeTxt(effStar())}`,3200);}
+ const sp=SP_BY[info.s];toast(`😋 ${info.name} 냠냠! ${sp?`(★${info.st} ${sp.name}) `:''}${fmtMin(info.dmin)} 동안 낚시 능력 ★+1 · 낚시 난이도 -${Math.round(info.ease*100)}%${info.ease<easeNow()?` (지금 먹은 효과보다 센 -${Math.round(easeNow()*100)}%가 남은 시간 동안 유지돼요)`:''} → ${starRangeTxt(effStar())}`,4600);}
 
 function buildTable(){const g=new THREE.Group();const pb=[];const P_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>pb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
  const box=new THREE.BoxGeometry(1,1,1);P_(box,'#b07a4a',0,0.74,0,0,0,0,1.15,0.07,0.68);for(const sx of[-1,1])for(const sz of[-1,1])P_(box,'#8a5a32',sx*0.5,0.37,sz*0.27,0,0,0,0.07,0.74,0.07);
@@ -2103,19 +2105,19 @@ function nearCampfire(){return Math.hypot(P.pos.x-PLAZA.x,P.pos.z-PLAZA.z)<3.6;}
 function openCook(){if(!entered)return;if(cookSt&&cookSt.stage===1)return;closeEmoPanel();closeChat();cookSel=null;cookDish=null;renderCook();$('cook').classList.remove('hidden');}
 function closeCook(){$('cook').classList.add('hidden');}
 function renderCook(){const box=$('cookBody');box.innerHTML='';
- const p=document.createElement('div');p.className='bsub';p.textContent='가방 속 물고기로 요리해요. 요리를 누르면 설명이 나와요. 다 만든 요리를 먹으면 일정 시간 동안 낚시 능력이 ★+1 돼요.';box.appendChild(p);
+ const p=document.createElement('div');p.className='bsub';p.innerHTML='가방 속 물고기로 요리해요. 다 만든 요리를 먹으면 낚시 능력 <b>★+1</b>, 그리고 <b>낚시 난이도가 쉬워져요</b>. <b>재료 ★가 높을수록 더 쉬워지고</b>, <b>오래 걸리는 요리일수록 효과가 오래</b> 가요.';box.appendChild(p);
  const usable=GS.bag.filter(it=>SP_BY[it.id]);if(!usable.length){const e=document.createElement('div');e.className='empty';e.innerHTML='가방에 물고기가 없어요.<br>물고기를 잡아서 <b>‘🎒 가방에 넣기’</b> 해 주세요.';box.appendChild(e);return;}
  const t1=document.createElement('div');t1.className='btitle';t1.textContent='① 재료 고르기';box.appendChild(t1);
  const list=document.createElement('div');list.className='chips fishpick';
- [...usable].sort((a,b)=>starOf(SP_BY[b.id])-starOf(SP_BY[a.id])).forEach(it=>{const sp=SP_BY[it.id];const b=document.createElement('button');b.textContent=`${sp.name} ${fmtSize(it.s)}`;if(cookSel===it)b.classList.add('on');
+ [...usable].sort((a,b)=>starOf(SP_BY[b.id])-starOf(SP_BY[a.id])).forEach(it=>{const sp=SP_BY[it.id];const b=document.createElement('button');b.textContent=`${sp.name} ★${starOf(sp)} · ${fmtSize(it.s)}`;if(cookSel===it)b.classList.add('on');
   b.onclick=()=>{cookSel=it;const ds=dishesFor(it.id);cookDish=ds[0]||null;renderCook();};list.appendChild(b);});box.appendChild(list);
  if(!cookSel)return;const sp=SP_BY[cookSel.id];const ds=dishesFor(cookSel.id);
  const t2=document.createElement('div');t2.className='btitle';t2.textContent='② 요리 고르기';box.appendChild(t2);
  if(!ds.length){const e=document.createElement('div');e.className='empty';e.innerHTML=`<b>${sp.name}</b>은(는) 소중한 보호종이라 요리할 수 없어요.<br>놓아주거나 🐠 수조에서 키워 주세요.`;box.appendChild(e);return;}
  const dl=document.createElement('div');dl.className='dishes';ds.forEach(k=>{const D=DISH[k];const b=document.createElement('button');b.className='dish'+(cookDish===k?' on':'');
-  b.innerHTML=`<span class="de">${D.em}</span><b>${D.name}</b><small>${k==='fantasy'?'⏱ 10~30초 · ★+1 2~6분':`⏱ ${D.sec}초 · ★+1 ${D.min}분`}</small>`;b.onclick=()=>{cookDish=k;renderCook();};dl.appendChild(b);});box.appendChild(dl);
+  b.innerHTML=`<span class="de">${D.em}</span><b>${D.name}</b><small>${k==='fantasy'?'⏱ 10~30초':`⏱ ${D.sec}초`} · ${cookEffHTML(sp,k)}</small>`;b.onclick=()=>{cookDish=k;renderCook();};dl.appendChild(b);});box.appendChild(dl);
  if(cookDish){const D=DISH[cookDish];const info=document.createElement('div');info.className='dinfo';
-  info.innerHTML=`<b>${D.em} ${sp.name} ${cookDish==='fantasy'?'→ 상상의 요리':D.name}</b><p>${D.desc}</p><ul><li>요리 시간: ${cookDish==='fantasy'?'10초 / 20초 / 30초 중 랜덤':D.sec+'초'}</li><li>먹으면: 낚시 능력 <em>★+1</em> · ${cookDish==='fantasy'?'2분 / 4분 / 6분 (요리 시간 × 12)':D.min+'분 동안'}</li><li>지금 ★${GS.rod} 낚싯대 → 먹으면 <em>★${GS.rod+1} 물고기</em>까지</li><li>요리 중에는 움직일 수 없어요. 완성된 요리는 테이블에 올라가 다른 사람들도 볼 수 있어요.</li></ul>`;box.appendChild(info);
+  info.innerHTML=`<b>${D.em} ${sp.name} ${cookDish==='fantasy'?'→ 상상의 요리':D.name}</b><p>${D.desc}</p><ul><li>요리 시간: ${cookDish==='fantasy'?'10초 / 20초 / 30초 중 랜덤':D.sec+'초'}</li><li>먹으면: <em>${cookEffHTML(sp,cookDish)}</em></li><li>재료 <b>★${starOf(sp)} ${sp.name}</b> → 낚시 난이도 <b>-${Math.round((FOOD_EASE[starOf(sp)]||0.05)*100)}%</b> (★1 -5% · ★2 -8% · ★3 -12% · ★4 -16% · ★5 -20% · ★6 -25% · ★7 -30%)</li><li>요리 시간이 길수록 효과가 오래 가요: 10초 → 5분 · 15초 → 10분 · 20초 → 15분 · 30초 → 25분</li><li>지금 ★${GS.rod} 낚싯대 → 먹으면 <em>★${GS.rod+1} 물고기</em>까지</li><li>요리 중에는 움직일 수 없어요. 완성된 요리는 테이블에 올라가 다른 사람들도 볼 수 있어요.</li></ul>`;box.appendChild(info);
   const go=document.createElement('button');go.className='primary';go.textContent='🍳 요리 시작';go.onclick=startCook;box.appendChild(go);}}
 function startCook(){if(!cookSel||!cookDish||!GS.bag.includes(cookSel))return;const it=cookSel;let code,info;
  if(cookDish==='fantasy'){const i=Math.floor(Math.random()*FANTASY.length);code=DISH_CODES.indexOf('f'+i);info={k:'f'+i,...FANTASY[i]};}else{code=DISH_CODES.indexOf(cookDish);info={k:cookDish,...DISH[cookDish]};}
@@ -2129,7 +2131,7 @@ function clearCookTable(){if(cookSt&&cookSt.table)scene.remove(cookSt.table);if(
 function finishCook(){const c=cookSt;c.stage=2;c.shownAt=t;setTableStage(c.table,2,c.code);mode='walk';P.char.cooking=false;$('cookBar').classList.add('hidden');
  GS.stats.cooked=(GS.stats.cooked||0)+1;markSave();ME.ck=[2,c.code,r2(c.x),r2(c.z),r2(c.yaw)];markPresence();
  const fi=foodInfo({k:c.info.k,s:c.item.id});c.food={k:c.info.k,s:c.item.id};
- $('dishName').textContent=`${fi.em} ${fi.name} 완성!`;$('dishSub').textContent=`먹으면 ${fi.min}분 동안 낚시 능력 ★+1 · 가방에 담아 두었다가 나중에 먹어도 돼요`;$('dishCard').classList.remove('hidden');
+ $('dishName').textContent=`${fi.em} ${fi.name} 완성!`;$('dishSub').textContent=`먹으면 ${effTxt(fi)} · 가방에 담아 두었다가 나중에 먹어도 돼요`;$('dishCard').classList.remove('hidden');
  [784,988,1175,1568].forEach((f,i)=>tone(f,i*0.09,0.18,0.05,'triangle'));burstHearts(c.x,groundY(c.x,c.z)+1.1,c.z,6);showBubble(P.label,fi.em,true,2.5);}
 function dishChoice(eat){const c=cookSt;if(!c||c.stage!==2||!c.food)return;const f=c.food;c.food=null;$('dishCard').classList.add('hidden');
  if(eat)eatFood(foodInfo(f));else{if(GS.food.length>=FOOD_MAX){toast(`음식 가방이 꽉 찼어요 (${FOOD_MAX}개). 하나 먹고 담아 주세요`);c.food=f;$('dishCard').classList.remove('hidden');return;}GS.food.push(f);markSave();toast(`🎒 ${foodInfo(f).name}을(를) 가방에 담았어요`);}
@@ -2281,7 +2283,7 @@ function doCtx(){if(ctxKind==='boat'){boardBoat();return;}if(ctxKind==='unboat')
 const SAVE_KEY='monggeul-save-v2',ACCT_KEY='monggeul-acct',GUEST_BAK='monggeul-guest-backup';
 var acct=null,cloud=null,saveBusy=false,lastSaveAt=0,lastSaveOk=0,saveErr='';
 function loveAll(){const o={};for(const d of ANIM_DEFS){try{const n=+localStorage.getItem('monggeul-love-'+d.id)||0;if(n)o[d.id]=n;}catch(e){}}return o;}
-function collectSave(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,stats:GS.stats}};}
+function collectSave(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
 function applySave(d){if(!d||typeof d!=='object')return false;
  const L=d.look;if(L&&[L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK={hat:clamp(L.hat,0,6),hc:clamp(L.hc,0,COLORS.length-1),cloth:clamp(L.cloth,0,4),cc:clamp(L.cc,0,COLORS.length-1)};
  if(d.name&&Number.isInteger(d.name.a)&&Number.isInteger(d.name.b)){const ck=checkNick(d.name.nk||'');NAME={a:d.name.a,b:d.name.b,nk:ck.ok?ck.nick:''};}
@@ -2293,7 +2295,7 @@ function applySave(d){if(!d||typeof d!=='object')return false;
  GS.packs=[...new Set((Array.isArray(g.packs)?g.packs:[]).map(x=>x|0).filter(x=>x>=1&&x<PACKS.length))].sort();GS.pack=GS.packs.includes(g.pack|0)?g.pack|0:0;if(P.char)setCharPack(P.char,GS.pack);
  GS.bag=(Array.isArray(g.bag)?g.bag:[]).filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,BAG_KEEP_MAX).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
  GS.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&(DISH[f.k]||/^f\d$/.test(f.k))).slice(0,FOOD_MAX).map(f=>({k:f.k,s:SP_BY[f.s]?f.s:''}));
- GS.buffUntil=Number.isFinite(+g.buffUntil)?+g.buffUntil:0;GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});LEG.n=Math.max(LEG.n,(+GS.stats.leg||0)|0);if(Array.isArray(GS.stats.nofol)){NOFOL.clear();for(const id of GS.stats.nofol)NOFOL.add(String(id));try{localStorage.setItem('monggeul-nofollow',JSON.stringify([...NOFOL]));}catch(e){}}
+ GS.buffUntil=Number.isFinite(+g.buffUntil)?+g.buffUntil:0;GS.ease=clamp(+g.ease||0,0,0.2);GS.easeUntil=Number.isFinite(+g.easeUntil)?+g.easeUntil:0;GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});LEG.n=Math.max(LEG.n,(+GS.stats.leg||0)|0);if(Array.isArray(GS.stats.nofol)){NOFOL.clear();for(const id of GS.stats.nofol)NOFOL.add(String(id));try{localStorage.setItem('monggeul-nofollow',JSON.stringify([...NOFOL]));}catch(e){}}
  try{localStorage.setItem('monggeul-me',JSON.stringify({look:LOOK,name:NAME}));localStorage.setItem(KEY,JSON.stringify(book));localStorage.setItem(TANK_KEY,JSON.stringify(tank));}catch(e){}
  if(P.char){rebuildMe();}buildEmoteBar();updateHUD();return true;}
 function loadLocalGS(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s&&s.gs){const keep={look:LOOK,name:NAME,book,tank};applySave(Object.assign({},s,keep,{gs:s.gs}));}}catch(e){}}
@@ -2337,7 +2339,7 @@ async function logout(){if(!acct)return;await doSave(false);try{await authCall('
 let v2HudAcc=0;
 function updV2(dt){const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
  for(const r of remote.values()){if(r.cookT)animTable(r.cookT,r.ckSt,dt);}
- v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}`+(bl>0?` · 🍳 +1★ ${fmtLeft(bl)}`:'');$('hudG').classList.toggle('buff',bl>0);
+ v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();const bs=buffShort();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}`+(bs?` · ${bs}`:'');$('hudG').classList.toggle('buff',!!bs);
   if(GS._buffWas&&bl<=0)toast('🍳 요리 효과가 끝났어요',2400);GS._buffWas=bl>0;saveTick();}}
 
 /* ---------- 게시판 (업데이트 요청) ---------- */
@@ -2516,9 +2518,13 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-11t';
+const NEWS_VER='2026-11-11u';
 const NEWS=[
- {d:'11월 11일',t:'💬 채팅 기록 100개',n:true,i:[
+ {d:'11월 11일',t:'🍳 요리 효과 업그레이드',n:true,i:[
+  '⭐ <b>재료 ★가 높을수록 낚시가 더 쉬워져요.</b> 요리를 먹으면 ★+1과 함께 낚시 난이도가 내려가요: ★1 -5% · ★2 -8% · ★3 -12% · ★4 -16% · ★5 -20% · ★6 -25% · ★7 -30%',
+  '⏱ <b>오래 걸리는 요리일수록 효과가 훨씬 오래 가요.</b> 10초 요리 5분 · 15초 10분 · 20초 15분 · 30초 25분 (예전 2~6분에서 크게 늘었어요)',
+  '예) ★4 물고기로 매운탕(20초)을 먹으면 15분 동안 ★+1 + 낚시 난이도 -16%. 남은 효과는 화면 위쪽에 보여요.']},
+ {d:'11월 11일',t:'💬 채팅 기록 100개',i:[
   '💬 채팅창에서 최근 <b>100개</b>의 채팅까지 볼 수 있어요. 다시 접속해도 섬의 최근 채팅 100개가 그대로 보여요.']},
  {d:'11월 11일',t:'🐚 소라게 새 모습 · 청새치 신화 등급',i:[
   '🐚 <b>소라게</b>가 진짜 소라게처럼 바뀌었어요. 빙글빙글 고동 껍데기 속에서 빨간 게가 집게와 눈을 빼꼼 내밀어요.',
@@ -3019,6 +3025,19 @@ function animPack(c,dt,speed){const g=c.packG;if(!g)return;const fx=g.userData.f
  else if(fx.lv===2){for(const[piv,s]of fx.wings){const fl=Math.sin(ph*(2.4+mv*5.5));piv.rotation.y=s*(0.1+fl*(0.22+0.3*mv));piv.rotation.z=s*fl*0.08;}
   const sp=fx.spark;if(sp){const k=(ph*0.7)%1;const side=Math.floor(ph*0.7)%2?1:-1;sp.position.set(side*(0.25+k*0.2),0.15+k*0.18,-0.12);sp.material.opacity=Math.sin(k*Math.PI)*(0.55+0.35*(S?S.night:0));sp.material.rotation=ph;}}}
 
+/* ---------- v22: 재료 ★ = 효과 세기(낚시 난이도 감소) · 요리 시간 = 지속시간 ---------- */
+const FOOD_EASE=[0,0.05,0.08,0.12,0.16,0.2,0.25,0.3];      // 재료 ★1~★7 → 낚시 난이도 감소율
+const FOOD_MIN={10:5,15:10,20:15,30:25};                    // 요리 시간(초) → 효과 지속(분)
+function foodEff(info,sid){const sp=SP_BY[sid];const st=sp?starOf(sp):1;
+ return Object.assign(info,{s:sid,st,dmin:FOOD_MIN[info.sec]||Math.max(5,info.min*2),ease:FOOD_EASE[st]||0.05});}
+function fmtMin(m){const mm=Math.floor(m),ss=Math.round((m-mm)*60);return ss?`${mm}분 ${ss}초`:`${mm}분`;}
+function easeLeft(){return Math.max(0,(GS.easeUntil||0)-Date.now());}
+function easeNow(){return easeLeft()>0?(+GS.ease||0):0;}
+function effTxt(i){return`${fmtMin(i.dmin)} 동안 ★+1 · 낚시 난이도 -${Math.round(i.ease*100)}%`;}
+function buffShort(){const bl=buffLeft(),e=easeNow();return(bl>0?`🍳 +1★ ${fmtLeft(bl)}`:'')+(e>0?`${bl>0?' · ':'🍳 '}난이도 -${Math.round(e*100)}%${Math.abs(easeLeft()-bl)>1500?' '+fmtLeft(easeLeft()):''}`:'');}
+function cookEffHTML(sp,k){const e=Math.round((FOOD_EASE[starOf(sp)]||0.05)*100);
+ if(k==='fantasy')return`5~25분 · ★+1 · 난이도 -${e}%`;const D=DISH[k];return`${FOOD_MIN[D.sec]||5}분 · ★+1 · 난이도 -${e}%`;}
+
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
@@ -3089,7 +3108,7 @@ function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=fa
  rodTipWorld(P.char,castFrom);castDur=0.5+0.45*p;castT0=t;rbCastStart();sfx.whoosh(p);setF('casting');}
 function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(habitat==='sea')toast(farZoneTxt(fishFar())+(BOAT.on&&BOAT.far?' · 🌊 선상 보너스 ★4↑ 2배':''),2000);biteAt=t+rand(3.2,9.5);nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
 function startBite(){setF('bite');biteT0=t;sfx.bell();try{navigator.vibrate&&navigator.vibrate([60,40,60]);}catch(e){}ripple(castTgt.x,castTgt.z,1.3);}
-function hook(){fish=pickFish7(fishFar(),habitat)||pickFish(fishFar(),habitat);fish.D=fightD(fish.sp,fish.frac);fish.over=starOf(fish.sp)>effStar()+1;fish.hard=!fish.over&&starOf(fish.sp)>effStar();$('tHard').textContent=fish.hard?hardTag(fish.sp):'';$('tHard').classList.toggle('hidden',!fish.hard);fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);if(fish.hard){toast(hardTxt(fish.sp)+'. 줄이 빨개지면 잠깐 손을 떼요!',4200);sfx.splash(0.25);}else toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
+function hook(){fish=pickFish7(fishFar(),habitat)||pickFish(fishFar(),habitat);fish.D=fightD(fish.sp,fish.frac);fish.ease=easeNow();if(fish.ease>0)fish.D=Math.max(0.04,fish.D*(1-fish.ease));fish.over=starOf(fish.sp)>effStar()+1;fish.hard=!fish.over&&starOf(fish.sp)>effStar();$('tHard').textContent=fish.hard?hardTag(fish.sp):'';$('tHard').classList.toggle('hidden',!fish.hard);fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);if(fish.hard){toast(hardTxt(fish.sp)+'. 줄이 빨개지면 잠깐 손을 떼요!',4200);sfx.splash(0.25);}else toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
 function startRetrieve(from){retrieveFrom.copy(from);rT0=t;setF('retrieve');}
 function fishPos(out){fwdOf(P.yaw,_f);const ex=P.pos.x+_f.x*1.6,ez=P.pos.z+_f.z*1.6;const surge=t<surgeUntil;const wob=(Math.sin(t*1.6)*0.9*fish.s+Math.sin(t*0.7)*0.6+(surge?Math.sin(t*13)*0.4:0))*(0.3+d)*(castDist/14);
  return out.set(lerp(ex,castTgt.x,d)+(-_f.z)*wob,0,lerp(ez,castTgt.z,d)+_f.x*wob);}
