@@ -12,7 +12,7 @@ const CHAT_LEN = 60;     // 채팅 한 줄 최대 글자 수
 const CHAT_GAP = 1500;   // 같은 사람이 채팅을 보낼 수 있는 최소 간격(ms)
 
 const EMOJI = new Set(["👋", "🙇", "🙏", "🤝", "✌️", "🫡", "🙌", "👀", "😊", "😆", "🥹", "😌", "😴", "🤔", "😮", "😭", "😤", "🥶", "🫠", "😎", "🤣", "😇", "🥳", "😑", "👍", "👏", "🔥", "💪", "🎉", "✨", "❤️", "💯", "🎣", "🐟", "🐠", "🐡", "🦑", "🦀", "🐙", "🦈", "🐳", "🌊", "⚓", "🪝", "☕", "🍜", "🍙", "🍎", "🍊", "🍑", "🌸", "🌳", "🏕️", "🔥", "🌙", "⭐", "🌧️", "🍀", "🦋", "🐚", "😋"]);
-const SPECIES_LIST = ["goby", "halfbeak", "jack", "mackerel", "rockfish", "greenling", "schlegeli", "porgy", "bass", "flounder", "starfish", "chub", "crucian", "loach", "carp", "catfish", "mandarin", "goldfish", "filefish", "puffer", "redbream", "oplegnathus", "hairtail", "mullet", "dodari", "stingray", "moray", "tuna", "sunfish", "octopus", "squid", "webfoot", "seahorse", "bluecrab", "snowcrab", "prawn", "spinylobster", "jellyfish", "urchin", "catshark", "blueshark", "hammerhead", "whaleshark", "clownfish", "bluetang", "emperorangel", "butterfly", "mandarinfish", "lionfish", "parrotfish", "boxfish", "medaka", "minnow", "kkeokji", "sweetfish", "masu", "snakehead", "eel", "crayfish", "freshshrimp", "turtle", "koi", "guppy", "betta", "arowana"];
+const SPECIES_LIST = ["goby", "halfbeak", "jack", "mackerel", "rockfish", "greenling", "schlegeli", "porgy", "bass", "flounder", "starfish", "chub", "crucian", "loach", "carp", "catfish", "mandarin", "goldfish", "filefish", "puffer", "redbream", "oplegnathus", "hairtail", "mullet", "dodari", "stingray", "moray", "tuna", "sunfish", "octopus", "squid", "webfoot", "seahorse", "bluecrab", "snowcrab", "prawn", "spinylobster", "jellyfish", "urchin", "catshark", "blueshark", "hammerhead", "whaleshark", "clownfish", "bluetang", "emperorangel", "butterfly", "mandarinfish", "lionfish", "parrotfish", "boxfish", "medaka", "minnow", "kkeokji", "sweetfish", "masu", "snakehead", "eel", "crayfish", "freshshrimp", "turtle", "koi", "guppy", "betta", "arowana", "seal", "dolphin", "orca", "seaotter", "otter"];
 const SPECIES = new Set(SPECIES_LIST);
 const N_ADJ = 40, N_NOUN = 40;
 const STATES = new Set(['idle', 'cast', 'wait', 'bite', 'fight']);
@@ -81,20 +81,20 @@ function sanitize(d) {
     eid: idx(d.eid, 1e9), e: EMOJI.has(d.e) ? d.e : '',
     cid: idx(d.cid, 1e9), cs: SPECIES.has(d.cs) ? d.cs : '', cz: r2(num(d.cz, 0, 1000, 0)),
     j: num(d.j, 0, 1e13, 0),
-    ai: idx(d.ai, 16), ak: d.ak === 1 ? 1 : 0, an: idx(d.an, 1e9),
-    rd: num(d.rd | 0, 1, 5, 1),
+    ai: idx(d.ai, 32), ak: d.ak === 1 ? 1 : 0, an: idx(d.an, 1e9),
+    rd: num(d.rd | 0, 1, 6, 1),
     ck: ck ? [idx(ck[0], 3), idx(ck[1], 40), r2(num(ck[2], -120, 120, 0)), r2(num(ck[3], -120, 120, 0)), r2(num(ck[4], -50, 50, 0))] : [0, 0, 0, 0, 0],
   };
 }
 // 수조 자랑용 프로필
 function sanitizeProfile(d) {
   if (!d || typeof d !== 'object') return null;
-  const k = Array.isArray(d.k) ? d.k.slice(0, 30) : [];
+  const k = Array.isArray(d.k) ? d.k.slice(0, 50) : [];
   return {
-    r: num(d.r | 0, 1, 5, 1),
+    r: num(d.r | 0, 1, 6, 1),
     k: k.filter(x => Array.isArray(x) && x.length === 2).map(x => [idx(x[0], SPECIES_LIST.length), r2(num(x[1], 0.5, 1000, 10))]),
     m: num(d.m | 0, 0, 1e9, 0),
-    b: num(d.b | 0, 0, 65, 0),
+    b: num(d.b | 0, 0, 200, 0),
   };
 }
 
