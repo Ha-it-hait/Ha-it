@@ -3014,21 +3014,30 @@ function buildPack(lv){const g=new THREE.Group();const fx={lv};g.userData.fx=fx;
  // 어깨끈
  const strap=col=>{for(const s of[-1,1]){const tr=add(g,'pkStrap',()=>new THREE.TorusGeometry(0.27,0.028,8,24,Math.PI),M(col,0.7),s*0.16,0.0,0.34,1,0.9,1);tr.rotation.y=Math.PI/2;}};
  if(lv===1){
-  const blue=M('#6fb7e6',0.55),dark=M('#4f97c9',0.6),white=M('#ffffff',0.55),eye=M('#22263a',0.25),hi=M('#ffffff',0.2),pink=M('#ff9fb8',0.7,{transparent:true,opacity:0.75});
+  // 상점 그림과 같은 비율: 통통한 몸통 + 크게 솟은 등지느러미 + 아래로 뻗은 옆지느러미 + 초승달 꼬리
+  const blue=M('#6fb7e6',0.5),dark=M('#4f97c9',0.55),side=M('#5aa3d6',0.55),white=M('#ffffff',0.5),eye=M('#22263a',0.25),hi=M('#ffffff',0.2),pink=M('#ff9fb8',0.7,{transparent:true,opacity:0.8}),gillM=M('#3d7aa6',0.6);
   strap('#4a7fa8');
-  add(g,'shBody',SPH(0.22),blue,0,0,0,1,1.32,0.66);
-  add(g,'shBelly',SPH(0.16),white,0,-0.06,-0.085,0.95,1.15,0.5);
-  for(const s of[-1,1]){const e=add(g,'shEye',SPH(0.032),eye,s*0.085,0.12,-0.125);add(g,'shEyeH',SPH(0.011),hi,s*0.085+0.012,0.132,-0.153);add(g,'shCheek',SPH(0.03),pink,s*0.13,0.06,-0.115,1,0.6,0.4);
-   for(let i=0;i<3;i++){const gl=add(g,'shGill',()=>new THREE.TorusGeometry(0.03,0.005,5,10,Math.PI*0.8),M('#3d7aa6',0.6),s*(0.175+i*0.016),0.02,-0.06+i*0.02);gl.rotation.set(0,s*1.2,s>0?1.9:1.25);}}
-  const sm=add(g,'shSmile',()=>new THREE.TorusGeometry(0.035,0.007,6,14,Math.PI*0.8),eye,0,0.07,-0.138);sm.rotation.z=Math.PI*1.1;
-  // 등지느러미 (바깥쪽 위로)
-  const df=add(g,'shDorsal',()=>new THREE.ConeGeometry(0.09,0.2,12),dark,0,0.2,-0.12,1,1,0.32);df.rotation.x=-0.75;
-  // 옆 지느러미 (양옆에서 파닥)
-  fx.fins=[];for(const s of[-1,1]){const piv=new THREE.Group();piv.position.set(s*0.2,-0.02,0);g.add(piv);const f=add(piv,'shFin',()=>new THREE.ConeGeometry(0.075,0.22,12),dark,s*0.09,-0.03,0,1,1,0.3);f.rotation.z=s*(Math.PI/2+0.55);fx.fins.push([piv,s]);}
-  // 꼬리 (아래에서 살랑)
-  const tail=new THREE.Group();tail.position.set(0,-0.27,0);g.add(tail);fx.tail=tail;
-  add(tail,'shTailB',SPH(0.07),blue,0,-0.02,0,1,1.3,0.7);
-  for(const s of[-1,1]){const tf=add(tail,'shTailF',()=>new THREE.ConeGeometry(0.06,0.2,10),dark,s*0.07,-0.1,0,1,1,0.3);tf.rotation.z=s*2.45;}}
+  const K=0.0059;const P2=(x,y)=>[x*K,-y*K];
+  const finGeo=(key,pts)=>()=>{const sh=new THREE.Shape();sh.moveTo(...P2(pts[0],pts[1]));for(let q=2;q<pts.length;q+=4)sh.quadraticCurveTo(...P2(pts[q],pts[q+1]),...P2(pts[q+2],pts[q+3]));const gg=new THREE.ExtrudeGeometry(sh,{depth:0.034,bevelEnabled:true,bevelThickness:0.012,bevelSize:0.01,bevelSegments:2,curveSegments:10});gg.translate(0,0,-0.017);return gg;};
+  // 몸통
+  add(g,'shBody2',SPH(0.2),blue,0,0,0,1,1.18,0.72);
+  // 하얀 배 (얼굴 쪽 아래)
+  add(g,'shBelly2',SPH(0.13),white,0,-0.07,-0.085,1,1.08,0.48);
+  // 등지느러미: 머리 위로 크게
+  add(g,'shDorsal2',finGeo('shDorsalG',[-10,-30, 4,-60,20,-58, 12,-44,14,-26, 2,-30,-10,-30]),dark,0,0,0.02);
+  // 옆지느러미: 양옆으로 아래를 향해 (파닥파닥)
+  fx.fins=[];for(const sg of[-1,1]){const piv=new THREE.Group();piv.position.set(sg*0.165,-0.01,0.0);g.add(piv);
+   const f=add(piv,'shSide2',finGeo('shSideG',[2,0, 28,10,30,28, 18,18,0,16, 0,8,2,0]),side,0,0,0);f.scale.x=sg;fx.fins.push([piv,sg]);}
+  // 초승달 꼬리 (아래에서 살랑)
+  const tail=new THREE.Group();tail.position.set(0,-0.2,0.0);g.add(tail);fx.tail=tail;
+  add(tail,'shTail2',finGeo('shTailG',[0,-6, -26,4,-34,18, -10,10,0,4, 10,10,34,18, 26,4,0,-6]),dark,0,0,0.0);
+  add(tail,'shTailRoot',SPH(0.06),blue,0,0.01,0,1,0.9,0.75);
+  // 얼굴
+  for(const sg of[-1,1]){add(g,'shEye2',SPH(0.034),eye,sg*0.083,0.07,-0.128,1,1.15,0.6);add(g,'shEyeH2',SPH(0.012),hi,sg*0.083+0.01,0.084,-0.15);
+   add(g,'shCheek2',SPH(0.03),pink,sg*0.128,0.012,-0.118,1,0.6,0.35);
+   for(let q=0;q<3;q++){const gl=add(g,'shGill2',()=>new THREE.TorusGeometry(0.034,0.0055,5,12,Math.PI*0.75),gillM,sg*(0.155+q*0.02),-0.012,-0.085+q*0.014);gl.rotation.set(0,sg*0.9,sg>0?2.0:1.15);}}
+  const sm=add(g,'shSmile2',()=>new THREE.TorusGeometry(0.034,0.0075,6,14,Math.PI*0.7),eye,0,0.016,-0.142);sm.rotation.z=Math.PI*1.15;
+  g.userData.shark=1;}
  else{
   const cream=M('#fff3f6',0.55),pinkM=M('#ffd3e1',0.6),gold=M('#f2c14e',0.3,{metalness:0.5,emissive:'#7a5200',emissiveIntensity:0.25});
   const feather=M('#ffffff',0.45,{emissive:'#fff6e0',emissiveIntensity:0.22}),feather2=M('#f6f7ff',0.5,{emissive:'#fff6e0',emissiveIntensity:0.15});
@@ -3055,8 +3064,8 @@ let _sparkTex=null;
 function sparkTex(){if(_sparkTex)return _sparkTex;const cv=document.createElement('canvas');cv.width=cv.height=64;const x=cv.getContext('2d');const gr=x.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(0.3,'rgba(255,240,200,.8)');gr.addColorStop(1,'rgba(255,240,200,0)');x.fillStyle=gr;x.fillRect(0,0,64,64);x.fillStyle='#fff';x.fillRect(30,6,4,52);x.fillRect(6,30,52,4);_sparkTex=new THREE.CanvasTexture(cv);return _sparkTex;}
 function animPack(c,dt,speed){const g=c.packG;if(!g)return;const fx=g.userData.fx;const mv=clamp(speed/4,0,1);const ph=t+c.seed;
  g.rotation.x=lerp(g.rotation.x,-0.05*mv,0.2);
- if(fx.lv===1){for(const[piv,s]of fx.fins)piv.rotation.y=s*(Math.sin(ph*(3+mv*7))*(0.25+0.3*mv));
-  fx.tail.rotation.z=Math.sin(ph*(2.2+mv*8))*(0.18+0.35*mv);fx.tail.rotation.y=Math.sin(ph*1.4)*0.15;}
+ if(fx.lv===1){for(const[piv,s]of fx.fins){piv.rotation.z=s*(Math.sin(ph*(3+mv*7))*(0.12+0.18*mv));piv.rotation.y=s*(-0.25+Math.sin(ph*(3+mv*7)+1)*0.12);}
+  fx.tail.rotation.z=Math.sin(ph*(2.2+mv*8))*(0.12+0.25*mv);fx.tail.rotation.y=Math.sin(ph*1.4)*0.2;}
  else if(fx.lv===2){for(const[piv,s]of fx.wings){const fl=Math.sin(ph*(2.4+mv*5.5));piv.rotation.y=s*(0.1+fl*(0.22+0.3*mv));piv.rotation.z=s*fl*0.08;}
   const sp=fx.spark;if(sp){const k=(ph*0.7)%1;const side=Math.floor(ph*0.7)%2?1:-1;sp.position.set(side*(0.25+k*0.2),0.15+k*0.18,-0.12);sp.material.opacity=Math.sin(k*Math.PI)*(0.55+0.35*(S?S.night:0));sp.material.rotation=ph;}}}
 
