@@ -100,7 +100,7 @@ button{font-family:inherit}
 #tMsg{text-align:center;font-size:12.5px;font-weight:800;margin-top:5px;min-height:16px}
 .bang{position:fixed;left:0;top:0;font-size:46px;font-weight:900;color:#ffd84d;-webkit-text-stroke:3px rgba(40,30,20,.7);z-index:3;pointer-events:none;animation:bang .18s infinite alternate}
 @keyframes bang{to{scale:1.2}}
-.toast{position:fixed;top:calc(var(--vvt,0px) + max(12px,env(safe-area-inset-top)) + 112px);left:50%;transform:translate(-50%,-8px);opacity:0;transition:opacity .25s,transform .25s;padding:9px 16px;border-radius:14px;background:rgba(30,40,60,.82);font-size:14px;font-weight:600;max-width:88vw;text-align:center;pointer-events:none;line-height:1.4;z-index:8}
+.toast{position:fixed;top:max(calc(var(--vvt,0px) + max(12px,env(safe-area-inset-top)) + 112px),var(--toastPush,0px));left:50%;transform:translate(-50%,-8px);opacity:0;transition:opacity .25s,transform .25s;padding:9px 16px;border-radius:14px;background:rgba(30,40,60,.82);font-size:14px;font-weight:600;max-width:88vw;text-align:center;pointer-events:none;line-height:1.4;z-index:8}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .closet{position:fixed;z-index:7;background:#fffaf0;color:#3a3326;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.25);padding:18px 18px 16px}
 @media (min-width:760px){.closet{top:16px;right:16px;bottom:16px;width:360px;border-radius:24px}}
@@ -353,7 +353,7 @@ body.cine .boatbadge{opacity:0}
 </div>
 
 <button id="tankBtn" class="tankbtn hidden" title="내 수조">🐠<span>수조</span></button>
-<button id="chatBtn" class="lbtn chat hidden" title="채팅 (Enter)">💬<span>채팅</span><em id="chatBadge" class="hidden">0</em></button>
+<button id="chatBtn" class="lbtn chat hidden" title="채팅 (C 또는 Enter)">💬<span>채팅</span><em id="chatBadge" class="hidden">0</em></button>
 <button id="bagBtn" class="lbtn bag hidden" title="가방 (B)">🎒<span>가방</span></button>
 <button id="ctxBtn" class="ctxbtn hidden"></button>
 <div id="boatBadge" class="boatbadge hidden"></div>
@@ -477,7 +477,7 @@ body.cine .boatbadge{opacity:0}
       <li>왼쪽의 💬 버튼으로 같은 섬 사람들과 채팅해요. 글은 머리 위에 10초 동안 떠요. 최근 50개만 남고 오래된 건 지워져요.</li>
       <li>다른 사람 캐릭터를 누르면 그 사람의 낚싯대와 수조를 구경할 수 있어요. 불편한 사람의 채팅은 거기서 숨길 수 있어요.</li>
       <li>모닥불 옆 📋 게시판을 누르면 게임 업데이트 요청사항을 남길 수 있어요.</li>
-      <li>🗺️ 지도에서 섬 전체와 내 위치를 볼 수 있어요. (PC: Enter 채팅 · B 가방 · M 지도 · R 상점/요리)</li>
+      <li>🗺️ 지도에서 섬 전체와 내 위치를 볼 수 있어요. (PC: C 또는 Enter 채팅 · B 가방 · M 지도 · R 상점/요리 · 채팅 중 게임 화면을 누르면 다시 움직여요)</li>
     </ul>
     <div class="btitle">🐾 동물 친구들</div>
     <ul class="tips">
@@ -2163,7 +2163,7 @@ function renderChat(){const box=$('chatList');const atBottom=box.scrollTop+box.c
  for(const e of vis){const d=document.createElement('div');d.className='cmsg'+(e.me?' me':'');const tm=new Date(e.ts);const hh=tm.getHours(),mm=String(tm.getMinutes()).padStart(2,'0');
   const nm=document.createElement('b');nm.textContent=e.name;const tx=document.createElement('span');tx.textContent=e.text;const ti=document.createElement('i');ti.textContent=`${hh}:${mm}`;d.append(nm,tx,ti);box.appendChild(d);}
  if(atBottom||true)box.scrollTop=box.scrollHeight;}
-function openChat(){if(!entered)return;closeEmoPanel();chatOpen=true;chatUnread=0;updChatBtn(false);renderChat();$('chatPanel').classList.remove('hidden');{const b=$('chatList');b.scrollTop=b.scrollHeight;requestAnimationFrame(()=>{b.scrollTop=b.scrollHeight;});setTimeout(()=>{b.scrollTop=b.scrollHeight;},120);}$('chatHint').textContent=netMode==='ws'?`${wsIsland}번 섬 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보관돼요`:`지금 이 섬에 있는 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보여요`;if(!isTouch)setTimeout(()=>$('chatIn').focus(),30);}
+function openChat(){if(!entered)return;closeEmoPanel();chatOpen=true;chatUnread=0;updChatBtn(false);renderChat();$('chatPanel').classList.remove('hidden');{const b=$('chatList');b.scrollTop=b.scrollHeight;requestAnimationFrame(()=>{b.scrollTop=b.scrollHeight;});setTimeout(()=>{b.scrollTop=b.scrollHeight;},120);}$('chatHint').textContent=(netMode==='ws'?`${wsIsland}번 섬 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보관돼요`:`지금 이 섬에 있는 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보여요`)+(isTouch?'':' · 게임 화면을 누르면 다시 움직일 수 있어요');if(!isTouch)setTimeout(()=>$('chatIn').focus(),30);}
 function closeChat(){if(!chatOpen)return false;chatOpen=false;$('chatPanel').classList.add('hidden');$('chatIn').blur();return true;}
 function sendChat(){const inp=$('chatIn');const raw=inp.value;const text=cleanChat(raw);if(!text)return;const now=Date.now();if(now-lastChatSend<1500){toast('조금 천천히 보내 주세요 🙂');return;}lastChatSend=now;inp.value='';
  showBubble(P.label,text,false,10);P.hopT=t;sfx.pop();
@@ -2523,9 +2523,12 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-11w';
+const NEWS_VER='2026-11-11x';
 const NEWS=[
- {d:'11월 11일',t:'👑 도감왕 왕관',n:true,i:[
+ {d:'11월 11일',t:'⌨️ PC 채팅 편해졌어요',n:true,i:[
+  '⌨️ PC에서 <b>C 키</b>를 누르면 채팅창이 열려요. (Enter도 그대로 돼요)',
+  '🖱️ 채팅창을 켜 둔 채로 <b>게임 화면을 누르면</b> 입력이 풀려서 WASD로 바로 캐릭터를 움직일 수 있어요. 채팅창은 그대로 열려 있어요.']},
+ {d:'11월 11일',t:'👑 도감왕 왕관',i:[
   '👑 명예의 전당 <b>도감왕 1등</b>(가장 많은 종류를 잡은 사람)의 머리 위에 <b>반짝이며 빙글빙글 도는 금빛 왕관</b>이 떠요. 모두에게 보여요!',
   '🌈 ★7 생물의 무지개 빛은 물고기 모양 바깥으로만 은은하게 번지도록 바꿨어요. 이제 물고기가 가려지지 않아요.']},
  {d:'11월 11일',t:'🌈 ★7 무지개 오라 · 수조 구경 크게',i:[
@@ -3089,6 +3092,13 @@ function animCrown(c,dt){const g=c.crownG;if(!g)return;const ph=t+(c.seed||0);g.
 function updCrown(dt){const nw=performance.now();if(nw-CROWN.acc>500){CROWN.acc=nw;CROWN.name=crownTopName();
   setCrown(P.char,!!CROWN.name&&entered&&hofName()===CROWN.name,LOOK.hat);for(const r of remote.values())if(r.char)setCrown(r.char,!!CROWN.name&&!r.leaving&&r.name===CROWN.name,r.look&&r.look.hat);}
  if(P.char)animCrown(P.char,dt);for(const r of remote.values())if(r.char)animCrown(r.char,dt);}
+/* ---------- v26: 채팅창 밖을 누르면 다시 캐릭터 조작 · C 키로 채팅 ---------- */
+document.addEventListener('pointerdown',e=>{const inp=document.getElementById('chatIn');if(!inp||document.activeElement!==inp)return;const pn=document.getElementById('chatPanel');if(pn&&pn.contains(e.target))return;inp.blur();keys.clear();},true);
+/* ---------- v27: 위쪽 안내 배지(선상낚시·무지개)와 알림이 겹치지 않게 ---------- */
+let TOP_PUSH=-1;
+function layoutTopStack(){let y=0;for(const id of['boatBadge','rbBadge']){const el=document.getElementById(id);if(!el||el.classList.contains('hidden'))continue;const r=el.getBoundingClientRect();if(r.height>0&&getComputedStyle(el).opacity!=='0')y=Math.max(y,r.bottom);}
+ const v=y?Math.round(y+8):0;if(v!==TOP_PUSH){TOP_PUSH=v;document.documentElement.style.setProperty('--toastPush',v+'px');}}
+setInterval(layoutTopStack,200);
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
@@ -3294,7 +3304,8 @@ function peopleCount(){let n=1;for(const r of remote.values())if(!r.leaving)n++;
 
 /* ---------- UI ---------- */
 let toastTimer=0;
-function toast(msg,ms=2600){const el=$('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),ms);}
+function toast(m,ms){layoutTopStack();return toast_(m,ms);}
+function toast_(msg,ms=2600){const el=$('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),ms);}
 function updateHUD(){const ph=PHASES[phaseOf(hourNow())];const cl=cycleLeft();const tm=timeMode==='real'?(cl.isDay?`밤까지 ${cl.txt}`:`아침까지 ${cl.txt}`):'미리보기';
  const who=roomState==='online'?(netMode==='ws'?`${wsIsland}번 섬 · ${peopleCount()}명`:`이 섬에 ${peopleCount()}명`):roomState==='connecting'?'연결 중…':'혼자 모드';$('hudS').textContent=W<520?`${ph.em} ${ph.ko}${timeMode==='real'?' '+cl.txt:''} · ${who}`:`${ph.em} ${ph.ko} · ${tm} · ${who}`;}
 function modalOpen(){return tankOpen||!!profPeer||mapOpen||['shop','bag','cook','auth','boardM','newsM','hofM'].some(id=>!$(id).classList.contains('hidden'))||!$('catch').classList.contains('hidden')||!$('book').classList.contains('hidden')||!$('help').classList.contains('hidden');}
@@ -3378,7 +3389,7 @@ window.addEventListener('keydown',e=>{const tg=e.target;if(tg&&(tg.tagName==='IN
  if(e.code==='Escape'){if(closeChat())return;for(const id of['shop','bag','cook','map','prof','boardM','newsM','hofM'])if(!$(id).classList.contains('hidden')){({shop:closeShop,bag:closeBag,cook:closeCook,map:closeMap,prof:closeProfile,boardM:closeBoard,newsM:closeNews,hofM:closeHof})[id]();return;}}
  if(!entered||mode==='closet')return;
  if(e.code==='Enter'||e.code==='NumpadEnter'){e.preventDefault();openChat();setTimeout(()=>$('chatIn').focus(),30);return;}
- if(!modalOpen()){if(e.code==='KeyB'){openBag();return;}if(e.code==='KeyM'){openMap();return;}if(e.code==='KeyR'){doCtx();return;}}
+ if(!modalOpen()){if(e.code==='KeyC'&&!e.repeat){e.preventDefault();openChat();setTimeout(()=>$('chatIn').focus(),30);return;}if(e.code==='KeyB'){openBag();return;}if(e.code==='KeyM'){openMap();return;}if(e.code==='KeyR'){doCtx();return;}}
  keys.add(e.code);
  if(e.code==='Space'){e.preventDefault();if(e.repeat)return;if(mode==='fish')press();else if(P.jy<=0){P.vy=4.6;initAudio();}}
  if(e.code==='KeyQ'&&!e.repeat&&mode==='walk'){interact(0);}
