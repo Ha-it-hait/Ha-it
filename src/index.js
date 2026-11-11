@@ -6,6 +6,8 @@ import { DurableObject } from 'cloudflare:workers';
 const CAP = 40;          // 섬 하나 정원
 const MAX_ISLANDS = 30;  // 섬 개수 상한
 const HOF_CACHE_MS = 15000; // 명예의 전당 목록 기억 시간
+const LEGEND_MS = 10 * 60 * 1000; // ★7을 잡으면 모두에게 축하 알림 + 무지개 이벤트 (10분)
+const LEGEND_IDS = new Set(['rainbowwhale', 'auroraray', 'rainbowflyer', 'prismjelly', 'rainbowseahorse', 'chaeunryong', 'chilbokoi', 'rainbowtrout', 'rainbowveil', 'rainbowsturgeon']);
 const MAX_MSG = 4096;    // 메시지 최대 크기(바이트)
 const MAX_RATE = 20;     // 접속자 1명당 초당 최대 메시지 수
 const CHAT_KEEP = 100;   // 섬마다 보관하는 최근 채팅 수 (넘으면 오래된 것부터 삭제)
@@ -121,7 +123,19 @@ export class Island extends DurableObject {
   }
 
   async fetch(request) {
-    if (request.headers.get('Upgrade') !== 'websocket') return new Response('Expected WebSocket', { status: 426 });
+    if (request.headers.get('Upgrade') !== 'websocket') {
+      // 계정 저장소(Worker)에서만 보내는 내부 알림: ★7 축하
+      if (request.method === 'POST' && new URL(request.url).pathname === '/legend') {
+        let lg = null; try { lg = await request.json(); } catch {}
+        if (lg && LEGEND_IDS.has(lg.id) && lg.until > Date.now()) {
+          await this.ctx.storage.put('legend', lg);
+          this.broadcast({ t: 'lg', n: lg.n, id: lg.id, s: lg.s, left: lg.until - Date.now() }, null);
+        }
+        return new Response('ok');
+      }
+      return new Response('Expected WebSocket', { status: 426 });
+    }
+    const lgNow = await this.ctx.storage.get('legend');
     this.lastPrune = 0; this.prune();
     const live = this.ctx.getWebSockets().filter(w => { const a = w.deserializeAttachment(); return a && !a.full && !a.gone; });
     const { 0: client, 1: server } = new WebSocketPair();
@@ -137,7 +151,8 @@ export class Island extends DurableObject {
     server.serializeAttachment({ id, p: null, sec: 0, cnt: 0, lc: 0, t0: Date.now() });
     const peers = [];
     for (const w of live) { const a = w.deserializeAttachment(); if (a && a.p) peers.push({ id: a.id, p: a.p }); }
-    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat() }));
+    const lgLeft = lgNow && lgNow.until > Date.now() ? lgNow.until - Date.now() : 0;
+    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat(), lg: lgLeft ? { n: lgNow.n, id: lgNow.id, s: lgNow.s, left: lgLeft } : null }));
     return new Response(null, { status: 101, webSocket: client });
   }
 
@@ -252,6 +267,9 @@ export class Vault extends DurableObject {
     this.regByIp = new Map();
     this.sql.exec('CREATE TABLE IF NOT EXISTS hof(id TEXT PRIMARY KEY, s REAL, n TEXT, ts INTEGER, ip TEXT)');
     this.hofByIp = new Map();
+    this.lgByIp = new Map();
+    this._lg = null;
+    ctx.blockConcurrencyWhile(async () => { try { this._lg = (await ctx.storage.get('legend')) || null; } catch {} });
     this.sql.exec('CREATE TABLE IF NOT EXISTS collectors(k TEXT PRIMARY KEY, n TEXT, c INTEGER, ts INTEGER, ip TEXT)');
     this.sql.exec('CREATE TABLE IF NOT EXISTS board(id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER, name TEXT, text TEXT, dk TEXT, ip TEXT)');
   }
@@ -266,6 +284,7 @@ export class Vault extends DurableObject {
     if (!r || r.exp < Date.now()) return null;
     return r.id;
   }
+  legendNow(now) { const lg = this._lg; return lg && lg.until > now ? { n: lg.n, id: lg.id, s: lg.s, left: lg.until - now } : null; }
   colTop() { return this.sql.exec('SELECT n, MAX(c) AS c, MIN(ts) AS ts FROM collectors GROUP BY n ORDER BY c DESC, ts ASC LIMIT 5').toArray(); }
   // 명예의 전당·도감왕 결과를 15초 동안 기억해서 DB를 덜 읽어요 (기록이 바뀌면 바로 새로 계산)
   topCached(now) { if (!this._topC || now - this._topC.at > HOF_CACHE_MS) this._topC = { at: now, v: this.colTop() }; return this._topC.v; }
@@ -279,7 +298,22 @@ export class Vault extends DurableObject {
     const ip = request.headers.get('x-ip') || '';
 
     if (op === 'hof-list') {
-      return J({ ok: true, list: this.hofCached(now), top: this.topCached(now) });
+      return J({ ok: true, list: this.hofCached(now), top: this.topCached(now), lg: this.legendNow(now) });
+    }
+    if (op === 'hof-legend') {
+      const id = String(body.id || '');
+      if (!LEGEND_IDS.has(id)) return J({ error: '★7 생물이 아니에요' }, 400);
+      const sz = Math.round(Number(body.s) * 10) / 10;
+      if (!Number.isFinite(sz) || sz <= 0 || sz > SPECIES_MAX[id] + 0.05) return J({ error: '크기가 이상해요' }, 400);
+      const ipKey = ip.slice(0, 64);
+      // 같은 곳(IP)에서 5분 안에 다시 보고하면 무시 (서버가 잠들었다 깨어나도 기억하도록 저장소에 기록)
+      const ipK = 'lgip:' + ipKey;
+      const last = this.lgByIp.get(ipKey) || (await this.ctx.storage.get(ipK)) || 0;
+      if (now - last < 5 * 60 * 1000) return J({ ok: true, lg: this.legendNow(now), skipped: true });
+      this.lgByIp.set(ipKey, now); await this.ctx.storage.put(ipK, now);
+      const lg = { n: cleanNick(body.name) || '익명의 낚시꾼', id, s: sz, ts: now, until: now + LEGEND_MS };
+      this._lg = lg; await this.ctx.storage.put('legend', lg);
+      return J({ ok: true, lg: this.legendNow(now), fan: lg });
     }
     if (op === 'hof-submit') {
       const id = String(body.id || '');
@@ -394,7 +428,7 @@ export class Vault extends DurableObject {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, cctx) {
     const url = new URL(request.url);
     if (url.pathname === '/api/hello') {
       return Response.json({ monggeul: true, cap: CAP, accounts: true, board: true, hof: true }, { headers: { 'cache-control': 'no-store' } });
@@ -402,13 +436,23 @@ export default {
     if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
       const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
       const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect'].includes(op)) return J({ error: 'not found' }, 404);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend'].includes(op)) return J({ error: 'not found' }, 404);
       if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {
         const stub = env.VAULT.get(env.VAULT.idFromName('vault'));
         const headers = new Headers({ 'content-type': 'application/json', 'x-ip': request.headers.get('cf-connecting-ip') || '' });
-        return await stub.fetch(new Request('https://vault/' + op, { method: 'POST', headers, body: request.method === 'POST' ? await request.text() : '{}' }));
+        const res = await stub.fetch(new Request('https://vault/' + op, { method: 'POST', headers, body: request.method === 'POST' ? await request.text() : '{}' }));
+        if (op !== 'hof-legend') return res;
+        // ★7 축하: 모든 섬에 바로 알려요 (응답은 기다리지 않아요)
+        const j = await res.json().catch(() => ({}));
+        if (j && j.fan) {
+          const body = JSON.stringify(j.fan);
+          const all = [];
+          for (let n = 1; n <= MAX_ISLANDS; n++) all.push(env.ISLAND.get(env.ISLAND.idFromName('island-' + n)).fetch('https://island/legend', { method: 'POST', body }).catch(() => {}));
+          if (cctx && cctx.waitUntil) cctx.waitUntil(Promise.all(all)); else await Promise.all(all);
+        }
+        return J({ ok: !!(j && j.ok), lg: j && j.lg || null, error: j && j.error }, res.status);
       } catch (e) {
         return J({ error: '계정 서버 오류: ' + String(e && e.message || e).slice(0, 120) }, 500);
       }
