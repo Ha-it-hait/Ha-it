@@ -87,6 +87,7 @@ function sanitize(d) {
     ai: idx(d.ai, 32), ak: d.ak === 1 ? 1 : 0, an: idx(d.an, 1e9),
     lv: Array.isArray(d.lv) ? d.lv.slice(0, 5).filter(e => Array.isArray(e) && e.length === 2).map(e => [idx(e[0], 32), Math.floor(num(e[1], 0, 1e6, 0))]) : [],
     rd: num(d.rd | 0, 1, 7, 1),
+    pk: idx(d.pk, 3),
     bt: d.bt === 1 ? 1 : 0,
     sd: typeof d.sd === 'string' && /^[a-z0-9]{6,16}$/.test(d.sd) ? d.sd : '',
     ck: ck ? [idx(ck[0], 3), idx(ck[1], 40), r2(num(ck[2], -120, 120, 0)), r2(num(ck[3], -120, 120, 0)), r2(num(ck[4], -50, 50, 0))] : [0, 0, 0, 0, 0],
