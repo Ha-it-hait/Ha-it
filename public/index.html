@@ -141,7 +141,10 @@ button{font-family:inherit}
 .soundmenu button i{font-style:normal;font-weight:900;color:#2f9e68;opacity:0}
 .soundmenu button.on{background:#e6f6ec}.soundmenu button.on i{opacity:1}
 
-.cbtns{display:flex;gap:8px}.cbtns .primary{flex:1;margin-top:14px;font-size:15px}
+.cbtns{display:flex;gap:8px}
+.cell .sz{font-size:11px;font-weight:800;color:#5a7a86;margin-top:2px}.cell .sz i{display:block;height:4px;border-radius:3px;background:rgba(0,0,0,.08);margin:3px auto 0;width:80%;overflow:hidden}.cell .sz u{display:block;height:100%;background:linear-gradient(90deg,#7cc6e8,#2f9e68)}
+.cbtns kbd{font-family:inherit;font-size:11px;font-weight:900;background:rgba(255,255,255,.55);color:#4a3a2a;border-radius:5px;padding:0 5px;margin-right:5px;vertical-align:1px}
+@media (pointer:coarse){.cbtns kbd{display:none}}.cbtns .primary{flex:1;margin-top:14px;font-size:15px}
 .card .primary.ghost{background:#e9eef3;color:#2b3b52;box-shadow:0 4px 0 #c9d3dd}
 .tankbtn{position:fixed;left:max(14px,env(safe-area-inset-left));bottom:calc(max(14px,env(safe-area-inset-bottom)) + 70px);width:64px;height:64px;border-radius:32px;border:3px solid #fff;background:#4fc3e8;color:#fff;font-size:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:0 8px 22px rgba(0,0,0,.22);z-index:4;cursor:pointer}
 .tankbtn span{font-size:11px;font-weight:900;margin-top:2px}
@@ -396,7 +399,7 @@ body.cine .boatbadge{opacity:0}
     <div class="cprice" id="cPrice"></div>
     <p class="cflavor" id="cFlavor"></p>
     <div class="cmeta" id="cMeta"></div>
-    <div class="cbtns"><button class="primary ghost" id="release">놓아주기</button><button class="primary" id="toBag" style="background:#f0a24a;box-shadow:0 4px 0 #c47a25">🎒 가방에</button><button class="primary" id="keep">🐠 수조에</button></div>
+    <div class="cbtns"><button class="primary ghost" id="release"><kbd>1</kbd>놓아주기</button><button class="primary" id="toBag" style="background:#f0a24a;box-shadow:0 4px 0 #c47a25"><kbd>2</kbd>🎒 가방에</button><button class="primary" id="keep"><kbd>3</kbd>🐠 수조에</button></div>
   </div>
 </div>
 <div class="overlay hidden" id="help">
@@ -408,7 +411,7 @@ body.cine .boatbadge{opacity:0}
       <li><b>기다려요</b><span>찌가 톡톡 흔들리는 건 물고기가 간을 보는 거예요. 이때 누르면 도망가요.</span></li>
       <li><b>챔질!</b><span>방울 소리와 함께 찌가 <em>쑥 들어가고 ❗가 뜨면</em> 바로 탭하세요.</span></li>
       <li><b>끌어올려요</b><span><em>누르고 있으면 감겨요.</em> 줄 장력 막대가 빨개지거나 <em>‘저항!’</em>이 뜨면 잠깐 손을 떼요. 너무 오래 떼면 바늘이 빠져요.</span></li>
-      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (최대 50마리)</span></li>
+      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (최대 50마리) 잡은 카드에서 PC는 키보드 <kbd>1</kbd> 놓아주기 · <kbd>2</kbd> 🎒 가방에 · <kbd>3</kbd> 🐠 수조에로도 골라요. 📖 도감에서 생물마다 📏 최소~최대 크기를 볼 수 있어요.</span></li>
     </ol>
     <div class="btitle">💡 물고기 찾기 팁</div>
     <ul class="tips">
@@ -905,7 +908,7 @@ function openBook(){const root=$('grid');root.innerHTML='';let found=0;$('bookGu
    const n=document.createElement('div');n.className='n';n.textContent=rec?sp.name:'???';
    const m=document.createElement('div');m.className='m';m.textContent=rec?`최고 ${fmtSize(rec.best)} · ${rec.n}마리`:sp.hint;
    const st=starOf(sp);const sd=document.createElement('div');sd.className='st';sd.textContent=starStr(st);const nd=document.createElement('div');nd.className='need'+(st>E+1?' no':st>E?' hard':'');nd.textContent=st>E+1?`★${st-1}↑ 낚싯대 필요`:st>E?'🔥 도전 가능 (어려움)':`✓ 약 ${fmtM(priceOf(sp.id,(sp.min+sp.max)/2))}몰랑`;
-   cell.append(n,sd,m,nd);grid.appendChild(cell);drawFish(c.getContext('2d'),sp,120+(sp.shape==='beak'?10:0),56,fishL(sp,190,50),!rec);});
+   const sz=document.createElement('div');sz.className='sz';sz.textContent=`📏 ${fmtSize(sp.min)} ~ ${fmtSize(sp.max)}`;if(rec){const fr=Math.max(0,Math.min(1,(rec.best-sp.min)/(sp.max-sp.min||1)));sz.innerHTML+=`<i><u style="width:${(fr*100).toFixed(0)}%"></u></i>`;}cell.append(n,sd,m,sz,nd);grid.appendChild(cell);drawFish(c.getContext('2d'),sp,120+(sp.shape==='beak'?10:0),56,fishL(sp,190,50),!rec);});
   root.append(tt,grid);});
  $('bookCount').textContent=`${found} / ${SPECIES.length}`;$('book').classList.remove('hidden');}
 
@@ -1976,6 +1979,7 @@ function bookGuideHTML(){const E=effStar(),bl=buffLeft();
  <p>지금: <em>${RODS[GS.rod].name} (★${GS.rod})</em>${bl>0?` + 요리 효과 ★1 (${fmtLeft(bl)} 남음)`:''} → <em>${starRangeTxt(E)}</em></p>
  <p>낚싯대 ★가 물고기 ★보다 높을수록 훨씬 쉽게 끌려와요. ★가 같으면 <em>줄이 빨개질 때 잠깐 손을 떼는</em> 요령이 필요해요. 몰랑은 🐉 용왕님 상점에서 물고기를 팔아 모으고, 요리를 먹으면 잠깐 ★+1 효과를 받아요.</p>
  <p>🌈 <em>★7 무지개 전설</em>: 배 타고 먼 바다(또는 강·연못 끝까지 멀리)에서만 아주 드물게 나와요. 30분마다 3분 동안 <b>무지개가 뜨면 4배</b>! 오래 못 만나면 <b>전설의 기운</b>이 쌓여 최대 3배까지 올라가요. 지금 전설의 기운 <em>${legGauge()}%</em> (×${legPity().toFixed(1)}) · ${rainbowOn()?`🌈 무지개 이벤트 중 (${mmss(rainbowLeftMs())} 남음)`:`다음 무지개까지 ${mmss(rainbowLeftMs())}`}</p>
+ <p>📐 <em>물고기 크기</em>: 생물마다 <b>최소~최대 크기</b>가 정해져 있고(각 칸의 📏), 그 사이에서 무작위로 잡혀요. <em>멀리 던질수록 큰 개체</em>가 나올 확률이 높아요. 같은 생물이라도 클수록 상점 가격이 올라가요. 최대 크기는 최소 크기보다 값을 약 1.75배 받아요. 잡은 생물은 📏 아래 막대로 내 최고 기록이 최대 크기의 어디쯤인지 보여줘요. 명예의 전당은 생물별 가장 큰 기록을 겨뤄요.</p>
  <p>📏 <em>거리 힌트</em> (바다는 해안선에서 찌까지 거리): 가까운 물가 0~10m · 조금 멀리 10m~ · 멀리 15~25m~ · 아주 멀리 약 30m(해안에서 끝까지 던지기) · 끝까지 멀리 35m~(부두 끝이나 배). 강·연못은 던지는 힘 기준이에요.</p></div>`;}
 
 /* ========== v2-B: 요리 · 채팅 · 수조 구경 · 지도 · 저장 ========== */
@@ -2453,9 +2457,12 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-11m';
+const NEWS_VER='2026-11-11n';
 const NEWS=[
- {d:'11월 11일',t:'🐾 따라오는 동물 개선',n:true,i:[
+ {d:'11월 11일',t:'📏 도감 크기 안내 · 키보드 1·2·3',n:true,i:[
+  '📖 도감의 모든 생물 칸에 <b>📏 최소~최대 크기</b>를 적었어요. 잡은 생물은 내 최고 기록이 최대 크기의 어디쯤인지 막대로 보여줘요. 명예의 전당에는 생물마다 최대 크기가 함께 보여요.',
+  '⌨️ PC에서 물고기를 잡으면 키보드 <b>1</b> 놓아주기 · <b>2</b> 🎒 가방에 · <b>3</b> 🐠 수조에로 바로 고를 수 있어요.']},
+ {d:'11월 11일',t:'🐾 따라오는 동물 개선',i:[
   '📱 나를 따라오는 동물 때문에 쓰다듬기·껴안기 버튼이 계속 뜨던 문제를 고쳤어요. 따라오는 동물은 <b>직접 눌렀을 때만</b> 버튼이 떠요.',
   '🏠 따라오는 동물을 누르면 <b>그만 따라오기</b> 버튼이 생겨요. 다시 누르면 <b>다시 따라오게 하기</b>로 돌아올 수 있어요.']},
  {d:'11월 11일',t:'🌈 ★7 무지개 전설',i:[
@@ -2696,7 +2703,7 @@ function renderHof(){$('hofKing').innerHTML=colHTML();const box=$('hofList');con
   const h=document.createElement('div');h.className='hofh s'+st;h.innerHTML=`<b>${'★'.repeat(st)}</b><span>${st===7?'무지개 전설':st===6?'신화':st===5?'전설':st===4?'희귀':st===3?'고급':st===2?'보통':'흔함'} · ${list.length}종</span><small>${got}종 기록됨</small>`;box.appendChild(h);
   for(const sp of list.sort((a,b)=>(HOF.map[b.id]?1:0)-(HOF.map[a.id]?1:0)||a.name.localeCompare(b.name,'ko'))){const rec=HOF.map[sp.id];const row=document.createElement('div');row.className='hofr'+(rec?'':' none')+(rec&&rec.n===me?' mine':'');
    const cv=document.createElement('canvas');cv.width=120;cv.height=60;drawFish(cv.getContext('2d'),sp,60+(sp.shape==='beak'?6:0),30,fishL(sp,96,24),!rec);
-   const nm=document.createElement('div');nm.className='hn';nm.innerHTML=`<b></b><small></small>`;nm.firstChild.textContent=sp.name;const mb=book[sp.id];nm.lastChild.textContent=mb?`내 최고 ${fmtSize(mb.best)}`:'';
+   const nm=document.createElement('div');nm.className='hn';nm.innerHTML=`<b></b><small></small>`;nm.firstChild.textContent=sp.name;const mb=book[sp.id];nm.lastChild.textContent=`최대 ${fmtSize(sp.max)}`+(mb?` · 내 최고 ${fmtSize(mb.best)}`:'');
    const rc=document.createElement('div');rc.className='hrec';
    if(rec){const d=new Date(rec.ts||0);rc.innerHTML=`<b></b><span></span><small></small>`;rc.children[0].textContent=fmtSize(rec.s);rc.children[1].textContent=(rec.n===me?'👑 ':'🏅 ')+String(rec.n).slice(0,12);rc.children[2].textContent=rec.ts?`${d.getMonth()+1}/${d.getDate()}`:'';}
    else rc.innerHTML='<span class="nobody">— 아직 아무도 잡지 못했어요</span>';
@@ -3101,6 +3108,7 @@ const endPtr=e=>{if(e.pointerId===joy.id){joy.id=null;joy.x=joy.y=0;$('joy').cla
 cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
 cv.addEventListener('wheel',e=>{e.preventDefault();if(mode==='walk')camDist=clamp(camDist*(1+Math.sign(e.deltaY)*0.1),4,20);},{passive:false});
 window.addEventListener('keydown',e=>{const tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA')){if(e.code==='Escape'){closeChat();tg.blur();}return;}
+ if(!$('catch').classList.contains('hidden')&&!e.repeat){const ck={Digit1:'release',Numpad1:'release',Digit2:'toBag',Numpad2:'toBag',Digit3:'keep',Numpad3:'keep'}[e.code];if(ck){e.preventDefault();$(ck).click();return;}}
  if(e.code==='Escape'){if(closeChat())return;for(const id of['shop','bag','cook','map','prof','boardM','newsM','hofM'])if(!$(id).classList.contains('hidden')){({shop:closeShop,bag:closeBag,cook:closeCook,map:closeMap,prof:closeProfile,boardM:closeBoard,newsM:closeNews,hofM:closeHof})[id]();return;}}
  if(!entered||mode==='closet')return;
  if(e.code==='Enter'||e.code==='NumpadEnter'){e.preventDefault();openChat();setTimeout(()=>$('chatIn').focus(),30);return;}
