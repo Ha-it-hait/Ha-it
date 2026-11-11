@@ -5,6 +5,7 @@ import { DurableObject } from 'cloudflare:workers';
 
 const CAP = 40;          // 섬 하나 정원
 const MAX_ISLANDS = 30;  // 섬 개수 상한
+const HOF_CACHE_MS = 15000; // 명예의 전당 목록 기억 시간
 const MAX_MSG = 4096;    // 메시지 최대 크기(바이트)
 const MAX_RATE = 20;     // 접속자 1명당 초당 최대 메시지 수
 const CHAT_KEEP = 50;    // 섬마다 보관하는 최근 채팅 수 (넘으면 오래된 것부터 삭제)
@@ -265,6 +266,9 @@ export class Vault extends DurableObject {
     return r.id;
   }
   colTop() { return this.sql.exec('SELECT n, MAX(c) AS c, MIN(ts) AS ts FROM collectors GROUP BY n ORDER BY c DESC, ts ASC LIMIT 5').toArray(); }
+  // 명예의 전당·도감왕 결과를 15초 동안 기억해서 DB를 덜 읽어요 (기록이 바뀌면 바로 새로 계산)
+  topCached(now) { if (!this._topC || now - this._topC.at > HOF_CACHE_MS) this._topC = { at: now, v: this.colTop() }; return this._topC.v; }
+  hofCached(now) { if (!this._hofC || now - this._hofC.at > HOF_CACHE_MS) this._hofC = { at: now, v: this.sql.exec('SELECT id, s, n, ts FROM hof').toArray() }; return this._hofC.v; }
   async fetch(request) {
     const url = new URL(request.url);
     const op = url.pathname.split('/').pop();
@@ -274,8 +278,7 @@ export class Vault extends DurableObject {
     const ip = request.headers.get('x-ip') || '';
 
     if (op === 'hof-list') {
-      const list = this.sql.exec('SELECT id, s, n, ts FROM hof').toArray();
-      return J({ ok: true, list, top: this.colTop() });
+      return J({ ok: true, list: this.hofCached(now), top: this.topCached(now) });
     }
     if (op === 'hof-submit') {
       const id = String(body.id || '');
@@ -291,6 +294,7 @@ export class Vault extends DurableObject {
       const row = this.sql.exec('SELECT s, n, ts FROM hof WHERE id = ?', id).toArray()[0];
       if (row && row.s >= sz) return J({ ok: true, top: false, rec: { s: row.s, n: row.n, ts: row.ts } });
       this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip) VALUES (?, ?, ?, ?, ?)', id, sz, name, now, ipKey);
+      this._hofC = null;
       return J({ ok: true, top: true, name, prev: row ? { s: row.s, n: row.n } : null });
     }
     if (op === 'hof-collect') {
@@ -309,7 +313,8 @@ export class Vault extends DurableObject {
       if (!row) this.sql.exec('INSERT INTO collectors(k, n, c, ts, ip) VALUES (?, ?, ?, ?, ?)', k, name, c, now, ipKey);
       else if (c > row.c) this.sql.exec('UPDATE collectors SET n = ?, c = ?, ts = ?, ip = ? WHERE k = ?', name, c, now, ipKey, k);
       else this.sql.exec('UPDATE collectors SET n = ? WHERE k = ?', name, k);
-      return J({ ok: true, top: this.colTop() });
+      this._topC = null;
+      return J({ ok: true, top: this.topCached(now) });
     }
     if (op === 'board-list') {
       const rows = this.sql.exec('SELECT id, ts, name, text FROM board ORDER BY id DESC LIMIT 100').toArray();
