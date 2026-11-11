@@ -8,7 +8,7 @@ const MAX_ISLANDS = 30;  // 섬 개수 상한
 const HOF_CACHE_MS = 15000; // 명예의 전당 목록 기억 시간
 const MAX_MSG = 4096;    // 메시지 최대 크기(바이트)
 const MAX_RATE = 20;     // 접속자 1명당 초당 최대 메시지 수
-const CHAT_KEEP = 50;    // 섬마다 보관하는 최근 채팅 수 (넘으면 오래된 것부터 삭제)
+const CHAT_KEEP = 100;   // 섬마다 보관하는 최근 채팅 수 (넘으면 오래된 것부터 삭제)
 const CHAT_LEN = 60;     // 채팅 한 줄 최대 글자 수
 const CHAT_GAP = 1500;   // 같은 사람이 채팅을 보낼 수 있는 최소 간격(ms)
 

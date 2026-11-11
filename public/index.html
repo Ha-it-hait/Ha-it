@@ -611,7 +611,7 @@ const SPECIES=[
  {id:'otter',hab:'fresh',grp:'myth',name:'수달',w:0.4,time:['dawn','dusk','night'],min:60,max:120,str:.7,r:6,minP:0,riverPref:true,shape:'otter',h:.24,c1:'#5b3f2b',c2:'#c9ab88',pat:'none',eye:.12,flavor:'천연기념물로 보호받는 우리 강의 수영 선수. 물속에서 수염으로 물고기를 찾아요.',hint:'강(연못에서도 가끔), 새벽·저녁·밤, 멀리 · 신화(★6)'},
  {id:"anchovy",hab:"sea",grp:"sea",name:"멸치",w:18,time:['any'],min:6,max:14,str:0.03,r:1,minP:0,shape:"fish",h:0.2,c1:"#5f7f95",c2:"#eef4f7",pat:"line",eye:0.22,flavor:"작아도 바다의 주인공. 떼 지어 반짝반짝 몰려다녀요.",hint:"바다, 가까운 물가에 많아요"},
  {id:"bekasquid",hab:"sea",grp:"critter",name:"꼴뚜기",w:10,time:['night','dusk'],min:6,max:15,str:0.06,r:1,minP:0,shape:"squid",h:1,c1:"#e8b9a8",c2:"#fff1ea",pat:"dots",eye:0.1,flavor:"“어물전 망신은 꼴뚜기가 시킨다”지만 알고 보면 귀여운 꼬마 오징어.",hint:"해질녘·밤 바다, 가까운 물가에 많아요"},
- {id:"hermitcrab",hab:"sea",grp:"critter",name:"소라게",w:9,time:['any'],min:3,max:8,str:0.03,r:1,minP:0,shape:"crab",h:1,c1:"#d9874a",c2:"#f6c79a",pat:"none",eye:0.1,flavor:"빈 소라 껍데기를 집 삼아 이고 다니는 이사 전문가.",near:true,hint:"바다, 발밑"},
+ {id:"hermitcrab",hab:"sea",grp:"critter",name:"소라게",w:9,time:['any'],min:3,max:8,str:0.03,r:1,minP:0,shape:"crab",hermit:true,h:1,c1:"#c98a5a",c2:"#f8e2c4",pat:"none",eye:0.1,flavor:"빈 소라 껍데기를 집 삼아 이고 다니는 이사 전문가.",near:true,hint:"바다, 발밑"},
  {id:"seacucumber",hab:"sea",grp:"critter",name:"해삼",w:7,time:['any'],min:10,max:30,str:0.04,r:1,minP:0,shape:"eel",h:0.2,c1:"#4a3a32",c2:"#8a6e5a",pat:"spots",eye:0.1,flavor:"느릿느릿 바닥을 기어 다니는 바다의 청소부. 오돌토돌한 돌기가 매력.",near:true,hint:"바다, 발밑"},
  {id:"sandlance",hab:"sea",grp:"sea",name:"까나리",w:14,time:['day','dawn'],min:8,max:18,str:0.05,r:1,minP:0,shape:"fish",h:0.13,c1:"#6f8fa0",c2:"#f1f5f7",pat:"line",eye:0.2,flavor:"모래 속에 쏙 숨었다가 튀어나오는 가늘고 긴 은빛 물고기.",hint:"새벽·낮 바다, 가까운 물가에 많아요"},
  {id:"shorecrab",hab:"sea",grp:"critter",name:"칠게",w:10,time:['any'],min:3,max:6,str:0.03,r:1,minP:0,shape:"crab",h:1,c1:"#7a6a4a",c2:"#c8b48a",pat:"none",eye:0.1,flavor:"갯벌 구멍에서 눈자루를 쫑긋 세우고 두리번두리번.",near:true,hint:"바다, 발밑"},
@@ -650,7 +650,7 @@ const SPECIES=[
  {id:"lenok",hab:"fresh",grp:"fresh",name:"열목어",w:2,time:['dawn','day'],min:30,max:70,str:0.6,r:4,minP:0.3,shape:"fish",h:0.26,c1:"#6a5a4a",c2:"#e8d0c0",pat:"spots",eye:0.13,flavor:"눈이 붉은 차가운 계곡의 귀한 물고기. 아주 맑고 찬 물에만 살아요.",riverOnly:true,hint:"새벽·낮 강, 멀리 · 가끔"},
  {id:"stickleback",hab:"fresh",grp:"fresh",name:"가시고기",w:2,time:['day','dawn'],min:4,max:8,str:0.05,r:4,minP:0,shape:"fish",h:0.3,c1:"#5a6a4a",c2:"#d8e0c0",pat:"none",eye:0.2,flavor:"아빠가 둥지를 짓고 알을 지키는 다정한 꼬마. 등에 가시가 있어요.",riverOnly:true,hint:"새벽·낮 강, 조금 멀리 · 가끔"},
  {id:"giantgrouper",hab:"sea",grp:"sea",name:"대왕바리",w:0.5,time:['any'],min:120,max:250,str:0.95,r:5,minP:0.7,shape:"fish",h:0.42,c1:"#5a5040",c2:"#b8a888",pat:"spots",eye:0.08,flavor:"커다란 입으로 무엇이든 꿀꺽! 바다 속 동굴의 주인.",hint:"바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
- {id:"marlin",hab:"sea",grp:"sea",name:"청새치",w:0.45,time:['day','dawn'],min:200,max:400,str:1,r:5,minP:0.85,shape:"beak",h:0.22,c1:"#1f3f6f",c2:"#e8eef6",pat:"bands",eye:0.12,flavor:"창 같은 주둥이로 바다를 가르는 “바다의 검객”.",hint:"새벽·낮 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
+ {id:"marlin",hab:"sea",grp:"myth",name:"청새치",w:0.45,time:['day','dawn'],min:200,max:400,str:1,r:6,minP:0.85,shape:"beak",h:0.22,c1:"#1f3f6f",c2:"#e8eef6",pat:"bands",eye:0.12,flavor:"창 같은 주둥이로 바다를 가르는 “바다의 검객”.",hint:"새벽·낮 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
  {id:"swordfish",hab:"sea",grp:"sea",name:"황새치",w:0.45,time:['night'],min:150,max:350,str:1,r:5,minP:0.8,shape:"beak",h:0.2,c1:"#3a3f4a",c2:"#d8dce2",pat:"none",eye:0.14,flavor:"칼처럼 넓적한 주둥이. 밤이 되면 깊은 바다에서 올라와요.",hint:"밤 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
  {id:"sailfish",hab:"sea",grp:"sea",name:"돛새치",w:0.45,time:['day'],min:150,max:300,str:1,r:5,minP:0.8,shape:"beak",h:0.2,c1:"#1f4f8f",c2:"#eaf0f8",pat:"dots",eye:0.12,flavor:"등에 커다란 돛을 펼치는, 바다에서 가장 빠른 물고기!",sail:true,hint:"낮 바다, 끝까지 멀리(부두 끝·배) · 아주 가끔"},
  {id:"kingcrab",hab:"sea",grp:"critter",name:"킹크랩",w:0.5,time:['night','dawn'],min:40,max:80,str:0.5,r:5,minP:0.55,shape:"crab",h:1,c1:"#c0402a",c2:"#f09a70",pat:"dots",eye:0.1,flavor:"다리를 쫙 펴면 1미터가 넘는 게의 왕.",longLegs:true,hint:"새벽·밤 바다, 아주 멀리(약 30m~) · 아주 가끔"},
@@ -1050,7 +1050,38 @@ CREATURE.seahorse=(c,sp,L)=>{c.lineCap='round';c.lineJoin='round';const col=sp.c
  c.beginPath();c.moveTo(-L*0.08,-L*0.36);c.lineTo(-L*0.24,-L*0.31);c.lineTo(-L*0.24,-L*0.27);c.lineTo(-L*0.08,-L*0.28);c.closePath();c.fill();
  c.beginPath();c.moveTo(-L*0.02,-L*0.4);c.lineTo(L*0.01,-L*0.47);c.lineTo(L*0.04,-L*0.39);c.closePath();c.fill();
  eyeDot(c,-L*0.04,-L*0.34,L*0.025);};
-CREATURE.crab=(c,sp,L)=>{c.lineCap='round';const legC=mixHex(sp.c1,'#000000',0.1);
+CREATURE.hermit=(c,sp,L)=>{c.lineCap='round';c.lineJoin='round';const red='#e0603a',redD='#a8402a',redL='#f39a76';
+ // 다리 (껍데기 입구에서 나와요)
+ c.strokeStyle=redD;for(let i=0;i<3;i++){c.lineWidth=L*0.034;c.beginPath();c.moveTo(-L*0.1+i*L*0.04,L*0.1);c.lineTo(-L*0.22+i*L*0.05,L*0.15+i*L*0.01);c.lineTo(-L*0.26+i*L*0.07,L*0.27);c.stroke();}
+ // 고동 껍데기 (꼭대기가 오른쪽 위로 빙글빙글)
+ c.save();c.translate(L*0.08,-L*0.01);c.rotate(-0.62);
+ const W=[];let x=0,r=L*0.23;for(let i=0;i<5;i++){W.push([x,r]);x+=r*0.72;r*=0.66;}
+ for(let i=W.length-1;i>=0;i--){const[wx,wr]=W[i];const p=new Path2D();p.ellipse(wx,0,wr*1.08,wr*0.92,0,0,7);c.fillStyle=vgrad(c,-wr,wr,sp.c2,sp.c1);c.fill(p);
+  c.save();c.clip(p);c.strokeStyle='rgba(140,80,40,.45)';c.lineWidth=Math.max(1,wr*0.16);for(const k of[-0.35,0.25]){c.beginPath();c.ellipse(wx-wr*0.25,k*wr,wr*0.95,wr*0.3,0,0,7);c.stroke();}
+  c.fillStyle='rgba(150,85,45,.35)';for(let j=0;j<4;j++){c.beginPath();c.ellipse(wx+wr*(0.5-j*0.32),-wr*0.55+j*0.05*wr,wr*0.09,wr*0.06,0,0,7);c.fill();}c.restore();
+  c.strokeStyle='rgba(110,60,30,.6)';c.lineWidth=Math.max(1,L*0.008);c.stroke(p);}
+ // 꼭대기 뾰족
+ const[ax,ar]=W[W.length-1];c.fillStyle=sp.c1;c.beginPath();c.moveTo(ax+ar*0.6,-ar*0.6);c.lineTo(ax+ar*2.2,-ar*0.2);c.lineTo(ax+ar*0.8,ar*0.5);c.closePath();c.fill();
+ // 반짝이는 결
+ c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=L*0.012;c.beginPath();c.ellipse(-L*0.02,-L*0.09,L*0.12,L*0.05,-0.2,Math.PI*1.1,Math.PI*1.6);c.stroke();
+ // 입구 (게가 나오는 구멍)
+ c.fillStyle='#6a3a24';c.beginPath();c.ellipse(-L*0.14,L*0.1,L*0.1,L*0.13,0.35,0,7);c.fill();c.fillStyle='#f6d2c2';c.beginPath();c.ellipse(-L*0.17,L*0.11,L*0.06,L*0.1,0.35,0,7);c.fill();
+ c.restore();
+ // 게 몸 (입구에서 빼꼼)
+ const ox=-L*0.13,oy=L*0.1;
+ c.fillStyle=vgrad(c,oy-L*0.1,oy+L*0.08,redL,red);c.beginPath();c.ellipse(ox-L*0.04,oy,L*0.1,L*0.085,0.3,0,7);c.fill();
+ // 눈 자루
+ c.strokeStyle=redD;c.lineWidth=L*0.022;for(const[ex,ey]of[[-0.2,-0.08],[-0.11,-0.1]]){c.beginPath();c.moveTo(ox-L*0.03,oy-L*0.05);c.lineTo(L*ex,L*ey);c.stroke();eyeDot(c,L*ex,L*ey,L*0.032);}
+ // 더듬이
+ c.strokeStyle=redD;c.lineWidth=L*0.008;c.beginPath();c.moveTo(ox-L*0.08,oy-L*0.04);c.quadraticCurveTo(-L*0.36,-L*0.14,-L*0.42,-L*0.08);c.moveTo(ox-L*0.07,oy-L*0.03);c.quadraticCurveTo(-L*0.33,-L*0.06,-L*0.4,0);c.stroke();
+ // 집게 (큰 집게 + 작은 집게)
+ const claw=(x,y,rx,ry,a)=>{c.fillStyle=red;c.beginPath();c.ellipse(x,y,rx,ry,a,0,7);c.fill();c.fillStyle=redD;c.beginPath();c.moveTo(x-rx*0.9,y-ry*0.2);c.lineTo(x-rx*1.45,y-ry*0.9);c.lineTo(x-rx*0.5,y-ry*0.75);c.closePath();c.fill();
+  c.fillStyle='rgba(255,255,255,.5)';c.beginPath();c.ellipse(x+rx*0.15,y-ry*0.35,rx*0.35,ry*0.2,a,0,7);c.fill();};
+ c.strokeStyle=redD;c.lineWidth=L*0.03;c.beginPath();c.moveTo(ox-L*0.08,oy+L*0.02);c.lineTo(-L*0.27,L*0.08);c.stroke();
+ claw(-L*0.31,L*0.07,L*0.085,L*0.06,-0.25);claw(-L*0.24,L*0.18,L*0.055,L*0.04,0.1);
+ // 볼
+ c.fillStyle='rgba(255,140,150,.55)';c.beginPath();c.ellipse(ox-L*0.07,oy+L*0.02,L*0.022,L*0.013,0,0,7);c.fill();};
+CREATURE.crab=(c,sp,L)=>{if(sp.hermit){CREATURE.hermit(c,sp,L);return;}c.lineCap='round';const legC=mixHex(sp.c1,'#000000',0.1);
  for(const s of[-1,1]){for(let i=0;i<3;i++){const bx=s*L*0.2,by=L*0.04+i*L*0.05;const kx=s*L*(sp.longLegs?0.42:0.34),ky=by-L*0.06+i*L*0.02;const ex=s*L*(sp.longLegs?0.5:0.42),ey=by+L*0.12+i*L*0.03;c.strokeStyle=legC;c.lineWidth=L*0.03;c.beginPath();c.moveTo(bx,by);c.lineTo(kx,ky);c.lineTo(ex,ey);c.stroke();}
   c.lineWidth=L*0.045;c.beginPath();c.moveTo(s*L*0.18,-L*0.02);c.lineTo(s*L*0.3,-L*0.16);c.stroke();
   c.fillStyle=sp.c1;c.beginPath();c.ellipse(s*L*0.33,-L*0.25,L*0.075,L*0.055,s*0.5,0,7);c.fill();
@@ -2111,7 +2142,7 @@ function updCook(dt){const c=cookSt;if(!c)return;animTable(c.table,c.stage,dt);
 function cookPose(c){if(!c.cooking)return;const k=Math.sin(t*16);c.arms[0].rotation.x=-1.0+k*0.35;c.arms[0].rotation.z=0.25;c.arms[1].rotation.x=-0.75;c.arms[1].rotation.z=-0.3;c.body.rotation.x=0.12;c.head.rotation.x=0.25;}
 
 /* ---------- 채팅 ---------- */
-const CHAT_KEEP=50,CHAT_LEN=60;
+const CHAT_KEEP=100,CHAT_LEN=60;
 const BADW=['씨발','시발','씨빨','시빨','ㅅㅂ','ㅆㅂ','병신','븅신','ㅂㅅ','개새끼','개새','새끼','좆','존나','졸라','ㅈㄴ','지랄','ㅈㄹ','미친놈','미친년','닥쳐','꺼져','애미','에미','느금','니미','엠창','섹스','야동','자살','fuck','shit','bitch','sex','porn'];
 function cleanChat(s){s=String(s??'').replace(/[\u0000-\u001f\u007f​-‏‪-‮⁠-⁤]/g,'').replace(/\s+/g,' ').trim();s=Array.from(s).slice(0,CHAT_LEN).join('');if(!s)return'';
  s=s.replace(/(https?:\/\/|www\.)\S*/gi,'(링크)').replace(/\b[\w-]+\.(com|net|org|kr|co|io|me|gg|xyz|ly|link|site|shop)\b\S*/gi,'(링크)').replace(/\d[\d\s.-]{7,}\d/g,'(숫자)');
@@ -2485,9 +2516,14 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-11r';
+const NEWS_VER='2026-11-11t';
 const NEWS=[
- {d:'11월 11일',t:'🎒 새 가방 2종',n:true,i:[
+ {d:'11월 11일',t:'💬 채팅 기록 100개',n:true,i:[
+  '💬 채팅창에서 최근 <b>100개</b>의 채팅까지 볼 수 있어요. 다시 접속해도 섬의 최근 채팅 100개가 그대로 보여요.']},
+ {d:'11월 11일',t:'🐚 소라게 새 모습 · 청새치 신화 등급',i:[
+  '🐚 <b>소라게</b>가 진짜 소라게처럼 바뀌었어요. 빙글빙글 고동 껍데기 속에서 빨간 게가 집게와 눈을 빼꼼 내밀어요.',
+  '🗡️ <b>청새치</b>가 <b>★6 신화</b> 등급이 됐어요. 도감의 ‘✨ 신화의 친구들’ 칸과 명예의 전당 ★6 칸으로 옮겨졌고, 상점 가격도 ★6 기준으로 올라요.']},
+ {d:'11월 11일',t:'🎒 새 가방 2종',i:[
   '🐉 용왕님 상점에 <b>🎒 가방</b> 칸이 생겼어요. 낚싯대 · 가방 · 물고기 팔기를 골라서 볼 수 있어요.',
   '🦈 <b>아기 상어 가방</b> (10,000몰랑) · 물고기 <b>+20마리</b> (모두 50마리). 양옆 지느러미가 파닥, 꼬리가 살랑!',
   '👼 <b>아기 천사 날개 가방</b> (30,000몰랑) · 물고기 <b>+40마리</b> (모두 70마리). 걸을 때마다 날개가 펄럭여요.',
