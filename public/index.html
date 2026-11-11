@@ -699,7 +699,9 @@ const SPECIES=[
  {id:"rainbowseahorse",hab:"sea",grp:"rainbow",name:"무지개 해마",w:1.4,time:['night'],min:20,max:35,str:0.15,r:7,minP:0.9,shape:"seahorse",h:1,c1:"#ff9ec7",c2:"#fff0f8",pat:"none",eye:0.1,rainbow:true,flavor:"꼬리에 작은 무지개를 돌돌 말고 다녀요. 보름달이 뜨면 무지개를 풀어 그네를 탄대요.",hint:"밤바다, 배 타고 먼 바다 · 무지개 전설(★7)"},
  {id:"chaeunryong",hab:"sea",grp:"rainbow",name:"채운룡",w:0.7,time:['any'],min:500,max:900,str:1,r:7,minP:0.9,shape:"eel",h:0.16,c1:"#ff8a8a",c2:"#fff2c0",pat:"none",eye:0.18,rainbow:true,eventOnly:true,flavor:"무지개를 타고 하늘과 바다를 오가는 용. 무지개가 떠 있는 동안에만 바다로 내려와요.",hint:"🌈 무지개가 뜬 동안에만, 배 타고 먼 바다 · 무지개 전설(★7)"},
  {id:"chilbokoi",hab:"fresh",grp:"rainbow",name:"칠보 잉어",w:1,time:['any'],min:60,max:120,str:0.7,r:7,minP:0.9,shape:"fish",h:0.32,c1:"#ff8f8f",c2:"#fff4e0",pat:"scales",eye:0.12,rainbow:true,pondOnly:true,flavor:"비늘 일곱 장이 저마다 다른 빛으로 반짝이는 연못의 보물.",hint:"연못, 끝까지 멀리 · 무지개 전설(★7)"},
- {id:"rainbowtrout",hab:"fresh",grp:"rainbow",name:"무지개다리 송어",w:1,time:['dawn','day'],min:60,max:110,str:0.8,r:7,minP:0.9,shape:"fish",h:0.26,c1:"#6a8a6a",c2:"#ffe0e8",pat:"spots",eye:0.13,rainbow:true,riverOnly:true,flavor:"무지개다리를 건너 강으로 내려왔다는 전설의 송어. 온몸이 무지갯빛이에요.",hint:"새벽·낮 강, 끝까지 멀리 · 무지개 전설(★7)"}
+ {id:"rainbowtrout",hab:"fresh",grp:"rainbow",name:"무지개다리 송어",w:1,time:['dawn','day'],min:60,max:110,str:0.8,r:7,minP:0.9,shape:"fish",h:0.26,c1:"#6a8a6a",c2:"#ffe0e8",pat:"spots",eye:0.13,rainbow:true,riverOnly:true,flavor:"무지개다리를 건너 강으로 내려왔다는 전설의 송어. 온몸이 무지갯빛이에요.",hint:"새벽·낮 강, 끝까지 멀리 · 무지개 전설(★7)"},
+ {id:"rainbowveil",hab:"fresh",grp:"rainbow",name:"무지개 꼬리 금붕어",w:1,time:['dusk','night'],min:25,max:50,str:0.55,r:7,minP:0.9,shape:"fancy",h:0.4,c1:"#ff9e6e",c2:"#fff1e6",pat:"none",eye:0.16,rainbow:true,pondOnly:true,flavor:"비단처럼 긴 꼬리를 살랑이면 연못 속에 무지개 커튼이 일렁여요. 달이 뜨는 저녁에 수면 가까이 올라온대요.",hint:"해질녘·밤 연못, 끝까지 멀리 · 무지개 전설(★7)"},
+ {id:"rainbowsturgeon",hab:"fresh",grp:"rainbow",name:"무지개 철갑상어",w:1,time:['night','dawn'],min:150,max:280,str:1,r:7,minP:0.9,shape:"fish",h:0.17,c1:"#4a5a7a",c2:"#e6f0ff",pat:"scales",eye:0.11,rainbow:true,riverOnly:true,flavor:"등에 늘어선 갑옷 비늘판마다 다른 빛이 깃든 강의 고대 왕. 무지개가 강물에 비칠 때 깊은 곳에서 올라온대요.",hint:"밤·새벽 강, 끝까지 멀리 · 무지개 전설(★7)"}
 ];
 SPECIES.forEach(sp=>{if(!sp.grp)sp.grp=sp.hab==='fresh'?'fresh':(sp.id==='starfish'?'critter':'sea');});
 function pickFish(p,hab){
@@ -2066,7 +2068,7 @@ const FANTASY=[
 ];
 const DISH_CODES=['sashimi','grill','stew','cgrill','steam',...FANTASY.map((_,i)=>'f'+i)];
 const CRUST=new Set(['hermitcrab','shorecrab','hairycrab','lobster','kingcrab','bluecrab','snowcrab','prawn','spinylobster','crayfish','freshshrimp']);
-const FANCY_FOOD=new Set(['rainbowwhale','auroraray','rainbowflyer','prismjelly','rainbowseahorse','chaeunryong','chilbokoi','rainbowtrout','yellowtang','moorishidol','triggerfish','leopardshark','dumbo','vampiresquid','tigershark','greatwhite','thresher','footballfish','napoleon','chimaera','giantmoray','goldkoi','jellyfish','urchin','starfish','seahorse','clownfish','bluetang','emperorangel','butterfly','mandarinfish','lionfish','boxfish','guppy','betta','goldfish','koi','arowana','parrotfish','catshark','blueshark','hammerhead','sunfish']);
+const FANCY_FOOD=new Set(['rainbowwhale','auroraray','rainbowflyer','prismjelly','rainbowseahorse','chaeunryong','chilbokoi','rainbowtrout','rainbowveil','rainbowsturgeon','yellowtang','moorishidol','triggerfish','leopardshark','dumbo','vampiresquid','tigershark','greatwhite','thresher','footballfish','napoleon','chimaera','giantmoray','goldkoi','jellyfish','urchin','starfish','seahorse','clownfish','bluetang','emperorangel','butterfly','mandarinfish','lionfish','boxfish','guppy','betta','goldfish','koi','arowana','parrotfish','catshark','blueshark','hammerhead','sunfish']);
 const PROTECTED=new Set(['humpback','bluewhale','spermwhale','beluga','narwhal','sealion','walrus','dugong','manatee','leatherback','greenturtle','giantsquid','oarfish','coelacanth','mantaray','leafyseadragon','goldmandarin','eoreumchi','arapaima','mihojonggae','mutae','lenok','turtle','whaleshark','seal','dolphin','orca','seaotter','otter']);
 function dishesFor(id){if(PROTECTED.has(id))return[];if(CRUST.has(id))return['cgrill','steam'];if(FANCY_FOOD.has(id))return['fantasy'];return['sashimi','grill','stew'];}
 function foodInfo(f){return foodEff(foodInfo0(f),f.s);}
@@ -2523,9 +2525,13 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-11x';
+const NEWS_VER='2026-11-11y';
 const NEWS=[
- {d:'11월 11일',t:'⌨️ PC 채팅 편해졌어요',n:true,i:[
+ {d:'11월 11일',t:'🌈 강·연못 ★7 새 친구 2종',n:true,i:[
+  '🐟 <b>무지개 꼬리 금붕어</b> (연못 · 해질녘·밤) — 비단 같은 긴 꼬리를 살랑이면 무지개 커튼이 일렁여요.',
+  '🦈 <b>무지개 철갑상어</b> (강 · 밤·새벽) — 갑옷 비늘판마다 다른 빛이 깃든 강의 고대 왕이에요.',
+  '이제 연못과 강에서 ★7을 각각 2종씩 만날 수 있어요. 끝까지 멀리 던져야 나오고, 무지개가 뜨면 4배 잘 나와요.']},
+ {d:'11월 11일',t:'⌨️ PC 채팅 편해졌어요',i:[
   '⌨️ PC에서 <b>C 키</b>를 누르면 채팅창이 열려요. (Enter도 그대로 돼요)',
   '🖱️ 채팅창을 켜 둔 채로 <b>게임 화면을 누르면</b> 입력이 풀려서 WASD로 바로 캐릭터를 움직일 수 있어요. 채팅창은 그대로 열려 있어요.']},
  {d:'11월 11일',t:'👑 도감왕 왕관',i:[
