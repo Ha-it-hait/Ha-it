@@ -34,6 +34,7 @@ button{font-family:inherit}
 #newsList{max-height:58vh;overflow:auto;touch-action:pan-y;overscroll-behavior:contain}.nwi{background:#fff8ec;border-radius:14px;padding:10px 12px;margin:8px 0}.nwi.top{background:#fff0f3;box-shadow:inset 0 0 0 2px #ffc2cf}.nwh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.nwh b{font-size:14.5px}.nwh small{color:#a08a6a;font-weight:800;font-size:11.5px;white-space:nowrap}.nwi.top .nwh small{color:#e0436b}.nwi ul{margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.55;color:#4a4236}.nwi li{margin:2px 0}
 @media (max-width:420px){.btns .ic{height:32px;min-width:31px;padding:0 6px;font-size:15px;border-radius:12px}body .btns{gap:4px}.ndot{top:2px;right:2px;width:8px;height:8px}}
 #tHard{text-align:center;font-size:12px;font-weight:900;color:#ffb36b;margin-bottom:4px}
+#tTire{text-align:center;font-size:11.5px;font-weight:800;color:rgba(255,255,255,.82);margin-top:4px}#tTire.on{color:#8ff0b8}
 .cell .need.hard{background:#fff0e0;color:#d2691e}
 @media (max-width:520px){.ic span{display:none}.ic{height:36px;min-width:36px;padding:0 8px;font-size:16px}.btns{gap:5px}.hud .t{font-size:16px}.hud .s{font-size:11.5px}}
 .emotes{position:fixed;left:50%;transform:translateX(-50%);bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:7px;z-index:3}
@@ -305,7 +306,7 @@ body.cine .boatbadge{opacity:0}
 <div class="petbox hidden" id="petBox"><div class="pn" id="petName"></div><div class="pb"><button id="petBtn"><b>🤚</b>쓰다듬기 <kbd>Q</kbd></button><button id="hugBtn" class="hug"><b>🤗</b>껴안기 <kbd>E</kbd></button></div><button id="folBtn" class="fol hidden"></button></div>
 <div id="joy" class="joy hidden"><div id="knob" class="knob"></div></div>
 <div id="charge" class="charge hidden"><div class="cbar"><div id="chargeFill"></div></div><div id="chargeTxt"></div></div>
-<div id="tension" class="tension hidden"><div id="tHard" class="hidden"></div><div class="trow"><span>줄 장력</span><span id="tDist"></span></div><div class="tbar"><div class="tdanger"></div><div id="tFill"></div></div><div id="tMsg"></div></div>
+<div id="tension" class="tension hidden"><div id="tHard" class="hidden"></div><div class="trow"><span>줄 장력</span><span id="tDist"></span></div><div class="tbar"><div class="tdanger"></div><div id="tFill"></div></div><div id="tMsg"></div><div id="tTire" class="hidden"></div></div>
 <div id="bang" class="bang hidden">!</div>
 <div class="toast" id="toast"></div>
 
@@ -411,7 +412,7 @@ body.cine .boatbadge{opacity:0}
       <li><b>기다려요</b><span>찌가 톡톡 흔들리는 건 물고기가 간을 보는 거예요. 이때 누르면 도망가요.</span></li>
       <li><b>챔질!</b><span>방울 소리와 함께 찌가 <em>쑥 들어가고 ❗가 뜨면</em> 바로 탭하세요.</span></li>
       <li><b>끌어올려요</b><span><em>누르고 있으면 감겨요.</em> 줄 장력 막대가 빨개지거나 <em>‘저항!’</em>이 뜨면 잠깐 손을 떼요. 너무 오래 떼면 바늘이 빠져요.</span></li>
-      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (최대 50마리) 잡은 카드에서 PC는 키보드 <kbd>1</kbd> 놓아주기 · <kbd>2</kbd> 🎒 가방에 · <kbd>3</kbd> 🐠 수조에로도 골라요. 📖 도감에서 생물마다 📏 최소~최대 크기를 볼 수 있어요.</span></li>
+      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (최대 50마리) 물고기와 <b>3분 넘게</b> 싸우면 물고기가 지쳐서 힘이 빠져요(최대 -30%). 잡은 카드에서 PC는 키보드 <kbd>1</kbd> 놓아주기 · <kbd>2</kbd> 🎒 가방에 · <kbd>3</kbd> 🐠 수조에로도 골라요. 📖 도감에서 생물마다 📏 최소~최대 크기를 볼 수 있어요.</span></li>
     </ol>
     <div class="btitle">💡 물고기 찾기 팁</div>
     <ul class="tips">
@@ -2457,9 +2458,12 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-11n';
+const NEWS_VER='2026-11-11o';
 const NEWS=[
- {d:'11월 11일',t:'📏 도감 크기 안내 · 키보드 1·2·3',n:true,i:[
+ {d:'11월 11일',t:'😮‍💨 오래 싸우면 물고기가 지쳐요',n:true,i:[
+  '⏱ 물고기와 <b>3분 넘게</b> 싸우면 물고기가 지쳐서 힘이 빠져요. 3분이 되면 힘이 20% 줄고, 5분까지 천천히 최대 30%까지 줄어요.',
+  '줄 장력 막대 아래에 싸운 시간과 지칠 때까지 남은 시간이 보여요. 어려운 물고기도 끈기 있게 버티면 잡을 수 있어요!']},
+ {d:'11월 11일',t:'📏 도감 크기 안내 · 키보드 1·2·3',i:[
   '📖 도감의 모든 생물 칸에 <b>📏 최소~최대 크기</b>를 적었어요. 잡은 생물은 내 최고 기록이 최대 크기의 어디쯤인지 막대로 보여줘요. 명예의 전당에는 생물마다 최대 크기가 함께 보여요.',
   '⌨️ PC에서 물고기를 잡으면 키보드 <b>1</b> 놓아주기 · <b>2</b> 🎒 가방에 · <b>3</b> 🐠 수조에로 바로 고를 수 있어요.']},
  {d:'11월 11일',t:'🐾 따라오는 동물 개선',i:[
@@ -2823,6 +2827,14 @@ const _anV=new THREE.Vector3();
 function animByScreen(cx,cy){let best=null,bd=46;for(const A of ANIMS){if(!A.m.root.visible)continue;if(Math.hypot(A.x-P.pos.x,A.z-P.pos.z)>12)continue;
  _anV.copy(A.m.root.position);_anV.y+=0.3;_anV.project(camera);if(_anV.z>1)continue;const x=(_anV.x+1)/2*W,y=(1-_anV.y)/2*H;const d=Math.hypot(x-cx,y-cy);if(d<bd){bd=d;best=A;}}return best?{anim:best.i}:null;}
 
+/* ---------- v16: 오래 싸우면 물고기가 지쳐요 ---------- */
+const TIRE_T=180,TIRE_FULL=300;
+// 3:00부터 10초에 걸쳐 힘 -20%, 이후 5:00까지 천천히 최대 -30%
+function tireK(el){if(el<TIRE_T)return 1;if(el<TIRE_T+10)return 1-0.2*(el-TIRE_T)/10;return Math.max(0.7,0.8-0.1*(el-TIRE_T-10)/(TIRE_FULL-TIRE_T-10));}
+function updTire(){const el=$('tTire');if(!fish||fstate!=='fight'){el.classList.add('hidden');return;}const e=t-fish.t0,k=tireK(e);
+ if(k<1&&!fish.tired){fish.tired=true;{const nm=book[fish.sp.id]?fish.sp.name:'물고기';toast(`😮‍💨 ${nm}${josa(nm,'이','가')} 지쳐서 힘이 빠졌어요! 조금 더 쉽게 끌려와요`,3200);};sfx.splash(0.15);showBubble(P.label,'😮‍💨',true,2.5);}
+ if(e<30){el.classList.add('hidden');return;}el.classList.remove('hidden');el.classList.toggle('on',k<1);
+ el.textContent=k<1?`😮‍💨 물고기가 지쳤어요 · 힘 -${Math.round((1-k)*100)}% · ⏱ ${mmss(e*1000)}`:`⏱ ${mmss(e*1000)} · ${mmss((TIRE_T-e)*1000)} 뒤 물고기가 지쳐요`;}
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
@@ -2899,7 +2911,7 @@ function fishPos(out){fwdOf(P.yaw,_f);const ex=P.pos.x+_f.x*1.6,ez=P.pos.z+_f.z*
  return out.set(lerp(ex,castTgt.x,d)+(-_f.z)*wob,0,lerp(ez,castTgt.z,d)+_f.x*wob);}
 let overT=0;
 function updateFight(dt){
- const D=fish.D;
+ const D=fish.over?fish.D:Math.max(0.04,fish.D*tireK(t-fish.t0));
  if(fish.over){tension=Math.min(1,tension+dt*0.85);d=Math.min(1,d+dt*0.04);surgeUntil=t+0.2;rippleAcc+=dt;if(rippleAcc>0.25){rippleAcc=0;fishPos(_a);ripple(_a.x,_a.z,1.3);splash(_a.x,_a.z,0.6);}
   if(t-fish.t0>1.7){const sp=fish.sp,st=starOf(sp);const nm=book[sp.id]?sp.name:`정체 모를 ★${st} 물고기`;sfx.snap();toast(`앗! ${nm}${josa(nm,'이','가')} 줄을 끊고 달아났어요… ★${st-1} 이상 낚싯대가 필요해요 (지금 ★${effStar()})`,4200);holding=false;fish=null;myLine.visible=false;myFloat.visible=false;setF('idle');}return;}
  if(t>nextSurge&&D>0.18){surgeUntil=t+0.35+0.5*D;nextSurge=surgeUntil+rand(1.6,3.4)/(0.5+D);fishPos(_a);splash(_a.x,_a.z,1.1);sfx.splash(0.18);}
@@ -2937,10 +2949,10 @@ function updateFishing(dt){
   const sink=fstate==='bite'?clamp((t-biteT0)/0.2,0,1)*0.2:0;updFloat(myFloat,castTgt.x,castTgt.z,sink,dip);floatTip(myFloat,_a);setLine(myLine,_tip,_a,fstate==='bite'?0.1:0.25+castDist*0.03);
   if(fstate==='waiting'&&t>=biteAt)startBite();
   if(fstate==='bite'){bend=0.15+Math.sin(t*40)*0.06;placeBang(_a);if(t-biteT0>BITE_WIN){toast('놓쳤어요… 미끼만 따먹혔네요');startRetrieve(_a);}}}
- else if(fstate==='fight'&&fish){myFloat.visible=false;fishPos(_a);_a.y=waveH(_a.x,_a.z,t);setLine(myLine,_tip,_a,(1-clamp(tension,0,1))*castDist*0.05);bend=tension*0.5+(t<surgeUntil?Math.sin(t*38)*0.05:0);updateFight(dt);updTension();}
+ else if(fstate==='fight'&&fish){myFloat.visible=false;fishPos(_a);_a.y=waveH(_a.x,_a.z,t);setLine(myLine,_tip,_a,(1-clamp(tension,0,1))*castDist*0.05);bend=tension*0.5+(t<surgeUntil?Math.sin(t*38)*0.05:0);updateFight(dt);updTension();updTire();}
  else if(fstate==='retrieve'){myFloat.visible=false;const k=clamp((t-rT0)/0.45,0,1);lure.lerpVectors(retrieveFrom,_tip,k);setLine(myLine,_tip,lure,0.2*(1-k));if(k>=1){myLine.visible=false;setF('idle');}}
  else{myLine.visible=fstate==='casting';}
- $('tension').classList.toggle('hidden',fstate!=='fight');
+ $('tension').classList.toggle('hidden',fstate!=='fight');if(fstate!=='fight')$('tTire').classList.add('hidden');
  c.rodPivot.rotation.x=lerp(c.rodPivot.rotation.x,0.95+bend,0.3);
 }
 function updTension(){const k=clamp(tension,0,1);const f=$('tFill');f.style.width=(k*100).toFixed(1)+'%';f.style.background=k<.6?'#6bd08a':k<.85?'#f2c14e':'#ef5b5b';$('tDist').textContent=`남은 거리 ${Math.max(0,Math.ceil(d*castDist))}m`;
