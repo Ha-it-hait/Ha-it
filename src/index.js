@@ -413,6 +413,20 @@ export default {
       const stub = env.ISLAND.get(env.ISLAND.idFromName('island-' + n));
       return stub.fetch(request);
     }
-    return env.ASSETS.fetch(request);
+    // 검색 노출(SEO): 주소가 바뀌어도 자동으로 맞는 robots.txt · sitemap.xml · 대표 주소
+    if (url.pathname === '/robots.txt') {
+      return new Response(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /ws\n\nUser-agent: Yeti\nAllow: /\nDisallow: /api/\nDisallow: /ws\n\nSitemap: ${url.origin}/sitemap.xml\n`, { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
+    }
+    if (url.pathname === '/sitemap.xml') {
+      const day = new Date().toISOString().slice(0, 10);
+      return new Response(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${url.origin}/</loc><lastmod>${day}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>\n</urlset>\n`, { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
+    }
+    const res = await env.ASSETS.fetch(request);
+    if (url.pathname === '/' && res.ok && (res.headers.get('content-type') || '').includes('text/html')) {
+      const html = (await res.text()).replaceAll('__ORIGIN__', url.origin);
+      const h = new Headers(res.headers); h.delete('content-length'); h.delete('etag');
+      return new Response(html, { status: res.status, headers: h });
+    }
+    return res;
   },
 };
