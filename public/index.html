@@ -417,7 +417,7 @@ body.cine .boatbadge{opacity:0}
     </ul>
     <div class="btitle">🎣 낚싯대 ★ · 물고기 ★</div>
     <ul class="tips">
-      <li>물고기마다 ★1~★6이 있어요. <b>내 낚싯대 ★보다 1단계 높은 물고기</b>까지 잡을 수 있어요. (★1 낚싯대 → ★2까지) 한 단계 위 물고기는 힘이 아주 세서 "🔥 난이도 높음" 안내가 떠요. 2단계 이상 높으면 줄을 끊고 달아나요.</li>
+      <li>물고기마다 ★1~★6이 있어요. <b>내 낚싯대 ★보다 1단계 높은 물고기</b>까지 잡을 수 있어요. (★1 낚싯대 → ★2까지) 한 단계 위 물고기는 힘이 아주 세서 "🔥 난이도 높음" 안내가 떠요. 2단계 이상 높으면 줄을 끊고 달아나요. 한 단계 위 물고기를 잡으면 상점에 팔 때 <b>몰랑 3배</b>예요! (🔥×3 표시)</li>
       <li>처음엔 ★1 대나무 낚싯대예요. 물고기를 팔아 모은 <b>몰랑</b>으로 🐉 용왕님 상점에서 ★2~★6 낚싯대를 사요. ★6은 신화급이에요!</li>
       <li>낚싯대 ★가 물고기보다 높으면 훨씬 쉽게 끌려와요. 📖 도감에서 물고기별 ★와 필요한 낚싯대를 볼 수 있어요.</li>
     </ul>
@@ -877,7 +877,7 @@ function drawFishBase(c,sp,x,y,L,sil){
 const HAB_KO={sea:'🌊 바다',river:'🏞️ 강',pond:'🪷 연못'};
 function showCatch(f,rec){
  $('cName').textContent=f.sp.name;$('cSize').textContent=fmtSize(f.size);
- $('cStars').textContent=starStr(starOf(f.sp));$('cPrice').textContent=`💰 상점 가격 ${fmtM(priceOf(f.sp.id,f.size))}몰랑`;
+ $('cStars').textContent=starStr(starOf(f.sp));$('cPrice').textContent=f.hard?`💰 상점 가격 ${fmtM(priceOf(f.sp.id,f.size)*3)}몰랑 · 🔥 한 단계 위 도전 성공! 몰랑 3배`:`💰 상점 가격 ${fmtM(priceOf(f.sp.id,f.size))}몰랑`;
  $('cFlavor').textContent=f.sp.flavor;const ph=PHASES[phaseOf(hourNow())];$('cMeta').textContent=`${ph.em} ${ph.ko} · ${HAB_KO[habitat]} · ${castMeters}m`;
  const b=$('cBadge');if(rec.isNew){b.textContent='도감 새로 등록!';b.hidden=false;}else if(rec.isBest){b.textContent='최고 기록!';b.hidden=false;}else b.hidden=true;
  const c=$('cFish'),cc=c.getContext('2d');cc.clearRect(0,0,c.width,c.height);const gr=cc.createLinearGradient(0,0,0,c.height);gr.addColorStop(0,'#e3ecef');gr.addColorStop(1,'#c7d8dd');cc.fillStyle=gr;cc.fillRect(0,0,c.width,c.height);
@@ -1115,10 +1115,10 @@ function openTank(){closeEmoPanel();$('tank').classList.remove('hidden');tankOpe
 function closeTank(){$('tank').classList.add('hidden');tankOpen=false;cancelAnimationFrame(tankRAF);}
 function showTinfo(){const tx=$('tinfoTxt'),rb=$('tinfoRel');$('tinfoBag').classList.toggle('hidden',!tankSel);if(!tankSel){tx.textContent=tank.length?'물고기를 누르면 이름과 크기가 보여요 · 크기에 따라 다르게 보여요':'';rb.classList.add('hidden');return;}
  const sp=tankSel.sp;tx.textContent=`${sp.name} · ${fmtSize(tankSel.o.s)} · ${starStr(starOf(sp))}`;rb.classList.remove('hidden');}
-function tankToBag(){if(!tankSel)return;if(GS.bag.length>=BAG_MAX){toast(`가방이 꽉 찼어요 (${BAG_MAX}마리)`);return;}const k=tankSel.key;const o=tankSel.o;tank=tank.filter(x=>x.t+'_'+x.id!==k);GS.bag.push({id:o.id,s:o.s,t:Date.now()});saveTank();tankSel=null;buildTank();sfx.pop();toast(`🎒 ${SP_BY[o.id].name}을(를) 가방으로 옮겼어요`);}
+function tankToBag(){if(!tankSel)return;if(GS.bag.length>=BAG_MAX){toast(`가방이 꽉 찼어요 (${BAG_MAX}마리)`);return;}const k=tankSel.key;const o=tankSel.o;tank=tank.filter(x=>x.t+'_'+x.id!==k);GS.bag.push({id:o.id,s:o.s,t:Date.now(),...(o.x===3?{x:3}:{})});saveTank();tankSel=null;buildTank();sfx.pop();toast(`🎒 ${SP_BY[o.id].name}을(를) 가방으로 옮겼어요`);}
 function releaseFromTank(){if(!tankSel)return;const k=tankSel.key;const sp=tankSel.sp;tank=tank.filter(o=>o.t+'_'+o.id!==k);saveTank();tankSel=null;buildTank();sfx.splash(0.2);toast(`잘 가, ${sp.name}! ${sp.hab==='fresh'?'강':'바다'}로 돌려보냈어요`);}
 function keepFish(){if(!fish)return;if(tank.length>=TANK_MAX){toast(`수조가 꽉 찼어요 (${TANK_MAX}마리). 🐠 수조에서 몇 마리 놓아주세요`,3200);return;}
- tank.push({id:fish.sp.id,s:fish.size,t:Date.now()});saveTank();$('catch').classList.add('hidden');sfx.pop();toast(`🐠 수조에 넣었어요 (${tank.length}/${TANK_MAX}) · 왼쪽 아래 수조 버튼에서 볼 수 있어요`,3000);fish=null;setF('idle');}
+ tank.push({id:fish.sp.id,s:fish.size,t:Date.now(),...(fishBonus(fish)===3?{x:3}:{})});saveTank();$('catch').classList.add('hidden');sfx.pop();toast(`🐠 수조에 넣었어요 (${tank.length}/${TANK_MAX}) · 왼쪽 아래 수조 버튼에서 볼 수 있어요`,3000);fish=null;setF('idle');}
 function seaweed(c,w,h,back){const n=back?6:4;for(let i=0;i<n;i++){const x=w*(back?0.06+i*0.17:0.03+i*0.31)+hash(i+(back?0:20))*30;const hh=h*(back?0.3+hash(i+5)*0.25:0.16+hash(i+9)*0.12);
   c.strokeStyle=back?`rgba(${50+i*6},${140+i*5},90,.55)`:`rgba(${70+i*10},${175},${85},.95)`;c.lineWidth=back?9:11;c.lineCap='round';c.beginPath();c.moveTo(x,h*0.9);for(let k=1;k<=8;k++){c.lineTo(x+Math.sin(tankT*1.1+k*0.55+i)*9*k/8,h*0.9-hh*k/8);}c.stroke();}}
 function drawTankBg(c,w,h){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#9be6f5');g.addColorStop(0.5,'#3fa6dc');g.addColorStop(1,'#1f6dab');c.fillStyle=g;c.fillRect(0,0,w,h);
@@ -1711,6 +1711,8 @@ const SP_IDX=new Map(SPECIES.map((s,i)=>[s.id,i]));const SP_BY=Object.fromEntrie
 function starOf(sp){return Math.max(1,Math.min(6,sp.r|0));}
 const STAR_PRICE=[0,20,50,120,300,1000,3000];
 function fracOf(sp,size){return clamp((size-sp.min)/Math.max(0.1,sp.max-sp.min),0,1);}
+function itemPrice(it){return priceOf(it.id,it.s)*(it&&it.x===3?3:1);}
+function fishBonus(f){return f&&f.hard?3:1;}
 function priceOf(id,size){const sp=SP_BY[id];if(!sp)return 0;return Math.round(STAR_PRICE[starOf(sp)]*(0.8+0.6*fracOf(sp,size)));}
 function starStr(n,max=6){return'★'.repeat(n)+'☆'.repeat(Math.max(0,max-n));}
 function fmtM(n){return Math.round(n).toLocaleString('ko-KR');}
@@ -1719,8 +1721,8 @@ const RODS=[null,
  {lv:2,name:'산호초 낚싯대',price:200,c1:'#ff8a7a',c2:'#ffd2b0',desc:'따뜻한 바다의 산호로 만들었어요. ★2 물고기까지 버텨요.'},
  {lv:3,name:'월광 은빛 낚싯대',price:900,c1:'#dfe8f2',c2:'#7fb6ff',desc:'달빛을 머금은 은빛 낚싯대. 끝에 달린 초승달이 은은하게 빛나요. ★3까지.'},
  {lv:4,name:'폭풍의 삼지창 낚싯대',price:2800,c1:'#24345e',c2:'#ffd34d',desc:'번개를 품은 삼지창 낚싯대. 거친 ★4 물고기도 꼼짝 못 해요.'},
- {lv:5,name:'용왕의 여의주 낚싯대',price:8800,c1:'#f5c542',c2:'#ff4d6d',desc:'용왕님이 아끼던 전설의 낚싯대. 여의주가 빛나며 ★5 전설의 물고기까지 낚아요.'},
- {lv:6,name:'신화급 불빠따 낚싯대',price:20000,c1:'#ff5a1f',c2:'#ffd23f',desc:'🔥 신화급! 전국 개미들의 “제발 떡상 가즈아” 기원이 모이고 모여 활활 불타오르는 방망이 낚싯대. 한 번 휘두르면 차트도 물고기도 수직 상승 📈 끝에 달린 빨간 양봉이 위로만 솟아요. ★6 신화의 바다 친구들까지 낚아요. (※ 실제 주가와는 아무 상관 없어요)'},
+ {lv:5,name:'용왕의 여의주 낚싯대',price:10000,c1:'#f5c542',c2:'#ff4d6d',desc:'용왕님이 아끼던 전설의 낚싯대. 여의주가 빛나며 ★5 전설의 물고기까지 낚아요.'},
+ {lv:6,name:'신화급 불빠따 낚싯대',price:30000,c1:'#ff5a1f',c2:'#ffd23f',desc:'🔥 신화급! 전국 개미들의 “제발 떡상 가즈아” 기원이 모이고 모여 활활 불타오르는 방망이 낚싯대. 한 번 휘두르면 차트도 물고기도 수직 상승 📈 끝에 달린 빨간 양봉이 위로만 솟아요. ★6 신화의 바다 친구들까지 낚아요. (※ 실제 주가와는 아무 상관 없어요)'},
 ];
 var GS={money:0,rods:[1],rod:1,bag:[],food:[],buffUntil:0,stats:{sold:0,cooked:0,earned:0}};
 const BAG_MAX=40,FOOD_MAX=20;
@@ -1857,7 +1859,7 @@ function updShop(dt,dd){if(!SHOP.g)return;const n=SHOP.npc,u=n.userData;n.positi
  if(dd<6&&t-SHOP.greetT>25&&entered){SHOP.greetT=t;showBubble(SHOP.label,['어서 오게나! 🐉','좋은 물고기를 잡았는가?','허허, 반갑구먼!','낚싯대 구경하고 가게나'][Math.floor(Math.random()*4)],false,4);}}
 
 /* ---------- 가방 ---------- */
-function bagAdd(id,size){if(GS.bag.length>=BAG_MAX)return false;GS.bag.push({id,s:size,t:Date.now()+Math.floor(Math.random()*1000)});markSave();return true;}
+function bagAdd(id,size,x){if(GS.bag.length>=BAG_MAX)return false;GS.bag.push({id,s:size,t:Date.now()+Math.floor(Math.random()*1000),...(x===3?{x:3}:{})});markSave();return true;}
 let bagTab='fish';
 function openBag(tab){if(!entered)return;closeEmoPanel();closeChat();if(tab)bagTab=tab;renderBag();$('bag').classList.remove('hidden');}
 function closeBag(){$('bag').classList.add('hidden');}
@@ -1868,8 +1870,8 @@ function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
   const head=document.createElement('div');head.className='bsub';head.textContent=`물고기 ${GS.bag.length} / ${BAG_MAX}마리 · 용왕님 상점에서 팔거나 모닥불에서 요리할 수 있어요`;box.appendChild(head);
   if(!GS.bag.length){const e=document.createElement('div');e.className='empty';e.innerHTML='가방이 비어 있어요.<br>물고기를 잡은 뒤 <b>‘🎒 가방에 넣기’</b>를 눌러 보세요.';box.appendChild(e);}
   const list=document.createElement('div');list.className='ilist';
-  [...GS.bag].sort((a,b)=>starOf(SP_BY[b.id])-starOf(SP_BY[a.id])||b.s-a.s).forEach(it=>{const sp=SP_BY[it.id];if(!sp)return;const row=itemRow(sp,it.s,`${starStr(starOf(sp))} · ${fmtM(priceOf(it.id,it.s))} 몰랑`);
-   const b1=document.createElement('button');b1.textContent='🐠 수조로';b1.onclick=()=>{if(tank.length>=TANK_MAX){toast(`수조가 꽉 찼어요 (${TANK_MAX}마리)`);return;}GS.bag=GS.bag.filter(x=>x!==it);tank.push({id:it.id,s:it.s,t:Date.now()});saveTank();markSave();sfx.pop();renderBag();toast(`🐠 ${sp.name}을(를) 수조에 넣었어요`);};
+  [...GS.bag].sort((a,b)=>starOf(SP_BY[b.id])-starOf(SP_BY[a.id])||b.s-a.s).forEach(it=>{const sp=SP_BY[it.id];if(!sp)return;const row=itemRow(sp,it.s,`${starStr(starOf(sp))} · ${fmtM(itemPrice(it))} 몰랑${it.x===3?' · 🔥×3':''}`);
+   const b1=document.createElement('button');b1.textContent='🐠 수조로';b1.onclick=()=>{if(tank.length>=TANK_MAX){toast(`수조가 꽉 찼어요 (${TANK_MAX}마리)`);return;}GS.bag=GS.bag.filter(x=>x!==it);tank.push({id:it.id,s:it.s,t:Date.now(),...(it.x===3?{x:3}:{})});saveTank();markSave();sfx.pop();renderBag();toast(`🐠 ${sp.name}을(를) 수조에 넣었어요`);};
    const b2=document.createElement('button');b2.className='ghost';b2.textContent='놓아주기';b2.onclick=()=>{GS.bag=GS.bag.filter(x=>x!==it);markSave();sfx.splash(0.2);renderBag();toast(`잘 가, ${sp.name}!`);};
    row.querySelector('.acts').append(b1,b2);list.appendChild(row);});box.appendChild(list);}
  if(bagTab==='gear'){
@@ -1923,21 +1925,21 @@ function renderShop(){$('shopMoney').textContent=`${fmtM(GS.money)} 몰랑`;docu
    acts.appendChild(b);row.append(c,tx,acts);list.appendChild(row);}
   box.appendChild(list);}
  else{
-  const total=GS.bag.reduce((s,it)=>s+priceOf(it.id,it.s),0);
+  const total=GS.bag.reduce((s,it)=>s+itemPrice(it),0);
   const p=document.createElement('div');p.className='bsub';p.innerHTML=`★가 많을수록, 크기가 클수록 비싸게 사 주신대요. (★1 ${STAR_PRICE[1]} · ★2 ${STAR_PRICE[2]} · ★3 ${STAR_PRICE[3]} · ★4 ${STAR_PRICE[4]} · ★5 ${STAR_PRICE[5]} · ★6 ${fmtM(STAR_PRICE[6])}몰랑 기준, 크기에 따라 0.8~1.4배)`;box.appendChild(p);
   if(!GS.bag.length){const e=document.createElement('div');e.className='empty';e.innerHTML='가방에 팔 물고기가 없어요.<br>잡은 물고기를 <b>‘🎒 가방에 넣기’</b> 하면 여기서 팔 수 있어요.';box.appendChild(e);}
   else{const all=document.createElement('button');all.className='primary small sellall';all.textContent=sellArm?`한 번 더 누르면 ${GS.bag.length}마리를 ${fmtM(total)}몰랑에 팔아요`:`💰 전부 팔기 (${GS.bag.length}마리 · ${fmtM(total)}몰랑)`;
    all.onclick=()=>{if(!sellArm){sellArm=1;renderShop();setTimeout(()=>{if(sellArm){sellArm=0;if(!$('shop').classList.contains('hidden'))renderShop();}},4000);return;}sellArm=0;sellItems([...GS.bag]);};box.appendChild(all);}
   const list=document.createElement('div');list.className='ilist';
-  [...GS.bag].sort((a,b)=>priceOf(b.id,b.s)-priceOf(a.id,a.s)).forEach(it=>{const sp=SP_BY[it.id];if(!sp)return;const row=itemRow(sp,it.s,starStr(starOf(sp)));
-   const b=document.createElement('button');b.className='buy';b.innerHTML=`${fmtM(priceOf(it.id,it.s))}<small>몰랑에 팔기</small>`;b.onclick=()=>sellItems([it]);row.querySelector('.acts').appendChild(b);list.appendChild(row);});
+  [...GS.bag].sort((a,b)=>itemPrice(b)-itemPrice(a)).forEach(it=>{const sp=SP_BY[it.id];if(!sp)return;const row=itemRow(sp,it.s,starStr(starOf(sp))+(it.x===3?' · 🔥 도전 보너스 ×3':''));
+   const b=document.createElement('button');b.className='buy';b.innerHTML=`${fmtM(itemPrice(it))}<small>몰랑에 팔기</small>`;b.onclick=()=>sellItems([it]);row.querySelector('.acts').appendChild(b);list.appendChild(row);});
   box.appendChild(list);
   if(tank.length){const n=document.createElement('div');n.className='bsub';n.textContent='수조에 있는 물고기를 팔고 싶으면 🐠 수조에서 ‘🎒 가방으로’를 먼저 눌러요.';box.appendChild(n);}}}
 function buyRod(lv){const R=RODS[lv];if(GS.rods.includes(lv))return;if(GS.money<R.price){toast(`몰랑이 ${fmtM(R.price-GS.money)} 부족해요. 물고기를 잡아서 팔아 보세요!`,3000);sfx.snap&&0;return;}
  GS.money-=R.price;GS.rods.push(lv);GS.rods.sort();markSave();equipRod(lv);renderShop();
  showBubble(SHOP.label,lv===6?'떡상 기원! 🔥📈 신화가 탄생했구먼!':lv===5?'오오… 내 여의주 낚싯대를! 잘 부탁하네 🐉✨':'좋은 선택일세! 🎣',false,4);for(let i=0;i<3;i++)setTimeout(()=>sfx.pop(),i*120);
  burstHearts&&burstHearts(P.pos.x,P.pos.y+2.2,P.pos.z,6);}
-function sellItems(items){let sum=0,n=0;const set=new Set(items);for(const it of items){sum+=priceOf(it.id,it.s);n++;}if(!n)return;
+function sellItems(items){let sum=0,n=0;const set=new Set(items);for(const it of items){sum+=itemPrice(it);n++;}if(!n)return;
  GS.bag=GS.bag.filter(x=>!set.has(x));GS.money+=sum;GS.stats.sold=(GS.stats.sold||0)+n;GS.stats.earned=(GS.stats.earned||0)+sum;markSave();updateHUD();renderShop();
  for(let i=0;i<Math.min(4,n);i++)setTimeout(()=>tone(1318.5+i*120,0,0.12,0.05,'triangle'),i*70);
  toast(`💰 ${n}마리를 팔아 ${fmtM(sum)}몰랑을 받았어요 (가진 돈 ${fmtM(GS.money)}몰랑)`,2800);
@@ -2195,11 +2197,11 @@ function applySave(d){if(!d||typeof d!=='object')return false;
  const L=d.look;if(L&&[L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK={hat:clamp(L.hat,0,6),hc:clamp(L.hc,0,COLORS.length-1),cloth:clamp(L.cloth,0,4),cc:clamp(L.cc,0,COLORS.length-1)};
  if(d.name&&Number.isInteger(d.name.a)&&Number.isInteger(d.name.b)){const ck=checkNick(d.name.nk||'');NAME={a:d.name.a,b:d.name.b,nk:ck.ok?ck.nick:''};}
  if(d.book&&typeof d.book==='object'){const nb={};for(const[k,v]of Object.entries(d.book))if(SP_BY[k]&&v&&Number.isFinite(+v.n)&&Number.isFinite(+v.best))nb[k]={n:Math.max(1,+v.n|0),best:+v.best};book=nb;}
- if(Array.isArray(d.tank))tank=d.tank.filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,TANK_MAX).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now()}));
+ if(Array.isArray(d.tank))tank=d.tank.filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,TANK_MAX).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
  if(d.love&&typeof d.love==='object')for(const[k,v]of Object.entries(d.love))try{localStorage.setItem('monggeul-love-'+k,String(v|0));}catch(e){}
  if(Array.isArray(d.emoji)){const f=d.emoji.filter(e=>EMOJI_SET.has(e)).slice(0,5);if(f.length===5)recentEmoji=f;}
  const g=d.gs||{};GS.money=clamp(Math.floor(+g.money||0),0,1e9);GS.rods=[...new Set([1,...(Array.isArray(g.rods)?g.rods:[]).map(x=>x|0).filter(x=>x>=1&&x<=6)])].sort();GS.rod=GS.rods.includes(g.rod|0)?g.rod|0:Math.max(...GS.rods);
- GS.bag=(Array.isArray(g.bag)?g.bag:[]).filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,BAG_MAX).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now()}));
+ GS.bag=(Array.isArray(g.bag)?g.bag:[]).filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,BAG_MAX).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
  GS.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&(DISH[f.k]||/^f\d$/.test(f.k))).slice(0,FOOD_MAX).map(f=>({k:f.k,s:SP_BY[f.s]?f.s:''}));
  GS.buffUntil=Number.isFinite(+g.buffUntil)?+g.buffUntil:0;GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});
  try{localStorage.setItem('monggeul-me',JSON.stringify({look:LOOK,name:NAME}));localStorage.setItem(KEY,JSON.stringify(book));localStorage.setItem(TANK_KEY,JSON.stringify(tank));}catch(e){}
@@ -2422,11 +2424,14 @@ function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 /* ---------- v6: 업데이트 공지 · 한 단계 위 물고기 ---------- */
 const HARD_D=0.16;
 function starRangeTxt(E){return E>=6?`★6 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
-function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요`;}
-function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위 · 난이도 높음`;}
-const NEWS_VER='2026-11-11i';
+function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요 · 잡으면 몰랑 3배`;}
+function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위 · 잡으면 몰랑 3배`;}
+const NEWS_VER='2026-11-11j';
 const NEWS=[
- {d:'11월 11일',t:'🏆 명예의 전당 · 생물 150종',n:true,i:[
+ {d:'11월 11일',t:'💰 낚싯대 가격 · 도전 보너스',n:true,i:[
+  '🎣 낚싯대 가격이 바뀌었어요: ★5 용왕의 여의주 <b>8,800 → 10,000몰랑</b>, ★6 신화급 불빠따 <b>20,000 → 30,000몰랑</b>.',
+  '🔥 내 낚시 능력보다 <b>★1 높은 물고기</b>를 잡으면 상점에 팔 때 <b>몰랑 3배</b>! 가방·수조로 옮겨도 보너스는 그대로예요. (🔥×3 표시)']},
+ {d:'11월 11일',t:'🏆 명예의 전당 · 생물 150종',i:[
   '🐋 생물이 <b>70종 → 150종</b>으로 늘었어요! ★1 8종 · ★2 10종 · ★3 10종 · ★4 12종 · <b>★5 20종 · ★6 20종</b>이 새로 왔어요. (고래·바다거북·대왕오징어·백상아리·청새치·킹크랩·황쏘가리 등)',
   '🏆 모닥불 옆에 반짝이는 <b>금빛 명예의 전당</b>이 생겼어요. 생물마다 가장 큰 크기를 잡은 사람의 이름이 새겨지고, 더 큰 걸 잡으면 이름이 바뀌어요.',
   '👑 명예의 전당 맨 위에 <b>도감왕</b>(가장 많은 종류를 잡은 낚시꾼)이 보여요. 2·3등도 함께 나와요.',
@@ -2454,7 +2459,7 @@ const NEWS=[
   '🐶 퍼그 <b>호떡</b>·<b>찹쌀</b>이 놀러 왔고, 콩이는 하얀 말티즈가 됐어요.',
   '🎥 쓰다듬기·껴안기를 하면 카메라가 가까이 다가가요.',
   '✨ ★6 신화 물고기 5종: 물개 · 돌고래 · 아기 범고래 · 해달(바다), 수달(민물).',
-  '🔥 ★6 <b>신화급 불빠따 낚싯대</b> (20,000몰랑) 출시!',
+  '🔥 ★6 <b>신화급 불빠따 낚싯대</b> 출시!',
   '🐠 수조가 넓어지고 최대 <b>50마리</b>까지 키울 수 있어요.',
   '🍁 단풍·은행나무, 흩날리는 낙엽, 발로 차면 날리는 바닥 낙엽.',
   '⚓ 낚시 부두 2곳 추가, 지도에 부두 끝까지 표시.',
@@ -3037,7 +3042,7 @@ $('chatForm').addEventListener('submit',e=>{e.preventDefault();sendChat();});
 $('profX').addEventListener('click',closeProfile);$('prof').addEventListener('click',e=>{if(e.target.id==='prof')closeProfile();});
 $('profMute').addEventListener('click',()=>{if(!profPeer)return;if(mutedPeers.has(profPeer)){mutedPeers.delete(profPeer);toast('이 사람의 채팅을 다시 보여 줘요');}else{mutedPeers.add(profPeer);toast('이 사람의 채팅을 숨겼어요 (이번 접속 동안)');}$('profMute').textContent=mutedPeers.has(profPeer)?'💬 이 사람 채팅 다시 보기':'🙈 이 사람 채팅 숨기기';if(chatOpen)renderChat();});
 $('profCv').addEventListener('pointerdown',e=>{const r=e.currentTarget.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;let hit=null;for(const cr of[...profCr].sort((a,b)=>b.y-a.y)){const s=cr.spr;if(Math.abs(x-cr.x)<s.w*0.45&&Math.abs(y-cr.y)<s.h*0.45){hit=cr;break;}}profSel=hit;if(hit){sfx.pop();$('profInfo').textContent=`${hit.sp.name} · ${fmtSize(hit.o.s)} · ${starStr(starOf(hit.sp))}`;}});
-$('toBag').addEventListener('click',()=>{if(!fish)return;if(!bagAdd(fish.sp.id,fish.size)){toast(`가방이 꽉 찼어요 (${BAG_MAX}마리). 상점에서 팔거나 놓아주세요`,3200);return;}$('catch').classList.add('hidden');sfx.pop();toast(`🎒 가방에 넣었어요 (${GS.bag.length}/${BAG_MAX}) · 상점 가격 ${fmtM(priceOf(fish.sp.id,fish.size))}몰랑`,2600);fish=null;setF('idle');});
+$('toBag').addEventListener('click',()=>{if(!fish)return;if(!bagAdd(fish.sp.id,fish.size,fishBonus(fish))){toast(`가방이 꽉 찼어요 (${BAG_MAX}마리). 상점에서 팔거나 놓아주세요`,3200);return;}$('catch').classList.add('hidden');sfx.pop();toast(`🎒 가방에 넣었어요 (${GS.bag.length}/${BAG_MAX}) · 상점 가격 ${fmtM(priceOf(fish.sp.id,fish.size)*fishBonus(fish))}몰랑${fishBonus(fish)===3?' (🔥 보너스 ×3)':''}`,2600);fish=null;setF('idle');});
 $('tinfoBag').addEventListener('click',tankToBag);
 document.querySelectorAll('#auth .tabs button').forEach(b=>b.addEventListener('click',()=>{authTab=b.dataset.tab;renderAuthTab();}));
 $('authGo').addEventListener('click',authSubmit);$('authGuest').addEventListener('click',authGuest);$('authQuickBtn').addEventListener('click',authQuick);
