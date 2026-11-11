@@ -57,7 +57,7 @@ button{font-family:inherit}
 .petbox button{height:48px;padding:0 16px;border-radius:24px;border:3px solid #fff;background:#ffd9e6;color:#7a2946;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.2);display:flex;align-items:center;gap:5px;white-space:nowrap}
 .petbox button b{font-size:21px}
 .petbox button.hug{background:#ffe7b8;color:#6b4508}
-.petbox button:active{transform:scale(.92)}
+.petbox button:active{transform:scale(.92)}.petbox button.fol{height:36px;padding:0 14px;font-size:13px;background:#eef3f8;color:#3a4a5c;border-width:2px}.petbox button.fol.back{background:#e3f6ea;color:#22663f}
 .petbox kbd{font-size:10px;background:rgba(255,255,255,.7);border-radius:4px;padding:0 4px;font-family:inherit}
 .lbl.ani .nm{font-size:11px;background:rgba(120,70,40,.42);padding:2px 8px}
 @media (max-width:520px){.petbox{bottom:calc(max(14px,env(safe-area-inset-bottom)) + 168px)}.petbox kbd{display:none}}
@@ -299,7 +299,7 @@ body.cine .boatbadge{opacity:0}
 <div class="emotes" id="emotes"></div>
 <div class="emopanel hidden" id="emoPanel"></div>
 <button id="actBtn" class="actbtn hidden"></button>
-<div class="petbox hidden" id="petBox"><div class="pn" id="petName"></div><div class="pb"><button id="petBtn"><b>🤚</b>쓰다듬기 <kbd>Q</kbd></button><button id="hugBtn" class="hug"><b>🤗</b>껴안기 <kbd>E</kbd></button></div></div>
+<div class="petbox hidden" id="petBox"><div class="pn" id="petName"></div><div class="pb"><button id="petBtn"><b>🤚</b>쓰다듬기 <kbd>Q</kbd></button><button id="hugBtn" class="hug"><b>🤗</b>껴안기 <kbd>E</kbd></button></div><button id="folBtn" class="fol hidden"></button></div>
 <div id="joy" class="joy hidden"><div id="knob" class="knob"></div></div>
 <div id="charge" class="charge hidden"><div class="cbar"><div id="chargeFill"></div></div><div id="chargeTxt"></div></div>
 <div id="tension" class="tension hidden"><div id="tHard" class="hidden"></div><div class="trow"><span>줄 장력</span><span id="tDist"></span></div><div class="tbar"><div class="tdanger"></div><div id="tFill"></div></div><div id="tMsg"></div></div>
@@ -451,7 +451,7 @@ body.cine .boatbadge{opacity:0}
     <ul class="tips">
       <li>섬 곳곳에 토끼·강아지(말티즈·퍼그 등)·고양이·아기 코끼리·판다·레서판다·사슴·너구리·다람쥐 18마리가 살아요. 모두에게 같은 자리에 보여요.</li>
       <li>가까이 다가가면 <em>🤚 쓰다듬기</em>, <em>🤗 껴안기</em> 버튼이 떠요. (PC는 <kbd>Q</kbd> / <kbd>E</kbd>) 하트가 나오고, 같은 섬 친구들에게도 보여요.</li>
-      <li>교감할 때마다 친밀도 💕+1. <b>친밀도 10 이상</b>이 되면 그 동물이 나를 졸졸 따라다녀요! 같은 동물을 더 아끼는 사람이 있으면 그 사람을 따라가고, 한 사람에게는 가장 친한 동물 1마리만 따라와요. 🎒 가방 → 🐾 동물에서 확인해요.</li>
+      <li>교감할 때마다 친밀도 💕+1. <b>친밀도 10 이상</b>이 되면 그 동물이 나를 졸졸 따라다녀요! 같은 동물을 더 아끼는 사람이 있으면 그 사람을 따라가고, 한 사람에게는 가장 친한 동물 1마리만 따라와요. 🎒 가방 → 🐾 동물에서 확인해요. 따라오는 동물은 <b>직접 눌러야</b> 쓰다듬기·껴안기 버튼이 떠요. 그때 <b>🏠 그만 따라오기</b>를 누르면 집으로 돌아가요.</li>
     </ul>
     <div class="btitle">🚶 바로 가기</div>
     <div class="chips go3"><button data-go="dock">⛵ 나무 부두</button><button data-go="river">🏞️ 강가</button><button data-go="pond">🪷 연못가</button></div>
@@ -1700,10 +1700,11 @@ function updateAnimals(dt){const now=Date.now()/1000;let near=null,nd=1e9;
   const m=A.m;const dd=Math.hypot(x-P.pos.x,z-P.pos.z);m.root.visible=dd<60;m.root.position.set(x,groundY(x,z),z);m.root.rotation.y=A.yaw;if(m.root.visible)animAnimal(A,dt,moving);
   if(dd<nd){nd=dd;near=A;}
   if(dd<16&&mode!=='closet')placeLabel(A.label,st.x,m.root.position.y+A.labelY,st.z);else A.label.el.style.display='none';}
- nearAnimal=(entered&&mode==='walk'&&!BOAT.on&&nd<2.6)?near:null;refreshPet();}
+ nearAnimal=pickNearAnimal();refreshPet();}
 let petShown=null;
 function refreshPet(){const box=$('petBox');const A=(nearAnimal&&!modalOpen())?nearAnimal:null;if(A===petShown)return;petShown=A;
- if(!A){box.classList.add('hidden');return;}const lvn=loveOf(A.d.id);$('petName').textContent=`${A.d.em} ${A.d.name} · ${A.d.sp} · 💕${lvn}`+(A.fol&&A.fol.me?' · 🐾 나를 따라오는 중':lvn<FOLLOW_MIN?` · ${FOLLOW_MIN-lvn}번 더 교감하면 따라와요`:'');box.classList.remove('hidden');}
+ if(!A){box.classList.add('hidden');return;}const lvn=loveOf(A.d.id);const off=NOFOL.has(A.d.id),mine=!!(A.fol&&A.fol.me);$('petName').textContent=`${A.d.em} ${A.d.name} · ${A.d.sp} · 💕${lvn}`+(mine?' · 🐾 나를 따라오는 중':off?' · 🏠 따라오지 않게 함':lvn<FOLLOW_MIN?` · ${FOLLOW_MIN-lvn}번 더 교감하면 따라와요`:'');box.classList.remove('hidden');
+ const fb=$('folBtn');fb.classList.toggle('hidden',!(mine||(off&&lvn>=FOLLOW_MIN)));fb.innerHTML=mine?'🏠 그만 따라오기':'🐾 다시 따라오게 하기';fb.classList.toggle('back',!mine);}
 const REACT={dog:'꼬리를 신나게 흔들어요 💕',cat:'골골송을 불러요 💕',rabbit:'코를 씰룩씰룩해요 💕',elephant:'코를 번쩍 들어 기뻐해요 💕',panda:'데굴데굴 좋아해요 💕',redpanda:'두 팔을 번쩍 들고 좋아해요 💕',deer:'귀를 쫑긋하며 좋아해요 💕',raccoon:'눈을 가늘게 뜨고 좋아해요 💕',squirrel:'볼을 부풀리며 좋아해요 💕'};
 function josa(w,a,b){const c=w.charCodeAt(w.length-1)-0xac00;return(c>=0&&c<=11171&&c%28)?a:b;}
 function animalSound(k){if(!AC)return;
@@ -1716,7 +1717,7 @@ function animalSound(k){if(!AC)return;
 function animalReact(A,kind,mine,px,pz){A.happyUntil=t+1.8;A.holdUntil=t+3.2;A.fx=px;A.fz=pz;A.catchUp=true;burstHearts(A.x,A.m.root.position.y+A.labelY*0.75,A.z,kind?9:5);animalSound(A.d.kind);showBubble(A.label,kind?'🤗':'💕',true,1.8);
  if(!mine)return;const key='monggeul-love-'+A.d.id;let n=0;try{n=(+localStorage.getItem(key)||0)+1;localStorage.setItem(key,String(n));}catch(e){}markSave();
  const d=A.d;toast(kind?`${d.name}${josa(d.name,'을','를')} 꼭 안아줬어요 🤗 (💕${n})`:`${d.name}${josa(d.name,'이','가')} ${REACT[d.kind]} (💕${n})`,2400);}
-function interact(kind){const rt=performance.now()/1000;if(!nearAnimal||rt<petCD||mode!=='walk')return;petCD=rt+0.9;const A=nearAnimal;initAudio();
+function interact(kind){const rt=performance.now()/1000;if(!nearAnimal||rt<petCD||mode!=='walk')return;petCD=rt+0.9;const A=nearAnimal;if(PET_PIN.A===A)PET_PIN.until=t+8;initAudio();
  P.yaw=Math.atan2(A.x-P.pos.x,A.z-P.pos.z);P.char.actT=t;P.char.actK=kind;animalReact(A,kind,true,P.pos.x,P.pos.z);startCine(A,kind);petShown=null;folAcc=9;ME.ai=A.i;ME.ak=kind;ME.an=(ME.an|0)+1;markPresence();}
 
 /* ========== v2-A: 별 · 몰랑 · 낚싯대 · 가방 · 상점 ========== */
@@ -2198,9 +2199,10 @@ function goNearPeer(peer){const r=remote.get(peer);if(!r||!entered)return;if(BOA
 
 /* ---------- 3D 눌러서 고르기 (상점·다른 사람) ---------- */
 const RAY=new THREE.Raycaster();const _ndc=new THREE.Vector2();let tapD=null;
-function pickAt(cx,cy){_ndc.set(cx/W*2-1,-(cy/H)*2+1);RAY.setFromCamera(_ndc,camera);const objs=[SHOP.g];if(BOARD_G)objs.push(BOARD_G);if(HOF.g)objs.push(HOF.g);for(const r of remote.values())if(r.char&&!r.leaving)objs.push(r.char.root);
- const hits=RAY.intersectObjects(objs,true);for(const h of hits){let o=h.object;while(o){if(o.userData&&o.userData.peer)return{peer:o.userData.peer};if(o.userData&&o.userData.pick==='shop')return{shop:true};if(o.userData&&o.userData.pick==='board')return{board:true};if(o.userData&&o.userData.pick==='hof')return{hof:true};o=o.parent;}}return null;}
-function onTap(cx,cy){const hit=pickAt(cx,cy);if(!hit)return false;
+function pickAt(cx,cy){_ndc.set(cx/W*2-1,-(cy/H)*2+1);RAY.setFromCamera(_ndc,camera);const objs=[SHOP.g];if(BOARD_G)objs.push(BOARD_G);if(HOF.g)objs.push(HOF.g);for(const r of remote.values())if(r.char&&!r.leaving)objs.push(r.char.root);for(const A of ANIMS)if(A.m.root.visible){if(!A.m.root.userData.animTag){A.m.root.userData.animTag=1;A.m.root.traverse(o=>{o.userData.anim=A.i;});}objs.push(A.m.root);}
+ const hits=RAY.intersectObjects(objs,true);for(const h of hits){let o=h.object;while(o){if(o.userData&&o.userData.peer)return{peer:o.userData.peer};if(o.userData&&o.userData.pick==='shop')return{shop:true};if(o.userData&&o.userData.pick==='board')return{board:true};if(o.userData&&o.userData.pick==='hof')return{hof:true};if(o.userData&&o.userData.anim!==undefined)return{anim:o.userData.anim};o=o.parent;}}return null;}
+function onTap(cx,cy){let hit=pickAt(cx,cy);if(!hit||(hit.anim===undefined&&hit.peer===undefined)){const ah=animByScreen(cx,cy);if(ah)hit=ah;}if(!hit)return false;
+ if(hit.anim!==undefined){petTap(ANIMS[hit.anim]);return true;}
  if(hit.shop){const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);if(dd<9)openShop();else toast('🐉 용왕님 상점이에요. 가까이 가면 들어갈 수 있어요',2400);return true;}
  if(hit.hof){const dd=Math.hypot(P.pos.x-HOF_POS.x,P.pos.z-HOF_POS.z);if(dd<14)openHof();else toast('🏆 명예의 전당이에요. 가까이 가면 기록을 볼 수 있어요',2400);return true;}
  if(hit.board){const dd=Math.hypot(P.pos.x-BOARD_G.position.x,P.pos.z-BOARD_G.position.z);if(dd<10)openBoard();else toast('📋 게시판이에요. 가까이 가면 요청사항을 남길 수 있어요',2400);return true;}
@@ -2228,7 +2230,7 @@ function applySave(d){if(!d||typeof d!=='object')return false;
  const g=d.gs||{};GS.money=clamp(Math.floor(+g.money||0),0,1e9);GS.rods=[...new Set([1,...(Array.isArray(g.rods)?g.rods:[]).map(x=>x|0).filter(x=>x>=1&&x<=7)])].sort();GS.rod=GS.rods.includes(g.rod|0)?g.rod|0:Math.max(...GS.rods);
  GS.bag=(Array.isArray(g.bag)?g.bag:[]).filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,BAG_MAX).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
  GS.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&(DISH[f.k]||/^f\d$/.test(f.k))).slice(0,FOOD_MAX).map(f=>({k:f.k,s:SP_BY[f.s]?f.s:''}));
- GS.buffUntil=Number.isFinite(+g.buffUntil)?+g.buffUntil:0;GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});LEG.n=Math.max(LEG.n,(+GS.stats.leg||0)|0);
+ GS.buffUntil=Number.isFinite(+g.buffUntil)?+g.buffUntil:0;GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});LEG.n=Math.max(LEG.n,(+GS.stats.leg||0)|0);if(Array.isArray(GS.stats.nofol)){NOFOL.clear();for(const id of GS.stats.nofol)NOFOL.add(String(id));try{localStorage.setItem('monggeul-nofollow',JSON.stringify([...NOFOL]));}catch(e){}}
  try{localStorage.setItem('monggeul-me',JSON.stringify({look:LOOK,name:NAME}));localStorage.setItem(KEY,JSON.stringify(book));localStorage.setItem(TANK_KEY,JSON.stringify(tank));}catch(e){}
  if(P.char){rebuildMe();}buildEmoteBar();updateHUD();return true;}
 function loadLocalGS(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s&&s.gs){const keep={look:LOOK,name:NAME,book,tank};applySave(Object.assign({},s,keep,{gs:s.gs}));}}catch(e){}}
@@ -2412,7 +2414,7 @@ function updV3(dt){const n=S?S.night:0;if(starMat){starMat.uniforms.uTime.value=
 /* ========== v5: 동물 친밀도 & 따라다니기 ========== */
 const FOLLOW_MIN=10;
 function loveOf(id){try{return +localStorage.getItem('monggeul-love-'+id)||0;}catch(e){return 0;}}
-function myLoveTop(){return ANIMS.map(A=>[A.i,loveOf(A.d.id)]).filter(x=>x[1]>=FOLLOW_MIN).sort((a,b)=>b[1]-a[1]).slice(0,5);}
+function myLoveTop(){return ANIMS.map(A=>[A.i,loveOf(A.d.id)]).filter(x=>x[1]>=FOLLOW_MIN&&!NOFOL.has(ANIMS[x[0]].d.id)).sort((a,b)=>b[1]-a[1]).slice(0,5);}
 let folAcc=9,folMine=-1;
 function leaderPos(L){if(!L)return null;if(L.me)return BOAT.on?null:{x:P.pos.x,z:P.pos.z,yaw:P.yaw,name:nameOf(NAME)};const r=remote.get(L.id);if(!r||r.leaving||!r.char||r.bt===1)return null;return{x:r.pos.x,z:r.pos.z,yaw:r.yaw,name:r.name};}
 function computeFollow(){
@@ -2427,7 +2429,7 @@ function computeFollow(){
   const same=(!prev&&!now)||(prev&&now&&((prev.me&&now.me)||(prev.id&&prev.id===now.id)));
   if(!same){if(prev&&!now)A.catchUp=true;A.fol=now;
    const L=leaderPos(now);A.label.nm.textContent=`${A.d.em} ${A.d.name}`+(L?` 🐾${L.name}`:'');
-   if(prev&&prev.me&&!now?.me&&entered){const L2=leaderPos(now);toast(L2?`${A.d.name}${josa(A.d.name,'이','가')} ${L2.name} 님을 따라갔어요 (친밀도가 더 높아요)`:`${A.d.name}${josa(A.d.name,'이','가')} 집으로 돌아갔어요`,3200);}}
+   if(prev&&prev.me&&!now?.me&&entered&&!(t<FOL_QUIET)){const L2=leaderPos(now);toast(L2?`${A.d.name}${josa(A.d.name,'이','가')} ${L2.name} 님을 따라갔어요 (친밀도가 더 높아요)`:`${A.d.name}${josa(A.d.name,'이','가')} 집으로 돌아갔어요`,3200);}}
   else if(now&&!now.me){const L=leaderPos(now);if(L)A.label.nm.textContent=`${A.d.em} ${A.d.name} 🐾${L.name}`;}
   if(now&&now.me)mine=A.i;}
  if(mine!==folMine){if(mine>=0&&entered){const A=ANIMS[mine];toast(`🐾 ${A.d.name}${josa(A.d.name,'이','가')} 나를 졸졸 따라와요! (친밀도 💕${loveOf(A.d.id)})`,3200);showBubble(A.label,'💕',true,2);}folMine=mine;}}
@@ -2442,7 +2444,7 @@ function followStep(A,dt){const L=leaderPos(A.fol);if(!L)return null;const fx=Ma
 function updFollow(dt){folAcc+=dt;if(folAcc>0.5){folAcc=0;computeFollow();}}
 function loveListHTML(){const rows=ANIMS.map(A=>({A,n:loveOf(A.d.id)})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n);
  if(!rows.length)return'<div class="empty">아직 친해진 동물이 없어요.<br>동물에게 다가가 🤚 쓰다듬기 · 🤗 껴안기를 해 보세요!</div>';
- return'<div class="ilist">'+rows.map(({A,n})=>{const L=leaderPos(A.fol);const st=A.fol&&A.fol.me?'<b style="color:#2f9e68">🐾 나를 따라오는 중</b>':L?`🐾 ${escapeHtml(L.name)} 님을 따라가는 중`:n>=FOLLOW_MIN?'따라올 수 있어요 (더 친한 동물이 따라오는 중)':`💕 ${FOLLOW_MIN-n}번 더 교감하면 따라와요`;
+ return'<div class="ilist">'+rows.map(({A,n})=>{const L=leaderPos(A.fol);const st=NOFOL.has(A.d.id)?'🏠 따라오지 않게 했어요 (동물을 눌러 다시 따라오게 할 수 있어요)':A.fol&&A.fol.me?'<b style="color:#2f9e68">🐾 나를 따라오는 중</b>':L?`🐾 ${escapeHtml(L.name)} 님을 따라가는 중`:n>=FOLLOW_MIN?'따라올 수 있어요 (더 친한 동물이 따라오는 중)':`💕 ${FOLLOW_MIN-n}번 더 교감하면 따라와요`;
   return`<div class="irow"><div class="fic">${A.d.em}</div><div class="itx"><b>${A.d.name} <em>${A.d.sp}</em></b><small>💕 친밀도 ${n} · ${st}</small></div></div>`;}).join('')+'</div>';}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
@@ -2451,9 +2453,12 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-11l';
+const NEWS_VER='2026-11-11m';
 const NEWS=[
- {d:'11월 11일',t:'🌈 ★7 무지개 전설',n:true,i:[
+ {d:'11월 11일',t:'🐾 따라오는 동물 개선',n:true,i:[
+  '📱 나를 따라오는 동물 때문에 쓰다듬기·껴안기 버튼이 계속 뜨던 문제를 고쳤어요. 따라오는 동물은 <b>직접 눌렀을 때만</b> 버튼이 떠요.',
+  '🏠 따라오는 동물을 누르면 <b>그만 따라오기</b> 버튼이 생겨요. 다시 누르면 <b>다시 따라오게 하기</b>로 돌아올 수 있어요.']},
+ {d:'11월 11일',t:'🌈 ★7 무지개 전설',i:[
   '🎣 ★7 <b>럭키비키 일곱 빛깔 무지개 낚싯대</b> (177,777몰랑) 출시! 들고 다니면 무지개 꼬리가 따라오고, 던지면 찌를 따라 무지개다리가 놓여요. 다른 사람 눈에도 보여요.',
   '✨ ★7 무지개 전설 8종: 무지개고래 · 오로라 가오리 · 칠색 날치 · 프리즘 해파리 · 무지개 해마 · 채운룡 · 칠보 잉어 · 무지개다리 송어.',
   '🌦️ <b>30분마다 3분 동안 여우비 뒤에 무지개</b>가 떠요. 이때 ★7이 4배 잘 나오고, 채운룡은 무지개가 뜬 동안에만 나와요.',
@@ -2791,6 +2796,25 @@ function rbCastStart(){if(!(P.char&&P.char.rodLv===7))return;ribbonClear(RB.arc)
 function rbCastSample(){}
 function legCatch(f){const st=starOf(f.sp);const mine=P.char&&P.char.rodLv===7;if(mine||st>=7){fwdOf(P.yaw,_f);rbPop(P.pos.x+_f.x*1.2,P.pos.y+2.2,P.pos.z+_f.z*1.2,st>=7);}
  if(st>=7){LEG.n=0;saveLeg();toast(`🌈 전설의 ★7 ${f.sp.name}${josa(f.sp.name,'을','를')} 낚았어요! 무지개가 축하해요!`,5200);}}
+
+/* ---------- v14: 따라오는 동물 버튼 정리 · 그만 따라오기 ---------- */
+const PET_PIN={A:null,until:0};let FOL_QUIET=0;
+const NOFOL=new Set();try{const a=JSON.parse(localStorage.getItem('monggeul-nofollow')||'[]');if(Array.isArray(a))a.forEach(x=>NOFOL.add(String(x)));}catch(e){}
+function saveNofol(){try{localStorage.setItem('monggeul-nofollow',JSON.stringify([...NOFOL]));}catch(e){}GS.stats.nofol=[...NOFOL];markSave();}
+// 가까운 동물: 나를 따라오는 동물은 직접 눌렀을 때만 버튼을 보여줘요
+function pickNearAnimal(){if(!(entered&&mode==='walk'&&!BOAT.on))return null;
+ const pin=PET_PIN.A&&t<PET_PIN.until?PET_PIN.A:null;if(pin&&Math.hypot(pin.x-P.pos.x,pin.z-P.pos.z)<4.5)return pin;
+ let best=null,bd=2.6;for(const A of ANIMS){if(A.fol&&A.fol.me)continue;const d=Math.hypot(A.x-P.pos.x,A.z-P.pos.z);if(d<bd){bd=d;best=A;}}return best;}
+function petTap(A){if(!A||!entered||mode!=='walk'||BOAT.on)return;const d=Math.hypot(A.x-P.pos.x,A.z-P.pos.z);
+ if(d>6){toast(`🐾 ${A.d.name}에게 가까이 가면 쓰다듬을 수 있어요`,2000);return;}PET_PIN.A=A;PET_PIN.until=t+8;petShown=null;}
+function toggleFollow(A){if(!A)return;const nm=A.d.name;
+ if(NOFOL.has(A.d.id)){NOFOL.delete(A.d.id);toast(`🐾 ${nm}${josa(nm,'이','가')} 다시 나를 따라올 수 있어요`,2600);}
+ else{NOFOL.add(A.d.id);A.catchUp=true;toast(`🏠 ${nm}${josa(nm,'이','가')} 집으로 돌아가요. 다시 따라오게 하려면 ${nm}${josa(nm,'을','를')} 눌러 '다시 따라오게'를 눌러요`,3600);}
+ FOL_QUIET=t+1.5;saveNofol();folAcc=9;petShown=null;markPresence();sfx.pop();if(PET_PIN.A===A)PET_PIN.until=t+8;}
+// 작은 동물도 손가락으로 쉽게 누를 수 있게: 화면에서 가까운 동물을 찾아요
+const _anV=new THREE.Vector3();
+function animByScreen(cx,cy){let best=null,bd=46;for(const A of ANIMS){if(!A.m.root.visible)continue;if(Math.hypot(A.x-P.pos.x,A.z-P.pos.z)>12)continue;
+ _anV.copy(A.m.root.position);_anV.y+=0.3;_anV.project(camera);if(_anV.z>1)continue;const x=(_anV.x+1)/2*W,y=(1-_anV.y)/2*H;const d=Math.hypot(x-cx,y-cy);if(d<bd){bd=d;best=A;}}return best?{anim:best.i}:null;}
 
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
@@ -3161,7 +3185,7 @@ cv.addEventListener('pointerdown',e=>{tapD={x:e.clientX,y:e.clientY,t:performanc
 cv.addEventListener('pointerup',e=>{const d0=tapD;tapD=null;if(!d0||d0.id!==e.pointerId)return;if(Math.hypot(e.clientX-d0.x,e.clientY-d0.y)>9||performance.now()-d0.t>380)return;if(!entered||mode!=='walk'||modalOpen())return;onTap(e.clientX,e.clientY);});
 async function boot(){{const ck=checkNick(NAME.nk||'');NAME.nk=ck.ok?ck.nick:'';}loadLocalGS();setCharRod(P.char,GS.rod);await detectNet();if(netMode==='ws'){showAuth();}else{openCloset(true);initCloud();}connectRoom();}
 /* ---------- start ---------- */
-$('petBtn').addEventListener('click',()=>interact(0));$('hugBtn').addEventListener('click',()=>interact(1));
+$('petBtn').addEventListener('click',()=>interact(0));$('folBtn').addEventListener('click',()=>toggleFollow(petShown));$('hugBtn').addEventListener('click',()=>interact(1));
 buildWorld();buildShop();initV3();initV7();buildHof();initV13();initHearts();buildAnimals();buildWater();skyMesh=buildSky();initRipples();initDrops();
 myFloat=makeFloat('#ff4d4d');myLine=makeLine();
 P.label=makeLabel(true);spawn();rebuildMe();
