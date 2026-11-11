@@ -85,6 +85,7 @@ function sanitize(d) {
     lv: Array.isArray(d.lv) ? d.lv.slice(0, 5).filter(e => Array.isArray(e) && e.length === 2).map(e => [idx(e[0], 32), Math.floor(num(e[1], 0, 1e6, 0))]) : [],
     rd: num(d.rd | 0, 1, 6, 1),
     bt: d.bt === 1 ? 1 : 0,
+    sd: typeof d.sd === 'string' && /^[a-z0-9]{6,16}$/.test(d.sd) ? d.sd : '',
     ck: ck ? [idx(ck[0], 3), idx(ck[1], 40), r2(num(ck[2], -120, 120, 0)), r2(num(ck[3], -120, 120, 0)), r2(num(ck[4], -50, 50, 0))] : [0, 0, 0, 0, 0],
   };
 }
@@ -117,6 +118,7 @@ export class Island extends DurableObject {
 
   async fetch(request) {
     if (request.headers.get('Upgrade') !== 'websocket') return new Response('Expected WebSocket', { status: 426 });
+    this.lastPrune = 0; this.prune();
     const live = this.ctx.getWebSockets().filter(w => { const a = w.deserializeAttachment(); return a && !a.full && !a.gone; });
     const { 0: client, 1: server } = new WebSocketPair();
     if (live.length >= CAP) {
@@ -128,7 +130,7 @@ export class Island extends DurableObject {
     }
     this.ctx.acceptWebSocket(server);
     const id = crypto.randomUUID().replace(/-/g, '').slice(0, 10);
-    server.serializeAttachment({ id, p: null, sec: 0, cnt: 0, lc: 0 });
+    server.serializeAttachment({ id, p: null, sec: 0, cnt: 0, lc: 0, t0: Date.now() });
     const peers = [];
     for (const w of live) { const a = w.deserializeAttachment(); if (a && a.p) peers.push({ id: a.id, p: a.p }); }
     server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat() }));
@@ -146,7 +148,18 @@ export class Island extends DurableObject {
     if (!m || typeof m !== 'object') { ws.serializeAttachment(a); return; }
     if (m.t === 'p') {
       const p = sanitize(m.d);
-      if (p) { a.p = p; ws.serializeAttachment(a); this.broadcast({ t: 'p', id: a.id, p }, ws); return; }
+      if (p) {
+        // 같은 화면(sd)이 다시 연결됐다면, 남아 있던 예전 연결(유령)을 정리
+        if (p.sd && a.sd !== p.sd) {
+          a.sd = p.sd;
+          for (const w of this.ctx.getWebSockets()) {
+            if (w === ws) continue;
+            const b = w.deserializeAttachment();
+            if (b && !b.full && !b.gone && b.p && b.p.sd === p.sd) { this.leave(w); try { w.close(4002, 'replaced'); } catch {} }
+          }
+        }
+        a.p = p; a.la = Date.now(); ws.serializeAttachment(a); this.broadcast({ t: 'p', id: a.id, p }, ws); this.prune(); return;
+      }
     } else if (m.t === 'c') {
       const now = Date.now();
       const text = cleanChat(m.m);
@@ -177,6 +190,21 @@ export class Island extends DurableObject {
 
   webSocketClose(ws, code) { this.leave(ws); try { ws.close(code === 1005 || code === 1006 ? 1000 : code, 'bye'); } catch {} }
   webSocketError(ws) { this.leave(ws); }
+
+  // 응답이 끊긴 지 오래된 연결(앱 전환·네트워크 끊김으로 닫힘 신호를 못 받은 경우)을 정리
+  prune() {
+    if (typeof this.ctx.getWebSocketAutoResponseTimestamp !== 'function') return; // 지원 안 되면 정리하지 않음(안전)
+    const now = Date.now();
+    if (now - (this.lastPrune || 0) < 20000) return;
+    this.lastPrune = now;
+    for (const w of this.ctx.getWebSockets()) {
+      const a = w.deserializeAttachment();
+      if (!a || a.full || a.gone) continue;
+      let last = a.la || a.t0 || 0;
+      try { const ar = this.ctx.getWebSocketAutoResponseTimestamp(w); if (ar) last = Math.max(last, ar.getTime()); } catch {}
+      if (last && now - last > 180000) { this.leave(w); try { w.close(4003, 'stale'); } catch {} }
+    }
+  }
 
   leave(ws) {
     const a = ws.deserializeAttachment();

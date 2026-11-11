@@ -188,7 +188,7 @@ body.cine .petbox,body.cine .ctxbtn,body.cine .hint,body.cine .emotes,body.cine 
 @keyframes glowp{from{box-shadow:0 0 0 0 rgba(255,122,168,.7),0 6px 16px rgba(0,0,0,.22)}to{box-shadow:0 0 0 10px rgba(255,122,168,0),0 6px 16px rgba(0,0,0,.22)}}
 @keyframes chatping{0%{transform:scale(1)}40%{transform:scale(1.25) rotate(-8deg)}100%{transform:scale(1)}}
 .ctxbtn{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(max(14px,env(safe-area-inset-bottom)) + 166px);height:58px;padding:0 18px;border-radius:29px;border:3px solid #fff;background:#3fb7a5;color:#fff;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.25);z-index:4;display:flex;align-items:center;gap:7px;animation:pop .3s cubic-bezier(.2,1.6,.4,1);white-space:nowrap}
-.ctxbtn b{font-size:24px}.ctxbtn.boat{background:#2b8fd6}.ctxbtn.unboat{background:#f0883a}
+.ctxbtn b{font-size:24px}.ctxbtn.boat{background:#2b8fd6}.ctxbtn small.fare{font-size:12px;background:rgba(255,255,255,.25);border-radius:999px;padding:2px 8px;margin-left:4px}.ctxbtn.unboat{background:#f0883a}.ctxbtn.boat.arm{background:#e0a21b;animation:armp .6s infinite alternate}@keyframes armp{to{transform:scale(1.06)}}
 .boatbadge{position:fixed;left:50%;transform:translateX(-50%);top:calc(max(10px,env(safe-area-inset-top)) + 64px);background:rgba(30,70,120,.78);color:#fff;font-size:12.5px;font-weight:800;padding:6px 14px;border-radius:999px;z-index:3;pointer-events:none;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}.boatbadge.far{background:rgba(20,30,110,.88);box-shadow:0 0 0 2px #ffd34a}.boatbadge b{color:#ffd34a}.boatbadge small{opacity:.8;font-weight:700}
 .mrow button.off{background:#cfd6de!important;color:#5a6470!important;box-shadow:none!important}
 body.cine .boatbadge{opacity:0}
@@ -408,7 +408,7 @@ body.cine .boatbadge{opacity:0}
     </ul>
     <div class="btitle">⛵ 선상낚시</div>
     <ul class="tips">
-      <li>섬 가장자리의 <b>🚤 배 타는 부두</b> 끝에 배가 묶여 있어요. 가까이 가면 <em>⛵ 선상낚시 하기</em> 버튼이 떠요. <b>★5 낚싯대를 가진 사람</b>부터 탈 수 있고, 한 사람당 배 1척이에요.</li>
+      <li>섬 가장자리의 <b>🚤 배 타는 부두</b> 끝에 배가 묶여 있어요. 가까이 가면 <em>⛵ 선상낚시 하기</em> 버튼이 떠요. <b>★5 낚싯대를 가진 사람</b>부터 탈 수 있고, 탈 때마다 <b>배삯 1,000몰랑</b>을 내요. 한 사람당 배 1척이에요.</li>
       <li>배를 탄 채 움직여 섬 주변 바다를 다니고, 🎣 낚시하기로 어디서든 낚시해요. <b>빨간 부표 바깥은 먼 바다</b>라 ★4 이상 물고기가 2배 더 잘 나와요. 주황 부표 밖으로는 나갈 수 없어요.</li>
       <li>배 타는 부두에 다시 배를 대면 <em>🛬 배 내리기</em> 버튼이 떠요. 배를 타고 있을 때는 지도의 '옆으로 가기'를 쓸 수 없고, 배 위의 사람에게도 갈 수 없어요.</li>
     </ul>
@@ -1995,7 +1995,7 @@ function v2Peer(r,pr,isNew){
   if(isNew||r.cmSeq===undefined){r.cmSeq=seq;if(Array.isArray(pr.cl))for(const e of pr.cl.slice(-5))if(Array.isArray(e))chatAdd({ts:+e[0]||0,pid:r.peer,name:r.name,text:cleanChat(e[1]),me:false});}
   else if(seq!==r.cmSeq){r.cmSeq=seq;const text=cleanChat(cm[1]);if(text){chatAdd({ts:Date.now(),pid:r.peer,name:r.name,text,me:false});if(!mutedPeers.has(r.peer)){showBubble(r.label,text,false,10);r.hopT=t;}}}}}
 function myProfile(){return{r:GS.rod,k:tank.slice(0,50).map(o=>[SP_IDX.get(o.id)??0,o.s]),b:Object.keys(book).length};}
-function v2Presence(o){o.bt=BOAT.on?1:0;o.lv=myLoveTop();o.rd=GS.rod;o.nk=NAME.nk||'';o.ck=ME.ck||[0,0,0,0,0];if(netMode!=='ws'){o.cm=ME.cm||[0,''];o.cl=ME.cl||[];o.pf=myProfile();}return o;}
+function v2Presence(o){o.bt=BOAT.on?1:0;o.sd=MY_SID;o.lv=myLoveTop();o.rd=GS.rod;o.nk=NAME.nk||'';o.ck=ME.ck||[0,0,0,0,0];if(netMode!=='ws'){o.cm=ME.cm||[0,''];o.cl=ME.cl||[];o.pf=myProfile();}return o;}
 function onNetMsg(m){if(m.t==='c'){onChatMsg(m);return true;}
  if(m.t==='gp'&&m.from){try{ws.send(JSON.stringify({t:'pf',to:String(m.from),d:myProfile()}));}catch(e){}return true;}
  if(m.t==='pf'&&m.id){if(profPeer===String(m.id))showProfData(m.d);return true;}return false;}
@@ -2084,7 +2084,7 @@ function onTap(cx,cy){const hit=pickAt(cx,cy);if(!hit)return false;
 let ctxKind='';
 function refreshCtx(){let want='';if(entered&&mode==='walk'&&!modalOpen()&&(BOAT.on||nearMoor())){want=BOAT.on?(nearBoatDock()?'unboat':''):'boat';}else if(entered&&mode==='walk'&&!modalOpen()){const ds=Math.hypot(P.pos.x-SHOP.front.x,P.pos.z-SHOP.front.z);if(ds<3.2||Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z)<4.2)want='shop';else if(nearBoard())want='board';else if(nearCampfire()&&!(cookSt&&cookSt.stage===1))want='cook';}
  if(want===ctxKind)return;ctxKind=want;const b=$('ctxBtn');if(!want){b.classList.add('hidden');return;}b.classList.remove('hidden');
- const kb=isTouch?'':' <kbd>R</kbd>';b.innerHTML=want==='boat'?`<b>⛵</b>선상낚시 하기${kb}`:want==='unboat'?`<b>🛬</b>배 내리기${kb}`:want==='shop'?`<b>🐉</b>용왕님 상점${isTouch?'':' <kbd>R</kbd>'}`:want==='board'?`<b>📋</b>게시판${isTouch?'':' <kbd>R</kbd>'}`:`<b>🍳</b>요리하기${isTouch?'':' <kbd>R</kbd>'}`;b.className='ctxbtn '+want;}
+ const kb=isTouch?'':' <kbd>R</kbd>';b.innerHTML=want==='boat'?(BOAT.armT>t?`<b>💰</b>${fmtM(BOAT_FARE)}몰랑 내고 타기${kb}`:`<b>⛵</b>선상낚시 하기 <small class=fare>🪙${fmtM(BOAT_FARE)}</small>${kb}`):want==='unboat'?`<b>🛬</b>배 내리기${kb}`:want==='shop'?`<b>🐉</b>용왕님 상점${isTouch?'':' <kbd>R</kbd>'}`:want==='board'?`<b>📋</b>게시판${isTouch?'':' <kbd>R</kbd>'}`:`<b>🍳</b>요리하기${isTouch?'':' <kbd>R</kbd>'}`;b.className='ctxbtn '+want+(want==='boat'&&BOAT.armT>t?' arm':'');}
 function doCtx(){if(ctxKind==='boat'){boardBoat();return;}if(ctxKind==='unboat'){leaveBoat();return;}if(ctxKind==='board')openBoard();else if(ctxKind==='shop')openShop();else if(ctxKind==='cook')openCook();}
 
 /* ---------- 저장 · 계정 ---------- */
@@ -2325,13 +2325,15 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=6?`★6 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위 · 난이도 높음`;}
-const NEWS_VER='2026-11-11e';
+const NEWS_VER='2026-11-11g';
 const NEWS=[
  {d:'11월 11일',t:'⛵ 선상낚시 · 거리별 물고기',n:true,i:[
   '🎯 바다는 <b>해안에서 멀리 던질수록</b> 크고 ★ 높은 물고기가 잘 나와요. 가까운 물가는 작고 흔한 물고기 위주예요. 육지에서는 <b>부두 끝에서 가장 멀리</b> 던지는 게 최고!',
-  '🚤 지도 오른쪽 아래에 <b>배 타는 부두</b>가 생겼어요. 끝에 묶인 배 옆에서 <b>⛵ 선상낚시 하기</b>를 누르면 배를 타요. (★5 낚싯대를 가진 사람부터 · 한 사람당 1척)',
+  '🚤 지도 오른쪽 아래에 <b>배 타는 부두</b>가 생겼어요. 끝에 묶인 배 옆에서 <b>⛵ 선상낚시 하기</b>를 누르면 배를 타요. (★5 낚싯대를 가진 사람부터 · 배삯 1,000몰랑 · 한 사람당 1척)',
   '🌊 배를 조종해 섬 주변을 다니며 어디서든 낚시해요. <b>빨간 부표 밖 먼 바다</b>에서는 ★4 이상 물고기가 2배 더 잘 나와요. 주황 부표 밖으로는 나갈 수 없어요.',
   '🛬 배 타는 부두에 다시 배를 대면 <b>배 내리기</b> 버튼이 떠요.',
+  '💰 배삯은 1,000몰랑이에요. 버튼을 한 번 더 눌러야 내고 타서, 실수로 돈이 빠지지 않아요.',
+  '🛠️ 연결이 잠깐 끊겼다 다시 붙을 때, 예전 내 캐릭터(배를 탄 모습 등)가 바다에 남아 보이던 문제를 고쳤어요.',
   '📖 해달 도감 힌트를 실제로 잘 나오는 곳(낮, 해안에서 30m쯤)에 맞게 고쳤어요.',
   '📖 도감 힌트를 실제 출현 거리·시간대에 맞게 고쳤어요. (예: 해달은 해안에서 30m쯤) 도감 위쪽에 거리 힌트 설명도 넣었어요.',
   '🗺️ 지도가 커졌고, 배를 탄 사람은 ⛵로 보여요. 배를 탄 사람과 육지 사람 사이에는 \'옆으로 가기\'를 쓸 수 없어요.']},
@@ -2375,8 +2377,10 @@ function openNews(){closeEmoPanel();closeChat();$('newsList').innerHTML=newsHTML
 function closeNews(){$('newsM').classList.add('hidden');}
 
 /* ---------- v7: 선상낚시 · 거리별 물고기 ---------- */
-const BOAT_R=114,FAR_R=90,BOAT_MIN_ROD=5,BOAT_SEAT_Z=-0.35,BOAT_CHAR_DY=-0.2;
-const BOAT={on:false,vx:0,vz:0,far:false,mesh:null,warnT:0,wakeT:0,cd:0,farT:0};
+const BOAT_R=114,FAR_R=90,BOAT_MIN_ROD=5,BOAT_FARE=1000,BOAT_SEAT_Z=-0.35,BOAT_CHAR_DY=-0.2;
+const BOAT={on:false,vx:0,vz:0,far:false,mesh:null,warnT:0,wakeT:0,cd:0,farT:0,armT:0};
+// 이 화면(페이지) 고유 번호: 다시 연결돼도 같아서, 예전 연결이 남긴 '내 유령'을 알아볼 수 있어요
+const MY_SID=(()=>{let s='';const a='abcdefghijklmnopqrstuvwxyz0123456789';for(let i=0;i<10;i++)s+=a[Math.floor(Math.random()*36)];return s;})();
 let MOOR=null;const BUOYS=[];
 // 별(★)별 출현 가중치: [가까운 곳, 기울기] → 가까우면 ★1~2, 멀면 ★3 이상
 const STAR_W=[0,[1.6,-1.3],[1.3,-0.6],[0.6,0.9],[0.35,1.4],[0.2,1.6],[0.1,1.5]];
@@ -2431,11 +2435,14 @@ function nearBoatDock(){const D=BOAT_DOCK;if(!D||!BOAT.on)return false;const[al,
 function hasBoatRod(){return GS.rods.some(l=>l>=BOAT_MIN_ROD);}
 function boardBoat(){if(BOAT.on||!BOAT_DOCK||!entered)return;
  if(!hasBoatRod()){const rn=RODS[BOAT_MIN_ROD].name;toast(`⛵ 배는 ★${BOAT_MIN_ROD} ${rn}${josa(rn,'을','를')} 가진 사람부터 탈 수 있어요. 🐉 용왕님 상점에서 구할 수 있어요!`,4000);sfx.pop();return;}
- if(cookSt&&cookSt.stage===1){toast('요리 중에는 배를 탈 수 없어요');return;}if(mode==='fish')exitFish();
+ if(cookSt&&cookSt.stage===1){toast('요리 중에는 배를 탈 수 없어요');return;}
+ if(GS.money<BOAT_FARE){toast(`⛵ 배삯 ${fmtM(BOAT_FARE)}몰랑이 필요해요. 지금 ${fmtM(GS.money)}몰랑이라 ${fmtM(BOAT_FARE-GS.money)}몰랑이 모자라요. 물고기를 팔아 모아 와요!`,4000);sfx.pop();return;}
+ if(!(BOAT.armT>t)){BOAT.armT=t+5;ctxKind='';refreshCtx();toast(`⛵ 배삯은 ${fmtM(BOAT_FARE)}몰랑이에요 (지금 ${fmtM(GS.money)}몰랑). 한 번 더 누르면 내고 배를 타요!`,4200);sfx.pop();return;}
+ BOAT.armT=0;GS.money-=BOAT_FARE;markSave();if(mode==='fish')exitFish();
  const D=BOAT_DOCK;const[x,z]=dockPt(D,D.s1+3.4,0);P.pos.set(x,boatCharY(x,z),z);P.yaw=Math.atan2(D.ux,D.uz);P.jy=0;P.vy=0;
  BOAT.on=true;BOAT.vx=BOAT.vz=0;BOAT.far=Math.hypot(x,z)>FAR_R;BOAT.farT=0;if(!BOAT.mesh){BOAT.mesh=makeRowBoat(COLORS[LOOK.cc%COLORS.length]);scene.add(BOAT.mesh);}BOAT.mesh.visible=true;P.char.sit=true;
  BOAT.cd=camDist;camDist=Math.max(camDist,12.5);camYaw=P.yaw+Math.PI;splash(x,z,1.3);sfx.splash(0.45);markPresence();refreshAct();updBoatBadge();
- toast('⛵ 배에 탔어요! 움직여서 섬 주변 바다를 다니고, 🎣 낚시하기로 선상낚시를 해요. 빨간 부표 밖 먼 바다는 ★4 이상 물고기가 2배!',5200);}
+ toast(`⛵ 배삯 ${fmtM(BOAT_FARE)}몰랑을 내고 배에 탔어요! (남은 돈 ${fmtM(GS.money)}몰랑) 움직여서 섬 주변 바다를 다니고, 🎣 낚시하기로 선상낚시를 해요. 빨간 부표 밖 먼 바다는 ★4 이상 물고기가 2배!`,5600);}
 function leaveBoat(){if(!BOAT.on)return;if(mode==='fish')exitFish();const D=BOAT_DOCK;const[x,z]=dockPt(D,D.s1-2.6,0);
  BOAT.on=false;BOAT.far=false;if(BOAT.mesh)BOAT.mesh.visible=false;P.char.sit=false;P.pos.set(x,groundY(x,z),z);P.yaw=Math.atan2(-D.ux,-D.uz);
  camDist=BOAT.cd||camDist;camYaw=P.yaw+Math.PI;splash(x,z,0.8);sfx.pop();markPresence();refreshAct();updBoatBadge();toast('🛬 배에서 내렸어요. 수고했어요!',2400);}
@@ -2449,7 +2456,7 @@ function remoteBoat(r,s){const c=r.char;if(c)c.sit=r.bt===1;
 function buildBoatDock(){const D=BOAT_DOCK;if(!D)return;
  const[mx,mz]=dockPt(D,D.s1-4.6,D.hw+1.35);MOOR={x:mx,z:mz,yaw:Math.atan2(D.ux,D.uz),m:makeRowBoat("#4aa3df")};scene.add(MOOR.m);MOOR.m.userData.pick='moor';MOOR.m.traverse(o=>{o.userData.pick='moor';});
  const cv=document.createElement('canvas');cv.width=512;cv.height=300;const c=cv.getContext('2d');c.fillStyle='#fff6e0';c.fillRect(0,0,512,300);c.strokeStyle='#7a5236';c.lineWidth=18;c.strokeRect(9,9,494,282);
- c.fillStyle='#2b6cb0';c.font='900 70px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('⛵ 선상낚시',256,92);c.fillStyle='#4a3a26';c.font='800 38px sans-serif';c.fillText('★5 낚싯대부터 탈 수 있어요',256,178);c.font='700 32px sans-serif';c.fillStyle='#8a6a40';c.fillText('먼 바다일수록 큰 물고기!',256,236);
+ c.fillStyle='#2b6cb0';c.font='900 70px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('⛵ 선상낚시',256,92);c.fillStyle='#4a3a26';c.font='800 38px sans-serif';c.fillText('★5 낚싯대부터 탈 수 있어요',256,172);c.font='800 36px sans-serif';c.fillStyle='#c0392b';c.fillText('배삯 1,000몰랑',256,236);
  const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;const g=new THREE.Group();const[sx,sz]=dockPt(D,D.s1-9,-(D.hw-0.55));g.position.set(sx,D.y,sz);g.rotation.y=Math.atan2(-D.ux,-D.uz);scene.add(g);
  for(const s of[-0.62,0.62])addMesh(new THREE.CylinderGeometry(0.06,0.06,1.8,8),stdMat('#7a5236'),s,0.9,0,g);
  addMesh(new THREE.PlaneGeometry(1.5,0.88),new THREE.MeshStandardMaterial({map:tex,roughness:0.7,emissive:'#ffffff',emissiveMap:tex,emissiveIntensity:0.2,side:THREE.DoubleSide}),0,1.5,0.07,g);
@@ -2458,7 +2465,7 @@ function buildBoatDock(){const D=BOAT_DOCK;if(!D)return;
  for(let k=0;k<28;k++){const a=k/28*Math.PI*2;const x=Math.cos(a)*FAR_R,z=Math.sin(a)*FAR_R;if(inDockZone(x,z,3)||terrainH(x,z)>-0.5)continue;const b=bm('#ff4a4a','#ffffff');b.position.set(x,0,z);scene.add(b);BUOYS.push({b,x,z,p:k});}
  for(let k=0;k<36;k++){const a=k/36*Math.PI*2;const x=Math.cos(a)*(BOAT_R+1),z=Math.sin(a)*(BOAT_R+1);const b=bm('#ff9a1f','#ffe14a');b.scale.setScalar(1.3);b.position.set(x,0,z);scene.add(b);BUOYS.push({b,x,z,p:k*1.7});}}
 function initV7(){buildBoatDock();}
-function updV7(dt){
+function updV7(dt){if(BOAT.armT&&t>BOAT.armT){BOAT.armT=0;ctxKind='';}
  if(MOOR)syncBoat(MOOR.m,MOOR.x,MOOR.z,MOOR.yaw,t,Math.sin(t*0.8)*0.02);
  for(const o of BUOYS){o.b.position.y=waveH(o.x,o.z,t)-0.05;o.b.rotation.z=Math.sin(t*1.3+o.p)*0.12;o.b.rotation.x=Math.cos(t*1.1+o.p)*0.1;}
  if(BOAT.on){BOAT.mesh.visible=true;syncBoat(BOAT.mesh,P.pos.x,P.pos.z,P.yaw,t);P.char.sit=true;
@@ -2614,19 +2621,21 @@ function startWS(n){wsIsland=n;roomState='connecting';updateHUD();
   if(m.t==='full'){sock.onclose=null;try{sock.close();}catch(e){}if(n<30)startWS(n+1);else{roomState='solo';updateHUD();toast('지금은 모든 섬이 꽉 찼어요. 잠시 후 다시 와 주세요');}return;}
   if(m.t==='welcome'){wsMyId=String(m.id||'');onChatHistory(m.chat);wsPeers.clear();for(const q of(m.peers||[]))if(q&&q.id)wsPeers.set(String(q.id),q.p);roomState='online';roomSince=t;
    room={presence:p=>{if(sock.readyState===1)sock.send(JSON.stringify({t:'p',d:p}));return Promise.resolve();}};presLast=-9;markPresence();pushWsPeers();updateHUD();if(n>1)toast(`1번 섬이 꽉 차서 ${n}번 섬으로 왔어요`);return;}
-  if(m.t==='p'&&m.id){wsPeers.set(String(m.id),m.p);pushWsPeers();return;}
+  if(m.t==='p'&&m.id){wsPeers.set(String(m.id),m.p);wsPeerT.set(String(m.id),performance.now());pushWsPeers();return;}
 if(onNetMsg(m))return;
-  if(m.t==='leave'&&m.id){wsPeers.delete(String(m.id));pushWsPeers();return;}};
+  if(m.t==='leave'&&m.id){wsPeers.delete(String(m.id));wsPeerT.delete(String(m.id));pushWsPeers();return;}};
  sock.onclose=()=>{if(ws!==sock)return;room=null;roomState='connecting';updateHUD();scheduleReconnect();setTimeout(()=>{if(!ws||ws.readyState!==1){wsPeers.clear();pushWsPeers();}},6000);};
  sock.onerror=()=>{};
  clearInterval(pingTimer);pingTimer=setInterval(()=>{if(ws&&ws.readyState===1)ws.send('ping');},25000);}
 function scheduleReconnect(){const n=wsIsland;setTimeout(()=>{if(!ws||ws.readyState>1)startWS(n);},wsBackoff);wsBackoff=Math.min(wsBackoff*2,15000);}
-function pushWsPeers(){const list=[];for(const[id,p]of wsPeers)list.push({peer:id,kind:'viewer',sameTab:false,presence:p});applyPeers(list);}
+const wsPeerT=new Map();
+function pushWsPeers(){const best=new Map(),list=[];for(const[id,p]of wsPeers){const sd=p&&typeof p.sd==='string'?p.sd:'';if(sd&&sd===MY_SID)continue;if(sd){const o=best.get(sd);const tt=wsPeerT.get(id)||0;if(o&&o.tt>=tt)continue;best.set(sd,{id,p,tt});continue;}list.push({peer:id,kind:'viewer',sameTab:false,presence:p});}
+ for(const v of best.values())list.push({peer:v.id,kind:'viewer',sameTab:false,presence:v.p});applyPeers(list);}
 const num=(v,def,a,b)=>{v=+v;return Number.isFinite(v)?clamp(v,a,b):def;};
 function applyPeers(list){
  const seen=new Set();
  for(const p of list){
-  if(!p||p.sameTab||p.kind!=='viewer')continue;const pr=p.presence||{};if(pr.v!==3)continue;seen.add(p.peer);
+  if(!p||p.sameTab||p.kind!=='viewer')continue;const pr=p.presence||{};if(pr.sd&&pr.sd===MY_SID)continue;if(pr.v!==3)continue;seen.add(p.peer);
   let r=remote.get(p.peer),isNew=false;
   if(!r){r={peer:p.peer,char:null,lookKey:'',label:makeLabel(false),pos:new THREE.Vector3(),tx:0,tz:0,tyaw:0,yaw:0,jy:0,tjy:0,sc:0,leaving:false,speed:0,eid:pr.eid|0,cid:pr.cid|0,an:pr.an|0,hopT:-9,float:null,line:null,init:false};remote.set(p.peer,r);isNew=true;}
   r.leaving=false;
