@@ -30,6 +30,11 @@ button{font-family:inherit}
 .btns{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));display:flex;gap:6px;z-index:3}
 .ic{height:40px;min-width:40px;padding:0 10px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:17px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
 .ic span{font-size:12.5px;font-weight:700}
+.ic.news{position:relative}.ndot{position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:#ff4d4f;box-shadow:0 0 0 2px #fff;animation:ndp 1.4s infinite}@keyframes ndp{50%{transform:scale(1.35)}}
+#newsList{max-height:58vh;overflow:auto;touch-action:pan-y;overscroll-behavior:contain}.nwi{background:#fff8ec;border-radius:14px;padding:10px 12px;margin:8px 0}.nwi.top{background:#fff0f3;box-shadow:inset 0 0 0 2px #ffc2cf}.nwh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.nwh b{font-size:14.5px}.nwh small{color:#a08a6a;font-weight:800;font-size:11.5px;white-space:nowrap}.nwi.top .nwh small{color:#e0436b}.nwi ul{margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.55;color:#4a4236}.nwi li{margin:2px 0}
+@media (max-width:420px){.btns .ic{height:32px;min-width:31px;padding:0 6px;font-size:15px;border-radius:12px}body .btns{gap:4px}.ndot{top:2px;right:2px;width:8px;height:8px}}
+#tHard{text-align:center;font-size:12px;font-weight:900;color:#ffb36b;margin-bottom:4px}
+.cell .need.hard{background:#fff0e0;color:#d2691e}
 @media (max-width:520px){.ic span{display:none}.ic{height:36px;min-width:36px;padding:0 8px;font-size:16px}.btns{gap:5px}.hud .t{font-size:16px}.hud .s{font-size:11.5px}}
 .emotes{position:fixed;left:50%;transform:translateX(-50%);bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:7px;z-index:3}
 .emotes button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font-size:21px;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .12s;color:var(--ink)}
@@ -260,6 +265,7 @@ body.cine .petbox,body.cine .ctxbtn,body.cine .hint,body.cine .emotes,body.cine 
 <div class="hud"><div class="t">아몰랑아일랜드</div><div class="s" id="hudS"></div><div class="s2" id="hudG"></div></div>
 <div class="btns">
   <button class="ic hidden" id="bShare" title="링크 복사">🔗<span>초대</span></button>
+  <button class="ic news" id="bNews" title="업데이트 공지사항">📢<span>공지</span><i id="newsDot" class="ndot hidden"></i></button>
   <button class="ic" id="bBook" title="도감">📖<span>도감</span></button>
   <button class="ic" id="bMap" title="섬 지도 (M)">🗺️<span>지도</span></button>
   <button class="ic" id="bCloset" title="옷 갈아입기">👕</button>
@@ -280,7 +286,7 @@ body.cine .petbox,body.cine .ctxbtn,body.cine .hint,body.cine .emotes,body.cine 
 <div class="petbox hidden" id="petBox"><div class="pn" id="petName"></div><div class="pb"><button id="petBtn"><b>🤚</b>쓰다듬기 <kbd>Q</kbd></button><button id="hugBtn" class="hug"><b>🤗</b>껴안기 <kbd>E</kbd></button></div></div>
 <div id="joy" class="joy hidden"><div id="knob" class="knob"></div></div>
 <div id="charge" class="charge hidden"><div class="cbar"><div id="chargeFill"></div></div><div id="chargeTxt"></div></div>
-<div id="tension" class="tension hidden"><div class="trow"><span>줄 장력</span><span id="tDist"></span></div><div class="tbar"><div class="tdanger"></div><div id="tFill"></div></div><div id="tMsg"></div></div>
+<div id="tension" class="tension hidden"><div id="tHard" class="hidden"></div><div class="trow"><span>줄 장력</span><span id="tDist"></span></div><div class="tbar"><div class="tdanger"></div><div id="tFill"></div></div><div id="tMsg"></div></div>
 <div id="bang" class="bang hidden">!</div>
 <div class="toast" id="toast"></div>
 
@@ -328,6 +334,11 @@ body.cine .petbox,body.cine .ctxbtn,body.cine .hint,body.cine .emotes,body.cine 
   <div class="proftank"><canvas id="profCv"></canvas></div>
   <div class="bsub" id="profInfo" style="margin-top:8px"></div>
   <button class="primary small ghost" id="profMute"></button></div></div>
+<div class="overlay hidden" id="newsM"><div class="card wide">
+  <div class="mhead"><b>📢 업데이트 공지사항</b><button class="x" id="newsX">✕</button></div>
+  <div class="bsub">아몰랑아일랜드에 새로 생긴 것들이에요. 원하는 기능은 📋 게시판에 남겨 주세요!</div>
+  <div id="newsList"></div>
+  <button class="primary" id="newsOk" style="margin-top:10px">확인했어요!</button></div></div>
 <div class="overlay hidden" id="boardM"><div class="card wide">
   <div class="mhead"><b>📋 아몰랑아일랜드 게시판</b><button class="x" id="boardX">✕</button></div>
   <div class="bsub">게임 업데이트 요청사항을 자유롭게 적어 주세요 ✍️ 닉네임과 함께 모두에게 보여요.</div>
@@ -386,7 +397,7 @@ body.cine .petbox,body.cine .ctxbtn,body.cine .hint,body.cine .emotes,body.cine 
     </ul>
     <div class="btitle">🎣 낚싯대 ★ · 물고기 ★</div>
     <ul class="tips">
-      <li>물고기마다 ★1~★6이 있어요. <b>내 낚싯대 ★ 이상</b>인 물고기만 끌어올릴 수 있고, 더 높은 ★는 걸려도 줄을 끊고 달아나요.</li>
+      <li>물고기마다 ★1~★6이 있어요. <b>내 낚싯대 ★보다 1단계 높은 물고기</b>까지 잡을 수 있어요. (★1 낚싯대 → ★2까지) 한 단계 위 물고기는 힘이 아주 세서 "🔥 난이도 높음" 안내가 떠요. 2단계 이상 높으면 줄을 끊고 달아나요.</li>
       <li>처음엔 ★1 대나무 낚싯대예요. 물고기를 팔아 모은 <b>몰랑</b>으로 🐉 용왕님 상점에서 ★2~★6 낚싯대를 사요. ★6은 신화급이에요!</li>
       <li>낚싯대 ★가 물고기보다 높으면 훨씬 쉽게 끌려와요. 📖 도감에서 물고기별 ★와 필요한 낚싯대를 볼 수 있어요.</li>
     </ul>
@@ -772,7 +783,7 @@ function openBook(){const root=$('grid');root.innerHTML='';let found=0;$('bookGu
    const c=document.createElement('canvas');c.width=240;c.height=112;cell.appendChild(c);
    const n=document.createElement('div');n.className='n';n.textContent=rec?sp.name:'???';
    const m=document.createElement('div');m.className='m';m.textContent=rec?`최고 ${fmtSize(rec.best)} · ${rec.n}마리`:sp.hint;
-   const st=starOf(sp);const sd=document.createElement('div');sd.className='st';sd.textContent=starStr(st);const nd=document.createElement('div');nd.className='need'+(st>E?' no':'');nd.textContent=st>E?`★${st} 낚싯대 필요`:`✓ 약 ${fmtM(priceOf(sp.id,(sp.min+sp.max)/2))}몰랑`;
+   const st=starOf(sp);const sd=document.createElement('div');sd.className='st';sd.textContent=starStr(st);const nd=document.createElement('div');nd.className='need'+(st>E+1?' no':st>E?' hard':'');nd.textContent=st>E+1?`★${st-1}↑ 낚싯대 필요`:st>E?'🔥 도전 가능 (어려움)':`✓ 약 ${fmtM(priceOf(sp.id,(sp.min+sp.max)/2))}몰랑`;
    cell.append(n,sd,m,nd);grid.appendChild(cell);drawFish(c.getContext('2d'),sp,120+(sp.shape==='beak'?10:0),56,fishL(sp,190,50),!rec);});
   root.append(tt,grid);});
  $('bookCount').textContent=`${found} / ${SPECIES.length}`;$('book').classList.remove('hidden');}
@@ -1601,7 +1612,7 @@ function markSave(){saveDirty=true;}
 function buffLeft(){return Math.max(0,(GS.buffUntil||0)-Date.now());}
 function effStar(){return GS.rod+(buffLeft()>0?1:0);}
 function fmtLeft(ms){const s=Math.ceil(ms/1000);return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
-function fightD(sp,frac){const st=starOf(sp);const base=[0,0.08,0.2,0.32,0.42,0.52,0.58][st]+0.12*frac+0.05*((sp.str||0.3)-0.5);return clamp(base-0.12*Math.max(0,effStar()-st),0.04,0.75);}
+function fightD(sp,frac){const st=starOf(sp);const base=[0,0.08,0.2,0.32,0.42,0.52,0.58][st]+0.12*frac+0.05*((sp.str||0.3)-0.5);const E=effStar();if(st>E)return clamp(base+HARD_D,0.3,0.86);return clamp(base-0.12*Math.max(0,E-st),0.04,0.75);}
 
 /* ---------- 낚싯대 3D ---------- */
 function rodMesh(parent,g,mat,x,y,z,rx=0,ry=0,rz=0){const m=new THREE.Mesh(g,mat);m.position.set(x,y,z);m.rotation.set(rx,ry,rz);m.castShadow=true;parent.add(m);return m;}
@@ -1735,7 +1746,7 @@ function openBag(tab){if(!entered)return;closeEmoPanel();closeChat();if(tab)bagT
 function closeBag(){$('bag').classList.add('hidden');}
 function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
  document.querySelectorAll('#bag .tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===bagTab));const box=$('bagBody');box.innerHTML='';
- const bl=buffLeft();$('bagBuff').textContent=bl>0?`🍳 요리 효과 +1★ · ${fmtLeft(bl)} 남음 → 지금 ★${effStar()} 물고기까지`:`🎣 지금 ★${effStar()} 물고기까지 잡을 수 있어요`;
+ const bl=buffLeft();$('bagBuff').textContent=bl>0?`🍳 요리 효과 +1★ · ${fmtLeft(bl)} 남음 → ${starRangeTxt(effStar())}`:`🎣 ${starRangeTxt(effStar())}`;
  if(bagTab==='fish'){
   const head=document.createElement('div');head.className='bsub';head.textContent=`물고기 ${GS.bag.length} / ${BAG_MAX}마리 · 용왕님 상점에서 팔거나 모닥불에서 요리할 수 있어요`;box.appendChild(head);
   if(!GS.bag.length){const e=document.createElement('div');e.className='empty';e.innerHTML='가방이 비어 있어요.<br>물고기를 잡은 뒤 <b>‘🎒 가방에 넣기’</b>를 눌러 보세요.';box.appendChild(e);}
@@ -1749,7 +1760,7 @@ function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
   const list=document.createElement('div');list.className='ilist';
   GS.rods.slice().sort((a,b)=>b-a).forEach(lv=>{const R=RODS[lv];const row=document.createElement('div');row.className='irow'+(GS.rod===lv?' on':'');
    const c=document.createElement('canvas');c.width=120;c.height=72;drawRodIcon(c.getContext('2d'),120,72,lv);
-   const tx=document.createElement('div');tx.className='itx';tx.innerHTML=`<b>${R.name}</b><small>${starStr(lv)} · ★${lv} 물고기까지</small>`;
+   const tx=document.createElement('div');tx.className='itx';tx.innerHTML=`<b>${R.name}</b><small>${starStr(lv)} · ★${lv}까지${lv<6?` (★${lv+1} 도전)`:''}</small>`;
    const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');if(GS.rod===lv){b.textContent='장착 중';b.disabled=true;}else{b.textContent='장착하기';b.onclick=()=>{equipRod(lv);renderBag();};}acts.appendChild(b);
    row.append(c,tx,acts);list.appendChild(row);});box.appendChild(list);
   if(GS.rods.length<6){const n=document.createElement('div');n.className='bsub';n.textContent='더 좋은 낚싯대는 마을 모닥불 옆 🐉 용왕님 상점에서 살 수 있어요.';box.appendChild(n);}
@@ -1773,7 +1784,7 @@ function itemRow(sp,size,sub){const row=document.createElement('div');row.classN
  drawFish(c.getContext('2d'),sp,60+(sp.shape==='beak'?6:0),36,fishL(sp,100,30),false);
  const tx=document.createElement('div');tx.className='itx';tx.innerHTML=`<b>${sp.name} <em>${fmtSize(size)}</em></b><small>${sub}</small>`;
  const acts=document.createElement('div');acts.className='acts';row.append(c,tx,acts);return row;}
-function equipRod(lv){if(!GS.rods.includes(lv))return;GS.rod=lv;setCharRod(P.char,lv);markSave();markPresence();sfx.pop();toast(`🎣 ${RODS[lv].name} 장착! 이제 ★${lv} 물고기까지 잡을 수 있어요`);updateHUD();}
+function equipRod(lv){if(!GS.rods.includes(lv))return;GS.rod=lv;setCharRod(P.char,lv);markSave();markPresence();sfx.pop();toast(`🎣 ${RODS[lv].name} 장착! ${starRangeTxt(effStar())}`);updateHUD();}
 
 /* ---------- 상점 UI ---------- */
 let shopTab='buy',sellArm=0;
@@ -1817,8 +1828,8 @@ function sellItems(items){let sum=0,n=0;const set=new Set(items);for(const it of
 
 /* ---------- 도감 안내 ---------- */
 function bookGuideHTML(){const E=effStar(),bl=buffLeft();
- return`<div class="guide"><b>🎣 낚싯대와 물고기의 ★</b><p>물고기의 ★(희귀도)는 잡기 어려운 정도예요. <em>내 낚싯대 ★ 이상</em>인 물고기만 끌어올릴 수 있고, ★가 더 높은 물고기는 걸려도 줄을 끊고 달아나요.</p>
- <p>지금: <em>${RODS[GS.rod].name} (★${GS.rod})</em>${bl>0?` + 요리 효과 ★1 (${fmtLeft(bl)} 남음)`:''} → <em>★${E} 물고기까지</em> 잡을 수 있어요.</p>
+ return`<div class="guide"><b>🎣 낚싯대와 물고기의 ★</b><p>물고기의 ★(희귀도)는 잡기 어려운 정도예요. <em>내 낚싯대 ★와 같거나 낮은</em> 물고기는 편하게, <em>★1 높은 물고기</em>는 힘들지만 노력하면 잡을 수 있어요. ★2 이상 높으면 줄을 끊고 달아나요.</p>
+ <p>지금: <em>${RODS[GS.rod].name} (★${GS.rod})</em>${bl>0?` + 요리 효과 ★1 (${fmtLeft(bl)} 남음)`:''} → <em>${starRangeTxt(E)}</em></p>
  <p>낚싯대 ★가 물고기 ★보다 높을수록 훨씬 쉽게 끌려와요. ★가 같으면 <em>줄이 빨개질 때 잠깐 손을 떼는</em> 요령이 필요해요. 몰랑은 🐉 용왕님 상점에서 물고기를 팔아 모으고, 요리를 먹으면 잠깐 ★+1 효과를 받아요.</p></div>`;}
 
 /* ========== v2-B: 요리 · 채팅 · 수조 구경 · 지도 · 저장 ========== */
@@ -1849,7 +1860,7 @@ function dishesFor(id){if(PROTECTED.has(id))return[];if(CRUST.has(id))return['cg
 function foodInfo(f){if(f.k&&f.k[0]==='f'){const F=FANTASY[+f.k.slice(1)]||FANTASY[0];return{name:F.name,em:'✨',sec:F.sec,min:F.min,code:f.k};}const D=DISH[f.k]||DISH.grill;return{name:D.name,em:D.em,sec:D.sec,min:D.min,code:f.k};}
 function eatFood(info){const dur=info.min*60000;const until=Date.now()+dur;GS.buffUntil=Math.max(GS.buffUntil||0,until);markSave();updateHUD();
  showBubble(P.label,'😋',true,2.5);P.hopT=t;burstHearts(P.pos.x,P.pos.y+2,P.pos.z,5);tone(784,0,0.12,0.05,'triangle');tone(1046.5,0.12,0.2,0.05,'triangle');
- toast(`😋 ${info.name} 냠냠! ${info.min}분 동안 낚시 능력 ★+1 → ★${effStar()} 물고기까지`,3200);}
+ toast(`😋 ${info.name} 냠냠! ${info.min}분 동안 낚시 능력 ★+1 → ${starRangeTxt(effStar())}`,3200);}
 
 function buildTable(){const g=new THREE.Group();const pb=[];const P_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>pb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
  const box=new THREE.BoxGeometry(1,1,1);P_(box,'#b07a4a',0,0.74,0,0,0,0,1.15,0.07,0.68);for(const sx of[-1,1])for(const sz of[-1,1])P_(box,'#8a5a32',sx*0.5,0.37,sz*0.27,0,0,0,0.07,0.74,0.07);
@@ -1938,7 +1949,7 @@ function renderChat(){const box=$('chatList');const atBottom=box.scrollTop+box.c
  for(const e of vis){const d=document.createElement('div');d.className='cmsg'+(e.me?' me':'');const tm=new Date(e.ts);const hh=tm.getHours(),mm=String(tm.getMinutes()).padStart(2,'0');
   const nm=document.createElement('b');nm.textContent=e.name;const tx=document.createElement('span');tx.textContent=e.text;const ti=document.createElement('i');ti.textContent=`${hh}:${mm}`;d.append(nm,tx,ti);box.appendChild(d);}
  if(atBottom||true)box.scrollTop=box.scrollHeight;}
-function openChat(){if(!entered)return;closeEmoPanel();chatOpen=true;chatUnread=0;updChatBtn(false);renderChat();$('chatPanel').classList.remove('hidden');$('chatHint').textContent=netMode==='ws'?`${wsIsland}번 섬 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보관돼요`:`지금 이 섬에 있는 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보여요`;if(!isTouch)setTimeout(()=>$('chatIn').focus(),30);}
+function openChat(){if(!entered)return;closeEmoPanel();chatOpen=true;chatUnread=0;updChatBtn(false);renderChat();$('chatPanel').classList.remove('hidden');{const b=$('chatList');b.scrollTop=b.scrollHeight;requestAnimationFrame(()=>{b.scrollTop=b.scrollHeight;});setTimeout(()=>{b.scrollTop=b.scrollHeight;},120);}$('chatHint').textContent=netMode==='ws'?`${wsIsland}번 섬 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보관돼요`:`지금 이 섬에 있는 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보여요`;if(!isTouch)setTimeout(()=>$('chatIn').focus(),30);}
 function closeChat(){if(!chatOpen)return false;chatOpen=false;$('chatPanel').classList.add('hidden');$('chatIn').blur();return true;}
 function sendChat(){const inp=$('chatIn');const raw=inp.value;const text=cleanChat(raw);if(!text)return;const now=Date.now();if(now-lastChatSend<1500){toast('조금 천천히 보내 주세요 🙂');return;}lastChatSend=now;inp.value='';
  showBubble(P.label,text,false,10);P.hopT=t;sfx.pop();
@@ -2285,6 +2296,52 @@ function loveListHTML(){const rows=ANIMS.map(A=>({A,n:loveOf(A.d.id)})).filter(x
   return`<div class="irow"><div class="fic">${A.d.em}</div><div class="itx"><b>${A.d.name} <em>${A.d.sp}</em></b><small>💕 친밀도 ${n} · ${st}</small></div></div>`;}).join('')+'</div>';}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
+/* ---------- v6: 업데이트 공지 · 한 단계 위 물고기 ---------- */
+const HARD_D=0.16;
+function starRangeTxt(E){return E>=6?`★6 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
+function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요`;}
+function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위 · 난이도 높음`;}
+const NEWS_VER='2026-11-11c';
+const NEWS=[
+ {d:'11월 11일',t:'공지사항 · 채팅 · 낚시 난이도',n:true,i:[
+  '📢 <b>업데이트 공지사항</b> 버튼이 생겼어요. 새 소식이 있으면 빨간 점이 떠요.',
+  '💬 다시 접속해도 채팅창이 <b>가장 최근 메시지</b>부터 보여요.',
+  '🎣 낚싯대보다 <b>★1 높은 물고기</b>도 잡을 수 있어요! 대신 힘이 훨씬 세요. 걸리면 "🔥 한 단계 위 · 난이도 높음" 안내가 떠요. (★1 낚싯대 → ★2까지, ★2 → ★3까지 …) ★2 이상 높은 물고기는 여전히 달아나요.']},
+ {d:'11월 11일',t:'동물 친밀도 · 따라다니기',i:[
+  '💕 동물과 교감(쓰다듬기·껴안기)할 때마다 친밀도 +1.',
+  '🐾 친밀도 10 이상이면 그 동물이 나를 졸졸 따라와요. 같은 동물을 더 아끼는 사람이 있으면 그 사람을 따라가고, 한 사람에게는 가장 친한 1마리만 따라와요.',
+  '🎒 가방 → 🐾 동물 탭에서 친밀도를 볼 수 있어요.']},
+ {d:'11월 11일',t:'새 친구들 · 신화 물고기 · 가을 섬',i:[
+  '🐶 퍼그 <b>호떡</b>·<b>찹쌀</b>이 놀러 왔고, 콩이는 하얀 말티즈가 됐어요.',
+  '🎥 쓰다듬기·껴안기를 하면 카메라가 가까이 다가가요.',
+  '✨ ★6 신화 물고기 5종: 물개 · 돌고래 · 아기 범고래 · 해달(바다), 수달(민물).',
+  '🔥 ★6 <b>신화급 불빠따 낚싯대</b> (20,000몰랑) 출시!',
+  '🐠 수조가 넓어지고 최대 <b>50마리</b>까지 키울 수 있어요.',
+  '🍁 단풍·은행나무, 흩날리는 낙엽, 발로 차면 날리는 바닥 낙엽.',
+  '⚓ 낚시 부두 2곳 추가, 지도에 부두 끝까지 표시.',
+  '🌕 반짝이는 별, 자주 떨어지는 별똥별, 떡 찧는 토끼가 보이는 보름달.']},
+ {d:'11월 10일',t:'닉네임 · 지도 · 게시판',i:[
+  '✏️ 아이디와 별개로 캐릭터 <b>닉네임</b>을 직접 정할 수 있어요.',
+  '🗺️ 지도에서 다른 사람들이 어디 있는지 보고, 눌러서 찾아갈 수 있어요.',
+  '📋 마을 <b>게시판</b>에 업데이트 요청사항을 남길 수 있어요.']},
+ {d:'11월 10일',t:'채팅 · 상점 · 요리 · 계정',i:[
+  '💬 <b>채팅</b>: 머리 위 말풍선, 최근 50개 보관, 새 메시지가 오면 버튼이 반짝여요.',
+  '🐉 모닥불 옆 <b>용왕님 상점</b>: 물고기를 팔아 <b>몰랑</b>을 모으고 ★1~★5 낚싯대를 사요. 들고 있는 낚싯대가 보여요.',
+  '🎒 <b>가방</b>: 물고기·장비·음식 보관.',
+  '🔐 <b>아이디/비밀번호</b>로 저장하면 다른 기기에서도 이어서 해요.',
+  '🍳 모닥불 <b>요리</b> (회·구이·매운탕·찜·상상의 요리). 먹으면 잠깐 낚시 능력 ★+1.',
+  '🐟 큰 물고기는 수조에서도 크게 보여요.',
+  '👀 다른 사람을 누르면 그 사람의 낚싯대와 수조를 구경할 수 있어요.',
+  '📖 도감에 ★별 난이도 안내 추가.']},
+ {d:'11월 9일',t:'아몰랑아일랜드 오픈!',i:[
+  '🏝️ 3D 섬에서 함께 낚시하고 힐링해요. 링크만 누르면 바로 같이 놀 수 있어요.',
+  '🐟 바다·민물 물고기, 📖 도감, 🐠 수조, 🐶 동물 친구들, 🎵 배경음, 10분마다 바뀌는 하루.']}];
+function newsHTML(){return NEWS.map((u,k)=>`<div class="nwi${k===0?' top':''}"><div class="nwh"><b>${u.t}</b><small>${u.d}${u.n?' · NEW':''}</small></div><ul>${u.i.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('');}
+function newsSeen(){try{return localStorage.getItem('monggeul-news')===NEWS_VER;}catch(e){return true;}}
+function updNewsDot(){const d=$('newsDot');if(d)d.classList.toggle('hidden',newsSeen());}
+function openNews(){closeEmoPanel();closeChat();$('newsList').innerHTML=newsHTML();$('newsM').classList.remove('hidden');$('newsList').scrollTop=0;try{localStorage.setItem('monggeul-news',NEWS_VER);}catch(e){}updNewsDot();}
+function closeNews(){$('newsM').classList.add('hidden');}
+
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
@@ -2355,7 +2412,7 @@ function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=fa
  rodTipWorld(P.char,castFrom);castDur=0.5+0.45*p;castT0=t;sfx.whoosh(p);setF('casting');}
 function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');biteAt=t+rand(3.2,9.5);nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
 function startBite(){setF('bite');biteT0=t;sfx.bell();try{navigator.vibrate&&navigator.vibrate([60,40,60]);}catch(e){}ripple(castTgt.x,castTgt.z,1.3);}
-function hook(){fish=pickFish(power,habitat);fish.D=fightD(fish.sp,fish.frac);fish.over=starOf(fish.sp)>effStar();fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
+function hook(){fish=pickFish(power,habitat);fish.D=fightD(fish.sp,fish.frac);fish.over=starOf(fish.sp)>effStar()+1;fish.hard=!fish.over&&starOf(fish.sp)>effStar();$('tHard').textContent=fish.hard?hardTag(fish.sp):'';$('tHard').classList.toggle('hidden',!fish.hard);fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);if(fish.hard){toast(hardTxt(fish.sp)+'. 줄이 빨개지면 잠깐 손을 떼요!',4200);sfx.splash(0.25);}else toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
 function startRetrieve(from){retrieveFrom.copy(from);rT0=t;setF('retrieve');}
 function fishPos(out){fwdOf(P.yaw,_f);const ex=P.pos.x+_f.x*1.6,ez=P.pos.z+_f.z*1.6;const surge=t<surgeUntil;const wob=(Math.sin(t*1.6)*0.9*fish.s+Math.sin(t*0.7)*0.6+(surge?Math.sin(t*13)*0.4:0))*(0.3+d)*(castDist/14);
  return out.set(lerp(ex,castTgt.x,d)+(-_f.z)*wob,0,lerp(ez,castTgt.z,d)+_f.x*wob);}
@@ -2363,7 +2420,7 @@ let overT=0;
 function updateFight(dt){
  const D=fish.D;
  if(fish.over){tension=Math.min(1,tension+dt*0.85);d=Math.min(1,d+dt*0.04);surgeUntil=t+0.2;rippleAcc+=dt;if(rippleAcc>0.25){rippleAcc=0;fishPos(_a);ripple(_a.x,_a.z,1.3);splash(_a.x,_a.z,0.6);}
-  if(t-fish.t0>1.7){const sp=fish.sp,st=starOf(sp);const nm=book[sp.id]?sp.name:`정체 모를 ★${st} 물고기`;sfx.snap();toast(`앗! ${nm}${josa(nm,'이','가')} 줄을 끊고 달아났어요… ★${st} 낚싯대가 필요해요 (지금 ★${effStar()})`,4200);holding=false;fish=null;myLine.visible=false;myFloat.visible=false;setF('idle');}return;}
+  if(t-fish.t0>1.7){const sp=fish.sp,st=starOf(sp);const nm=book[sp.id]?sp.name:`정체 모를 ★${st} 물고기`;sfx.snap();toast(`앗! ${nm}${josa(nm,'이','가')} 줄을 끊고 달아났어요… ★${st-1} 이상 낚싯대가 필요해요 (지금 ★${effStar()})`,4200);holding=false;fish=null;myLine.visible=false;myFloat.visible=false;setF('idle');}return;}
  if(t>nextSurge&&D>0.18){surgeUntil=t+0.35+0.5*D;nextSurge=surgeUntil+rand(1.6,3.4)/(0.5+D);fishPos(_a);splash(_a.x,_a.z,1.1);sfx.splash(0.18);}
  const surge=t<surgeUntil;
  if(holding){tension+=dt*(0.04+0.42*D+(surge?0.35+0.6*D:0));d-=dt*(0.34-0.18*D)*(surge?0.3:1)*(14/Math.max(castDist,6))**0.4;tension=Math.max(tension,0.15+0.2*D);tickAcc+=dt;if(tickAcc>0.055){tickAcc=0;sfx.tick();}}
@@ -2406,7 +2463,7 @@ function updateFishing(dt){
  c.rodPivot.rotation.x=lerp(c.rodPivot.rotation.x,0.95+bend,0.3);
 }
 function updTension(){const k=clamp(tension,0,1);const f=$('tFill');f.style.width=(k*100).toFixed(1)+'%';f.style.background=k<.6?'#6bd08a':k<.85?'#f2c14e':'#ef5b5b';$('tDist').textContent=`남은 거리 ${Math.max(0,Math.ceil(d*castDist))}m`;
- let msg='',col='#fff';if(fish&&fish.over){msg=`⚠ 너무 강해요! ★${starOf(fish.sp)} 낚싯대가 필요해요`;col='#ffb0b0';}else if(t<surgeUntil){msg='⚠ 저항! 잠깐 놓아요';col='#ffc0c0';}else if(k>0.85){msg='너무 팽팽해요!';col='#ffd8a8';}else if(!holding&&tension<0.15){msg='느슨해요 — 다시 감아요';col='#d6e8ff';}else if(holding)msg='감는 중…';const m=$('tMsg');m.textContent=msg;m.style.color=col;}
+ let msg='',col='#fff';if(fish&&fish.over){msg=`⚠ 너무 강해요! ★${starOf(fish.sp)-1} 이상 낚싯대가 필요해요`;col='#ffb0b0';}else if(t<surgeUntil){msg='⚠ 저항! 잠깐 놓아요';col='#ffc0c0';}else if(k>0.85){msg='너무 팽팽해요!';col='#ffd8a8';}else if(!holding&&tension<0.15){msg='느슨해요 — 다시 감아요';col='#d6e8ff';}else if(holding)msg='감는 중…';const m=$('tMsg');m.textContent=msg;m.style.color=col;}
 function placeBang(p){_lv.set(p.x,p.y+0.9,p.z).project(camera);const b=$('bang');b.style.transform=`translate(${((_lv.x+1)/2*W-12).toFixed(0)}px,${((1-_lv.y)/2*H-60).toFixed(0)}px)`;}
 
 /* ---------- room: real people ---------- */
@@ -2491,7 +2548,7 @@ let toastTimer=0;
 function toast(msg,ms=2600){const el=$('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),ms);}
 function updateHUD(){const ph=PHASES[phaseOf(hourNow())];const cl=cycleLeft();const tm=timeMode==='real'?(cl.isDay?`밤까지 ${cl.txt}`:`아침까지 ${cl.txt}`):'미리보기';
  const who=roomState==='online'?(netMode==='ws'?`${wsIsland}번 섬 · ${peopleCount()}명`:`이 섬에 ${peopleCount()}명`):roomState==='connecting'?'연결 중…':'혼자 모드';$('hudS').textContent=W<520?`${ph.em} ${ph.ko}${timeMode==='real'?' '+cl.txt:''} · ${who}`:`${ph.em} ${ph.ko} · ${tm} · ${who}`;}
-function modalOpen(){return tankOpen||!!profPeer||mapOpen||['shop','bag','cook','auth','boardM'].some(id=>!$(id).classList.contains('hidden'))||!$('catch').classList.contains('hidden')||!$('book').classList.contains('hidden')||!$('help').classList.contains('hidden');}
+function modalOpen(){return tankOpen||!!profPeer||mapOpen||['shop','bag','cook','auth','boardM','newsM'].some(id=>!$(id).classList.contains('hidden'))||!$('catch').classList.contains('hidden')||!$('book').classList.contains('hidden')||!$('help').classList.contains('hidden');}
 function sendEmote(e,remember=true){if(!EMOJI_SET.has(e))return;initAudio();sfx.pop();showBubble(P.label,e,true,2.8);P.hopT=t;ME.eid++;ME.e=e;markPresence();
  if(remember){recentEmoji=[e,...recentEmoji.filter(x=>x!==e)].slice(0,5);try{localStorage.setItem('monggeul-emoji',JSON.stringify(recentEmoji));}catch(_){}buildEmoteBar();}}
 function buildEmoteBar(){const bar=$('emotes');bar.innerHTML='';recentEmoji.forEach(e=>{const b=document.createElement('button');b.textContent=e;b.addEventListener('click',()=>{if(!entered)return;closeEmoPanel();sendEmote(e,false);});bar.appendChild(b);});
@@ -2568,7 +2625,7 @@ const endPtr=e=>{if(e.pointerId===joy.id){joy.id=null;joy.x=joy.y=0;$('joy').cla
 cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
 cv.addEventListener('wheel',e=>{e.preventDefault();if(mode==='walk')camDist=clamp(camDist*(1+Math.sign(e.deltaY)*0.1),4,20);},{passive:false});
 window.addEventListener('keydown',e=>{const tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA')){if(e.code==='Escape'){closeChat();tg.blur();}return;}
- if(e.code==='Escape'){if(closeChat())return;for(const id of['shop','bag','cook','map','prof','boardM'])if(!$(id).classList.contains('hidden')){({shop:closeShop,bag:closeBag,cook:closeCook,map:closeMap,prof:closeProfile,boardM:closeBoard})[id]();return;}}
+ if(e.code==='Escape'){if(closeChat())return;for(const id of['shop','bag','cook','map','prof','boardM','newsM'])if(!$(id).classList.contains('hidden')){({shop:closeShop,bag:closeBag,cook:closeCook,map:closeMap,prof:closeProfile,boardM:closeBoard,newsM:closeNews})[id]();return;}}
  if(!entered||mode==='closet')return;
  if(e.code==='Enter'||e.code==='NumpadEnter'){e.preventDefault();openChat();setTimeout(()=>$('chatIn').focus(),30);return;}
  if(!modalOpen()){if(e.code==='KeyB'){openBag();return;}if(e.code==='KeyM'){openMap();return;}if(e.code==='KeyR'){doCtx();return;}}
@@ -2628,6 +2685,7 @@ function frame(now){
 }
 /* ---------- v2 handlers ---------- */
 $('boardX').addEventListener('click',closeBoard);$('boardM').addEventListener('click',e=>{if(e.target.id==='boardM')closeBoard();});$('boardGo').addEventListener('click',postBoard);$('boardIn').addEventListener('input',updBoardCount);
+$('bNews').addEventListener('click',openNews);$('newsX').addEventListener('click',closeNews);$('newsOk').addEventListener('click',closeNews);$('newsM').addEventListener('click',e=>{if(e.target.id==='newsM')closeNews();});updNewsDot();
 $('bMap').addEventListener('click',openMap);$('mapX').addEventListener('click',closeMap);$('map').addEventListener('click',e=>{if(e.target.id==='map')closeMap();});
 $('bagBtn').addEventListener('click',()=>{initAudio();openBag();});$('bagX').addEventListener('click',closeBag);$('bag').addEventListener('click',e=>{if(e.target.id==='bag')closeBag();});
 document.querySelectorAll('#bag .tabs button').forEach(b=>b.addEventListener('click',()=>{bagTab=b.dataset.tab;renderBag();}));
