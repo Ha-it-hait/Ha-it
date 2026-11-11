@@ -208,6 +208,8 @@ body.cine .petbox,body.cine .ctxbtn,body.cine .hint,body.cine .emotes,body.cine 
 .bpost .bt button{border:0;background:#f3ecdc;color:#8a5a32;border-radius:8px;height:26px;padding:0 9px;font-size:11.5px;font-weight:800;cursor:pointer}.bpost p{margin:4px 0 0;font-size:14px;line-height:1.55;color:#3a3326;white-space:pre-wrap;word-break:break-all;user-select:text;-webkit-user-select:text}
 .hud .s2{font-size:12px;font-weight:800;margin-top:3px;opacity:.95}
 .hud .s2.buff{color:#ffe08a}
+.lbtn .hk{position:absolute;right:-12px;bottom:-4px;min-width:20px;height:20px;padding:0 4px;border-radius:6px;background:#fff;color:#33415c;font:900 12px/20px inherit;font-style:normal;text-align:center;box-shadow:0 2px 0 #c9d3dd,0 2px 6px rgba(0,0,0,.2);pointer-events:none}
+@media (pointer:coarse){.lbtn .hk{display:none}}
 .lbtn{position:fixed;left:max(14px,env(safe-area-inset-left));width:56px;height:56px;border-radius:28px;border:3px solid #fff;color:#fff;font-size:23px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:0 6px 16px rgba(0,0,0,.22);z-index:4;cursor:pointer;padding:0}
 .lbtn span{font-size:10.5px;font-weight:900;margin-top:2px}
 .lbtn.bag{bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 144px);background:#f0a24a}
@@ -353,8 +355,8 @@ body.cine .boatbadge{opacity:0}
 </div>
 
 <button id="tankBtn" class="tankbtn hidden" title="내 수조">🐠<span>수조</span></button>
-<button id="chatBtn" class="lbtn chat hidden" title="채팅 (C 또는 Enter)">💬<span>채팅</span><em id="chatBadge" class="hidden">0</em></button>
-<button id="bagBtn" class="lbtn bag hidden" title="가방 (B)">🎒<span>가방</span></button>
+<button id="chatBtn" class="lbtn chat hidden" title="채팅 (C 또는 Enter)">💬<span>채팅</span><em id="chatBadge" class="hidden">0</em><i class="hk">C</i></button>
+<button id="bagBtn" class="lbtn bag hidden" title="가방 (B)">🎒<span>가방</span><i class="hk">B</i></button>
 <button id="ctxBtn" class="ctxbtn hidden"></button>
 <div id="boatBadge" class="boatbadge hidden"></div>
 <div id="rbBadge" class="rbbadge hidden"></div>
