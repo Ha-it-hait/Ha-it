@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-13e">
+<meta name="amollang-build" content="2026-11-13f">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -231,7 +231,7 @@ body.cine .petbox,body.cine .ctxbtn,body.cine .hint,body.cine .emotes,body.cine 
 .rbbadge{position:fixed;left:50%;transform:translateX(-50%);white-space:nowrap;top:calc(var(--vvt,0px) + max(10px,env(safe-area-inset-top)) + 64px);background:linear-gradient(90deg,rgba(255,77,77,.85),rgba(255,154,46,.85),rgba(255,225,74,.85),rgba(79,214,106,.85),rgba(63,155,255,.85),rgba(75,91,214,.85),rgba(166,92,255,.85));color:#fff;font-size:12px;font-weight:900;padding:5px 12px;border-radius:999px;z-index:3;pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,.45);box-shadow:0 3px 10px rgba(0,0,0,.2)}.rbbadge.low{top:calc(var(--vvt,0px) + max(10px,env(safe-area-inset-top)) + 98px)}@media (max-width:520px){.rbbadge{top:calc(var(--vvt,0px) + max(10px,env(safe-area-inset-top)) + 84px);font-size:11px}.rbbadge.low{top:calc(var(--vvt,0px) + max(10px,env(safe-area-inset-top)) + 116px)}}
 .ctxbtn b{font-size:24px}.ctxbtn.boat{background:#2b8fd6}.ctxbtn small.fare{font-size:12px;background:rgba(255,255,255,.25);border-radius:999px;padding:2px 8px;margin-left:4px}.ctxbtn.unboat{background:#f0883a}.ctxbtn.hof{background:linear-gradient(135deg,#e2a92a,#f6d36a);color:#4a3300}
 .hofcard{background:linear-gradient(#fffaf0,#fff6e2)}.colk{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#3a2a08,#6a4a10);color:#fff3c8;border-radius:16px;padding:10px 14px;margin:6px 0 6px;box-shadow:inset 0 0 0 2px #f2c14e,0 4px 14px rgba(160,110,20,.25)}.colk .cr{font-size:34px;filter:drop-shadow(0 0 6px rgba(255,210,90,.8))}.colk div{display:flex;flex-direction:column;min-width:0}.colk small{font-size:11.5px;color:#e8cf8a;font-weight:700}.colk b{font-size:20px;color:#ffe08a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.colk em{font-style:normal;font-weight:800;font-size:13px;color:#fff}.colk.me{box-shadow:inset 0 0 0 3px #ffe08a,0 0 18px rgba(255,210,90,.6)}.colk.empty b{font-size:16px}
-.colr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 8px}@media (max-width:520px){.colr{grid-template-columns:repeat(2,minmax(0,1fr))}}.colc{display:flex;flex-direction:column;align-items:center;gap:1px;background:#fff6dc;border-radius:12px;padding:6px 6px 7px;box-shadow:inset 0 0 0 1.5px #ecd28a;min-width:0}.colc .rk{font-size:17px;line-height:1.1;font-weight:900;color:#a07a2a}.colc .rn{font-size:10.5px;font-weight:800;color:#a08a5a}.colc b{font-size:13px;color:#4a3410;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.colc em{font-style:normal;font-size:11.5px;font-weight:800;color:#b07800}.colc.me{background:#fff0b8;box-shadow:inset 0 0 0 2px #f2c14e}
+.colr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 8px}@media (max-width:520px){.colr{grid-template-columns:repeat(2,minmax(0,1fr))}}.colc{display:flex;flex-direction:column;align-items:center;gap:1px;background:#fff6dc;border-radius:12px;padding:6px 6px 7px;box-shadow:inset 0 0 0 1.5px #ecd28a;min-width:0}.colc .rk{font-size:17px;line-height:1.1;font-weight:900;color:#a07a2a}.colc .rn{font-size:10.5px;font-weight:800;color:#a08a5a}.colc b{font-size:13px;color:#4a3410;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.colc em{font-style:normal;font-size:11.5px;font-weight:800;color:#b07800}.colc.me{background:#fff0b8;box-shadow:inset 0 0 0 2px #f2c14e}.colc.plain{justify-content:center}
 .hofsum{background:#fff1c8;border-radius:12px;padding:8px 12px;font-size:13px;color:#6a4a10;margin:4px 0 8px}.hofsum b{color:#b07800}
 .hoftabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}.hoftabs button{border:1.5px solid #e8cf8a;background:#fff;border-radius:999px;padding:5px 12px;font-weight:800;font-size:13px;color:#8a6a20;cursor:pointer}.hoftabs button.on{background:#f2c14e;color:#3a2a00;border-color:#d9a520}
 #hofList{max-height:56vh;overflow:auto;touch-action:pan-y;overscroll-behavior:contain}
@@ -2978,7 +2978,7 @@ async function colSync(force){const c=bookCount();if(c<=0||COL.busy)return;const
 function colWatch(){if(COL.unsub||!HOF.db)return;try{COL.unsub=HOF.db.collection('collectors').onSnapshot(snap=>{const a=[];for(const d of snap.docs){const v=d.data()||{};a.push({n:String(v.n||''),c:+v.c||0,ts:+v.ts||0});}a.sort((x,y)=>y.c-x.c||x.ts-y.ts);const seen=new Set();COL.top=a.filter(e=>!seen.has(e.n)&&seen.add(e.n)).slice(0,5);hofRefresh();},()=>{COL.unsub=null;});}catch(e){}}
 function colHTML(){const t=COL.top.filter(e=>e&&e.c>0);const me=hofName();
  if(!t.length)return`<div class="colk empty"><span class="cr">👑</span><div><b>도감왕</b><small>${HOF.ok?'아직 아무도 없어요. 가장 많은 종류를 잡으면 이 자리에 이름이 올라가요!':'공개 서버 버전에서 모두와 겨룰 수 있어요'}</small></div></div>`;
- const e=t[0];const rest=t.slice(1,5).map((x,i)=>`<div class="colc${x.n===me?' me':''}"><span class="rk">${['🥈','🥉','🏅','🏅'][i]}</span><span class="rn">${i+2}등</span><b>${esc(x.n.slice(0,12))}</b><em>${x.c}종</em></div>`).join('');
+ const e=t[0];const rest=t.slice(1,5).map((x,i)=>`<div class="colc${x.n===me?' me':''}${i>=2?' plain':''}">${i<2?`<span class="rk">${['🥈','🥉'][i]}</span>`:''}<span class="rn">${i+2}등</span><b>${esc(x.n.slice(0,12))}</b><em>${x.c}종</em></div>`).join('');
  return`<div class="colk${e.n===me?' me':''}"><span class="cr">👑</span><div><small>도감왕 · 가장 많은 종류를 잡은 낚시꾼</small><b>${esc(e.n.slice(0,12))}</b><em>${e.c} / ${SPECIES.length}종</em></div></div>${rest?`<div class="colr">${rest}</div>`:''}`;}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 
@@ -3303,7 +3303,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-13e';
+const BUILD='2026-11-13f';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
