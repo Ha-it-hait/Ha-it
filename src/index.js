@@ -256,7 +256,7 @@ const DSID_KEEP = 80;              // 화면(창)마다 '마지막으로 반영�
 const LEGACY_NEW_MS = 5 * 60e3;
 // 이 빌드보다 오래된 화면은 저장을 받지 않아요(새로고침 안내). 저장 항목이 바뀌는 업데이트를 할 때마다 올려요.
 // 막힌 화면의 기록은 그 기기에 보관됐다가, 새로고침해서 다시 로그인하면 합쳐져요.
-const MIN_CV = '2026-11-12q';
+const MIN_CV = '2026-11-12r';
 const OWNED_LISTS = ['rods', 'packs', 'floats', 'reels'];    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
 
 // ---------- 저장 데이터 안전 합치기 (서버) ----------
@@ -290,6 +290,7 @@ function legacyMerge(S, D) {
   const M = Object.assign({}, S, D);
   M.book = bookUnion(S.book, D.book);
   M.tank = itemsUnion(S.tank, D.tank);
+  M.mail = mergeMail(S.mail, D.mail);
   const sg = S.gs || {}, dg = D.gs || {};
   M.gs = Object.assign({}, sg, dg, {
     money: Math.max(+sg.money || 0, +dg.money || 0),
@@ -297,6 +298,7 @@ function legacyMerge(S, D) {
     packs: [...new Set([...(sg.packs || []), ...(dg.packs || [])])],
     floats: [...new Set([...(sg.floats || []), ...(dg.floats || [])])],
     tankUp: Math.max(sg.tankUp | 0, dg.tankUp | 0),
+    freeLot: Math.max(sg.freeLot | 0, dg.freeLot | 0),
     reels: [...new Set([...(sg.reels || []), ...(dg.reels || [])])],
     bag: itemsUnion(sg.bag, dg.bag),
   });
@@ -317,6 +319,39 @@ function keepOwned(old, d) {
   for (const k of Object.keys(og)) if (!(k in g)) g[k] = og[k];
   for (const k of OWNED_LISTS) { const u = [...new Set([...(Array.isArray(og[k]) ? og[k] : []), ...(Array.isArray(g[k]) ? g[k] : [])].map(x => x | 0))].filter(x => x > 0).sort((a, b) => a - b); if (u.length) g[k] = u; }
   g.tankUp = Math.max(og.tankUp | 0, g.tankUp | 0);
+  if (old.mail || d.mail) d.mail = mergeMail(old.mail, d.mail);
+  return d;
+}
+// 선물 우편함: 같은 선물(id)은 하나로, '읽음'은 한 번 읽으면 계속 읽음 — 어느 화면이 저장해도 선물 목록이 줄지 않게
+function mergeMail(a, b) {
+  const m = new Map();
+  for (const x of [...(Array.isArray(a) ? a : []), ...(Array.isArray(b) ? b : [])]) {
+    if (!x || typeof x.id !== 'string') continue;
+    const o = m.get(x.id); if (o) { o.seen = (o.seen | 0) || (x.seen | 0) ? 1 : 0; } else m.set(x.id, Object.assign({}, x));
+  }
+  return [...m.values()].sort((p, q) => (p.ts || 0) - (q.ts || 0)).slice(-40);
+}
+const GIFT_LIM = { money: 1000000, lot: 100, tank: 15 };
+function cleanGift(b) {
+  const ints = (a, lo, hi) => [...new Set((Array.isArray(a) ? a : []).map(x => x | 0).filter(x => x >= lo && x <= hi))].sort((x, y) => x - y);
+  const it = {
+    money: Math.max(0, Math.min(GIFT_LIM.money, Math.floor(Number(b.money) || 0))),
+    lot: Math.max(0, Math.min(GIFT_LIM.lot, Math.floor(Number(b.lot) || 0))),
+    tank: Math.max(0, Math.min(GIFT_LIM.tank, Math.floor(Number(b.tank) || 0))),
+    floats: ints(b.floats, 1, 3), reels: ints(b.reels, 1, 2), rods: ints(b.rods, 1, 7),
+  };
+  const msg = String(b.msg || '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 200);
+  const any = it.money || it.lot || it.tank || it.floats.length || it.reels.length || it.rods.length;
+  return any || msg ? { it, msg } : null;
+}
+function applyGift(d, gift, now, gid) {
+  const g = d.gs = Object.assign({}, d.gs || {}), it = gift.it;
+  g.money = Math.max(0, (+g.money || 0) + it.money);
+  g.freeLot = Math.max(0, (g.freeLot | 0) + it.lot);
+  g.tankUp = Math.min(GIFT_LIM.tank, (g.tankUp | 0) + it.tank);
+  for (const [k, add] of [['floats', it.floats], ['reels', it.reels], ['rods', it.rods]]) if (add.length) g[k] = [...new Set([...(Array.isArray(g[k]) ? g[k] : []), ...add])].sort((a, b) => a - b);
+  d.mail = mergeMail(d.mail, [{ id: gid, ts: now, msg: gift.msg, it, seen: 0 }]);
+  d.at = now;
   return d;
 }
 function ownedSum(d) { const g = (d && d.gs) || {}; return { rods: g.rods || [], packs: g.packs || [], floats: g.floats || [], reels: g.reels || [], tankUp: g.tankUp | 0, float: g.float | 0, reel: g.reel | 0 }; }
@@ -346,6 +381,7 @@ export class Vault extends DurableObject {
     if (!cols.has('sids')) this.sql.exec('ALTER TABLE users ADD COLUMN sids TEXT');
     if (!cols.has('dsid')) this.sql.exec('ALTER TABLE users ADD COLUMN dsid TEXT');
     this.sql.exec('CREATE TABLE IF NOT EXISTS baks(id TEXT, ts INTEGER, why TEXT, data TEXT, PRIMARY KEY(id, ts))');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS gifts(gid TEXT PRIMARY KEY, ts INTEGER, target TEXT, n INTEGER, items TEXT, msg TEXT)');
     this.adminFail = new Map();
     this.regByIp = new Map();
     this.sql.exec('CREATE TABLE IF NOT EXISTS hof(id TEXT PRIMARY KEY, s REAL, n TEXT, ts INTEGER, ip TEXT)');
@@ -519,6 +555,36 @@ export class Vault extends DurableObject {
       let data = null; try { data = row.data ? JSON.parse(row.data) : null; } catch { data = null; }
       return J({ ok: true, id, token: this.newSession(id), data, rev: row.rev | 0, sids: (pj(row.sids) || []).map(x => x.s), dsid: dsidOut(row.dsid) });
     }
+    if (op === 'admin-gift' || op === 'admin-gifts') {
+      const ipKey = ip.slice(0, 64);
+      const fails = (this.adminFail.get(ipKey) || []).filter(x => now - x < 3600e3);
+      if (fails.length >= 10) return J({ error: '관리자 키를 너무 많이 틀렸어요. 1시간 뒤에 다시 해 주세요' }, 429);
+      const okKey = this.env.ADMIN_KEY && typeof body.admin === 'string' && sameStr(body.admin, String(this.env.ADMIN_KEY));
+      if (!okKey) { fails.push(now); this.adminFail.set(ipKey, fails); return J({ error: this.env.ADMIN_KEY ? '관리자 키가 맞지 않아요' : '서버에 ADMIN_KEY가 설정되어 있지 않아요' }, 403); }
+      if (op === 'admin-gifts') {
+        const list = this.sql.exec('SELECT gid, ts, target, n, items, msg FROM gifts ORDER BY ts DESC LIMIT 100').toArray().map(r => ({ gid: r.gid, ts: r.ts, target: r.target, n: r.n, it: pj(r.items), msg: r.msg }));
+        return J({ ok: true, list });
+      }
+      const gift = cleanGift(body); if (!gift) return J({ error: '보낼 보상이나 메시지를 넣어 주세요' }, 400);
+      const gid = 'g' + now.toString(36) + Math.random().toString(36).slice(2, 7);
+      const all = body.all === true;
+      const uid = String(body.id ?? '').trim().toLowerCase();
+      const rows = all ? this.sql.exec('SELECT id, data, rev FROM users WHERE data IS NOT NULL').toArray()
+                       : this.sql.exec('SELECT id, data, rev FROM users WHERE id = ?', uid).toArray();
+      if (!all && !rows.length) return J({ error: '없는 아이디예요' }, 404);
+      let n = 0, skip = 0;
+      for (const row of rows) {
+        const d = pj(row.data); if (!d || d.v !== 2) { skip++; continue; }
+        applyGift(d, gift, now, gid);
+        if (!all) this.bak(row.id, row.data, now, 'before-restore', true);
+        // 저장 번호를 올려서, 게임을 켜 둔 화면도 다음 저장 때 서버 기록(선물 포함)과 합쳐요
+        this.sql.exec('UPDATE users SET data = ?, updated = ?, rev = ? WHERE id = ?', JSON.stringify(d), now, (row.rev | 0) + 1, row.id);
+        n++;
+      }
+      if (!all && !n) return J({ error: '아직 게임 기록이 없는 아이디예요 (한 번 접속해서 저장된 뒤에 보낼 수 있어요)' }, 400);
+      this.sql.exec('INSERT INTO gifts(gid, ts, target, n, items, msg) VALUES (?, ?, ?, ?, ?, ?)', gid, now, all ? '*' : uid, n, JSON.stringify(gift.it), gift.msg);
+      return J({ ok: true, gid, n, skip, it: gift.it });
+    }
     if (op.startsWith('admin-')) {
       const ipKey = ip.slice(0, 64);
       const fails = (this.adminFail.get(ipKey) || []).filter(x => now - x < 3600e3);
@@ -637,7 +703,7 @@ export default {
     if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
       const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
       const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear'].includes(op)) return J({ error: 'not found' }, 404);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear', 'admin-gift', 'admin-gifts'].includes(op)) return J({ error: 'not found' }, 404);
       if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {

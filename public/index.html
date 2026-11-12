@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12q">
+<meta name="amollang-build" content="2026-11-12r">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -268,6 +268,13 @@ body.cine .boatbadge{opacity:0}
 .irow canvas{width:84px;height:50px;flex:none;border-radius:10px;background:#eef5f7}
 .irow.rod canvas{width:100px;height:60px;background:linear-gradient(#eef5f7,#dfeaf0)}
 .irow.pack canvas{width:96px;height:70px;background:linear-gradient(#fff8ec,#f3e6cf)}.irow.pack.p1{background:linear-gradient(90deg,#eaf6ff,#fff)}.irow.pack.p1 canvas{background:linear-gradient(#e6f5ff,#cfe8f8)}.irow.pack.p2{background:linear-gradient(90deg,#fff3f8,#fffbea);border-color:#f2c14e}.irow.pack.p2 canvas{background:linear-gradient(#fdf6ff,#fbe9f1)}.irow.pack.on{border-color:#4cc38a}
+.gfov{position:fixed;inset:0;z-index:9450;background:rgba(18,28,44,.6);display:none;align-items:center;justify-content:center;padding:16px}.gfov.on{display:flex}
+.gfcard{width:100%;max-width:380px;max-height:86vh;overflow:auto;background:linear-gradient(170deg,#fff8e6,#ffe9f1);border-radius:20px;padding:18px 16px 16px;text-align:center;box-shadow:0 12px 34px rgba(0,0,0,.35);border:3px solid #fff;color:#3a2f22}
+.gfem{font-size:40px;animation:gfb 1.2s ease-in-out infinite alternate}@keyframes gfb{to{transform:translateY(-4px) rotate(-6deg)}}.gft{display:block;font-size:19px;font-weight:900;color:#c2384d;margin:2px 0 10px}
+.gflist{display:flex;flex-direction:column;gap:8px;text-align:left}.gfi{background:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}.gfi p{margin:0 0 6px;font-size:13.5px;line-height:1.55;white-space:pre-wrap}.gfi small{color:#9a8a72;font-size:11.5px}
+.gfch{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px}.gfch span{background:#fff3c4;border-radius:999px;padding:3px 9px;font-weight:800;font-size:12.5px;color:#7a4a10}
+.gfnote{font-size:12px;color:#7a6a52;margin:10px 2px 12px;line-height:1.5}.gfcard button{width:100%;border:0;border-radius:12px;padding:12px;font:900 15px system-ui,sans-serif;background:#ff7a59;color:#fff;cursor:pointer}
+.gfhist{font-size:12.5px;line-height:1.6;color:#5a4c3a;background:#fffaf0;border-radius:12px;padding:8px 10px}.gfhist small{color:#9a8a72}
 .irow.lot canvas{width:96px;height:70px;background:linear-gradient(#fff8ec,#fde8ef);border-radius:10px}.irow.lot{background:linear-gradient(90deg,#fff6e0,#fff);border-color:#f2c14e}
 .lttbl{margin:10px 2px 4px;font-size:13px}.lttbl table{width:100%;border-collapse:collapse;margin:6px 0}.lttbl td{padding:4px 6px;border-bottom:1px solid #efe6d6}.lttbl td.n{text-align:right;white-space:nowrap}.lttbl small{color:#7a6a52;line-height:1.5}.lttbl tr.ltsp td{background:linear-gradient(90deg,#fff3c4,#ffe0ec);font-weight:800;color:#a8324a}
 .ltov{position:fixed;inset:0;z-index:9400;background:rgba(18,28,44,.6);display:none;align-items:center;justify-content:center;padding:16px}.ltov.on{display:flex}
@@ -2020,7 +2027,7 @@ function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
    const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');if(GS.rod===lv){b.textContent='장착 중';b.disabled=true;}else{b.textContent='장착하기';b.onclick=()=>{equipRod(lv);renderBag();};}acts.appendChild(b);
    row.append(c,tx,acts);list.appendChild(row);});box.appendChild(list);
   if(GS.rods.length<6){const n=document.createElement('div');n.className='bsub';n.textContent='더 좋은 낚싯대는 마을 모닥불 옆 🐉 용왕님 상점에서 살 수 있어요.';box.appendChild(n);}
-  renderReelGear(box);renderFloatGear(box);
+  renderReelGear(box);renderFloatGear(box);renderGiftGear(box);
   const t2=document.createElement('div');t2.className='btitle';t2.textContent='👕 옷차림';box.appendChild(t2);
   const o=document.createElement('div');o.className='outfit';const sw=(i)=>`<i style="background:${COLORS[i]}"></i>`;
   o.innerHTML=`<div><span>모자</span><b>${HAT_NAMES[LOOK.hat]}</b>${LOOK.hat===6?'':sw(LOOK.hc)}</div><div><span>옷</span><b>${CLOTH_NAMES[LOOK.cloth]}</b>${sw(LOOK.cc)}</div><div><span>이름</span><b>${nameOf(NAME)}</b></div>`;
@@ -2342,7 +2349,7 @@ function doCtx(){if(ctxKind==='boat'){boardBoat();return;}if(ctxKind==='unboat')
 const SAVE_KEY='monggeul-save-v2',ACCT_KEY='monggeul-acct',GUEST_BAK='monggeul-guest-backup';
 var acct=null,cloud=null,saveBusy=false,lastSaveAt=0,lastSaveOk=0,saveErr='';
 function loveAll(){const o={};for(const d of ANIM_DEFS){try{const n=+localStorage.getItem('monggeul-love-'+d.id)||0;if(n)o[d.id]=n;}catch(e){}}return o;}
-function collectSave0(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,floats:GS.floats||[],float:GS.float|0,tankUp:GS.tankUp|0,reels:GS.reels||[],reel:GS.reel|0,lotPend:GS.lotPend||null,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
+function collectSave0(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,floats:GS.floats||[],float:GS.float|0,tankUp:GS.tankUp|0,reels:GS.reels||[],reel:GS.reel|0,lotPend:GS.lotPend||null,freeLot:GS.freeLot|0,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
 function applySave0(d){if(!d||typeof d!=='object')return false;
  const L=d.look;if(L&&[L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK={hat:clamp(L.hat,0,6),hc:clamp(L.hc,0,COLORS.length-1),cloth:clamp(L.cloth,0,4),cc:clamp(L.cc,0,COLORS.length-1)};
  if(d.name&&Number.isInteger(d.name.a)&&Number.isInteger(d.name.b)){const ck=checkNick(d.name.nk||'');NAME={a:d.name.a,b:d.name.b,nk:ck.ok?ck.nick:''};}
@@ -2351,7 +2358,7 @@ function applySave0(d){if(!d||typeof d!=='object')return false;
  if(d.love&&typeof d.love==='object')for(const[k,v]of Object.entries(d.love))try{localStorage.setItem('monggeul-love-'+k,String(v|0));}catch(e){}
  if(Array.isArray(d.emoji)){const f=d.emoji.filter(e=>EMOJI_SET.has(e)).slice(0,5);if(f.length===5)recentEmoji=f;}
  const g=d.gs||{};GS.money=clamp(Math.floor(+g.money||0),0,1e9);GS.rods=[...new Set([1,...(Array.isArray(g.rods)?g.rods:[]).map(x=>x|0).filter(x=>x>=1&&x<=7)])].sort();GS.rod=GS.rods.includes(g.rod|0)?g.rod|0:Math.max(...GS.rods);
- GS.packs=[...new Set((Array.isArray(g.packs)?g.packs:[]).map(x=>x|0).filter(x=>x>=1&&x<PACKS.length))].sort();GS.pack=GS.packs.includes(g.pack|0)?g.pack|0:0;GS.floats=[...new Set((Array.isArray(g.floats)?g.floats:[]).map(x=>x|0).filter(x=>x>=1&&x<FLOATS.length))].sort((a,b)=>a-b);GS.float=GS.floats.includes(g.float|0)?g.float|0:0;GS.tankUp=clamp(g.tankUp|0,0,TANK_LV_MAX);tankCr=[];GS.reels=[...new Set((Array.isArray(g.reels)?g.reels:[]).map(x=>x|0).filter(x=>x>=1&&x<REELS.length))].sort((a,b)=>a-b);GS.reel=GS.reels.includes(g.reel|0)?g.reel|0:0;GS.lotPend=(g.lotPend&&Array.isArray(g.lotPend.c)&&g.lotPend.c.length===6&&[0,1200,3000,6000,12000,30000,2000,5000,10000,20000,50000].includes(g.lotPend.p|0))?{p:g.lotPend.p|0,c:g.lotPend.c.map(String),n:String(g.lotPend.n||''),...(g.lotPend.f?{f:1}:{})}:null;if(P.char)setCharReel(P.char,GS.reel);if(P.char)setCharPack(P.char,GS.pack);
+ GS.packs=[...new Set((Array.isArray(g.packs)?g.packs:[]).map(x=>x|0).filter(x=>x>=1&&x<PACKS.length))].sort();GS.pack=GS.packs.includes(g.pack|0)?g.pack|0:0;GS.floats=[...new Set((Array.isArray(g.floats)?g.floats:[]).map(x=>x|0).filter(x=>x>=1&&x<FLOATS.length))].sort((a,b)=>a-b);GS.float=GS.floats.includes(g.float|0)?g.float|0:0;GS.tankUp=clamp(g.tankUp|0,0,TANK_LV_MAX);tankCr=[];GS.reels=[...new Set((Array.isArray(g.reels)?g.reels:[]).map(x=>x|0).filter(x=>x>=1&&x<REELS.length))].sort((a,b)=>a-b);GS.reel=GS.reels.includes(g.reel|0)?g.reel|0:0;GS.freeLot=clamp(g.freeLot|0,0,1000);GS.lotPend=(g.lotPend&&Array.isArray(g.lotPend.c)&&g.lotPend.c.length===6&&[0,1200,3000,6000,12000,30000,2000,5000,10000,20000,50000].includes(g.lotPend.p|0))?{p:g.lotPend.p|0,c:g.lotPend.c.map(String),n:String(g.lotPend.n||''),...(g.lotPend.f?{f:1}:{})}:null;if(P.char)setCharReel(P.char,GS.reel);if(P.char)setCharPack(P.char,GS.pack);
  GS.bag=(Array.isArray(g.bag)?g.bag:[]).filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,1000).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
  GS.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&(DISH[f.k]||/^f\d$/.test(f.k))).slice(0,300).map(f=>({k:f.k,s:SP_BY[f.s]?f.s:''}));
  GS.buffUntil=Number.isFinite(+g.buffUntil)?+g.buffUntil:0;GS.ease=clamp(+g.ease||0,0,0.2);GS.easeUntil=Number.isFinite(+g.easeUntil)?+g.easeUntil:0;GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});LEG.n=Math.max(LEG.n,(+GS.stats.leg||0)|0);if(Array.isArray(GS.stats.nofol)){NOFOL.clear();for(const id of GS.stats.nofol)NOFOL.add(String(id));try{localStorage.setItem('monggeul-nofollow',JSON.stringify([...NOFOL]));}catch(e){}}
@@ -2578,9 +2585,14 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-12q';
+const NEWS_VER='2026-11-12r';
 const NEWS=[
- {d:'11월 12일',t:'🛠️ 산 장비가 사라지던 문제를 고쳤어요',n:true,i:[
+ {d:'11월 12일',t:'📮 선물 우편함이 생겼어요',n:true,i:[
+  '🎁 오류나 이벤트로 운영자가 선물을 보내면, 게임에 들어올 때 <b>“📮 선물이 도착했어요!”</b> 창으로 알려 드려요.',
+  '💰 몰랑 · 🎫 무료 복권 · 🎯 찌 · 🧵 릴 · 🎣 낚싯대 · 🐠 수조 칸이 선물로 올 수 있어요. 선물은 바로 내 기록에 들어가요.',
+  '🎫 무료 복권은 상점 복권 칸에서 돈 없이 긁을 수 있고, 하루 20장 제한과 별개예요.',
+  '📜 받은 선물은 🎒 가방 › 🎣 장비·옷 맨 아래에서 다시 볼 수 있어요.']},
+ {d:'11월 12일',t:'🛠️ 산 장비가 사라지던 문제를 고쳤어요',i:[
   '🎯 PC와 휴대폰을 오가며 할 때, 오래 켜 둔 예전 화면이 저장하면서 <b>산 찌·릴·수조 크기가 사라질 수 있던 문제</b>를 고쳤어요.',
   '🔒 이제 산 물건(낚싯대·가방·찌·릴·수조 크기)은 어떤 경우에도 줄어들지 않게 서버가 지켜요.',
   '🆕 너무 오래된 화면은 저장 대신 새로고침 안내가 떠요. 그동안의 기록은 기기에 보관됐다가 새로고침하면 합쳐져요.',
@@ -3257,7 +3269,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12q';
+const BUILD='2026-11-12r';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3291,12 +3303,12 @@ function merge3(B,L,S){B=B&&typeof B==='object'?B:null;L=L||{};S=S||{};
  const nm=(b,l,s)=>{b=+b||0;l=+l||0;s=+s||0;return B?Math.max(0,s+(l-b)):Math.max(s,l);};
  const M=Object.assign({},S);M.v=2;M.at=Date.now();
  M.look=pk(B&&B.look,L.look,S.look);M.name=pk(B&&B.name,L.name,S.name);M.emoji=pk(B&&B.emoji,L.emoji,S.emoji);
- M.book=mergeBook(B&&B.book,L.book,S.book);M.tank=mergeItems(B&&B.tank,L.tank,S.tank);
+ M.book=mergeBook(B&&B.book,L.book,S.book);M.tank=mergeItems(B&&B.tank,L.tank,S.tank);M.mail=mergeMailC(S.mail,L.mail);
  const lv={},LL=L.love||{},SL=S.love||{},BL=(B&&B.love)||{};for(const k of new Set([...Object.keys(SL),...Object.keys(LL)]))lv[k]=Math.max(+SL[k]||0,+LL[k]||0,B?nm(BL[k],LL[k],SL[k]):0);M.love=lv;
  const hm={},LH=L.hm||{},SH=S.hm||{};for(const k of new Set([...Object.keys(SH),...Object.keys(LH)]))hm[k]=Math.max(+SH[k]||0,+LH[k]||0);M.hm=hm;
  const bg=B?(B.gs||{}):null,lg=L.gs||{},sg=S.gs||{};const g=Object.assign({},sg);
  g.money=nm(bg&&bg.money,lg.money,sg.money);
- g.rods=[...new Set([...(sg.rods||[]),...(lg.rods||[])])].sort((a,b)=>a-b);g.packs=[...new Set([...(sg.packs||[]),...(lg.packs||[])])].sort((a,b)=>a-b);g.floats=[...new Set([...(sg.floats||[]),...(lg.floats||[])])].sort((a,b)=>a-b);g.tankUp=Math.max(sg.tankUp|0,lg.tankUp|0);g.reels=[...new Set([...(sg.reels||[]),...(lg.reels||[])])].sort((a,b)=>a-b);g.reel=pk(bg&&bg.reel,lg.reel,sg.reel);g.lotPend=pk(bg&&bg.lotPend,lg.lotPend,sg.lotPend);g.float=pk(bg&&bg.float,lg.float,sg.float);
+ g.rods=[...new Set([...(sg.rods||[]),...(lg.rods||[])])].sort((a,b)=>a-b);g.packs=[...new Set([...(sg.packs||[]),...(lg.packs||[])])].sort((a,b)=>a-b);g.floats=[...new Set([...(sg.floats||[]),...(lg.floats||[])])].sort((a,b)=>a-b);g.tankUp=Math.max(sg.tankUp|0,lg.tankUp|0);g.reels=[...new Set([...(sg.reels||[]),...(lg.reels||[])])].sort((a,b)=>a-b);g.reel=pk(bg&&bg.reel,lg.reel,sg.reel);g.lotPend=pk(bg&&bg.lotPend,lg.lotPend,sg.lotPend);g.freeLot=nm(bg&&bg.freeLot,lg.freeLot,sg.freeLot);g.float=pk(bg&&bg.float,lg.float,sg.float);
  g.rod=pk(bg&&bg.rod,lg.rod,sg.rod);g.pack=pk(bg&&bg.pack,lg.pack,sg.pack);
  g.bag=mergeItems(bg&&bg.bag,lg.bag,sg.bag);g.food=mergeFood(bg&&bg.food,lg.food,sg.food);
  g.buffUntil=Math.max(+sg.buffUntil||0,+lg.buffUntil||0);
@@ -3317,7 +3329,7 @@ function resolveBase(dsid,sids,tab,pend,base,baseSid){pend=pend||[];
 function mergeAddOnly(L,S,since){const M=JSON.parse(JSON.stringify(S||{}));L=L||{};M.v=2;M.at=Date.now();M.book=mergeBook(null,L.book,M.book);
  const add=(sa,la)=>{const out=sNormItems(sa),ks=new Set(out.map(sIkey));for(const o of sNormItems(la))if(+o.t>since&&!ks.has(sIkey(o))){ks.add(sIkey(o));out.push(o);}return out;};
  M.tank=add(M.tank,L.tank);M.gs=Object.assign({},M.gs||{});M.gs.bag=add(M.gs.bag,(L.gs||{}).bag);
- const hm=Object.assign({},M.hm||{});for(const[k,v]of Object.entries(L.hm||{}))hm[k]=Math.max(+hm[k]||0,+v||0);M.hm=hm;return M;}
+ const hm=Object.assign({},M.hm||{});for(const[k,v]of Object.entries(L.hm||{}))hm[k]=Math.max(+hm[k]||0,+v||0);M.hm=hm;M.mail=mergeMailC(M.mail,L.mail);return M;}
 function mergeSafe(r,L,S){return r.amb?mergeAddOnly(L,S,((r.B&&+r.B.at)||0)-2000):merge3(r.B,L,S);}
 function saveCore(d){if(!d)return'';const x=Object.assign({},d);delete x.at;return JSON.stringify(x);}
 
@@ -3326,7 +3338,8 @@ function applySave(d){if(!d||typeof d!=='object')return false;
  const tk=sNormItems(d.tank),g=d.gs||{};
  UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};
  // 이 화면이 모르는 저장 항목(앞으로 생길 새 기능)도 지우지 않고 그대로 보관했다가 저장할 때 돌려줘요
- try{const kn=collectSave0();for(const k of Object.keys(g))if(!(k in kn.gs))UNK.gs[k]=g[k];for(const k of Object.keys(d))if(!(k in kn)&&k!=='hm'&&k!=='gs')UNK.top[k]=d[k];}catch(e){}
+ try{const kn=collectSave0();for(const k of Object.keys(g))if(!(k in kn.gs))UNK.gs[k]=g[k];for(const k of Object.keys(d))if(!(k in kn)&&k!=='hm'&&k!=='gs'&&k!=='mail')UNK.top[k]=d[k];}catch(e){}
+ MAIL=mergeMailC([],d.mail);
  if(d.book&&typeof d.book==='object')for(const[k,v]of Object.entries(d.book))if(!SP_BY[k]&&v&&typeof v==='object')UNK.book[k]=v;
  UNK.tank=tk.filter(o=>!SP_BY[o.id]);
  const bg=sNormItems(g.bag);UNK.bag=bg.filter(o=>!SP_BY[o.id]);
@@ -3341,7 +3354,7 @@ function collectSave(){const d=collectSave0();
  if(UNK.tank.length)d.tank=[...d.tank,...UNK.tank];
  if(UNK.bag.length)d.gs.bag=[...d.gs.bag,...UNK.bag];
  if(UNK.food.length)d.gs.food=[...d.gs.food,...UNK.food];
- d.hm=Object.assign({},HOF_MINE);return d;}
+ d.hm=Object.assign({},HOF_MINE);d.mail=MAIL.slice();return d;}
 
 /* 합친 기록을 화면에 적용 (옷·이름이 같으면 캐릭터를 다시 만들지 않아요) */
 function applyMerged(M){const same=JSON.stringify([M.look,M.name])===JSON.stringify([LOOK,NAME]);
@@ -3801,6 +3814,7 @@ function lotDraw(){let r=Math.random()*100,T=LOT_TIERS[LOT_TIERS.length-1];for(c
  return{p:T.p,c:cells,n:T.name,...(T.f?{f:1}:{})};}
 // 산 순간 결과가 정해지고 저장돼요 → 새로고침해도 다시 뽑을 수 없고, 긁다가 꺼도 당첨금은 다음에 꼭 받아요
 function buyLotto(){if(GS.lotPend){openLotto();return;}
+ if((GS.freeLot|0)>0){const s=lotSt();GS.freeLot=(GS.freeLot|0)-1;s.lotN=(s.lotN|0)+1;GS.lotPend=lotDraw();markSave();updateHUD();sfx.pop();openLotto();return;}
  if(lotLeft()<=0){toast(`오늘은 복권을 다 샀어요 (하루 ${LOT_DAY_MAX}장). 내일 또 만나요!`,3200);return;}
  if(GS.money<LOT_PRICE){toast(`몰랑이 ${fmtM(LOT_PRICE-GS.money)} 부족해요. 물고기를 잡아서 팔아 보세요!`,3000);return;}
  const s=lotSt();GS.money-=LOT_PRICE;s.lotDayN=(s.lotDayN|0)+1;s.lotN=(s.lotN|0)+1;GS.lotPend=lotDraw();markSave();updateHUD();sfx.pop();openLotto();}
@@ -3842,7 +3856,7 @@ function lotReveal(){if(LOT_UI.done)return;LOT_UI.done=true;const cv=$('ltCv');c
  else if(L.p>=6000){res.innerHTML=`🎉 <b>${T.name} 당첨!</b> ${T.sym}${T.sym}${T.sym} <b>+${fmtM(L.p)} 몰랑</b>`;res.className='ltres big';for(let i=0;i<3;i++)setTimeout(()=>sfx.pop(),i*110);burstHearts(P.pos.x,P.pos.y+2.2,P.pos.z,8);}
  else if(L.p>0){res.innerHTML=`${T.name}! ${T.sym}${T.sym}${T.sym} <b>+${fmtM(L.p)} 몰랑</b>${L.p===LOT_PRICE?' (본전!)':''}`;res.className='ltres win';sfx.pop();}
  else{res.innerHTML='🐟 꽝… 아몰랑~ 다음엔 될 거야!';res.className='ltres lose';}
- $('ltAll').classList.add('hidden');const more=$('ltMore');more.classList.remove('hidden');more.textContent=lotLeft()>0?`🎫 한 장 더 (오늘 ${lotLeft()}장 남음)`:'오늘은 다 샀어요';more.disabled=lotLeft()<=0;
+ $('ltAll').classList.add('hidden');const more=$('ltMore');more.classList.remove('hidden');more.textContent=(GS.freeLot|0)>0?`🎁 무료 복권 긁기 (${GS.freeLot}장 남음)`:lotLeft()>0?`🎫 한 장 더 (오늘 ${lotLeft()}장 남음)`:'오늘은 다 샀어요';more.disabled=lotLeft()<=0&&!((GS.freeLot|0)>0);
  if(!$('shop').classList.contains('hidden'))renderShop();}
 function closeLotto(){const el=$('lotto');if(!el)return;if(GS.lotPend&&!LOT_UI.done){el.classList.remove('on');toast('긁지 않은 복권은 상점 🎫 복권 칸에서 이어서 긁을 수 있어요',3000);return;}el.classList.remove('on');}
 function lotAnnounce(text){try{const inp=$('chatIn');if(!inp)return;const old=inp.value;inp.value=text;lastChatSend=0;sendChat();inp.value=old;}catch(e){}}
@@ -3852,17 +3866,43 @@ function drawLottoIcon(c,w,h){c.clearRect(0,0,w,h);c.save();const x=w*0.12,y=h*0
  for(let i=0;i<6;i++){const cx=x+tw*(0.2+0.3*(i%3)),cy=y+th*(0.47+0.3*Math.floor(i/3));c.fillStyle=i<3?'#cfd5dc':'#e6e9ed';c.fillRect(cx-12,cy-9,24,18);}
  c.font='16px system-ui';c.fillText('🏰',x+tw*0.2,y+th*0.53);c.restore();}
 function renderLottoShop(box){const s=lotSt(),left=lotLeft();
- const p=document.createElement('div');p.className='bsub';p.innerHTML=`🐉 “한 장 긁어 보겠나? 같은 그림 3개면 당첨일세!” · 오늘 남은 복권 <b>${left} / ${LOT_DAY_MAX}장</b>`;box.appendChild(p);
+ const p=document.createElement('div');p.className='bsub';p.innerHTML=`🐉 “한 장 긁어 보겠나? 같은 그림 3개면 당첨일세!” · 오늘 남은 복권 <b>${left} / ${LOT_DAY_MAX}장</b>${(GS.freeLot|0)>0?` · 🎁 무료 복권 <b>${GS.freeLot}장</b> (하루 제한과 별개)`:''}`;box.appendChild(p);
  const list=document.createElement('div');list.className='ilist';const row=document.createElement('div');row.className='irow lot';
  const c=document.createElement('canvas');c.width=150;c.height=110;drawLottoIcon(c.getContext('2d'),150,110);
  const tx=document.createElement('div');tx.className='itx';tx.innerHTML=`<b>🎫 아몰랑복권</b><small>은박 6칸을 긁어서 <b>같은 그림 3개</b>가 나오면 당첨! 최고 <b>30,000 몰랑</b>, 그리고 <b>0.1%</b> 확률로 복권에서만 나오는 전설의 <b>🏰 용궁 산호성 찌</b>를 받을 수 있어요.</small><small>내 기록: ${fmtM(s.lotN|0)}장 · 당첨 합계 ${fmtM(s.lotWon|0)} 몰랑 · 최고 ${fmtM(s.lotBest|0)} 몰랑${s.lotFloat?' · 🏰 특등 '+s.lotFloat+'번':''}</small>`;
  const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');
  if(GS.lotPend){b.textContent='🎫 이어서 긁기';b.onclick=openLotto;}
+ else if((GS.freeLot|0)>0){b.innerHTML=`🎁 무료<small>${GS.freeLot}장</small>`;b.className='buy';b.onclick=buyLotto;}
  else if(left<=0){b.textContent='내일 또';b.disabled=true;}
  else{b.innerHTML=`${fmtM(LOT_PRICE)}<small>몰랑</small>`;b.className='buy'+(GS.money<LOT_PRICE?' poor':'');b.onclick=buyLotto;}
  acts.appendChild(b);row.append(c,tx,acts);list.appendChild(row);box.appendChild(list);
  const t=document.createElement('div');t.className='lttbl';
  t.innerHTML='<b>📋 당첨 확률 (모두 공개)</b><table>'+LOT_TIERS.map(x=>`<tr${x.f?' class="ltsp"':''}><td>${x.p||x.f?x.sym.repeat(3):'그 밖'}</td><td>${x.name}</td><td class="n">${x.f?'🏰 용궁 산호성 찌':x.p?fmtM(x.p)+' 몰랑':'0'}</td><td class="n">${x.w}%</td></tr>`).join('')+`</table><small>평균적으로 한 장에 ${fmtM(LOT_TIERS.reduce((a,x)=>a+x.p*x.w/100,0))} 몰랑을 돌려받아요(환급률 ${Math.round(LOT_TIERS.reduce((a,x)=>a+x.p*x.w/100,0)/LOT_PRICE*100)}%). 복권은 재미로만! 하루 ${LOT_DAY_MAX}장까지 살 수 있어요. 특등 찌를 이미 갖고 있으면 1등 상금(${fmtM(LOT_TIERS[1].p)} 몰랑)으로 바꿔 드려요.</small>`;box.appendChild(t);}
+/* ---------- v46: 📮 운영자 선물 (서버가 기록에 직접 넣은 보상을 알려 줘요) ---------- */
+var MAIL=[];let giftOpen=false;
+function mergeMailC(a,b){const m=new Map();for(const x of[...(Array.isArray(a)?a:[]),...(Array.isArray(b)?b:[])]){if(!x||typeof x.id!=='string')continue;const o=m.get(x.id);if(o)o.seen=(o.seen|0)||(x.seen|0)?1:0;else m.set(x.id,Object.assign({},x));}
+ return[...m.values()].sort((p,q)=>(p.ts||0)-(q.ts||0)).slice(-40);}
+function escH(t){return String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function giftItems(it){it=it||{};const out=[];
+ if(it.money>0)out.push(`💰 ${fmtM(it.money)} 몰랑`);if(it.lot>0)out.push(`🎫 무료 복권 ${it.lot}장`);
+ for(const lv of it.floats||[])if(FLOATS[lv])out.push(`${FLOATS[lv].em} ${FLOATS[lv].name}`);
+ for(const lv of it.reels||[])if(REELS[lv])out.push(`${REELS[lv].em} ${REELS[lv].name}`);
+ for(const lv of it.rods||[])if(RODS[lv])out.push(`🎣 ${RODS[lv].name}`);
+ if(it.tank>0)out.push(`🐠 수조 +${it.tank*TANK_STEP}칸`);return out;}
+function giftUnseen(){return MAIL.filter(m=>!(m.seen|0));}
+function showGift(){const list=giftUnseen();if(!list.length)return;giftOpen=true;let el=$('giftM');
+ if(!el){el=document.createElement('div');el.id='giftM';el.className='gfov';document.body.appendChild(el);}
+ el.innerHTML=`<div class="gfcard"><div class="gfem">📮</div><b class="gft">선물이 도착했어요!</b>
+  <div class="gflist">${list.map(m=>`<div class="gfi">${m.msg?`<p>${escH(m.msg)}</p>`:''}<div class="gfch">${giftItems(m.it).map(x=>`<span>${escH(x)}</span>`).join('')}</div><small>${new Date(m.ts||Date.now()).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})} · 아몰랑아일랜드 운영자</small></div>`).join('')}</div>
+  <div class="gfnote">선물은 이미 내 기록에 들어갔어요. 찌·릴·낚싯대는 🎒 가방 › 🎣 장비·옷에서 끼울 수 있어요.</div>
+  <button id="giftOk">🎁 고마워요! 받기</button></div>`;
+ el.classList.add('on');sfx.bell();
+ $('giftOk').onclick=()=>{const ids=new Set(list.map(m=>m.id));MAIL=MAIL.map(m=>ids.has(m.id)?Object.assign({},m,{seen:1}):m);markSave();el.classList.remove('on');giftOpen=false;
+  for(let i=0;i<3;i++)setTimeout(()=>sfx.pop(),i*110);if(P.char)burstHearts(P.pos.x,P.pos.y+2.2,P.pos.z,8);updateHUD();toast('🎁 선물을 받았어요!',2400);
+  if(!$('shop').classList.contains('hidden'))renderShop();if(!$('bag').classList.contains('hidden'))renderBag();};}
+setInterval(()=>{try{if(entered&&!giftOpen&&giftUnseen().length&&!modalOpen()&&mode!=='closet')showGift();}catch(e){}},2000);
+function renderGiftGear(box){if(!MAIL.length)return;const t=document.createElement('div');t.className='btitle';t.textContent='📮 받은 선물';box.appendChild(t);
+ const w=document.createElement('div');w.className='gfhist';w.innerHTML=MAIL.slice(-8).reverse().map(m=>`<div><small>${new Date(m.ts||0).toLocaleDateString('ko-KR')}</small> ${escH(giftItems(m.it).join(' · ')||'메시지')}${m.msg?` — ${escH(m.msg)}`:''}</div>`).join('');box.appendChild(w);}
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}

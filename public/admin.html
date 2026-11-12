@@ -11,6 +11,7 @@
  h1{font-size:20px;margin:6px 0 4px}p.note{color:#56637a;font-size:13px;margin:0 0 14px}
  .card{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:14px}
  label{display:block;font-size:13px;font-weight:700;margin:6px 0 4px}
+ .chips{display:flex;flex-wrap:wrap;gap:6px 14px}.chips label{display:inline-flex;gap:5px;align-items:center;font-weight:600;margin:2px 0}.chips input{width:auto}
  input{width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #c9d3e2;border-radius:10px;font:inherit}
  button{border:0;border-radius:10px;padding:9px 14px;font:700 14px system-ui;background:#2f6bd8;color:#fff;cursor:pointer}
  button.ghost{background:#e8eef9;color:#2f4b7c}button.warn{background:#d9443a}
@@ -31,6 +32,20 @@
    <div style="flex:0"><button id="go">불러오기</button></div>
   </div>
   <div id="msg"></div>
+ </div>
+ <div class="card" id="giftCard">
+  <b style="font-size:16px">🎁 보상 보내기</b>
+  <p class="note" style="margin-top:4px">보상은 서버가 유저 기록에 바로 넣어요. 유저가 게임에 들어오면 “📮 선물이 도착했어요!” 창으로 알려 줘요. 게임을 켜 둔 유저는 몇 분 안에 반영돼요.</p>
+  <label><input type="checkbox" id="gAll" style="width:auto"> <b>모든 유저에게 보내기</b> (체크하지 않으면 위의 ‘유저 아이디’에게만)</label>
+  <div class="row"><div><label>💰 몰랑</label><input id="gMoney" type="number" min="0" max="1000000" step="1000" placeholder="0"></div>
+   <div><label>🎫 무료 복권 (장)</label><input id="gLot" type="number" min="0" max="100" placeholder="0"></div>
+   <div><label>🐠 수조 늘리기</label><select id="gTank" style="width:100%;padding:9px;border-radius:10px;border:1px solid #c9d3e2"><option value="0">없음</option><option value="1">+10칸</option><option value="2">+20칸</option><option value="3">+30칸</option><option value="4">+40칸</option><option value="5">+50칸</option></select></div></div>
+  <label>🎯 찌</label><div class="chips" data-k="floats"><label><input type="checkbox" value="1"> 🦈 상어 지느러미찌</label><label><input type="checkbox" value="2"> 💡 꼬마 등대찌</label><label><input type="checkbox" value="3"> 🏰 용궁 산호성 찌</label></div>
+  <label>🧵 릴</label><div class="chips" data-k="reels"><label><input type="checkbox" value="1"> 🐚 소라 껍데기 릴</label><label><input type="checkbox" value="2"> 🐋 황금 고래 릴</label></div>
+  <label>🎣 낚싯대</label><div class="chips" data-k="rods"><label><input type="checkbox" value="2"> ★2</label><label><input type="checkbox" value="3"> ★3</label><label><input type="checkbox" value="4"> ★4</label><label><input type="checkbox" value="5"> ★5</label><label><input type="checkbox" value="6"> ★6</label><label><input type="checkbox" value="7"> ★7</label></div>
+  <label>✉️ 메시지 (유저에게 보여요, 200자까지)</label><textarea id="gMsg" maxlength="200" rows="3" style="width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #c9d3e2;border-radius:10px;font:inherit" placeholder="예: 찌가 사라지는 오류로 불편을 드려 죄송해요. 작은 선물을 보내 드려요 🙏"></textarea>
+  <p style="margin-top:10px"><button id="gSend" style="background:#e0703c">🎁 보내기</button> <button class="ghost" id="gHist">보낸 기록 보기</button></p>
+  <div id="gOut"></div>
  </div>
  <div class="card" id="res" hidden></div>
  <div class="card" id="view" hidden></div>
@@ -74,6 +89,16 @@ async function delSel(){const ch=[...document.querySelectorAll('#view input[type
  try{const j=await call('admin-edit',{remove:rm});msg(`지웠어요 · 수조 ${j.removed.tank}마리 · 가방 ${j.removed.bag}마리. 유저가 게임을 켜 두었다면 몇 분 안에 자동으로 반영돼요.`,true);setTimeout(()=>{load().then(()=>view(0));},500);}catch(e){msg(e.message,false);}}
 async function restore(ts,mode){if(!confirm(mode==='replace'?`${fmt(ts)} 저장본 상태로 정확히 되돌릴까요?\n그 뒤에 생긴 물고기·몰랑 변화는 없어져요 (도감은 줄지 않아요).\n(지금 상태도 따로 저장본으로 남아요)`:`${fmt(ts)} 저장본의 물고기·도감을 지금 기록에 합쳐 넣을까요?\n(지금 상태도 따로 저장본으로 남아요)`))return;
  try{const j=await call('admin-restore',{ts,mode:mode||'merge'});msg(`${mode==='replace'?'되돌렸어요':'합쳐 넣었어요'} · 수조 ${j.sum.tank} · 가방 ${j.sum.bag} · 도감 ${j.sum.book}종. 유저가 게임을 켜 두었다면 몇 분 안에 자동으로 반영돼요.`,true);setTimeout(load,800);}catch(e){msg(e.message,false);}}
+function chk(k){return[...document.querySelectorAll(`.chips[data-k=${k}] input:checked`)].map(x=>+x.value);}
+const NAMES={floats:['','🦈 상어 지느러미찌','💡 꼬마 등대찌','🏰 용궁 산호성 찌'],reels:['','🐚 소라 껍데기 릴','🐋 황금 고래 릴']};
+function itTxt(it){it=it||{};const a=[];if(it.money)a.push(`💰 ${(+it.money).toLocaleString()} 몰랑`);if(it.lot)a.push(`🎫 무료 복권 ${it.lot}장`);(it.floats||[]).forEach(x=>a.push(NAMES.floats[x]));(it.reels||[]).forEach(x=>a.push(NAMES.reels[x]));(it.rods||[]).forEach(x=>a.push(`🎣 ★${x} 낚싯대`));if(it.tank)a.push(`🐠 수조 +${it.tank*10}칸`);return a.join(' · ')||'(메시지만)';}
+async function sendGift(){const all=$('gAll').checked;const body={all,money:+$('gMoney').value||0,lot:+$('gLot').value||0,tank:+$('gTank').value||0,floats:chk('floats'),reels:chk('reels'),rods:chk('rods'),msg:$('gMsg').value.trim()};
+ if(!all&&!$('u').value.trim()){msg('보상을 받을 유저 아이디를 위에 넣어 주세요',false);return;}
+ const who=all?'⚠ 모든 유저':`‘${$('u').value.trim()}’`;if(!confirm(`${who}에게 보낼까요?\n\n${itTxt(body)}${body.msg?'\n메시지: '+body.msg:''}`))return;
+ if(all&&!confirm('정말 모든 유저에게 보낼까요? 되돌리기 어려워요.'))return;
+ try{const j=await call('admin-gift',body);$('gOut').innerHTML=`<p class="ok" style="font-weight:700">보냈어요! ${j.n}명에게 · ${itTxt(j.it)}${j.skip?` (기록이 없는 ${j.skip}명 제외)`:''}</p>`;if(!all)setTimeout(load,600);}catch(e){$('gOut').innerHTML=`<p class="err" style="font-weight:700">${e.message}</p>`;}}
+async function giftHist(){try{const j=await call('admin-gifts');$('gOut').innerHTML='<table><tr><th>시각</th><th>받은 사람</th><th>보상</th><th>메시지</th></tr>'+(j.list.length?j.list.map(g=>`<tr><td>${fmt(g.ts)}</td><td>${g.target==='*'?`모든 유저(${g.n}명)`:g.target}</td><td style="white-space:normal">${itTxt(g.it)}</td><td style="white-space:normal">${(g.msg||'').replace(/</g,'&lt;')}</td></tr>`).join(''):'<tr><td colspan="4">아직 보낸 선물이 없어요</td></tr>')+'</table>';}catch(e){$('gOut').innerHTML=`<p class="err">${e.message}</p>`;}}
+$('gSend').onclick=sendGift;$('gHist').onclick=giftHist;
 $('go').onclick=load;$('u').addEventListener('keydown',e=>{if(e.key==='Enter')load();});
 </script>
 </body>
