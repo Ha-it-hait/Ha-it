@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12t">
+<meta name="amollang-build" content="2026-11-12u">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -3283,7 +3283,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12t';
+const BUILD='2026-11-12u';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3959,6 +3959,7 @@ function setViewOffset(){if(mode==='closet'){if(W>=760)camera.setViewOffset(W,H,
 
 /* ---------- fishing ---------- */
 const HINTS={idle:'꾹 눌렀다 놓으면 던져요',charging:'놓으면 던져요 · 게이지가 높을수록 멀리',casting:'',waiting:'찌를 지켜보세요 · 누르면 회수',bite:'지금! 탭!',fight:'누르고 있으면 감기 · 팽팽하면 잠깐 놓기',retrieve:'',caught:''};
+if(!isTouch){HINTS.idle='꾹 눌렀다 놓으면 던져요 · Space 키를 꾹 눌렀다 놓아도 돼요';HINTS.charging='놓으면 던져요 (Space 키도 OK) · 게이지가 높을수록 멀리';}
 let fstate='idle';
 const castTgt=new THREE.Vector3(),castFrom=new THREE.Vector3(),lure=new THREE.Vector3();
 let castDist=0,castMeters=0,power=0,castDur=0.8,castT0=0,habitat='sea',minD=6,maxD=30,chargeT0=0;
