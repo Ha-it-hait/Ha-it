@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-13f">
+<meta name="amollang-build" content="2026-11-13g">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -1690,12 +1690,19 @@ function animChar(c,dt,speed,fishing,hop){
  else{c.arms[0].rotation.x=-sw*0.8;c.arms[1].rotation.x=sw*0.8;c.arms[1].rotation.z=0.18;}
  c.body.position.y=Math.abs(Math.sin(c.phase))*0.06*Math.min(amt,1)+hop;
  c.head.rotation.z=amt<0.05?Math.sin(t*1.3+c.seed)*0.05:0;
- const ak=c.actT!=null?t-c.actT:9;let lean=0;
- if(!fishing&&ak<1.3){const w=Math.min(1,ak/0.15)*(ak>1.1?(1.3-ak)/0.2:1);
-  if(c.actK===1){c.arms[0].rotation.x=-1.35*w;c.arms[1].rotation.x=-1.35*w;c.arms[0].rotation.z=lerp(-0.18,0.55,w);c.arms[1].rotation.z=lerp(0.18,-0.55,w);lean=0.2*w;}
-  else{c.arms[0].rotation.x=(-1.2+Math.sin(ak*16)*0.28)*w;c.arms[0].rotation.z=lerp(-0.18,0.2,w);lean=0.1*w;}}
+ const ak=c.actT!=null?t-c.actT:9;let lean=0,roll=0;const AD=c.actK===1?2.7:2.3;
+ if(!fishing&&ak<AD){const w=Math.min(1,ak/0.2)*(ak>AD-0.35?(AD-ak)/0.35:1);
+  if(c.actK===1){/* 껴안기: 0~0.6초 양팔을 활짝 벌리고 다가감 → 꼭 끌어안고 좌우로 살랑 */const k=smooth(0.5,0.95,ak);
+   c.arms[0].rotation.x=lerp(-0.55,-1.42,k)*w;c.arms[1].rotation.x=lerp(-0.55,-1.42,k)*w;
+   c.arms[0].rotation.z=lerp(-0.18,lerp(-1.3,0.62,k),w);c.arms[1].rotation.z=lerp(0.18,lerp(1.3,-0.62,k),w);
+   lean=(0.08+0.22*k)*w;roll=Math.sin((ak-0.9)*4.2)*0.13*k*w;if(k>0.5){const sq=1+Math.max(0,Math.sin((ak-0.9)*8.4))*0.03*w;c.body.scale.set(sq,1/sq,sq);}}
+  else{/* 쓰다듬기: 한 손을 머리 위로 올려 앞뒤로 쓱쓱 */const st=Math.sin(ak*8.5);
+   const hy=c.actHy!=null?c.actHy:0.6;const dn=Math.atan2(0.95-hy-0.12,0.5);const ax=clamp(-(Math.PI/2-dn),-2.1,-0.55);
+   c.arms[0].rotation.x=(ax+st*0.22)*w;c.arms[0].rotation.z=lerp(-0.18,0.3+st*0.1,w);
+   c.arms[1].rotation.x=-0.25*w;lean=(clamp(0.5-hy*0.3,0.08,0.38)+st*0.04)*w;c.head.rotation.x=0.18*w;}}
  else c.arms[0].rotation.z=-0.18;
- c.body.rotation.x=lerp(c.body.rotation.x,lean,0.3);animPack(c,dt,speed);
+ if(!(ak<AD&&c.actK===1))c.body.scale.set(1,1,1);
+ c.body.rotation.x=lerp(c.body.rotation.x,lean,0.3);c.body.rotation.z=lerp(c.body.rotation.z,roll,0.3);animPack(c,dt,speed);
 }
 function labelH(hat){return hat===5?2.5:hat===3||hat===1?2.05:2.1;}
 function hopOf(h){const k=t-h;return k>=0&&k<0.6?Math.abs(Math.sin(k*Math.PI/0.3))*0.22*(1-k/0.6):0;}
@@ -1769,7 +1776,7 @@ function buildQuad(c){const root=new THREE.Group(),body=grp(root,0,0,0);const C=
  const ey=eyes2(head,H,c.eyeRing);
  const tail=grp(body,0,hip+c.R*0.3,-(lz+c.R*0.75));const tp=[];aTail(tp,c);bake(tp,tail,true);
  let trunk=null;if(c.trunk){trunk=grp(head,0,-H*0.3,H*0.9);const kp=[];for(let i=0;i<6;i++){const a=i/5,s=H*(0.22-a*0.08);ap(kp,A_SPH,C('head'),0,-a*H*0.7+Math.max(0,a-0.7)*H*1.3,a*H*0.35,s,s,s);}bake(kp,trunk,true);}
- return{root,body,head,tail,legs,eyes:ey,trunk,hop:!!c.hop,labelY:hip+c.R+H*2.1+0.2};}
+ return{root,body,head,tail,legs,eyes:ey,trunk,hop:!!c.hop,labelY:hip+c.R+H*2.1+0.2,lz};}
 function buildRabbit(c){const root=new THREE.Group(),body=grp(root,0,0,0);const pb=[];const C1=c.col,C2=c.col2;
  ap(pb,A_SPH,C1,0,0.2,-0.02,0.2,0.19,0.24);ap(pb,A_SPH,C2,0,0.16,0.09,0.13,0.12,0.13);
  for(const s of[-1,1]){ap(pb,A_SPH,C1,s*0.11,0.06,-0.08,0.07,0.06,0.13);ap(pb,A_SPH,C1,s*0.07,0.05,0.13,0.04,0.05,0.05);}
@@ -1831,11 +1838,21 @@ function buildAnimals(){
    const L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L>0.01){yaw=Math.atan2(b[0]-a[0],b[1]-a[1]);const dur=L/d.speed;tl.push({t0:tc,dur,walk:true,a,b,yaw});tc+=dur;}}
   if(!tl.length)tl.push({t0:0,dur:10,walk:false,a:home,yaw:0});
   const label=makeLabel(false);label.el.classList.add('ani');label.nm.textContent=`${d.em} ${d.name}`;
-  ANIMS.push({i,d,m,label,tl,period:Math.max(tc,1),offset:rng()*1000,yaw:tl[0].yaw,x:home[0],z:home[1],ph:0,happyUntil:0,holdUntil:0,fx:0,fz:0,catchUp:false,labelY:m.labelY*sc});});
+  ANIMS.push({i,d,m,label,tl,period:Math.max(tc,1),offset:rng()*1000,yaw:tl[0].yaw,x:home[0],z:home[1],ph:0,happyUntil:0,holdUntil:0,fx:0,fz:0,catchUp:false,labelY:m.labelY*sc,lz:(m.lz||0.3)});});
 }
 function animalAt(A,now){const T=((now+A.offset)%A.period+A.period)%A.period;let e=A.tl[A.tl.length-1];for(const s of A.tl){if(T<s.t0+s.dur){e=s;break;}}
  if(!e.walk)return{x:e.a[0],z:e.a[1],yaw:e.yaw,moving:false};const k=clamp((T-e.t0)/e.dur,0,1);return{x:lerp(e.a[0],e.b[0],k),z:lerp(e.a[1],e.b[1],k),yaw:e.yaw,moving:true};}
-function animAnimal(A,dt,moving){const m=A.m,d=A.d,happy=t<A.happyUntil;
+function animAnimal(A,dt,moving){animAnimal0(A,dt,moving);const m=A.m;const rk=A.reactT!=null?t-A.reactT:9;const RD=A.reactK===1?2.7:2.3;
+ const w=rk<RD?Math.min(1,rk/0.25)*(rk>RD-0.4?(RD-rk)/0.4:1):0;A.rw=lerp(A.rw||0,w,0.25);const W=A.rw;if(W<0.01&&!A.rwOn)return;A.rwOn=W>0.01;
+ if(A.reactK===1){/* 껴안기: 앞발을 들고 일어서서 반김 */const up=W*(m.hop?0.5:0.62),L=A.lz||0.3;
+  m.body.rotation.x=-up;m.body.position.y+=Math.sin(up)*L*(m.hop?0.6:1);m.body.position.z=-(1-Math.cos(up))*L*0.4;
+  if(m.legs.length===4){const pw=Math.sin(t*9)*0.25*W;m.legs[0].rotation.x=-1.25*W+pw;m.legs[1].rotation.x=-1.25*W-pw;m.legs[2].rotation.x=up;m.legs[3].rotation.x=up;}
+  m.head.rotation.x=lerp(m.head.rotation.x,0.35*W-0.15*W,1);
+  for(const e of m.eyes)e.scale.y=lerp(1,0.22,W);}
+ else{/* 쓰다듬기: 고개를 끄덕끄덕, 눈을 감고 좋아해요 */m.head.rotation.x=Math.sin(t*9)*0.32*W+0.12*W;m.head.rotation.y*=1-W;m.head.rotation.z=Math.sin(t*4.5)*0.12*W;
+  m.body.position.y=Math.sin(t*9)*0.02*W+(m.body.position.y)*(1-W*0.8);for(const e of m.eyes)e.scale.y=lerp(1,0.15,W);}
+ if(!m.hop&&W<0.02){m.body.rotation.x=0;m.body.position.z=0;}}
+function animAnimal0(A,dt,moving){const m=A.m,d=A.d,happy=t<A.happyUntil;
  if(m.hop){A.ph+=dt*(moving?10:0);m.body.position.y=(moving?Math.abs(Math.sin(A.ph))*0.12:0)+(happy?Math.abs(Math.sin(t*12))*0.12:0);m.body.rotation.x=moving?-Math.cos(A.ph*2)*0.1:0;
   if(m.ears)for(const e of m.ears)e.rotation.x=Math.sin(t*3+A.i)*0.12+(moving?-0.35:0)+(happy?Math.sin(t*16)*0.2:0);}
  else{A.ph+=dt*(moving?d.speed*6:0);const sw=moving?Math.sin(A.ph)*0.55:0;m.legs[0].rotation.x=sw;m.legs[3].rotation.x=sw;m.legs[1].rotation.x=-sw;m.legs[2].rotation.x=-sw;
@@ -1867,7 +1884,7 @@ function animalSound(k){if(!AC)return;
  else if(k==='rabbit'||k==='squirrel'){tone(1400,0,0.08,0.05,'sine',1900);tone(1600,0.1,0.08,0.05,'sine',2100);}
  else tone(600,0,0.18,0.06,'triangle',820);
  [1046.5,1318.5].forEach((f,i)=>tone(f,0.25+i*0.08,0.3,0.03));}
-function animalReact(A,kind,mine,px,pz){A.happyUntil=t+1.8;A.holdUntil=t+3.2;A.fx=px;A.fz=pz;A.catchUp=true;burstHearts(A.x,A.m.root.position.y+A.labelY*0.75,A.z,kind?9:5);animalSound(A.d.kind);showBubble(A.label,kind?'🤗':'💕',true,1.8);
+function animalReact(A,kind,mine,px,pz){A.happyUntil=t+1.8;A.holdUntil=t+3.4;A.reactT=t;A.reactK=kind?1:0;A.fx=px;A.fz=pz;A.catchUp=true;burstHearts(A.x,A.m.root.position.y+A.labelY*0.75,A.z,kind?9:5);animalSound(A.d.kind);showBubble(A.label,kind?'🤗':'💕',true,1.8);
  if(!mine)return;const key='monggeul-love-'+A.d.id;let n=0;try{n=(+localStorage.getItem(key)||0)+1;localStorage.setItem(key,String(n));}catch(e){}markSave();
  const d=A.d;toast(kind?`${d.name}${josa(d.name,'을','를')} 꼭 안아줬어요 🤗 (💕${n})`:`${d.name}${josa(d.name,'이','가')} ${REACT[d.kind]} (💕${n})`,2400);}
 function interact(kind){const rt=performance.now()/1000;if(!nearAnimal||rt<petCD||mode!=='walk')return;petCD=rt+0.9;const A=nearAnimal;if(PET_PIN.A===A)PET_PIN.until=performance.now()/1000+PET_SHOW_S;initAudio();
@@ -2479,14 +2496,23 @@ async function delPost(id){const mine=boardMine();try{if(netMode==='ws'){const r
 /* ========== v3: 가을 낙엽 · 보름달 · 별똥별 · 확대 연출 ========== */
 /* ---------- 쓰다듬기/껴안기 확대 연출 ---------- */
 var cine=null;
-function startCine(A,kind){cine={t0:t,A,kind,dur:kind?2.3:2.0};document.body.classList.add('cine');}
+var _v56=null;function aniHead(A){if(!_v56)_v56=new THREE.Vector3();A.m.head.getWorldPosition(_v56);return{d:Math.hypot(_v56.x-A.x,_v56.z-A.z),y:_v56.y-A.m.root.position.y};}
+function startCine(A,kind){const dx=A.x-P.pos.x,dz=A.z-P.pos.z,l=Math.hypot(dx,dz)||1;const hd=aniHead(A);const gap=hd.d+(kind?0.3:0.42);P.char.actHy=hd.y;
+ let tx=A.x-dx/l*gap,tz=A.z-dz/l*gap;if(!walkable(tx,tz)||l<gap){tx=P.pos.x;tz=P.pos.z;}
+ cine={t0:t,A,kind,dur:kind?2.9:2.5,ap:{x0:P.pos.x,z0:P.pos.z,x1:tx,z1:tz,T:kind?0.75:0.35}};document.body.classList.add('cine');}
 function cineCam(){if(!cine)return false;const c=cine,A=c.A;if(t-c.t0>c.dur||mode!=='walk'){cine=null;document.body.classList.remove('cine');return false;}
+ if(c.ap){const k=smooth(0,1,(t-c.t0)/c.ap.T);const x=lerp(c.ap.x0,c.ap.x1,k),z=lerp(c.ap.z0,c.ap.z1,k);P.pos.set(x,groundY(x,z),z);P.yaw=Math.atan2(A.x-x,A.z-z);if(k>=1){c.ap=null;markPresence();}}
  const ax=A.x,az=A.z,px=P.pos.x,pz=P.pos.z;const mx=(ax+px)/2,mz=(az+pz)/2;let dx=ax-px,dz=az-pz;const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;
  const ay=A.m.root.position.y+A.labelY*0.38;const my=(ay+P.pos.y+0.95)/2;
- if(c.side===undefined){const s1=[mx-dz*2.2,mz+dx*2.2],s2=[mx+dz*2.2,mz-dx*2.2];const ok=p=>Math.max(terrainH(p[0],p[1]),0)<my+0.6;
-  const toCam=[camera.position.x-mx,camera.position.z-mz];const dot1=(s1[0]-mx)*toCam[0]+(s1[1]-mz)*toCam[1];c.side=(ok(s1)&&(dot1>=0||!ok(s2)))?1:-1;}
- const dist=c.kind?2.5:2.1;const ox=-dz*c.side,oz=dx*c.side;
- camPosD.set(mx+ox*dist-dx*0.35,my+0.55,mz+oz*dist-dz*0.35);const gh=Math.max(terrainH(camPosD.x,camPosD.z),0)+0.5;if(camPosD.y<gh)camPosD.y=gh;
+ const sz=Math.min(2.2,A.labelY*0.9);const dist=((c.kind?4.3:3.9)+sz)*(H>W?1.45:1);
+ if(c.side===undefined){const toCam=[camera.position.x-mx,camera.position.z-mz];const pref=((-dz)*toCam[0]+dx*toCam[1])>=0?1:-1;let best=null,bs=-1e9;
+  for(const side of[pref,-pref])for(const rot of[0,0.3,-0.3,0.6,-0.6,0.9,-0.9]){const px=-dz*side,pz=dx*side,cs=Math.cos(rot),sn=Math.sin(rot);const ux=px*cs-pz*sn,uz=px*sn+pz*cs;
+   const cx=mx+ux*dist,cz=mz+uz*dist,cy=my+(H>W?1.7:1.25)+sz*0.3;let sc=(side===pref?1.5:0)-Math.abs(rot)*5;
+   for(let k=0.12;k<0.9;k+=0.06){const x=mx+(cx-mx)*k,z=mz+(cz-mz)*k,y=my+(cy-my)*k;if(Math.max(terrainH(x,z),0)>y-0.25)sc-=6;for(const o of OBST){if(o.r>2.5)continue;const q=Math.hypot(x-o.x,z-o.z);if(q<o.r+0.55)sc-=3;}}
+   if(sc>bs){bs=sc;best=[side,rot];}}
+  c.side=best[0];c.rot=best[1];}
+ const px0=-dz*c.side,pz0=dx*c.side,cr=Math.cos(c.rot||0),sr0=Math.sin(c.rot||0);const ox=px0*cr-pz0*sr0,oz=px0*sr0+pz0*cr;
+ camPosD.set(mx+ox*dist,my+(H>W?1.7:1.25)+sz*0.3,mz+oz*dist);const gh=Math.max(terrainH(camPosD.x,camPosD.z),0)+0.5;if(camPosD.y<gh)camPosD.y=gh;
  camLookD.set(mx,my+0.05,mz);return true;}
 
 /* ---------- 별 (반짝이) ---------- */
@@ -3303,7 +3329,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-13f';
+const BUILD='2026-11-13g';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -4229,7 +4255,7 @@ function applyPeers(list){
   if(!isNew&&prev!=='wait'&&r.st==='wait')splash(r.fx,r.fz,0.7);
   if((pr.eid|0)!==r.eid){r.eid=pr.eid|0;const e=String(pr.e||'');if(EMOJI_SET.has(e)){showBubble(r.label,e,true,2.8);r.hopT=t;}}
   if((pr.cid|0)!==r.cid){r.cid=pr.cid|0;if(!isNew)happyStart(r);const sp=SPECIES.find(s=>s.id===pr.cs);const sz=+pr.cz;if(sp&&Number.isFinite(sz)){const txt=`${sp.name} ${fmtSize(clamp(sz,1,1000))}`;showBubble(r.label,txt,false,5);r.hopT=t;if(sp.r>=7&&entered)toast(`🌈 ${r.name} 님이 ★7 무지개 전설 ${txt}을(를) 낚았어요!`,5200);else if(sp.r>=4&&entered)toast(`🎣 ${r.name} 님이 ${txt}!`);}}
-  if((pr.an|0)!==r.an){r.an=pr.an|0;const A=ANIMS[pr.ai|0];if(A&&!isNew){const k=pr.ak===1?1:0;animalReact(A,k,false,r.tx,r.tz);if(r.char){r.char.actT=t;r.char.actK=k;}}}
+  if((pr.an|0)!==r.an){r.an=pr.an|0;const A=ANIMS[pr.ai|0];if(A&&!isNew){const k=pr.ak===1?1:0;animalReact(A,k,false,r.tx,r.tz);if(r.char){r.char.actT=t;r.char.actK=k;try{r.char.actHy=aniHead(A).y;}catch(e){}}}}
   v2Peer(r,pr,isNew);
   if(isNew&&entered&&t-roomSince>3)toast(`${r.name} 님이 섬에 왔어요`);
  }
