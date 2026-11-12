@@ -306,7 +306,9 @@ function legacyMerge(S, D) {
 }
 function saveSum(d) {
   if (!d) return null; const g = d.gs || {};
-  return { book: d.book ? Object.keys(d.book).length : 0, tank: Array.isArray(d.tank) ? d.tank.length : 0, bag: Array.isArray(g.bag) ? g.bag.length : 0, food: Array.isArray(g.food) ? g.food.length : 0, money: +g.money || 0, at: +d.at || 0 };
+  const L = k => (Array.isArray(g[k]) ? g[k] : []).map(x => x | 0).filter(x => x > 0).sort((x, y) => x - y);
+  return { book: d.book ? Object.keys(d.book).length : 0, tank: Array.isArray(d.tank) ? d.tank.length : 0, bag: Array.isArray(g.bag) ? g.bag.length : 0, food: Array.isArray(g.food) ? g.food.length : 0, money: +g.money || 0, at: +d.at || 0,
+    gear: { rods: L('rods'), rod: g.rod | 0, packs: L('packs'), pack: g.pack | 0, floats: L('floats'), float: g.float | 0, reels: L('reels'), reel: g.reel | 0, tankUp: g.tankUp | 0, freeLot: g.freeLot | 0, lotPend: !!g.lotPend } };
 }
 const dsidOut = t => { const o = pj(t) || {}, r = {}; for (const k in o) r[k] = o[k].s; return r; };
 // 산 물건(낚싯대·가방·찌·릴·수조 크기)은 어떤 저장으로도 줄어들지 않게 지켜요.
