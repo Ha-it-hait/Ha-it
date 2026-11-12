@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12f">
+<meta name="amollang-build" content="2026-11-12g">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑 낚시 게임</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -2541,9 +2541,13 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-12e';
+const NEWS_VER='2026-11-12g';
 const NEWS=[
- {d:'11월 12일',t:'🎯 상점에 찌가 생겼어요',n:true,i:[
+ {d:'11월 12일',t:'🛠️ 물고기 기록 오류 고쳤어요',n:true,i:[
+  '📱💻 휴대폰과 PC를 오가며 하면 <b>이미 판 물고기가 가방에 다시 생기던 문제</b>를 고쳤어요.',
+  '🕰️ 오래 켜 둔 예전 버전 화면이 저장하면서 지난 가방을 되살리던 문제도 막았어요. 화면 위에 🆕 새 버전 안내가 뜨면 꼭 눌러 주세요.',
+  '🙏 혹시 내 것이 아닌 물고기가 있거나 사라진 물고기가 있으면 게시판에 아이디와 함께 알려 주세요. 기록을 확인해서 바로잡아 드릴게요.']},
+ {d:'11월 12일',t:'🎯 상점에 찌가 생겼어요',i:[
   '🦈 <b>상어 지느러미찌</b> (70,000몰랑) — ★1 물고기가 걸리지 않아요. 지느러미가 찌 주변을 빙글빙글 돌며 물살을 일으켜요. ★2 이상 낚싯대에서 쓸 수 있어요.',
   '💡 <b>꼬마 등대찌</b> (150,000몰랑) — ★1·★2 물고기가 걸리지 않아요. 꼭대기 불빛이 빙글 돌며 바다를 비춰요(밤에 더 밝아요). ★3 이상 낚싯대에서 쓸 수 있어요.',
   '🌈 찌를 끼우면 ★7 무지개 전설 확률이 올라가요: 🦈 상어 지느러미찌 1.2배 · 💡 꼬마 등대찌 1.5배. 대신 예민한 찌라 입질이 조금 늦게 와요(상어 약 20% · 등대 약 30%).',
@@ -3188,9 +3192,9 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12f';
+const BUILD='2026-11-12g';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
-var SYNC={rev:null,base:null,own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
+var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[]};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
 var HOF_MINE={};                              // 내가 명예의 전당에 올린 기록 {생물:크기}
 const SYNC_KEY='monggeul-sync-v3',HOFMINE_KEY='monggeul-hof-mine';
@@ -3238,6 +3242,18 @@ function merge3(B,L,S){B=B&&typeof B==='object'?B:null;L=L||{};S=S||{};
   else if(typeof ls[k]==='number'||typeof ss[k]==='number')st[k]=nm(bs[k],ls[k],ss[k]);
   else st[k]=pk(bs[k],ls[k],ss[k]);}
  g.stats=st;M.gs=g;return M;}
+/* 어느 기록을 기준(B)으로 합칠지 정해요.
+   서버는 화면(창)마다 '마지막으로 반영된 저장 번호'를 기억해요 → 이 화면이 보낸 저장 중 어디까지 반영됐는지 정확히 알 수 있어요.
+   알 수 없을 때(amb)는 이미 판 물고기가 되살아나지 않도록 '새로 잡은 물고기만 더하기'로 합쳐요. */
+function resolveBase(dsid,sids,tab,pend,base,baseSid){pend=pend||[];
+ if(dsid&&typeof dsid==='object'){const last=dsid[tab]||'';if(last===(baseSid||''))return{B:base};
+  for(let i=pend.length-1;i>=0;i--)if(pend[i].sid===last)return{B:pend[i].data};return{B:base,amb:true};}
+ return{B:effBase(sids,pend,base)};}
+function mergeAddOnly(L,S,since){const M=JSON.parse(JSON.stringify(S||{}));L=L||{};M.v=2;M.at=Date.now();M.book=mergeBook(null,L.book,M.book);
+ const add=(sa,la)=>{const out=sNormItems(sa),ks=new Set(out.map(sIkey));for(const o of sNormItems(la))if(+o.t>since&&!ks.has(sIkey(o))){ks.add(sIkey(o));out.push(o);}return out;};
+ M.tank=add(M.tank,L.tank);M.gs=Object.assign({},M.gs||{});M.gs.bag=add(M.gs.bag,(L.gs||{}).bag);
+ const hm=Object.assign({},M.hm||{});for(const[k,v]of Object.entries(L.hm||{}))hm[k]=Math.max(+hm[k]||0,+v||0);M.hm=hm;return M;}
+function mergeSafe(r,L,S){return r.amb?mergeAddOnly(L,S,((r.B&&+r.B.at)||0)-2000):merge3(r.B,L,S);}
 function saveCore(d){if(!d)return'';const x=Object.assign({},d);delete x.at;return JSON.stringify(x);}
 
 /* 이 화면이 모르는 생물도 지우지 않고 보관했다가 저장할 때 그대로 돌려줘요 */
@@ -3267,7 +3283,7 @@ function applyMerged(M){const same=JSON.stringify([M.look,M.name])===JSON.string
  updateHUD();}
 
 /* 이 기기에 '마지막으로 서버와 맞춘 기록 + 아직 못 보낸 기록'을 함께 보관 → 다음에 로그인하면 합쳐요 */
-function syncPersist(data){if(!SYNC.own)return;try{localStorage.setItem(SYNC_KEY,JSON.stringify({own:SYNC.own,rev:SYNC.rev,base:SYNC.base,data,pend:SYNC.pend.slice(-3),at:Date.now()}));}catch(e){}}
+function syncPersist(data){if(!SYNC.own)return;try{localStorage.setItem(SYNC_KEY,JSON.stringify({own:SYNC.own,rev:SYNC.rev,base:SYNC.base,baseSid:SYNC.baseSid||'',tab:TAB_ID,data,pend:SYNC.pend.slice(-8),at:Date.now()}));}catch(e){}}
 function syncLoadLocal(){try{return JSON.parse(localStorage.getItem(SYNC_KEY)||'null');}catch(e){return null;}}
 function effBase(sids,pend,base){sids=Array.isArray(sids)?sids:[];for(let i=(pend||[]).length-1;i>=0;i--)if(sids.includes(pend[i].sid))return pend[i].data;return base;}
 
@@ -3275,10 +3291,9 @@ function syncOnAuth(j){
  SYNC.own=j.id;SYNC.rev=Number.isInteger(j.rev)?j.rev:null;SYNC.pend=[];SYNC.frozen=false;
  const S=j.data&&j.data.v===2?j.data:null;const loc=syncLoadLocal();let M=S,merged=false;
  if(loc&&loc.own===j.id&&loc.data&&loc.data.v===2){
-  const B=effBase(j.sids,loc.pend,loc.base);
-  if(S){if(B){M=merge3(B,loc.data,S);}else if((+loc.data.at||0)>(+S.at||0)+1000){M=merge3(null,loc.data,S);}merged=M!==S&&saveCore(M)!==saveCore(S);}
+  if(S){const r=resolveBase(j.dsid,j.sids,loc.tab||'',loc.pend,loc.base||null,loc.baseSid||'');if(r.B||r.amb)M=mergeSafe(r,loc.data,S);merged=M!==S&&saveCore(M)!==saveCore(S);}
   else{M=loc.data;merged=true;}}
- SYNC.base=S;
+ SYNC.base=S;SYNC.baseSid=(j.dsid&&j.dsid[TAB_ID])||'';
  if(M)applySave(M);
  if(merged||!S){markSave();doSave(false);}
  if(merged&&S)setTimeout(()=>toast('💾 이 기기에 남아 있던 기록까지 합쳐서 불러왔어요',3200),400);
@@ -3289,16 +3304,16 @@ async function doSave(urgent,depth=0){
  if(!acct){if(SYNC.own)syncPersist(collectSave());return doSave0(urgent);}
  if(SYNC.busy){saveDirty=true;SYNC.again=true;if(urgent)syncPersist(collectSave());return;}
  SYNC.busy=true;saveDirty=false;lastSaveAt=Date.now();
- const data=collectSave(),sid=rid(16);SYNC.pend.push({sid,data});if(SYNC.pend.length>4)SYNC.pend.shift();syncPersist(data);
+ const data=JSON.parse(JSON.stringify(collectSave())),sid=rid(16);/* 꼭 복사본으로! 가방·수조 배열을 그대로 가리키면 이후에 잡은 물고기가 '기준 기록'에도 섞여 합칠 때 사라져요 */SYNC.pend.push({sid,data});if(SYNC.pend.length>8)SYNC.pend.shift();syncPersist(data);
  let retry=false;
- try{const body=JSON.stringify({token:acct.token,data,base:SYNC.rev,sid,cv:BUILD});
+ try{const body=JSON.stringify({token:acct.token,data,base:SYNC.rev,sid,tab:TAB_ID,cv:BUILD});
   const r=await fetch('/api/acct/save',{method:'POST',headers:{'content-type':'application/json'},body,keepalive:!!urgent&&body.length<60000});
   const j=await r.json().catch(()=>({}));
   if(r.status===401){saveErr='다시 로그인이 필요해요';toast('로그인이 풀렸어요. 기록은 이 기기에 안전하게 보관해 둘게요 — 다시 로그인하면 합쳐져요',4200);acct=null;saveDirty=true;}
-  else if(r.ok&&j.ok){if(Number.isInteger(j.rev))SYNC.rev=j.rev;SYNC.base=data;SYNC.pend=[];lastSaveOk=Date.now();saveErr='';syncPersist(data);}
+  else if(r.ok&&j.ok){if(Number.isInteger(j.rev))SYNC.rev=j.rev;SYNC.base=data;SYNC.baseSid=sid;SYNC.pend=[];lastSaveOk=Date.now();saveErr='';syncPersist(data);}
   else if(r.status===409&&j.conflict){
-   const S=j.data||{},B=effBase(j.sids,SYNC.pend,SYNC.base);const M=merge3(B,collectSave(),S);
-   SYNC.base=S;SYNC.rev=j.rev;SYNC.pend=[];applyMerged(M);saveDirty=true;SYNC.conflicts++;syncPersist(collectSave());
+   const S=j.data||{},rb=resolveBase(j.dsid,j.sids,TAB_ID,SYNC.pend,SYNC.base,SYNC.baseSid);const M=mergeSafe(rb,collectSave(),S);
+   SYNC.base=S;SYNC.baseSid=(j.dsid&&j.dsid[TAB_ID])||'';SYNC.rev=j.rev;SYNC.pend=[];applyMerged(M);saveDirty=true;SYNC.conflicts++;syncPersist(collectSave());
    if(depth===0)toast('🔄 다른 기기(창)에서 저장한 기록과 합쳤어요 · 잃어버린 기록은 없어요',3200);retry=depth<3;}
   else{saveErr='저장 실패'+(j.error?': '+j.error:' ('+r.status+')');saveDirty=true;}}
  catch(e){saveErr='인터넷 연결을 확인해 주세요';saveDirty=true;}
@@ -3314,8 +3329,8 @@ async function pullSync(){if(!acct||SYNC.busy||SYNC.frozen||!Number.isInteger(SY
  try{const r=await fetch('/api/acct/load',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:acct.token,have:SYNC.rev})});
   const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok||j.same||!Number.isInteger(j.rev)||j.rev===SYNC.rev||!j.data)return;
   if(SYNC.busy||!acct||mode!=='walk'||modalOpen()){SYNC.pullWant=true;return;}
-  const B=effBase(j.sids,SYNC.pend,SYNC.base);const M=merge3(B,collectSave(),j.data);const mine=saveCore(M)!==saveCore(j.data);
-  SYNC.base=j.data;SYNC.rev=j.rev;SYNC.pend=[];applyMerged(M);if(mine)markSave();syncPersist(collectSave());
+  const rb=resolveBase(j.dsid,j.sids,TAB_ID,SYNC.pend,SYNC.base,SYNC.baseSid);const M=mergeSafe(rb,collectSave(),j.data);const mine=saveCore(M)!==saveCore(j.data);
+  SYNC.base=j.data;SYNC.baseSid=(j.dsid&&j.dsid[TAB_ID])||'';SYNC.rev=j.rev;SYNC.pend=[];applyMerged(M);if(mine)markSave();syncPersist(collectSave());
   toast('🔄 다른 기기에서 저장한 기록을 불러왔어요',2600);}catch(e){}}
 
 /* 같은 브라우저에서 창(탭)을 여러 개 열면 마지막 창만 저장해요 */

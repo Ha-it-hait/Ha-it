@@ -23,7 +23,7 @@
 <body>
 <main>
  <h1>🛟 계정 기록 복구 (관리자 전용)</h1>
- <p class="note">서버는 계정마다 예전 저장본을 최근 40개까지 남겨 둬요(약 20분 간격, 물고기가 크게 줄면 바로). 유저가 “물고기가 사라졌다”고 하면 아이디를 넣고, 사라지기 전 저장본을 골라 <b>합쳐 넣기</b>를 누르세요. 그 저장본에 있던 물고기·도감·장비가 <b>지금 기록에 다시 더해져요</b> (지금 있는 물고기는 그대로, 몰랑은 둘 중 큰 값). 합치기 직전 상태도 따로 저장본으로 남아요.</p>
+ <p class="note">서버는 계정마다 예전 저장본을 최근 40개까지 남겨 둬요(약 20분 간격, 물고기가 크게 줄면 바로). 유저가 “물고기가 사라졌다”고 하면 아이디를 넣고, 사라지기 전 저장본을 골라 <b>합쳐 넣기</b>를 누르세요. “내가 잡지 않은 물고기가 생겼다”면 <b>현재 기록 › 보기</b>에서 그 물고기를 골라 지우거나, 생기기 전 저장본에서 <b>이 상태로 되돌리기</b>를 누르세요. 그 저장본에 있던 물고기·도감·장비가 <b>지금 기록에 다시 더해져요</b> (지금 있는 물고기는 그대로, 몰랑은 둘 중 큰 값). 합치기 직전 상태도 따로 저장본으로 남아요.</p>
  <div class="card">
   <div class="row">
    <div><label>관리자 키 (Cloudflare의 ADMIN_KEY)</label><input id="k" type="password" autocomplete="off"></div>
@@ -37,8 +37,11 @@
 </main>
 <script>
 const $=id=>document.getElementById(id);
+const NM={"goby": ["망둥어", 1], "halfbeak": ["학꽁치", 1], "jack": ["전갱이", 1], "mackerel": ["고등어", 2], "rockfish": ["볼락", 2], "greenling": ["노래미", 2], "schlegeli": ["우럭", 3], "porgy": ["감성돔", 4], "bass": ["농어", 4], "flounder": ["광어", 5], "starfish": ["불가사리", 0], "chub": ["피라미", 1], "crucian": ["붕어", 1], "loach": ["미꾸라지", 1], "carp": ["잉어", 3], "catfish": ["메기", 3], "mandarin": ["쏘가리", 4], "goldfish": ["금붕어", 5], "filefish": ["쥐치", 2], "puffer": ["복어", 3], "redbream": ["참돔", 4], "oplegnathus": ["돌돔", 4], "hairtail": ["갈치", 3], "mullet": ["숭어", 1], "dodari": ["도다리", 2], "stingray": ["노랑가오리", 3], "moray": ["곰치", 3], "tuna": ["참치", 5], "sunfish": ["개복치", 5], "octopus": ["문어", 3], "squid": ["오징어", 3], "webfoot": ["주꾸미", 2], "seahorse": ["해마", 4], "bluecrab": ["꽃게", 2], "snowcrab": ["대게", 4], "prawn": ["대하", 2], "spinylobster": ["닭새우", 4], "jellyfish": ["해파리", 1], "urchin": ["성게", 1], "catshark": ["두툽상어", 3], "blueshark": ["청새리상어", 4], "hammerhead": ["귀상어", 5], "whaleshark": ["고래상어", 5], "clownfish": ["흰동가리", 3], "bluetang": ["블루탱", 3], "emperorangel": ["황제엔젤피시", 4], "butterfly": ["나비고기", 2], "mandarinfish": ["만다린피시", 4], "lionfish": ["쏠배감펭", 4], "parrotfish": ["앵무고기", 3], "boxfish": ["거북복", 3], "medaka": ["송사리", 1], "minnow": ["버들치", 1], "kkeokji": ["꺽지", 2], "sweetfish": ["은어", 3], "masu": ["산천어", 3], "snakehead": ["가물치", 4], "eel": ["뱀장어", 4], "crayfish": ["가재", 2], "freshshrimp": ["새뱅이", 1], "turtle": ["남생이", 5], "koi": ["비단잉어", 4], "guppy": ["구피", 3], "betta": ["베타", 4], "arowana": ["아로와나", 5], "seal": ["물개", 6], "dolphin": ["돌고래", 6], "orca": ["아기 범고래", 6], "seaotter": ["해달", 6], "otter": ["수달", 6], "anchovy": ["멸치", 1], "bekasquid": ["꼴뚜기", 1], "hermitcrab": ["소라게", 1], "seacucumber": ["해삼", 1], "sandlance": ["까나리", 1], "shorecrab": ["칠게", 1], "bitterling": ["납자루", 1], "topmouth": ["참붕어", 1], "gizzardshad": ["전어", 2], "yellowcroaker": ["참조기", 2], "saury": ["꽁치", 2], "herring": ["청어", 2], "flatfish": ["참가자미", 2], "wrasse": ["용치놀래기", 2], "sillago": ["보리멸", 2], "damsel": ["자리돔", 2], "darkchub": ["갈겨니", 2], "sandgudgeon": ["모래무지", 2], "monkfish": ["아귀", 3], "scorpionfish": ["쏨뱅이", 3], "spanishmack": ["삼치", 3], "croaker": ["민어", 3], "cuttlefish": ["갑오징어", 3], "conger": ["붕장어", 3], "gurnard": ["성대", 3], "yellowtang": ["노랑탱", 3], "bagrid": ["동자개", 3], "skygager": ["강준치", 3], "amberjack": ["부시리", 4], "yellowtail": ["방어", 4], "kobudai": ["혹돔", 4], "bigfinsquid": ["무늬오징어", 4], "hairycrab": ["털게", 4], "sevenband": ["능성어", 4], "lobster": ["바닷가재", 4], "moorishidol": ["깃대돔", 4], "triggerfish": ["피카소트리거피시", 4], "leopardshark": ["표범상어", 4], "lenok": ["열목어", 4], "stickleback": ["가시고기", 4], "giantgrouper": ["대왕바리", 5], "marlin": ["청새치", 6], "swordfish": ["황새치", 5], "sailfish": ["돛새치", 5], "kingcrab": ["킹크랩", 5], "giantoctopus": ["대왕문어", 5], "dumbo": ["덤보문어", 5], "vampiresquid": ["흡혈오징어", 5], "opah": ["붉평치", 5], "tigershark": ["뱀상어", 5], "greatwhite": ["백상아리", 5], "thresher": ["환도상어", 5], "footballfish": ["초롱아귀", 5], "napoleon": ["나폴레옹피시", 5], "chimaera": ["은상어", 5], "giantmoray": ["대왕곰치", 5], "sturgeon": ["철갑상어", 5], "giantcatfish": ["메콩대왕메기", 5], "mutae": ["무태장어", 5], "goldkoi": ["황금 비단잉어", 5], "humpback": ["아기 혹등고래", 6], "bluewhale": ["아기 대왕고래", 6], "spermwhale": ["아기 향유고래", 6], "beluga": ["벨루가", 6], "narwhal": ["일각고래", 6], "sealion": ["바다사자", 6], "walrus": ["바다코끼리", 6], "dugong": ["듀공", 6], "manatee": ["매너티", 6], "leatherback": ["장수거북", 6], "greenturtle": ["푸른바다거북", 6], "giantsquid": ["대왕오징어", 6], "oarfish": ["산갈치", 6], "coelacanth": ["실러캔스", 6], "mantaray": ["쥐가오리", 6], "leafyseadragon": ["나뭇잎해룡", 6], "goldmandarin": ["황쏘가리", 6], "eoreumchi": ["어름치", 6], "arapaima": ["피라루쿠", 6], "mihojonggae": ["미호종개", 6], "rainbowwhale": ["무지개고래", 7], "auroraray": ["오로라 가오리", 7], "rainbowflyer": ["칠색 날치", 7], "prismjelly": ["프리즘 해파리", 7], "rainbowseahorse": ["무지개 해마", 7], "chaeunryong": ["채운룡", 7], "chilbokoi": ["칠보 잉어", 7], "rainbowtrout": ["무지개다리 송어", 7], "rainbowveil": ["무지개 꼬리 금붕어", 7], "rainbowsturgeon": ["무지개 철갑상어", 7]};
+const nm=id=>NM[id]?`${NM[id][0]} ★${Math.max(1,NM[id][1])}`:id;
+const ikey=(o,i)=>o.id+'|'+(+o.t||(1000+i))+'|'+(+o.s);
 const fmt=ts=>ts?new Date(ts).toLocaleString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}):'-';
-const WHY={save:'정기 저장',drop:'물고기가 줄기 직전',legacy:'예전 버전 화면 저장 직전','before-restore':'합쳐 넣기 직전'};
+const WHY={save:'정기 저장',drop:'물고기가 줄기 직전',legacy:'예전 버전 화면 저장 직전','before-restore':'관리자 복구·수정 직전'};
 async function call(op,body){const r=await fetch('/api/acct/'+op,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({admin:$('k').value,id:$('u').value.trim().toLowerCase()},body||{}))});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||('오류 '+r.status));return j;}
 function msg(t,ok){$('msg').textContent=t;$('msg').className=ok?'ok':'err';}
 const sumCells=s=>s?`<td class="n">${s.book}</td><td class="n">${s.tank}</td><td class="n">${s.bag}</td><td class="n">${s.food}</td><td class="n">${(s.money||0).toLocaleString()}</td>`:'<td colspan="5">-</td>';
@@ -46,18 +49,27 @@ async function load(){msg('불러오는 중…',true);$('view').hidden=true;
  try{const j=await call('admin-user');msg(`‘${j.id}’ · 가입 ${fmt(j.created)} · 마지막 저장 ${fmt(j.updated)} · 저장 번호 ${j.rev}`,true);
   let h='<table><tr><th>시각</th><th>종류</th><th>도감</th><th>수조</th><th>가방</th><th>요리</th><th>몰랑</th><th></th></tr>';
   h+=`<tr style="background:#f4f8ff"><td><b>지금</b></td><td>현재 기록</td>${sumCells(j.sum)}<td><button class="ghost" data-v="0">보기</button></td></tr>`;
-  for(const b of j.baks)h+=`<tr><td>${fmt(b.ts)}</td><td>${WHY[b.why]||b.why}</td>${sumCells(b.sum)}<td><button class="ghost" data-v="${b.ts}">보기</button> <button class="warn" data-r="${b.ts}">합쳐 넣기</button></td></tr>`;
+  for(const b of j.baks)h+=`<tr><td>${fmt(b.ts)}</td><td>${WHY[b.why]||b.why}</td>${sumCells(b.sum)}<td><button class="ghost" data-v="${b.ts}">보기</button> <button class="warn" data-r="${b.ts}">합쳐 넣기</button> <button class="warn" data-x="${b.ts}" style="background:#7a3fb8">이 상태로 되돌리기</button></td></tr>`;
   if(!j.baks.length)h+='<tr><td colspan="8">아직 남은 저장본이 없어요 (이번 업데이트 이후부터 쌓여요)</td></tr>';
   $('res').innerHTML=h+'</table>';$('res').hidden=false;
   $('res').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>view(+b.dataset.v));
   $('res').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>restore(+b.dataset.r));
+  $('res').querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>restore(+b.dataset.x,'replace'));
  }catch(e){msg(e.message,false);$('res').hidden=true;}}
-async function view(ts){try{const j=await call('admin-bak',{ts});const d=j.data||{},g=d.gs||{};
-  const list=a=>(a||[]).map(o=>`${o.id} ${o.s}cm`).join(', ')||'(없음)';
-  $('view').innerHTML=`<b>${ts?fmt(ts)+' 저장본':'현재 기록'}</b><p class="note">수조: ${list(d.tank)}<br>가방: ${list(g.bag)}<br>도감: ${Object.keys(d.book||{}).length}종 · 몰랑 ${(g.money||0).toLocaleString()}</p><pre></pre>`;
-  $('view').querySelector('pre').textContent=JSON.stringify(d,null,1);$('view').hidden=false;$('view').scrollIntoView({behavior:'smooth'});}catch(e){msg(e.message,false);}}
-async function restore(ts){if(!confirm(`${fmt(ts)} 저장본의 물고기·도감을 지금 기록에 합쳐 넣을까요?\n(지금 상태도 따로 저장본으로 남아요)`))return;
- try{const j=await call('admin-restore',{ts});msg(`합쳐 넣었어요 · 수조 ${j.sum.tank} · 가방 ${j.sum.bag} · 도감 ${j.sum.book}종. 유저가 게임을 켜 두었다면 몇 분 안에 자동으로 반영돼요.`,true);setTimeout(load,800);}catch(e){msg(e.message,false);}}
+async function view(ts){try{const j=await call('admin-bak',{ts});const d=j.data||{},g=d.gs||{};const cur=!ts;
+  const tbl=(a,kind)=>{a=Array.isArray(a)?a:[];if(!a.length)return'<p class="note">(없음)</p>';
+   return`<table><tr>${cur?'<th></th>':''}<th>물고기</th><th>크기</th><th>잡은(넣은) 시각</th></tr>`+a.map((o,i)=>`<tr>${cur?`<td><input type="checkbox" data-k="${kind}" value="${ikey(o,i)}"></td>`:''}<td>${nm(o.id)}${o.x===3?' 🔥×3':''}</td><td class="n">${o.s}cm</td><td>${o.t>1e12?fmt(+o.t):'예전 기록'}</td></tr>`).join('')+'</table>';};
+  $('view').innerHTML=`<b>${cur?'현재 기록':fmt(ts)+' 저장본'}</b><p class="note">도감 ${Object.keys(d.book||{}).length}종 · 몰랑 ${(g.money||0).toLocaleString()}${cur?' · 잘못 들어온 물고기를 골라서 지울 수 있어요. 잡은 시각을 보면 언제 들어온 물고기인지 알 수 있어요.':''}</p>
+  <h3 style="font-size:15px;margin:12px 0 4px">🐠 수조 (${(d.tank||[]).length})</h3>${tbl(d.tank,'tank')}<h3 style="font-size:15px;margin:12px 0 4px">🎒 가방 (${(g.bag||[]).length})</h3>${tbl(g.bag,'bag')}
+  ${cur?'<p style="margin-top:12px"><button class="warn" id="delSel">선택한 물고기 지우기</button></p>':''}<details style="margin-top:10px"><summary>원본 데이터 보기</summary><pre></pre></details>`;
+  $('view').querySelector('pre').textContent=JSON.stringify(d,null,1);$('view').hidden=false;
+  if(cur)$('delSel').onclick=delSel;$('view').scrollIntoView({behavior:'smooth'});}catch(e){msg(e.message,false);}}
+async function delSel(){const ch=[...document.querySelectorAll('#view input[type=checkbox]:checked')];if(!ch.length){msg('지울 물고기를 골라 주세요',false);return;}
+ const rm={tank:ch.filter(c=>c.dataset.k==='tank').map(c=>c.value),bag:ch.filter(c=>c.dataset.k==='bag').map(c=>c.value)};
+ if(!confirm(`수조 ${rm.tank.length}마리 · 가방 ${rm.bag.length}마리를 지울까요?\n(지우기 직전 상태도 저장본으로 남아요)`))return;
+ try{const j=await call('admin-edit',{remove:rm});msg(`지웠어요 · 수조 ${j.removed.tank}마리 · 가방 ${j.removed.bag}마리. 유저가 게임을 켜 두었다면 몇 분 안에 자동으로 반영돼요.`,true);setTimeout(()=>{load().then(()=>view(0));},500);}catch(e){msg(e.message,false);}}
+async function restore(ts,mode){if(!confirm(mode==='replace'?`${fmt(ts)} 저장본 상태로 정확히 되돌릴까요?\n그 뒤에 생긴 물고기·몰랑 변화는 없어져요 (도감은 줄지 않아요).\n(지금 상태도 따로 저장본으로 남아요)`:`${fmt(ts)} 저장본의 물고기·도감을 지금 기록에 합쳐 넣을까요?\n(지금 상태도 따로 저장본으로 남아요)`))return;
+ try{const j=await call('admin-restore',{ts,mode:mode||'merge'});msg(`${mode==='replace'?'되돌렸어요':'합쳐 넣었어요'} · 수조 ${j.sum.tank} · 가방 ${j.sum.bag} · 도감 ${j.sum.book}종. 유저가 게임을 켜 두었다면 몇 분 안에 자동으로 반영돼요.`,true);setTimeout(load,800);}catch(e){msg(e.message,false);}}
 $('go').onclick=load;$('u').addEventListener('keydown',e=>{if(e.key==='Enter')load();});
 </script>
 </body>

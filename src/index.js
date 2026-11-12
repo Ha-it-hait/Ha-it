@@ -248,7 +248,9 @@ const PW_MIN = 4, PW_MAX = 40;
 const SAVE_MAX = 300000;           // 저장 데이터 최대 크기(바이트) — 넉넉하게 (실제 저장은 보통 수십 KB 이하)
 const BAK_KEEP = 40;               // 계정마다 보관하는 예전 저장본 수 (복구용)
 const BAK_GAP = 20 * 60e3;         // 예전 저장본을 남기는 최소 간격 (물고기가 크게 줄면 1분 간격으로도 남김)
-const SID_KEEP = 16;               // 서버에 반영된 최근 저장 번호(중복·유실 판별용)
+const SID_KEEP = 64;               // 서버에 반영된 최근 저장 번호(중복 저장 판별용)
+const DSID_KEEP = 80;              // 화면(창)마다 '마지막으로 반영된 저장 번호' — 다른 기기가 아무리 많이 저장해도 밀려나지 않게
+const LEGACY_NEW_MS = 5 * 60e3;    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
 
 // ---------- 저장 데이터 안전 합치기 (서버) ----------
 // 도감(book)은 늘어나기만 하는 기록이라 서버가 항상 '합집합 + 최댓값'으로 지켜요.
@@ -265,7 +267,18 @@ function bookUnion(a, b) {
 const normItems = a => (Array.isArray(a) ? a : []).filter(o => o && typeof o.id === 'string').map((o, i) => (+o.t ? o : Object.assign({}, o, { t: 1000 + i })));
 const ikey = o => o.id + '|' + (+o.t) + '|' + (+o.s);
 function itemsUnion(a, b) { const out = [], seen = new Set(); for (const o of [...normItems(a), ...normItems(b)]) { const k = ikey(o); if (!seen.has(k)) { seen.add(k); out.push(o); } } return out; }
-// 예전 버전 화면(합치기 기능이 없는 화면)이 보낸 저장: 서버에 있던 물고기·도감을 지우지 않도록 합쳐서 저장
+// 예전 버전 화면(합치기 기능이 없는 화면)이 보낸 저장:
+// 그 화면이 들고 있던 '예전 가방'을 통째로 합치면 이미 판 물고기가 되살아나요(물고기 복제 버그의 원인).
+// 그래서 서버 기록은 그대로 두고, 최근 5분 안에 새로 잡은 물고기와 도감만 더해요.
+function legacyAddNew(S, D, now) {
+  const M = Object.assign({}, S); M.book = bookUnion(S.book, D.book); M.at = now;
+  const cut = now - LEGACY_NEW_MS;
+  const add = (sa, da) => { const out = normItems(sa), ks = new Set(out.map(ikey)); for (const o of normItems(da)) { const t = +o.t; if (t > cut && t <= now + 60e3 && !ks.has(ikey(o))) { ks.add(ikey(o)); out.push(o); } } return out; };
+  M.tank = add(S.tank, D.tank);
+  M.gs = Object.assign({}, S.gs || {}); M.gs.bag = add((S.gs || {}).bag, (D.gs || {}).bag);
+  return M;
+}
+// 관리자 '합쳐 넣기'용: 두 기록의 물고기·도감·장비를 모두 합쳐요
 function legacyMerge(S, D) {
   const M = Object.assign({}, S, D);
   M.book = bookUnion(S.book, D.book);
@@ -284,6 +297,7 @@ function saveSum(d) {
   if (!d) return null; const g = d.gs || {};
   return { book: d.book ? Object.keys(d.book).length : 0, tank: Array.isArray(d.tank) ? d.tank.length : 0, bag: Array.isArray(g.bag) ? g.bag.length : 0, food: Array.isArray(g.food) ? g.food.length : 0, money: +g.money || 0, at: +d.at || 0 };
 }
+const dsidOut = t => { const o = pj(t) || {}, r = {}; for (const k in o) r[k] = o[k].s; return r; };
 const fishCount = d => { const x = saveSum(d); return x ? x.tank + x.bag : 0; };
 const SESSION_DAYS = 60;
 const PBKDF2_ITER = 50000;
@@ -308,6 +322,7 @@ export class Vault extends DurableObject {
     const cols = new Set(this.sql.exec('PRAGMA table_info(users)').toArray().map(r => r.name));
     if (!cols.has('rev')) this.sql.exec('ALTER TABLE users ADD COLUMN rev INTEGER DEFAULT 0');
     if (!cols.has('sids')) this.sql.exec('ALTER TABLE users ADD COLUMN sids TEXT');
+    if (!cols.has('dsid')) this.sql.exec('ALTER TABLE users ADD COLUMN dsid TEXT');
     this.sql.exec('CREATE TABLE IF NOT EXISTS baks(id TEXT, ts INTEGER, why TEXT, data TEXT, PRIMARY KEY(id, ts))');
     this.adminFail = new Map();
     this.regByIp = new Map();
@@ -480,7 +495,7 @@ export class Vault extends DurableObject {
       this.sql.exec('UPDATE users SET fails = 0, lock_until = 0 WHERE id = ?', id);
       if (Math.random() < 0.05) this.sql.exec('DELETE FROM sessions WHERE exp < ?', now);
       let data = null; try { data = row.data ? JSON.parse(row.data) : null; } catch { data = null; }
-      return J({ ok: true, id, token: this.newSession(id), data, rev: row.rev | 0, sids: (pj(row.sids) || []).map(x => x.s) });
+      return J({ ok: true, id, token: this.newSession(id), data, rev: row.rev | 0, sids: (pj(row.sids) || []).map(x => x.s), dsid: dsidOut(row.dsid) });
     }
     if (op.startsWith('admin-')) {
       const ipKey = ip.slice(0, 64);
@@ -506,38 +521,57 @@ export class Vault extends DurableObject {
         const b = this.sql.exec('SELECT data FROM baks WHERE id = ? AND ts = ?', uid, ts).toArray()[0];
         if (!b) return J({ error: '그 저장본이 없어요' }, 404);
         const old = pj(b.data); if (!old) return J({ error: '저장본이 깨져 있어요' }, 500);
-        // 저장본에 있던 물고기·도감·장비를 지금 기록에 다시 합쳐 넣어요 (지금 있는 것은 그대로 두고, 몰랑은 더 큰 쪽)
-        const d = legacyMerge(old, pj(row.data) || {});
+        const cur = pj(row.data) || {};
+        // merge: 저장본의 물고기·도감·장비를 지금 기록에 더해요 / replace: 그 저장본 상태로 정확히 되돌려요(도감만 지금 것과 합침)
+        let d;
+        if (body.mode === 'replace') { d = old; d.book = bookUnion(cur.book, old.book); }
+        else d = legacyMerge(old, cur);
         d.at = now;
         this.bak(uid, row.data, now + 1, 'before-restore', true);
         const rev = (row.rev | 0) + 1;
         this.sql.exec('UPDATE users SET data = ?, updated = ?, rev = ?, sids = ? WHERE id = ?', JSON.stringify(d), now, rev, JSON.stringify([{ s: 'R' + now, r: rev }]), uid);
         return J({ ok: true, rev, sum: saveSum(d) });
       }
+      if (op === 'admin-edit') {
+        // 가방·수조에서 고른 물고기를 지워요 (잘못 들어온 물고기 정리용). 지우기 직전 상태는 저장본으로 남아요
+        const d = pj(row.data); if (!d) return J({ error: '기록이 없어요' }, 404);
+        const rm = body.remove || {};
+        const rt = new Set(Array.isArray(rm.tank) ? rm.tank.map(String) : []), rb = new Set(Array.isArray(rm.bag) ? rm.bag.map(String) : []);
+        if (!rt.size && !rb.size) return J({ error: '지울 물고기를 골라 주세요' }, 400);
+        const bt = normItems(d.tank).length, bb = normItems((d.gs || {}).bag).length;
+        d.tank = normItems(d.tank).filter(o => !rt.has(ikey(o)));
+        d.gs = Object.assign({}, d.gs || {}); d.gs.bag = normItems(d.gs.bag).filter(o => !rb.has(ikey(o)));
+        d.at = now;
+        this.bak(uid, row.data, now, 'before-restore', true);
+        const rev = (row.rev | 0) + 1;
+        this.sql.exec('UPDATE users SET data = ?, updated = ?, rev = ?, sids = ? WHERE id = ?', JSON.stringify(d), now, rev, JSON.stringify([{ s: 'E' + now, r: rev }]), uid);
+        return J({ ok: true, rev, removed: { tank: bt - d.tank.length, bag: bb - d.gs.bag.length }, sum: saveSum(d) });
+      }
       return J({ error: 'not found' }, 404);
     }
     const id = this.who(body.token);
     if (!id) return J({ error: '다시 로그인해 주세요' }, 401);
     if (op === 'load') {
-      const row = this.sql.exec('SELECT data, rev, sids FROM users WHERE id = ?', id).toArray()[0];
+      const row = this.sql.exec('SELECT data, rev, sids, dsid FROM users WHERE id = ?', id).toArray()[0];
       const rev = row ? row.rev | 0 : 0;
       if (Number.isInteger(body.have) && body.have === rev) return J({ ok: true, id, same: true, rev });
-      return J({ ok: true, id, data: row ? pj(row.data) : null, rev, sids: (pj(row && row.sids) || []).map(x => x.s) });
+      return J({ ok: true, id, data: row ? pj(row.data) : null, rev, sids: (pj(row && row.sids) || []).map(x => x.s), dsid: dsidOut(row && row.dsid) });
     }
     if (op === 'save') {
       let d = body.data;
       if (!d || typeof d !== 'object' || Array.isArray(d)) return J({ error: '잘못된 데이터' }, 400);
-      const row = this.sql.exec('SELECT data, rev, sids FROM users WHERE id = ?', id).toArray()[0];
+      const row = this.sql.exec('SELECT data, rev, sids, dsid FROM users WHERE id = ?', id).toArray()[0];
       if (!row) return J({ error: '다시 로그인해 주세요' }, 401);
       const rev = row.rev | 0, sids = pj(row.sids) || [], old = pj(row.data);
-      const conflict = () => J({ conflict: true, rev, data: old, sids: sids.map(x => x.s) }, 409);
+      const conflict = () => J({ conflict: true, rev, data: old, sids: sids.map(x => x.s), dsid: dsidOut(row.dsid) }, 409);
+      const tab = typeof body.tab === 'string' && /^[a-z0-9]{6,16}$/.test(body.tab) ? body.tab : '';
       const sid = typeof body.sid === 'string' && /^[a-z0-9]{8,32}$/.test(body.sid) ? body.sid : '';
       if (sid) { const hit = sids.find(x => x.s === sid); if (hit) return hit.r === rev ? J({ ok: true, at: now, rev, dup: true }) : conflict(); }
       let why = 'save';
       if (Number.isInteger(body.base)) {
         // 내가 마지막으로 받은 기록(base) 뒤에 다른 기기·창이 저장했다면 덮어쓰지 않고 돌려보내요 → 화면에서 합친 뒤 다시 저장
         if (body.base !== rev) return conflict();
-      } else if (old) { d = legacyMerge(old, d); why = 'legacy'; }
+      } else if (old) { d = legacyAddNew(old, d, now); why = 'legacy'; }
       if (old) d.book = bookUnion(old.book, d.book); // 도감은 절대 줄어들지 않게
       const s = JSON.stringify(d);
       if (s.length > SAVE_MAX) return J({ error: '데이터가 너무 커요' }, 413);
@@ -545,7 +579,9 @@ export class Vault extends DurableObject {
       this.bak(id, row.data, now, drop >= 3 ? 'drop' : why, drop >= 3 || why === 'legacy');
       const nrev = rev + 1;
       sids.push({ s: sid || 'L' + now, r: nrev }); while (sids.length > SID_KEEP) sids.shift();
-      this.sql.exec('UPDATE users SET data = ?, updated = ?, rev = ?, sids = ? WHERE id = ?', s, now, nrev, JSON.stringify(sids), id);
+      let ds = pj(row.dsid) || {};
+      if (tab && sid) { ds[tab] = { s: sid, ts: now }; const ks = Object.keys(ds); if (ks.length > DSID_KEEP) { ks.sort((a, b) => ds[a].ts - ds[b].ts); for (const k of ks.slice(0, ks.length - DSID_KEEP)) delete ds[k]; } }
+      this.sql.exec('UPDATE users SET data = ?, updated = ?, rev = ?, sids = ?, dsid = ? WHERE id = ?', s, now, nrev, JSON.stringify(sids), JSON.stringify(ds), id);
       return J({ ok: true, at: now, rev: nrev, merged: why === 'legacy' || undefined });
     }
     if (op === 'logout') { this.sql.exec('DELETE FROM sessions WHERE token = ?', body.token); return J({ ok: true }); }
@@ -563,7 +599,7 @@ export default {
     if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
       const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
       const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore'].includes(op)) return J({ error: 'not found' }, 404);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit'].includes(op)) return J({ error: 'not found' }, 404);
       if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {
