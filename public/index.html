@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12h">
+<meta name="amollang-build" content="2026-11-12k">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -268,6 +268,13 @@ body.cine .boatbadge{opacity:0}
 .irow canvas{width:84px;height:50px;flex:none;border-radius:10px;background:#eef5f7}
 .irow.rod canvas{width:100px;height:60px;background:linear-gradient(#eef5f7,#dfeaf0)}
 .irow.pack canvas{width:96px;height:70px;background:linear-gradient(#fff8ec,#f3e6cf)}.irow.pack.p1{background:linear-gradient(90deg,#eaf6ff,#fff)}.irow.pack.p1 canvas{background:linear-gradient(#e6f5ff,#cfe8f8)}.irow.pack.p2{background:linear-gradient(90deg,#fff3f8,#fffbea);border-color:#f2c14e}.irow.pack.p2 canvas{background:linear-gradient(#fdf6ff,#fbe9f1)}.irow.pack.on{border-color:#4cc38a}
+.tkask{position:fixed;inset:0;z-index:9500;background:rgba(18,28,44,.55);display:none;align-items:center;justify-content:center;padding:18px}.tkask.on{display:flex}
+.tkcard{max-width:360px;width:100%;background:#fffaf0;border-radius:18px;padding:20px 18px 16px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3);color:#3a2f22}
+.tkcard .tkem{font-size:34px}.tkcard b{display:block;font-size:17px;margin:4px 0 8px}.tkcard p{font-size:13.5px;line-height:1.6;margin:0 0 12px}.tkcard p em{font-style:normal;color:#c0392b;font-weight:800}
+.tkchk{display:flex;gap:7px;align-items:center;justify-content:center;font-size:13px;color:#5a4c3a;margin-bottom:14px;cursor:pointer}.tkchk input{width:17px;height:17px}
+.tkbtns{display:flex;gap:8px}.tkbtns button{flex:1;border:0;border-radius:12px;padding:11px 8px;font:800 14.5px system-ui,sans-serif;cursor:pointer;background:#3aa0d8;color:#fff}.tkbtns button.ghost{background:#ece3d2;color:#5a4c3a}
+.irow.tnk canvas{width:96px;height:70px;background:linear-gradient(#f2fbff,#d9f0fb);border-radius:10px}.irow.tnk{background:linear-gradient(90deg,#eaf8ff,#fff)}.irow.tnk.on{border-color:#4cc38a}
+@media (max-width:520px){.irow.tnk canvas{width:70px;height:52px}#shop .tabs{gap:4px}#shop .tabs button{font-size:12.5px;padding-left:2px;padding-right:2px;white-space:nowrap;letter-spacing:-0.4px;min-width:0}}
 .lgc{background:linear-gradient(135deg,#2a2152,#46307a 60%,#2f4f8a);color:#fff;border-radius:16px;padding:12px 14px 10px;margin:6px 0 12px;box-shadow:0 4px 14px rgba(40,20,90,.25)}
 .lgh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.lgh span{font-weight:900;font-size:15px}.lgh b{font-size:26px;font-weight:900;background:linear-gradient(90deg,#ff7a7a,#ffd24d,#7dff9a,#6fc8ff,#c48bff);-webkit-background-clip:text;background-clip:text;color:transparent}.lgh em{font-style:normal;font-weight:800;font-size:13px;background:rgba(255,255,255,.16);border-radius:10px;padding:2px 8px;margin-left:auto}
 .lgbar{position:relative;height:14px;border-radius:9px;background:rgba(255,255,255,.16);margin:8px 0 14px;overflow:visible}.lgbar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#ff5e5e,#ffb84d,#ffe55c,#5fe08a,#4db8ff,#7a6bff,#c06bff,#ff5e5e);background-size:200% 100%;animation:lgsh 4s linear infinite;box-shadow:0 0 10px rgba(255,230,140,.55)}
@@ -389,7 +396,7 @@ body.cine .boatbadge{opacity:0}
 <div class="overlay hidden" id="shop"><div class="card wide">
   <div class="mhead"><b>🐉 용왕님 상점</b><span class="money" id="shopMoney"></span><button class="x" id="shopX">✕</button></div>
   <div class="bsub">“허허, 어서 오게나! 좋은 물고기는 값을 후하게 쳐주지.”</div>
-  <div class="tabs"><button data-tab="buy">🎣 낚싯대</button><button data-tab="pack">🎒 가방</button><button data-tab="float">🎯 찌</button><button data-tab="sell">💰 물고기 팔기</button></div>
+  <div class="tabs"><button data-tab="buy">🎣 낚싯대</button><button data-tab="pack">🎒 가방</button><button data-tab="float">🎯 찌</button><button data-tab="tank">🐠 수조</button><button data-tab="sell">💰 팔기</button></div>
   <div id="shopBody"></div></div></div>
 <div class="overlay hidden" id="cook"><div class="card wide">
   <div class="mhead"><b>🍳 모닥불 요리</b><button class="x" id="cookX">✕</button></div>
@@ -456,7 +463,7 @@ body.cine .boatbadge{opacity:0}
       <li><b>기다려요</b><span>찌가 톡톡 흔들리는 건 물고기가 간을 보는 거예요. 이때 누르면 도망가요.</span></li>
       <li><b>챔질!</b><span>방울 소리와 함께 찌가 <em>쑥 들어가고 ❗가 뜨면</em> 바로 탭하세요.</span></li>
       <li><b>끌어올려요</b><span><em>누르고 있으면 감겨요.</em> 줄 장력 막대가 빨개지거나 <em>‘저항!’</em>이 뜨면 잠깐 손을 떼요. 너무 오래 떼면 바늘이 빠져요.</span></li>
-      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (최대 50마리) 👑 명예의 전당 <b>도감왕 1등</b>은 머리 위에 빙글빙글 도는 금빛 왕관이 떠요. 🎒 가방은 기본 30마리이고, 🐉 상점의 <b>🎒 가방</b> 칸에서 🦈 아기 상어 가방(+20마리)·👼 아기 천사 날개 가방(+40마리)을 살 수 있어요. 물고기와 <b>3분 넘게</b> 싸우면 물고기가 지쳐서 힘이 빠져요(최대 -30%). 잡은 카드에서 PC는 키보드 <kbd>1</kbd> 놓아주기 · <kbd>2</kbd> 🎒 가방에 · <kbd>3</kbd> 🐠 수조에로도 골라요. 📖 도감에서 생물마다 📏 최소~최대 크기를 볼 수 있어요.</span></li>
+      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (기본 50마리 · 🐉 상점의 <b>🐠 수조</b> 칸에서 3만 몰랑에 10칸씩, 최대 200마리까지 늘릴 수 있어요. 수조 물고기는 <b>구경 전용</b>이라 가방으로 옮기거나 팔 수 없어요) 👑 명예의 전당 <b>도감왕 1등</b>은 머리 위에 빙글빙글 도는 금빛 왕관이 떠요. 🎒 가방은 기본 30마리이고, 🐉 상점의 <b>🎒 가방</b> 칸에서 🦈 아기 상어 가방(+20마리)·👼 아기 천사 날개 가방(+40마리)을 살 수 있어요. 물고기와 <b>3분 넘게</b> 싸우면 물고기가 지쳐서 힘이 빠져요(최대 -30%). 잡은 카드에서 PC는 키보드 <kbd>1</kbd> 놓아주기 · <kbd>2</kbd> 🎒 가방에 · <kbd>3</kbd> 🐠 수조에로도 골라요. 📖 도감에서 생물마다 📏 최소~최대 크기를 볼 수 있어요.</span></li>
     </ol>
     <div class="btitle">💡 물고기 찾기 팁</div>
     <ul class="tips">
@@ -1201,20 +1208,20 @@ function tankSprite(sp,size,k=1){const big=sp.shape==='shark'||sp.shape==='hamme
  const half=PL*(HALF[sp.shape]??sp.h*0.95)+6;const w=Math.ceil(PL*1.22+12),h=Math.ceil(half*2+8);const dpr=Math.min(2,devicePixelRatio||1);
  const cv=document.createElement('canvas');cv.width=Math.ceil(w*dpr);cv.height=Math.ceil(h*dpr);const cx=cv.getContext('2d');cx.scale(dpr,dpr);cx.__noAura=1;drawFishBase(cx,sp,w/2,h/2,PL,false);return{cv,w,h};}
 function tankDims(){const cv=$('tankCv');const r=cv.getBoundingClientRect();const dpr=Math.min(2,devicePixelRatio||1);const W2=Math.max(10,Math.round(r.width*dpr)),H2=Math.max(10,Math.round(r.height*dpr));if(cv.width!==W2||cv.height!==H2){cv.width=W2;cv.height=H2;}return{w:r.width,h:r.height,dpr};}
-function buildTank(){const{w,h}=tankDims();$('tankCount').textContent=`${tank.length} / ${TANK_MAX}`;$('tankEmpty').classList.toggle('hidden',tank.length>0);
+function buildTank(){const{w,h}=tankDims();$('tankCount').textContent=`${tank.length} / ${tankCap()}칸`;$('tankEmpty').classList.toggle('hidden',tank.length>0);
  const old=new Map(tankCr.map(c=>[c.key,c]));const sandY=h*0.86;
- tankCr=tank.map(o=>{const key=tankKeyOf(o);if(old.has(key))return old.get(key);const sp=SPECIES.find(s=>s.id===o.id);const spr=tankSprite(sp,+o.s,clamp(w/780,0.55,1.25));
+ tankCr=tank.map(o=>{const key=tankKeyOf(o);if(old.has(key))return old.get(key);const sp=SPECIES.find(s=>s.id===o.id);const spr=tankSprite(sp,+o.s,clamp(w/780,0.55,1.25)*tankScale());
   const kind=T_BOTTOM.has(sp.shape)?'bottom':T_FLOAT.has(sp.shape)?'float':'swim';const slow=(sp.shape==='turtle'||sp.shape==='sunfish'||sp.shape==='shark'||sp.shape==='hammer'||sp.shape==='seal'||sp.shape==='orca'||sp.shape==='seaotter')?0.55:1;
   return{key,o,sp,spr,kind,x:rand(spr.w*0.5+4,Math.max(spr.w*0.5+6,w-spr.w*0.5-4)),y:kind==='bottom'?sandY-spr.h*0.3:rand(h*0.2,h*0.7),vx:(kind==='bottom'?rand(8,16):rand(20,42))*slow*(Math.random()<0.5?-1:1),ty:0,ph:rand(0,6)};});
  if(tankSel&&!tankCr.includes(tankSel))tankSel=null;showTinfo();}
 function openTank(){closeEmoPanel();$('tank').classList.remove('hidden');tankOpen=true;tankSel=null;requestAnimationFrame(()=>{buildTank();tankLast=performance.now();cancelAnimationFrame(tankRAF);tankRAF=requestAnimationFrame(tankLoop);});}
 function closeTank(){$('tank').classList.add('hidden');tankOpen=false;cancelAnimationFrame(tankRAF);}
-function showTinfo(){const tx=$('tinfoTxt'),rb=$('tinfoRel');$('tinfoBag').classList.toggle('hidden',!tankSel);if(!tankSel){tx.textContent=tank.length?'물고기를 누르면 이름과 크기가 보여요 · 크기에 따라 다르게 보여요':'';rb.classList.add('hidden');return;}
+function showTinfo(){const tx=$('tinfoTxt'),rb=$('tinfoRel');$('tinfoBag').classList.add('hidden');if(!tankSel){tx.textContent=tank.length?'물고기를 누르면 이름과 크기가 보여요 · 수조 물고기는 구경 전용이에요(가방으로 옮기기·팔기 ✕)':'';rb.classList.add('hidden');return;}
  const sp=tankSel.sp;tx.textContent=`${sp.name} · ${fmtSize(tankSel.o.s)} · ${starStr(starOf(sp))}`;rb.classList.remove('hidden');}
-function tankToBag(){if(!tankSel)return;if(GS.bag.length>=bagCap()){toast(`가방이 꽉 찼어요 (${bagCap()}마리)${bagFullTip()}`,3400);return;}const k=tankSel.key;const o=tankSel.o;tank=tank.filter(x=>x!==o);GS.bag.push({id:o.id,s:o.s,t:newT(),...(o.x===3?{x:3}:{})});saveTank();tankSel=null;buildTank();sfx.pop();toast(`🎒 ${SP_BY[o.id].name}을(를) 가방으로 옮겼어요`);}
+function tankToBag(){if(!tankSel)return;toast('수조에 있는 물고기는 가방으로 옮길 수 없어요. 구경하거나 놓아주기만 할 수 있어요',3200);return;if(GS.bag.length>=bagCap()){toast(`가방이 꽉 찼어요 (${bagCap()}마리)${bagFullTip()}`,3400);return;}const k=tankSel.key;const o=tankSel.o;tank=tank.filter(x=>x!==o);GS.bag.push({id:o.id,s:o.s,t:newT(),...(o.x===3?{x:3}:{})});saveTank();tankSel=null;buildTank();sfx.pop();toast(`🎒 ${SP_BY[o.id].name}을(를) 가방으로 옮겼어요`);}
 function releaseFromTank(){if(!tankSel)return;const k=tankSel.key;const sp=tankSel.sp;tank=tank.filter(o=>o!==tankSel.o);saveTank();tankSel=null;buildTank();sfx.splash(0.2);toast(`잘 가, ${sp.name}! ${sp.hab==='fresh'?'강':'바다'}로 돌려보냈어요`);}
-function keepFish(){if(!fish)return;if(tank.length>=TANK_MAX){toast(`수조가 꽉 찼어요 (${TANK_MAX}마리). 🐠 수조에서 몇 마리 놓아주세요`,3200);return;}
- tank.push({id:fish.sp.id,s:fish.size,t:newT(),...(fishBonus(fish)===3?{x:3}:{})});saveTank();$('catch').classList.add('hidden');sfx.pop();toast(`🐠 수조에 넣었어요 (${tank.length}/${TANK_MAX}) · 왼쪽 아래 수조 버튼에서 볼 수 있어요`,3000);fish=null;setF('idle');}
+function keepFish0(){if(!fish)return;if(tank.length>=tankCap()){toast(`수조가 꽉 찼어요 (${tankCap()}마리). 🐠 수조에서 몇 마리 놓아주거나 🐉 상점에서 큰 수조로 바꿔 보세요`,3600);return;}
+ tank.push({id:fish.sp.id,s:fish.size,t:newT(),...(fishBonus(fish)===3?{x:3}:{})});saveTank();$('catch').classList.add('hidden');sfx.pop();toast(`🐠 수조에 넣었어요 (${tank.length}/${tankCap()}) · 왼쪽 아래 수조 버튼에서 볼 수 있어요`,3000);fish=null;setF('idle');}
 function seaweed(c,w,h,back){const n=back?6:4;for(let i=0;i<n;i++){const x=w*(back?0.06+i*0.17:0.03+i*0.31)+hash(i+(back?0:20))*30;const hh=h*(back?0.3+hash(i+5)*0.25:0.16+hash(i+9)*0.12);
   c.strokeStyle=back?`rgba(${50+i*6},${140+i*5},90,.55)`:`rgba(${70+i*10},${175},${85},.95)`;c.lineWidth=back?9:11;c.lineCap='round';c.beginPath();c.moveTo(x,h*0.9);for(let k=1;k<=8;k++){c.lineTo(x+Math.sin(tankT*1.1+k*0.55+i)*9*k/8,h*0.9-hh*k/8);}c.stroke();}}
 function drawTankBg(c,w,h){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#9be6f5');g.addColorStop(0.5,'#3fa6dc');g.addColorStop(1,'#1f6dab');c.fillStyle=g;c.fillRect(0,0,w,h);
@@ -1820,10 +1827,10 @@ const RODS=[null,
  {lv:3,name:'월광 은빛 낚싯대',price:900,c1:'#dfe8f2',c2:'#7fb6ff',desc:'달빛을 머금은 은빛 낚싯대. 끝에 달린 초승달이 은은하게 빛나요. ★3까지.'},
  {lv:4,name:'폭풍의 삼지창 낚싯대',price:2800,c1:'#24345e',c2:'#ffd34d',desc:'번개를 품은 삼지창 낚싯대. 거친 ★4 물고기도 꼼짝 못 해요.'},
  {lv:5,name:'용왕의 여의주 낚싯대',price:10000,c1:'#f5c542',c2:'#ff4d6d',desc:'용왕님이 아끼던 전설의 낚싯대. 여의주가 빛나며 ★5 전설의 물고기까지 낚아요.'},
- {lv:6,name:'신화급 불빠따 낚싯대',price:30000,c1:'#ff5a1f',c2:'#ffd23f',desc:'🔥 신화급! 전국 개미들의 “제발 떡상 가즈아” 기원이 모이고 모여 활활 불타오르는 방망이 낚싯대. 한 번 휘두르면 차트도 물고기도 수직 상승 📈 끝에 달린 빨간 양봉이 위로만 솟아요. ★6 신화의 바다 친구들까지 낚아요. (※ 실제 주가와는 아무 상관 없어요)'},
+ {lv:6,name:'떡상기원 불빠따 낚싯대',price:30000,c1:'#ff5a1f',c2:'#ffd23f',desc:'🔥 신화급! 전국 개미들의 “제발 떡상 가즈아” 기원이 모이고 모여 활활 불타오르는 방망이 낚싯대. 한 번 휘두르면 차트도 물고기도 수직 상승 📈 끝에 달린 빨간 양봉이 위로만 솟아요. ★6 신화의 바다 친구들까지 낚아요. (※ 실제 주가와는 아무 상관 없어요)'},
  {lv:7,name:'럭키비키 일곱 빛깔 무지개 낚싯대',price:177777,c1:'#ff4d4d',c2:'#a65cff',desc:'🌈 비 갠 하늘에 걸린 무지개다리를 한 가닥 떼어 만든 낚싯대. 일곱 빛깔이 모두 모여야 비로소 ★7 무지개 전설에 닿을 수 있대요. 들고 다니면 무지개 꼬리가 따라오고, 던지면 찌를 따라 무지개다리가 놓여요.'},
 ];
-var GS={money:0,rods:[1],rod:1,packs:[],pack:0,floats:[],float:0,bag:[],food:[],buffUntil:0,ease:0,easeUntil:0,stats:{sold:0,cooked:0,earned:0}};
+var GS={money:0,rods:[1],rod:1,packs:[],pack:0,floats:[],float:0,tankUp:0,bag:[],food:[],buffUntil:0,ease:0,easeUntil:0,stats:{sold:0,cooked:0,earned:0}};
 const BAG_MAX=30,FOOD_MAX=20,BAG_KEEP_MAX=120;
 var saveDirty=false;
 function markSave(){saveDirty=true;}
@@ -1980,7 +1987,7 @@ function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
   if(!GS.bag.length){const e=document.createElement('div');e.className='empty';e.innerHTML='가방이 비어 있어요.<br>물고기를 잡은 뒤 <b>‘🎒 가방에 넣기’</b>를 눌러 보세요.';box.appendChild(e);}
   const list=document.createElement('div');list.className='ilist';
   [...GS.bag].sort((a,b)=>starOf(SP_BY[b.id])-starOf(SP_BY[a.id])||b.s-a.s).forEach(it=>{const sp=SP_BY[it.id];if(!sp)return;const row=itemRow(sp,it.s,`${starStr(starOf(sp))} · ${fmtM(itemPrice(it))} 몰랑${it.x===3?' · 🔥×3':''}`);
-   const b1=document.createElement('button');b1.textContent='🐠 수조로';b1.onclick=()=>{if(tank.length>=TANK_MAX){toast(`수조가 꽉 찼어요 (${TANK_MAX}마리)`);return;}GS.bag=GS.bag.filter(x=>x!==it);tank.push({id:it.id,s:it.s,t:newT(),...(it.x===3?{x:3}:{})});saveTank();markSave();sfx.pop();renderBag();toast(`🐠 ${sp.name}을(를) 수조에 넣었어요`);};
+   const b1=document.createElement('button');b1.textContent='🐠 수조로';b1.onclick=()=>{if(tank.length>=tankCap()){toast(`수조가 꽉 찼어요 (${tankCap()}마리) · 🐉 상점에서 큰 수조로 바꿀 수 있어요`,3400);return;}tankConfirm(()=>{if(!GS.bag.includes(it)||tank.length>=tankCap())return;GS.bag=GS.bag.filter(x=>x!==it);tank.push({id:it.id,s:it.s,t:newT(),...(it.x===3?{x:3}:{})});saveTank();markSave();sfx.pop();renderBag();toast(`🐠 ${sp.name}을(를) 수조에 넣었어요`);});};
    const b2=document.createElement('button');b2.className='ghost';b2.textContent='놓아주기';b2.onclick=()=>{GS.bag=GS.bag.filter(x=>x!==it);markSave();sfx.splash(0.2);renderBag();toast(`잘 가, ${sp.name}!`);};
    row.querySelector('.acts').append(b1,b2);list.appendChild(row);});box.appendChild(list);}
  if(bagTab==='gear'){
@@ -2024,6 +2031,7 @@ function renderShop(){$('shopMoney').textContent=`${fmtM(GS.money)} 몰랑`;docu
  const box=$('shopBody');box.innerHTML='';
  if(shopTab==='pack'){renderPackShop(box);return;}
  if(shopTab==='float'){renderFloatShop(box);return;}
+ if(shopTab==='tank'){renderTankShop(box);return;}
  if(shopTab==='buy'){
   const p=document.createElement('div');p.className='bsub';p.textContent='낚싯대 ★가 높을수록 더 힘센(★ 많은) 물고기를 낚을 수 있어요. 산 낚싯대는 바로 장착돼요.';box.appendChild(p);
   const list=document.createElement('div');list.className='ilist rods';
@@ -2046,7 +2054,7 @@ function renderShop(){$('shopMoney').textContent=`${fmtM(GS.money)} 몰랑`;docu
   [...GS.bag].sort((a,b)=>itemPrice(b)-itemPrice(a)).forEach(it=>{const sp=SP_BY[it.id];if(!sp)return;const row=itemRow(sp,it.s,starStr(starOf(sp))+(it.x===3?' · 🔥 도전 보너스 ×3':''));
    const b=document.createElement('button');b.className='buy';b.innerHTML=`${fmtM(itemPrice(it))}<small>몰랑에 팔기</small>`;b.onclick=()=>sellItems([it]);row.querySelector('.acts').appendChild(b);list.appendChild(row);});
   box.appendChild(list);
-  if(tank.length){const n=document.createElement('div');n.className='bsub';n.textContent='수조에 있는 물고기를 팔고 싶으면 🐠 수조에서 ‘🎒 가방으로’를 먼저 눌러요.';box.appendChild(n);}}}
+  if(tank.length){const n=document.createElement('div');n.className='bsub';n.textContent='수조에 있는 물고기는 구경 전용이라 팔 수 없어요. 팔 물고기는 잡을 때 ‘🎒 가방에 넣기’를 눌러요.';box.appendChild(n);}}}
 function buyRod(lv){const R=RODS[lv];if(GS.rods.includes(lv))return;if(GS.money<R.price){toast(`몰랑이 ${fmtM(R.price-GS.money)} 부족해요. 물고기를 잡아서 팔아 보세요!`,3000);sfx.snap&&0;return;}
  GS.money-=R.price;GS.rods.push(lv);GS.rods.sort();markSave();equipRod(lv);renderShop();
  showBubble(SHOP.label,lv===6?'떡상 기원! 🔥📈 신화가 탄생했구먼!':lv===5?'오오… 내 여의주 낚싯대를! 잘 부탁하네 🐉✨':'좋은 선택일세! 🎣',false,4);for(let i=0;i<3;i++)setTimeout(()=>sfx.pop(),i*120);
@@ -2210,7 +2218,7 @@ function v2Peer(r,pr,isNew){
  if(netMode!=='ws'){const cm=Array.isArray(pr.cm)?pr.cm:null;const seq=cm?cm[0]|0:0;
   if(isNew||r.cmSeq===undefined){r.cmSeq=seq;if(Array.isArray(pr.cl))for(const e of pr.cl.slice(-5))if(Array.isArray(e))chatAdd({ts:+e[0]||0,pid:r.peer,name:r.name,text:cleanChat(e[1]),me:false});}
   else if(seq!==r.cmSeq){r.cmSeq=seq;const text=cleanChat(cm[1]);if(text){chatAdd({ts:Date.now(),pid:r.peer,name:r.name,text,me:false});if(!mutedPeers.has(r.peer)){showBubble(r.label,text,false,10);r.hopT=t;}}}}}
-function myProfile(){return{r:GS.rod,k:tank.slice(0,50).map(o=>[SP_IDX.get(o.id)??0,o.s]),b:Object.keys(book).length};}
+function myProfile(){return{r:GS.rod,k:tank.slice(0,200).map(o=>[SP_IDX.get(o.id)??0,o.s]),b:Object.keys(book).length,c:tankCap()};}
 function v2Presence(o){o.bt=BOAT.on?1:0;o.sd=MY_SID;o.lv=myLoveTop();o.rd=GS.rod;o.pk=GS.pack|0;o.fl=floatOn()?GS.float|0:0;o.nk=NAME.nk||'';o.ck=ME.ck||[0,0,0,0,0];if(netMode!=='ws'){o.cm=ME.cm||[0,''];o.cl=ME.cl||[];o.pf=myProfile();}return o;}
 function onNetMsg(m){if(m.t==='c'){onChatMsg(m);return true;}
  if(m.t==='lg'){applyLegend(m);return true;}
@@ -2226,9 +2234,9 @@ function openProfile(r){if(!r)return;closeEmoPanel();closeChat();profPeer=r.peer
  else showProfData(r.pf||{r:r.rd||1,k:[],b:0});}
 function showProfData(d){if(!d)return;const lv=clamp(d.r|0,1,7);const R=RODS[lv];const box=$('profRod');box.innerHTML='';const c=document.createElement('canvas');c.width=150;c.height=90;drawRodIcon(c.getContext('2d'),150,90,lv);
  const tx=document.createElement('div');tx.innerHTML=`<b>${R.name}</b><small>${starStr(lv)}</small>`;box.append(c,tx);
- const list=(Array.isArray(d.k)?d.k:[]).slice(0,50).map((x,i)=>({id:(SPECIES[x[0]]||SPECIES[0]).id,s:+x[1]||10,t:i}));
+ const list=(Array.isArray(d.k)?d.k:[]).slice(0,200).map((x,i)=>({id:(SPECIES[x[0]]||SPECIES[0]).id,s:+x[1]||10,t:i}));
  $('profInfo').textContent=d.none?'수조 정보를 받지 못했어요':list.length?`수조에 ${list.length}마리 · 도감 ${d.b|0}/${SPECIES.length}종 · 물고기를 누르면 이름이 보여요`:`아직 수조가 비어 있어요 · 도감 ${d.b|0}/${SPECIES.length}종`;
- requestAnimationFrame(()=>{const cv=$('profCv');const r=cv.getBoundingClientRect();const w=r.width,h=r.height;const k=clamp(w/780,0.55,1.25);const sandY=h*0.86;
+ requestAnimationFrame(()=>{const cv=$('profCv');const r=cv.getBoundingClientRect();const w=r.width,h=r.height;const k=clamp(w/780,0.55,1.25)*tankScaleFor(+d.c||TANK_MAX);const sandY=h*0.86;
   profCr=list.map(o=>{const sp=SP_BY[o.id];const spr=tankSprite(sp,o.s,k);const kind=T_BOTTOM.has(sp.shape)?'bottom':T_FLOAT.has(sp.shape)?'float':'swim';return{o,sp,spr,kind,x:rand(spr.w*0.5,Math.max(spr.w*0.5+2,w-spr.w*0.5)),y:kind==='bottom'?sandY-spr.h*0.3:rand(h*0.2,h*0.7),vx:(kind==='bottom'?rand(8,16):rand(20,42))*(Math.random()<0.5?-1:1),ty:0,ph:rand(0,6)};});});}
 function closeProfile(){$('prof').classList.add('hidden');profPeer=null;cancelAnimationFrame(profRAF);}
 function profLoop(now){if(!profPeer)return;const dt=Math.min(0.05,(now-profLast)/1000);profLast=now;tankT+=dt;const cv=$('profCv');const r=cv.getBoundingClientRect();const dpr=Math.min(2,devicePixelRatio||1);
@@ -2311,7 +2319,7 @@ function doCtx(){if(ctxKind==='boat'){boardBoat();return;}if(ctxKind==='unboat')
 const SAVE_KEY='monggeul-save-v2',ACCT_KEY='monggeul-acct',GUEST_BAK='monggeul-guest-backup';
 var acct=null,cloud=null,saveBusy=false,lastSaveAt=0,lastSaveOk=0,saveErr='';
 function loveAll(){const o={};for(const d of ANIM_DEFS){try{const n=+localStorage.getItem('monggeul-love-'+d.id)||0;if(n)o[d.id]=n;}catch(e){}}return o;}
-function collectSave0(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,floats:GS.floats||[],float:GS.float|0,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
+function collectSave0(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,floats:GS.floats||[],float:GS.float|0,tankUp:GS.tankUp|0,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
 function applySave0(d){if(!d||typeof d!=='object')return false;
  const L=d.look;if(L&&[L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK={hat:clamp(L.hat,0,6),hc:clamp(L.hc,0,COLORS.length-1),cloth:clamp(L.cloth,0,4),cc:clamp(L.cc,0,COLORS.length-1)};
  if(d.name&&Number.isInteger(d.name.a)&&Number.isInteger(d.name.b)){const ck=checkNick(d.name.nk||'');NAME={a:d.name.a,b:d.name.b,nk:ck.ok?ck.nick:''};}
@@ -2320,7 +2328,7 @@ function applySave0(d){if(!d||typeof d!=='object')return false;
  if(d.love&&typeof d.love==='object')for(const[k,v]of Object.entries(d.love))try{localStorage.setItem('monggeul-love-'+k,String(v|0));}catch(e){}
  if(Array.isArray(d.emoji)){const f=d.emoji.filter(e=>EMOJI_SET.has(e)).slice(0,5);if(f.length===5)recentEmoji=f;}
  const g=d.gs||{};GS.money=clamp(Math.floor(+g.money||0),0,1e9);GS.rods=[...new Set([1,...(Array.isArray(g.rods)?g.rods:[]).map(x=>x|0).filter(x=>x>=1&&x<=7)])].sort();GS.rod=GS.rods.includes(g.rod|0)?g.rod|0:Math.max(...GS.rods);
- GS.packs=[...new Set((Array.isArray(g.packs)?g.packs:[]).map(x=>x|0).filter(x=>x>=1&&x<PACKS.length))].sort();GS.pack=GS.packs.includes(g.pack|0)?g.pack|0:0;GS.floats=[...new Set((Array.isArray(g.floats)?g.floats:[]).map(x=>x|0).filter(x=>x>=1&&x<FLOATS.length))].sort((a,b)=>a-b);GS.float=GS.floats.includes(g.float|0)?g.float|0:0;if(P.char)setCharPack(P.char,GS.pack);
+ GS.packs=[...new Set((Array.isArray(g.packs)?g.packs:[]).map(x=>x|0).filter(x=>x>=1&&x<PACKS.length))].sort();GS.pack=GS.packs.includes(g.pack|0)?g.pack|0:0;GS.floats=[...new Set((Array.isArray(g.floats)?g.floats:[]).map(x=>x|0).filter(x=>x>=1&&x<FLOATS.length))].sort((a,b)=>a-b);GS.float=GS.floats.includes(g.float|0)?g.float|0:0;GS.tankUp=clamp(g.tankUp|0,0,TANK_LV_MAX);tankCr=[];if(P.char)setCharPack(P.char,GS.pack);
  GS.bag=(Array.isArray(g.bag)?g.bag:[]).filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,1000).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
  GS.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&(DISH[f.k]||/^f\d$/.test(f.k))).slice(0,300).map(f=>({k:f.k,s:SP_BY[f.s]?f.s:''}));
  GS.buffUntil=Number.isFinite(+g.buffUntil)?+g.buffUntil:0;GS.ease=clamp(+g.ease||0,0,0.2);GS.easeUntil=Number.isFinite(+g.easeUntil)?+g.easeUntil:0;GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});LEG.n=Math.max(LEG.n,(+GS.stats.leg||0)|0);if(Array.isArray(GS.stats.nofol)){NOFOL.clear();for(const id of GS.stats.nofol)NOFOL.add(String(id));try{localStorage.setItem('monggeul-nofollow',JSON.stringify([...NOFOL]));}catch(e){}}
@@ -2547,9 +2555,17 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-12h';
+const NEWS_VER='2026-11-12k';
 const NEWS=[
- {d:'11월 12일',t:'💫 도감에서 전설의 기운이 잘 보여요',n:true,i:[
+ {d:'11월 12일',t:'🐠 수조는 구경 전용이 돼요',n:true,i:[
+  '🐠 수조에 넣은 물고기는 이제 <b>가방으로 다시 옮기거나 팔 수 없어요</b>. 수조에서는 구경하고 놓아주기만 할 수 있어요.',
+  '💬 물고기를 수조에 넣을 때 안내가 한 번 떠요. ‘다시 띄우지 않음’을 체크하면 다음부터는 바로 수조에 들어가요.',
+  '💰 팔고 싶은 물고기는 잡았을 때 <b>🎒 가방에 넣기</b>를 눌러 주세요.']},
+ {d:'11월 12일',t:'🐠 큰 수조를 팔아요',i:[
+  '🐉 용왕님 상점에 <b>🐠 수조</b> 칸이 생겼어요. <b>30,000몰랑</b>마다 수조가 <b>10칸</b>씩 커져요 (기본 50칸 → 최대 200칸).',
+  '🔍 수조가 커질수록 물고기가 조금씩 작게 보여서 수조가 훨씬 넓어 보여요. 기본 수조의 물고기도 조금 작아졌어요.',
+  '👀 다른 사람 수조를 구경할 때도 그 사람 수조 크기에 맞춰 보여요.']},
+ {d:'11월 12일',t:'💫 도감에서 전설의 기운이 잘 보여요',i:[
   '📖 도감 맨 위에 <b>전설의 기운 게이지</b>가 생겼어요. 지금 몇 %인지, ★7 확률이 몇 배인지, 지금 내 ★7 확률이 얼마인지 한눈에 보여요.',
   '🌦️ 다음 무지개까지 남은 시간과 무지개 이벤트 남은 시간도 함께 보여요.']},
  {d:'11월 12일',t:'🛠️ 물고기 기록 오류 고쳤어요',i:[
@@ -2627,7 +2643,7 @@ const NEWS=[
   '🏆 명예의 전당 도감왕 아래에 <b>2~5등</b>도 함께 보여요.',
   '💫 오래 못 만나면 <b>전설의 기운</b>이 쌓여 ★7 확률이 최대 3배까지 올라가요. (도감에서 확인)']},
  {d:'11월 11일',t:'💰 낚싯대 가격 · 도전 보너스',i:[
-  '🎣 낚싯대 가격이 바뀌었어요: ★5 용왕의 여의주 <b>8,800 → 10,000몰랑</b>, ★6 신화급 불빠따 <b>20,000 → 30,000몰랑</b>.',
+  '🎣 낚싯대 가격이 바뀌었어요: ★5 용왕의 여의주 <b>8,800 → 10,000몰랑</b>, ★6 떡상기원 불빠따 <b>20,000 → 30,000몰랑</b>.',
   '🔥 내 낚시 능력보다 <b>★1 높은 물고기</b>를 잡으면 상점에 팔 때 <b>몰랑 3배</b>! 가방·수조로 옮겨도 보너스는 그대로예요. (🔥×3 표시)']},
  {d:'11월 11일',t:'🏆 명예의 전당 · 생물 150종',i:[
   '🐋 생물이 <b>70종 → 150종</b>으로 늘었어요! ★1 8종 · ★2 10종 · ★3 10종 · ★4 12종 · <b>★5 20종 · ★6 20종</b>이 새로 왔어요. (고래·바다거북·대왕오징어·백상아리·청새치·킹크랩·황쏘가리 등)',
@@ -2657,7 +2673,7 @@ const NEWS=[
   '🐶 퍼그 <b>호떡</b>·<b>찹쌀</b>이 놀러 왔고, 콩이는 하얀 말티즈가 됐어요.',
   '🎥 쓰다듬기·껴안기를 하면 카메라가 가까이 다가가요.',
   '✨ ★6 신화 물고기 5종: 물개 · 돌고래 · 아기 범고래 · 해달(바다), 수달(민물).',
-  '🔥 ★6 <b>신화급 불빠따 낚싯대</b> 출시!',
+  '🔥 ★6 <b>떡상기원 불빠따 낚싯대</b> 출시!',
   '🐠 수조가 넓어지고 최대 <b>50마리</b>까지 키울 수 있어요.',
   '🍁 단풍·은행나무, 흩날리는 낙엽, 발로 차면 날리는 바닥 낙엽.',
   '⚓ 낚시 부두 2곳 추가, 지도에 부두 끝까지 표시.',
@@ -3201,7 +3217,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12h';
+const BUILD='2026-11-12k';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[]};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3240,7 +3256,7 @@ function merge3(B,L,S){B=B&&typeof B==='object'?B:null;L=L||{};S=S||{};
  const hm={},LH=L.hm||{},SH=S.hm||{};for(const k of new Set([...Object.keys(SH),...Object.keys(LH)]))hm[k]=Math.max(+SH[k]||0,+LH[k]||0);M.hm=hm;
  const bg=B?(B.gs||{}):null,lg=L.gs||{},sg=S.gs||{};const g=Object.assign({},sg);
  g.money=nm(bg&&bg.money,lg.money,sg.money);
- g.rods=[...new Set([...(sg.rods||[]),...(lg.rods||[])])].sort((a,b)=>a-b);g.packs=[...new Set([...(sg.packs||[]),...(lg.packs||[])])].sort((a,b)=>a-b);g.floats=[...new Set([...(sg.floats||[]),...(lg.floats||[])])].sort((a,b)=>a-b);g.float=pk(bg&&bg.float,lg.float,sg.float);
+ g.rods=[...new Set([...(sg.rods||[]),...(lg.rods||[])])].sort((a,b)=>a-b);g.packs=[...new Set([...(sg.packs||[]),...(lg.packs||[])])].sort((a,b)=>a-b);g.floats=[...new Set([...(sg.floats||[]),...(lg.floats||[])])].sort((a,b)=>a-b);g.tankUp=Math.max(sg.tankUp|0,lg.tankUp|0);g.float=pk(bg&&bg.float,lg.float,sg.float);
  g.rod=pk(bg&&bg.rod,lg.rod,sg.rod);g.pack=pk(bg&&bg.pack,lg.pack,sg.pack);
  g.bag=mergeItems(bg&&bg.bag,lg.bag,sg.bag);g.food=mergeFood(bg&&bg.food,lg.food,sg.food);
  g.buffUntil=Math.max(+sg.buffUntil||0,+lg.buffUntil||0);
@@ -3536,6 +3552,58 @@ function legCardHTML(){const g=legGauge(),pm=legPity(),E=effStar(),F=floatOn(),r
  <div class="lgs dim">★6 이상 낚싯대로 <b>멀리 던져 물고기가 걸릴 때마다</b> 쌓여요 (${fmtM(Math.min(casts,full))} / ${fmtM(full)}번 · 최대 ×3). ★7을 낚으면 0으로 돌아가요.${E<6?'<br><span class="lgw">⚠ 지금 낚싯대로는 기운이 쌓이지 않아요 (★6 이상 필요)</span>':''}${E<7?' ★6 낚싯대는 ★7 확률이 0.4배예요.':''}</div></div>`;}
 function renderLegCard(){const el=$('legCard');if(el)el.innerHTML=legCardHTML();}
 setInterval(()=>{if(!$('book').classList.contains('hidden'))renderLegCard();},1000);
+/* ---------- v39: 🐠 큰 수조 (상점에서 10칸씩 늘리기) ---------- */
+var TANK_STEP=10,TANK_PRICE=30000,TANK_LV_MAX=15;   // 기본 50칸 → 최대 200칸
+function tankCap(lv){return TANK_MAX+TANK_STEP*clamp((lv==null?GS.tankUp:lv)|0,0,TANK_LV_MAX);}
+// 수조가 커질수록 물고기를 조금씩 작게 그려서 수조가 넓어 보이게 (기본 수조도 예전보다 10% 작게)
+function tankScaleFor(cap){return 0.9*Math.pow(TANK_MAX/Math.max(TANK_MAX,cap||TANK_MAX),0.35);}
+function tankScale(){return tankScaleFor(tankCap());}
+function buyTankUp(){const lv=GS.tankUp|0;if(lv>=TANK_LV_MAX){toast('이미 가장 큰 수조예요!');return;}
+ if(GS.money<TANK_PRICE){toast(`몰랑이 ${fmtM(TANK_PRICE-GS.money)} 부족해요. 물고기를 잡아서 팔아 보세요!`,3000);return;}
+ GS.money-=TANK_PRICE;GS.tankUp=lv+1;tankCr=[];markSave();markPresence();updateHUD();
+ toast(`🐠 수조가 커졌어요! 이제 ${tankCap()}마리까지 키울 수 있어요`,3600);
+ showBubble(SHOP.label,GS.tankUp>=TANK_LV_MAX?'허허, 이 섬에서 제일 큰 수조로구먼! 🐋':'수조가 한층 넓어졌구먼! 물고기들이 신나겠어 🐠',false,4);
+ for(let i=0;i<3;i++)setTimeout(()=>sfx.pop(),i*120);burstHearts(P.pos.x,P.pos.y+2.2,P.pos.z,6);renderShop();}
+function drawTankIcon(c,w,h,cap){c.clearRect(0,0,w,h);c.save();const k=0.62+0.38*Math.min(1,(cap-TANK_MAX)/(TANK_STEP*TANK_LV_MAX));
+ const tw=w*0.86*k+w*0.1,th=h*0.62*k+h*0.16,x0=(w-tw)/2,y0=h*0.9-th;
+ const g=c.createLinearGradient(0,y0,0,y0+th);g.addColorStop(0,'#bfeaff');g.addColorStop(1,'#3a9fd6');c.fillStyle=g;c.fillRect(x0,y0+th*0.12,tw,th*0.88);
+ c.fillStyle='#e8d29a';c.fillRect(x0,y0+th*0.86,tw,th*0.14);
+ c.strokeStyle='rgba(255,255,255,.85)';c.lineWidth=3;c.strokeRect(x0,y0,tw,th);c.fillStyle='#6b4f2f';c.fillRect(x0-3,y0+th,tw+6,5);
+ const n=Math.round(3+6*k),sz=Math.max(5,11-4*k);const cols=['#ff8a3d','#ffd84d','#ff6fa8','#7ee08a','#6fc8ff'];
+ for(let i=0;i<n;i++){const fx=x0+tw*(0.15+0.7*((i*0.618)%1)),fy=y0+th*(0.3+0.45*((i*0.37)%1));c.fillStyle=cols[i%5];c.beginPath();c.ellipse(fx,fy,sz,sz*0.6,0,0,Math.PI*2);c.fill();c.beginPath();c.moveTo(fx-sz*0.8,fy);c.lineTo(fx-sz*1.5,fy-sz*0.6);c.lineTo(fx-sz*1.5,fy+sz*0.6);c.closePath();c.fill();}
+ c.fillStyle='rgba(255,255,255,.7)';for(let i=0;i<4;i++){c.beginPath();c.arc(x0+tw*(0.82-i*0.03),y0+th*(0.7-i*0.17),2+i*0.6,0,Math.PI*2);c.fill();}
+ c.restore();}
+function renderTankShop(box){const lv=GS.tankUp|0,cap=tankCap(),max=lv>=TANK_LV_MAX;
+ const p=document.createElement('div');p.className='bsub';p.innerHTML=`수조를 키우면 물고기를 더 많이 키울 수 있어요. 지금 <b>${cap}칸 수조</b> · 물고기 ${tank.length} / ${cap}마리`;box.appendChild(p);
+ const list=document.createElement('div');list.className='ilist';const row=document.createElement('div');row.className='irow tnk'+(max?' on':'');
+ const c=document.createElement('canvas');c.width=150;c.height=110;drawTankIcon(c.getContext('2d'),150,110,max?cap:cap+TANK_STEP);
+ const tx=document.createElement('div');tx.className='itx';
+ tx.innerHTML=max?`<b>🐋 가장 큰 수조 (${cap}칸)</b><small>더 이상 키울 수 없어요. 섬에서 제일 큰 수조예요!</small>`:`<b>🐠 큰 수조로 바꾸기</b><small class="cap">${cap}칸 → <b>${cap+TANK_STEP}칸</b> (+${TANK_STEP}칸)</small><small>칸이 늘어날수록 물고기가 조금씩 작게 보여서 수조가 훨씬 넓어 보여요. 최대 ${tankCap(TANK_LV_MAX)}칸까지 키울 수 있어요 (${lv}/${TANK_LV_MAX}단계).</small>`;
+ const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');
+ if(max){b.textContent='최대';b.disabled=true;}else{b.innerHTML=`${fmtM(TANK_PRICE)}<small>몰랑</small>`;b.className='buy'+(GS.money<TANK_PRICE?' poor':'');b.onclick=buyTankUp;}
+ acts.appendChild(b);row.append(c,tx,acts);list.appendChild(row);box.appendChild(list);}
+/* ---------- v40: 수조는 '구경 전용' — 수조 물고기는 가방으로 못 옮기고 팔 수 없어요 ---------- */
+const TANKASK_KEY='monggeul-tank-noask';
+function tankAskOff(){try{return localStorage.getItem(TANKASK_KEY)==='1';}catch(e){return false;}}
+let tankAskCb=null;
+function tankConfirm(cb){if(tankAskOff()){cb();return;}tankAskCb=cb;let el=$('tankAsk');
+ if(!el){el=document.createElement('div');el.id='tankAsk';el.className='tkask';
+  el.innerHTML=`<div class="tkcard"><div class="tkem">🐠</div><b>수조에 넣을까요?</b>
+  <p>수조에 넣은 물고기는 <em>다시 가방으로 옮기거나 팔 수 없어요.</em><br>수조에서는 헤엄치는 모습을 구경하고, 놓아주기만 할 수 있어요.</p>
+  <label class="tkchk"><input type="checkbox" id="tankAskNo"> 다시 띄우지 않음 (다음부터 바로 수조에 넣어요)</label>
+  <div class="tkbtns"><button class="ghost" id="tankAskCancel">취소</button><button id="tankAskOk">🐠 수조에 넣기</button></div></div>`;
+  document.body.appendChild(el);
+  $('tankAskOk').onclick=()=>tankAskClose(true);$('tankAskCancel').onclick=()=>tankAskClose(false);
+  el.addEventListener('click',e=>{if(e.target===el)tankAskClose(false);});}
+ $('tankAskNo').checked=false;el.classList.add('on');}
+function tankAskClose(ok){const el=$('tankAsk');if(!el||!el.classList.contains('on'))return;el.classList.remove('on');
+ if(ok&&$('tankAskNo').checked){try{localStorage.setItem(TANKASK_KEY,'1');}catch(e){}}
+ const cb=tankAskCb;tankAskCb=null;if(ok&&cb)cb();}
+window.addEventListener('keydown',e=>{const el=$('tankAsk');if(!el||!el.classList.contains('on'))return;
+ if(e.code==='Enter'||e.code==='NumpadEnter'){e.preventDefault();tankAskClose(true);}else if(e.code==='Escape'){e.preventDefault();tankAskClose(false);}
+ else if(e.code==='Space'&&e.target!==$('tankAskNo')){e.preventDefault();$('tankAskNo').checked=!$('tankAskNo').checked;}
+ e.stopImmediatePropagation();},true);
+function keepFish(){if(!fish)return;if(tank.length>=tankCap()){keepFish0();return;}tankConfirm(()=>{if(fish)keepFish0();});}
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}

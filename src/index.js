@@ -8,7 +8,7 @@ const MAX_ISLANDS = 30;  // 섬 개수 상한
 const HOF_CACHE_MS = 15000; // 명예의 전당 목록 기억 시간
 const LEGEND_MS = 3 * 60 * 1000; // ★7을 잡으면 모두에게 축하 알림 + 무지개 이벤트 (3분)
 const LEGEND_IDS = new Set(['rainbowwhale', 'auroraray', 'rainbowflyer', 'prismjelly', 'rainbowseahorse', 'chaeunryong', 'chilbokoi', 'rainbowtrout', 'rainbowveil', 'rainbowsturgeon']);
-const MAX_MSG = 4096;    // 메시지 최대 크기(바이트)
+const MAX_MSG = 8192;    // 메시지 최대 크기(바이트) — 큰 수조(최대 200마리) 구경 정보까지 들어가게
 const MAX_RATE = 20;     // 접속자 1명당 초당 최대 메시지 수
 const CHAT_KEEP = 100;   // 섬마다 보관하는 최근 채팅 수 (넘으면 오래된 것부터 삭제)
 const CHAT_LEN = 60;     // 채팅 한 줄 최대 글자 수
@@ -99,12 +99,13 @@ function sanitize(d) {
 // 수조 자랑용 프로필
 function sanitizeProfile(d) {
   if (!d || typeof d !== 'object') return null;
-  const k = Array.isArray(d.k) ? d.k.slice(0, 50) : [];
+  const k = Array.isArray(d.k) ? d.k.slice(0, 200) : [];
   return {
     r: num(d.r | 0, 1, 7, 1),
     k: k.filter(x => Array.isArray(x) && x.length === 2).map(x => [idx(x[0], SPECIES_LIST.length), r2(num(x[1], 0.5, 1000, 10))]),
     m: num(d.m | 0, 0, 1e9, 0),
     b: num(d.b | 0, 0, 200, 0),
+    c: num(d.c | 0, 50, 200, 50),
   };
 }
 
@@ -289,6 +290,7 @@ function legacyMerge(S, D) {
     rods: [...new Set([...(sg.rods || []), ...(dg.rods || [])])],
     packs: [...new Set([...(sg.packs || []), ...(dg.packs || [])])],
     floats: [...new Set([...(sg.floats || []), ...(dg.floats || [])])],
+    tankUp: Math.max(sg.tankUp | 0, dg.tankUp | 0),
     bag: itemsUnion(sg.bag, dg.bag),
   });
   return M;
