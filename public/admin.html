@@ -34,11 +34,6 @@
   </div>
   <div id="msg"></div>
  </div>
- <div class="card" id="opCard">
-  <b style="font-size:16px">👑 운영자 닉네임 기기 등록</b>
-  <p class="note" style="margin-top:4px">이 기기(이 브라우저)를 운영자 기기로 등록하면, 게임에서 <b>‘운영자’·‘관리자’ 같은 금지어가 들어간 닉네임</b>(예: 아몰랑운영자)을 정할 수 있어요. 서버가 확인하기 때문에 다른 유저는 같은 이름을 쓸 수 없어요. <b>게임을 하는 기기마다(휴대폰·PC 각각) 이 화면을 열어 한 번씩 등록</b>해 주세요. 관리자 키 자체는 기기에 저장하지 않아요.</p>
-  <p><button id="opReg" style="background:#7a52d8">👑 이 기기를 운영자로 등록</button> <button class="ghost" id="opOff">등록 해제</button> <span id="opSt" style="margin-left:6px;font-weight:700"></span></p>
- </div>
  <div class="card" id="giftCard">
   <b style="font-size:16px">🎁 보상 보내기</b>
   <p class="note" style="margin-top:4px">보상은 서버가 유저 기록에 바로 넣어요. 유저가 게임에 들어오면 “📮 선물이 도착했어요!” 창으로 알려 줘요. 게임을 켜 둔 유저는 몇 분 안에 반영돼요.</p>
@@ -116,11 +111,6 @@ async function sendGift(){const all=$('gAll').checked;const body={all,money:+$('
 async function giftHist(){try{const j=await call('admin-gifts');$('gOut').innerHTML='<table><tr><th>시각</th><th>받은 사람</th><th>보상</th><th>메시지</th></tr>'+(j.list.length?j.list.map(g=>`<tr><td>${fmt(g.ts)}</td><td>${g.target==='*'?`모든 유저(${g.n}명)`:g.target}</td><td style="white-space:normal">${itTxt(g.it)}</td><td style="white-space:normal">${(g.msg||'').replace(/</g,'&lt;')}</td></tr>`).join(''):'<tr><td colspan="4">아직 보낸 선물이 없어요</td></tr>')+'</table>';}catch(e){$('gOut').innerHTML=`<p class="err">${e.message}</p>`;}}
 $('gSend').onclick=sendGift;$('gHist').onclick=giftHist;
 $('go').onclick=load;$('u').addEventListener('keydown',e=>{if(e.key==='Enter')load();});
-
-function opShow(){let t='';try{t=localStorage.getItem('monggeul-optok')||'';}catch(e){}$('opSt').textContent=t?'✅ 이 기기는 운영자 기기로 등록되어 있어요':'아직 등록 안 됨';}
-$('opReg').onclick=async()=>{try{if(!$('k').value){$('opSt').textContent='위에 관리자 키를 먼저 넣어 주세요';return;}const j=await call('admin-optok',{});if(!j.tok)throw new Error('서버에 ADMIN_KEY가 없어요');localStorage.setItem('monggeul-optok',j.tok);opShow();alert('등록됐어요! 게임을 새로고침한 뒤 닉네임을 ‘아몰랑운영자’로 정해 보세요.');}catch(e){$('opSt').textContent='❌ '+e.message;}};
-$('opOff').onclick=()=>{try{localStorage.removeItem('monggeul-optok');}catch(e){}opShow();};
-opShow();
 </script>
 </body>
 </html>
