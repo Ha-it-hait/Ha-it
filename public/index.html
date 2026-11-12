@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12b">
+<meta name="amollang-build" content="2026-11-12c">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑 낚시 게임</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -2355,7 +2355,7 @@ async function logout(){if(!acct)return;await doSave(false);try{await authCall('
 
 /* ---------- 매 프레임 ---------- */
 let v2HudAcc=0;
-function updV2(dt){const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
+function updV2(dt){updHappy(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
  for(const r of remote.values()){if(r.cookT)animTable(r.cookT,r.ckSt,dt);}
  v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();const bs=buffShort();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}`+(bs?` · ${bs}`:'');$('hudG').classList.toggle('buff',!!bs);
   if(GS._buffWas&&bl<=0)toast('🍳 요리 효과가 끝났어요',2400);GS._buffWas=bl>0;saveTick();}}
@@ -2536,9 +2536,12 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-12b';
+const NEWS_VER='2026-11-12c';
 const NEWS=[
- {d:'11월 12일',t:'💾 잡은 물고기 기록을 더 단단하게 지켜요',n:true,i:[
+ {d:'11월 12일',t:'🎵 물고기를 잡으면 기분이 좋아요',n:true,i:[
+  '🎶 물고기를 낚으면 캐릭터가 살짝 움찔하고 머리 위에 작은 음표가 떠올라요. 다른 사람이 낚을 때도 보여요.',
+  '🌈 무지개 낚싯대는 던질 때와 걸을 때만 무지개가 보이도록 정리했어요. (찌가 물에 떠 있을 때 · 잡았을 때의 무지개는 없앴어요)']},
+ {d:'11월 12일',t:'💾 잡은 물고기 기록을 더 단단하게 지켜요',i:[
   '📱💻 휴대폰과 PC(또는 창 여러 개)에서 번갈아 해도 <b>서로의 기록을 덮어쓰지 않고 합쳐서</b> 저장해요.',
   '🪟 같은 브라우저에서 게임 창을 여러 개 열면, 마지막에 연 창만 저장하고 나머지 창은 멈춰요.',
   '🏆 전송이 실패해서 명예의 전당에 빠진 기록이 있으면, 도감의 내 최고 기록으로 <b>자동으로 다시 올려요</b>. 내 기록이 깨지면 알려 드려요.',
@@ -2910,25 +2913,22 @@ function updV13(dt){const on=rainbowOn();if(on!==RB.on){const first=RB.on===null
  const mine=P.char&&P.char.rodLv===7&&!(P.char.cooking);
  if(mine&&entered)trailSample(RB.trail,P.char,RB.last,P.speed>5);else if(RB.trail.pts.length&&!mine)ribbonClear(RB.trail);
  ribbonUpd(RB.trail);ribbonUpd(RB.arc);
- if(mine&&(fstate==='waiting'||fstate==='bite')){RB.ringT-=dt;if(RB.ringT<=0){RB.ringT=1.1;rbRing(castTgt.x,castTgt.z);}}
  if(mine&&fstate==='fight'){myLine.material.color.setHSL((t*0.6)%1,1,0.62);RB.lineCol=true;}else if(RB.lineCol){myLine.material.color.set('#ffffff');RB.lineCol=false;}
  // 다른 사람의 무지개 낚싯대
  for(const r of remote.values()){if(!r.char)continue;const has=r.rd===7&&!r.leaving&&!r.char.cooking;
   if(has){if(!r.rbT){r.rbT=makeRibbon(70);r.rbL=new THREE.Vector3();r.rbA=makeRibbon(40);}trailSample(r.rbT,r.char,r.rbL,r.speed>5);
    if(r.st==='cast'&&r.rbPrev!=='cast'&&r.rbPrev!==undefined){rodTipWorld(r.char,_rbv);ribbonClear(r.rbA);rbArc(r.rbA,_rbv.x,_rbv.y,_rbv.z,r.fx,r.fz,1.5+Math.min(1,r.cd/30)*4.5,0.8,r.yaw);}
-   if(r.st==='wait'||r.st==='bite'){r.rbRingT=(r.rbRingT||0)-dt;if(r.rbRingT<=0){r.rbRingT=1.1;rbRing(r.fx,r.fz);}}
    if(r.line){if(r.st==='fight'){r.line.material.color.setHSL((t*0.6+0.3)%1,1,0.62);r.rbLc=true;}else if(r.rbLc){r.line.material.color.set('#ffffff');r.rbLc=false;}}
-   if((r.cid|0)!==(r.rbCid??r.cid|0)){rbPop(r.pos.x,r.pos.y+2.4,r.pos.z,false);}r.rbCid=r.cid|0;
    ribbonUpd(r.rbT);ribbonUpd(r.rbA);}
   else if(r.rbT){ribbonClear(r.rbT);ribbonClear(r.rbA);}
   r.rbPrev=r.st;}
  for(const r of RB.rings){if(r.life<=0){r.m.visible=false;continue;}r.life-=dt;const k=1-r.life/r.max;r.m.scale.setScalar(0.3+k*1.9);r.m.material.opacity=(1-k)*0.85;}
  RB.pops=RB.pops.filter(o=>{const k=(t-o.t0)/(o.big?3:1.8);if(k>=1){scene.remove(o.s);o.s.material.dispose();return false;}const sc=(o.big?5:2.6)*(0.5+0.5*Math.min(1,k*3));o.s.scale.set(sc,sc/2,1);o.s.position.y+=dt*0.4;o.s.material.opacity=Math.min(1,k*5)*(1-k)*1.2;return true;});}
 function rbArc(R,ax,ay,az,bx,bz,H,dur,yaw){const dx=bx-ax,dz=bz-az,D=Math.hypot(dx,dz)||1;const fx=Math.sin(yaw),fz=Math.cos(yaw);const lx=fz,lz=-fx;const B=Math.min(4,D*0.2);
- for(let k=0;k<=36;k++){const u=k/36,sn=Math.sin(u*Math.PI);ribbonPush(R,ax+dx*u+lx*sn*B,ay+(0.15-ay)*u+sn*H,az+dz*u+lz*sn*B,0,1,0,0.6,2.8,t+u*dur*0.95,true);}}
+ for(let k=0;k<=36;k++){const u=k/36,sn=Math.sin(u*Math.PI);ribbonPush(R,ax+dx*u+lx*sn*B,ay+(0.15-ay)*u+sn*H,az+dz*u+lz*sn*B,0,1,0,0.6,1.1,t+u*dur*0.95,true);}}
 function rbCastStart(){if(!(P.char&&P.char.rodLv===7))return;ribbonClear(RB.arc);rodTipWorld(P.char,_rbv);rbArc(RB.arc,_rbv.x,_rbv.y,_rbv.z,castTgt.x,castTgt.z,1.5+power*4.5,castDur,P.yaw);}
 function rbCastSample(){}
-function legCatch(f){const st=starOf(f.sp);const mine=P.char&&P.char.rodLv===7;if(mine||st>=7){fwdOf(P.yaw,_f);rbPop(P.pos.x+_f.x*1.2,P.pos.y+2.2,P.pos.z+_f.z*1.2,st>=7);}
+function legCatch(f){const st=starOf(f.sp);if(st>=7){fwdOf(P.yaw,_f);rbPop(P.pos.x+_f.x*1.2,P.pos.y+2.2,P.pos.z+_f.z*1.2,st>=7);}
  if(st>=7){LEG.n=0;saveLeg();toast(`🌈 전설의 ★7 ${f.sp.name}${josa(f.sp.name,'을','를')} 낚았어요! 무지개가 축하해요!`,5200);legendReport(f);}}
 
 /* ---------- v14: 따라오는 동물 버튼 정리 · 그만 따라오기 ---------- */
@@ -3176,7 +3176,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12b';
+const BUILD='2026-11-12c';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[]};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3353,6 +3353,26 @@ setInterval(()=>{try{saveWarnTick();if(acct&&SYNC.pullWant&&!SYNC.busy)pullSync(
 setInterval(()=>{verCheck();},10*60e3);setTimeout(()=>verCheck(),8000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(acct)pullSync();verCheck();}});
 addEventListener('pageshow',e=>{if(e.persisted&&acct)pullSync();});
+/* ---------- v35: 물고기를 잡으면 살짝 움찔 + 머리 위에 작은 음표 ---------- */
+const NOTE_TEX=[['♪','#ff7eb6'],['♫','#ffc93c'],['♪','#5fd4c4'],['♫','#9f8cff']].map(([ch,col])=>canvasTex(64,64,(c,w,h)=>{c.font='900 50px system-ui,"Apple SD Gothic Neo",sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=7;c.strokeStyle='rgba(255,255,255,.95)';c.strokeText(ch,w/2,h/2+2);c.fillStyle=col;c.fillText(ch,w/2,h/2+2);}));
+const NOTES=[];
+function happyStart(o){if(!o||!o.char)return;o.hapT=t;
+ for(let i=0;i<3;i++){let n=NOTES.find(x=>!x.on);if(!n){if(NOTES.length>=24)break;n={s:new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthWrite:false,opacity:0,fog:false,toneMapped:false}))};n.s.renderOrder=7;scene.add(n.s);NOTES.push(n);}
+  n.on=true;n.o=o;n.t0=t+i*0.17;n.side=(i%2?1:-1)*(0.32+Math.random()*0.12);n.ph=Math.random()*6;n.s.material.map=NOTE_TEX[(Math.random()*NOTE_TEX.length)|0];n.s.material.needsUpdate=true;n.s.visible=false;}}
+function updHappy(dt){
+ // 움찔: 아주 짧게 눌렸다가 펴져요
+ for(const o of[P,...remote.values()]){if(!o||!o.char||o.hapT===undefined)continue;const k=(t-o.hapT)/0.42;const root=o.char.root;
+  if(o===P&&!o._hb)o._hb=root.scale.clone();
+  if(k>=1||k<0){if(o===P&&o._hb){root.scale.copy(o._hb);o._hb=null;}o.hapT=undefined;continue;}
+  const e=Math.sin(k*Math.PI*2)*(1-k);const sy=1-0.12*e,sx=1+0.07*e;
+  if(o===P)root.scale.set(o._hb.x*sx,o._hb.y*sy,o._hb.z*sx);else root.scale.set(root.scale.x*sx,root.scale.y*sy,root.scale.z*sx);}
+ // 음표: 머리 옆에서 살랑살랑 올라가며 사라져요
+ for(const n of NOTES){if(!n.on)continue;const o=n.o;const k=(t-n.t0)/1.5;
+  if(!o||!o.char||(o!==P&&(o.leaving||!remote.has(o.peer)))||k>=1){n.on=false;n.s.visible=false;continue;}
+  if(k<0){n.s.visible=false;continue;}
+  const yaw=o===P?P.yaw:(o.yaw||0);const rx=Math.cos(yaw),rz=-Math.sin(yaw);const sway=Math.sin(n.ph+k*7)*0.1;
+  n.s.position.set(o.pos.x+rx*(n.side+sway),o.pos.y+(o.jy||0)+1.5+k*0.85,o.pos.z+rz*(n.side+sway));
+  const sc=0.24+0.08*Math.min(1,k*4);n.s.scale.set(sc,sc,sc);n.s.material.opacity=Math.min(1,k*6)*(k>0.6?(1-k)/0.4:1);n.s.visible=true;}}
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
@@ -3448,7 +3468,7 @@ function updateFight(dt){
  rippleAcc+=dt;if(rippleAcc>0.3){rippleAcc=0;fishPos(_a);ripple(_a.x,_a.z,surge?1.2:0.7);}
 }
 function landed(){setF('caught');holding=false;myLine.visible=false;myFloat.visible=false;const rec=recordCatch(fish);sfx.catch();showBubble(P.label,`${fish.sp.name} ${fmtSize(fish.size)}`,false,6);
- ME.cid++;ME.cs=fish.sp.id;ME.cz=fish.size;P.hopT=t;markPresence();markSave();showCatch(fish,rec);hofSubmit(fish.sp,fish.size);if(rec.isNew)colSync();legCatch(fish);}
+ ME.cid++;ME.cs=fish.sp.id;ME.cz=fish.size;P.hopT=t;markPresence();markSave();showCatch(fish,rec);happyStart(P);hofSubmit(fish.sp,fish.size);if(rec.isNew)colSync();legCatch(fish);}
 function press(){
  if(!entered||mode==='closet'||modalOpen())return;if(closeEmoPanel())return;initAudio();
  if(mode!=='fish')return;
@@ -3532,7 +3552,7 @@ function applyPeers(list){
   const f=Array.isArray(pr.f)?pr.f:[0,0];r.fx=num(f[0],0,-200,200);r.fz=num(f[1],0,-200,200);r.fd=num(pr.fd,1,0,1);r.ft=num(pr.ft,0,0,1);r.cd=num(pr.cd,10,1,40);
   if(!isNew&&prev!=='wait'&&r.st==='wait')splash(r.fx,r.fz,0.7);
   if((pr.eid|0)!==r.eid){r.eid=pr.eid|0;const e=String(pr.e||'');if(EMOJI_SET.has(e)){showBubble(r.label,e,true,2.8);r.hopT=t;}}
-  if((pr.cid|0)!==r.cid){r.cid=pr.cid|0;const sp=SPECIES.find(s=>s.id===pr.cs);const sz=+pr.cz;if(sp&&Number.isFinite(sz)){const txt=`${sp.name} ${fmtSize(clamp(sz,1,1000))}`;showBubble(r.label,txt,false,5);r.hopT=t;if(sp.r>=7&&entered)toast(`🌈 ${r.name} 님이 ★7 무지개 전설 ${txt}을(를) 낚았어요!`,5200);else if(sp.r>=4&&entered)toast(`🎣 ${r.name} 님이 ${txt}!`);}}
+  if((pr.cid|0)!==r.cid){r.cid=pr.cid|0;if(!isNew)happyStart(r);const sp=SPECIES.find(s=>s.id===pr.cs);const sz=+pr.cz;if(sp&&Number.isFinite(sz)){const txt=`${sp.name} ${fmtSize(clamp(sz,1,1000))}`;showBubble(r.label,txt,false,5);r.hopT=t;if(sp.r>=7&&entered)toast(`🌈 ${r.name} 님이 ★7 무지개 전설 ${txt}을(를) 낚았어요!`,5200);else if(sp.r>=4&&entered)toast(`🎣 ${r.name} 님이 ${txt}!`);}}
   if((pr.an|0)!==r.an){r.an=pr.an|0;const A=ANIMS[pr.ai|0];if(A&&!isNew){const k=pr.ak===1?1:0;animalReact(A,k,false,r.tx,r.tz);if(r.char){r.char.actT=t;r.char.actK=k;}}}
   v2Peer(r,pr,isNew);
   if(isNew&&entered&&t-roomSince>3)toast(`${r.name} 님이 섬에 왔어요`);
