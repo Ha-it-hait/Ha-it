@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12m">
+<meta name="amollang-build" content="2026-11-12n">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -269,7 +269,7 @@ body.cine .boatbadge{opacity:0}
 .irow.rod canvas{width:100px;height:60px;background:linear-gradient(#eef5f7,#dfeaf0)}
 .irow.pack canvas{width:96px;height:70px;background:linear-gradient(#fff8ec,#f3e6cf)}.irow.pack.p1{background:linear-gradient(90deg,#eaf6ff,#fff)}.irow.pack.p1 canvas{background:linear-gradient(#e6f5ff,#cfe8f8)}.irow.pack.p2{background:linear-gradient(90deg,#fff3f8,#fffbea);border-color:#f2c14e}.irow.pack.p2 canvas{background:linear-gradient(#fdf6ff,#fbe9f1)}.irow.pack.on{border-color:#4cc38a}
 .irow.rel canvas{width:96px;height:70px;background:linear-gradient(#fff5f8,#f6e6ee);border-radius:10px}.irow.rel.r2{background:linear-gradient(90deg,#fff8e1,#fff);border-color:#f2c14e}.irow.rel.r2 canvas{background:linear-gradient(#fffaf0,#f8ecc8)}.irow.rel.on{border-color:#4cc38a}
-@media (max-width:520px){.irow.rel canvas{width:70px;height:52px}}
+@media (max-width:520px){.irow.rel canvas{width:70px;height:52px}#shop .tabs{flex-wrap:wrap}#shop .tabs button{flex:1 1 30%}}
 .tkask{position:fixed;inset:0;z-index:9500;background:rgba(18,28,44,.55);display:none;align-items:center;justify-content:center;padding:18px}.tkask.on{display:flex}
 .tkcard{max-width:360px;width:100%;background:#fffaf0;border-radius:18px;padding:20px 18px 16px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3);color:#3a2f22}
 .tkcard .tkem{font-size:34px}.tkcard b{display:block;font-size:17px;margin:4px 0 8px}.tkcard p{font-size:13.5px;line-height:1.6;margin:0 0 12px}.tkcard p em{font-style:normal;color:#c0392b;font-weight:800}
@@ -398,7 +398,7 @@ body.cine .boatbadge{opacity:0}
 <div class="overlay hidden" id="shop"><div class="card wide">
   <div class="mhead"><b>🐉 용왕님 상점</b><span class="money" id="shopMoney"></span><button class="x" id="shopX">✕</button></div>
   <div class="bsub">“허허, 어서 오게나! 좋은 물고기는 값을 후하게 쳐주지.”</div>
-  <div class="tabs"><button data-tab="buy">🎣 장비</button><button data-tab="pack">🎒 가방</button><button data-tab="float">🎯 찌</button><button data-tab="tank">🐠 수조</button><button data-tab="sell">💰 팔기</button></div>
+  <div class="tabs"><button data-tab="buy">🎣 낚싯대</button><button data-tab="reel">🧵 릴</button><button data-tab="pack">🎒 가방</button><button data-tab="float">🎯 찌</button><button data-tab="tank">🐠 수조</button><button data-tab="sell">💰 팔기</button></div>
   <div id="shopBody"></div></div></div>
 <div class="overlay hidden" id="cook"><div class="card wide">
   <div class="mhead"><b>🍳 모닥불 요리</b><button class="x" id="cookX">✕</button></div>
@@ -465,7 +465,7 @@ body.cine .boatbadge{opacity:0}
       <li><b>기다려요</b><span>찌가 톡톡 흔들리는 건 물고기가 간을 보는 거예요. 이때 누르면 도망가요.</span></li>
       <li><b>챔질!</b><span>방울 소리와 함께 찌가 <em>쑥 들어가고 ❗가 뜨면</em> 바로 탭하세요.</span></li>
       <li><b>끌어올려요</b><span><em>누르고 있으면 감겨요.</em> 줄 장력 막대가 빨개지거나 <em>‘저항!’</em>이 뜨면 잠깐 손을 떼요. 너무 오래 떼면 바늘이 빠져요.</span></li>
-      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (기본 50마리 · 🐉 상점의 <b>🐠 수조</b> 칸에서 3만 몰랑에 10칸씩, 최대 200마리까지 늘릴 수 있어요. 🧵 상점 🎣 장비 칸의 <b>릴</b>을 달면 줄을 더 빨리, 덜 팽팽하게 감을 수 있어요(🐚 소라 껍데기 릴 · 🐋 황금 고래 릴). 수조 물고기는 <b>구경 전용</b>이라 가방으로 옮기거나 팔 수 없어요) 👑 명예의 전당 <b>도감왕 1등</b>은 머리 위에 빙글빙글 도는 금빛 왕관이 떠요. 🎒 가방은 기본 30마리이고, 🐉 상점의 <b>🎒 가방</b> 칸에서 🦈 아기 상어 가방(+20마리)·👼 아기 천사 날개 가방(+40마리)을 살 수 있어요. 물고기와 <b>3분 넘게</b> 싸우면 물고기가 지쳐서 힘이 빠져요(최대 -30%). 잡은 카드에서 PC는 키보드 <kbd>1</kbd> 놓아주기 · <kbd>2</kbd> 🎒 가방에 · <kbd>3</kbd> 🐠 수조에로도 골라요. 📖 도감에서 생물마다 📏 최소~최대 크기를 볼 수 있어요.</span></li>
+      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (기본 50마리 · 🐉 상점의 <b>🐠 수조</b> 칸에서 3만 몰랑에 10칸씩, 최대 200마리까지 늘릴 수 있어요. 🧵 상점 <b>🧵 릴</b> 칸의 릴을 달면 줄을 더 빨리, 덜 팽팽하게 감을 수 있어요(🐚 소라 껍데기 릴 · 🐋 황금 고래 릴). 수조 물고기는 <b>구경 전용</b>이라 가방으로 옮기거나 팔 수 없어요) 👑 명예의 전당 <b>도감왕 1등</b>은 머리 위에 빙글빙글 도는 금빛 왕관이 떠요. 🎒 가방은 기본 30마리이고, 🐉 상점의 <b>🎒 가방</b> 칸에서 🦈 아기 상어 가방(+20마리)·👼 아기 천사 날개 가방(+40마리)을 살 수 있어요. 물고기와 <b>3분 넘게</b> 싸우면 물고기가 지쳐서 힘이 빠져요(최대 -30%). 잡은 카드에서 PC는 키보드 <kbd>1</kbd> 놓아주기 · <kbd>2</kbd> 🎒 가방에 · <kbd>3</kbd> 🐠 수조에로도 골라요. 📖 도감에서 생물마다 📏 최소~최대 크기를 볼 수 있어요.</span></li>
     </ol>
     <div class="btitle">💡 물고기 찾기 팁</div>
     <ul class="tips">
@@ -2036,10 +2036,10 @@ let shopTab='buy',sellArm=0;
 function openShop(){if(!entered)return;closeEmoPanel();closeChat();if(mode==='fish')exitFish();sellArm=0;renderShop();$('shop').classList.remove('hidden');sfx.pop();
  showBubble(SHOP.label,'어서 오게나! 🐉',false,3);}
 function closeShop(){$('shop').classList.add('hidden');}
-function renderShop(){renderShop0();if(shopTab==='buy')renderReelShop($('shopBody'));}
-function renderShop0(){$('shopMoney').textContent=`${fmtM(GS.money)} 몰랑`;document.querySelectorAll('#shop .tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===shopTab));
+function renderShop(){$('shopMoney').textContent=`${fmtM(GS.money)} 몰랑`;document.querySelectorAll('#shop .tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===shopTab));
  const box=$('shopBody');box.innerHTML='';
  if(shopTab==='pack'){renderPackShop(box);return;}
+ if(shopTab==='reel'){renderReelShop(box);return;}
  if(shopTab==='float'){renderFloatShop(box);return;}
  if(shopTab==='tank'){renderTankShop(box);return;}
  if(shopTab==='buy'){
@@ -2568,7 +2568,7 @@ function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${s
 const NEWS_VER='2026-11-12m';
 const NEWS=[
  {d:'11월 12일',t:'🧵 릴이 나왔어요',n:true,i:[
-  '🐉 용왕님 상점의 <b>🎣 장비</b> 칸에서 릴을 살 수 있어요. 릴을 달면 줄을 감는 힘이 세져서 어려운 물고기도 더 쉽게 끌어와요.',
+  '🐉 용왕님 상점에 <b>🧵 릴</b> 칸이 생겼어요. 릴을 달면 줄을 감는 힘이 세져서 어려운 물고기도 더 쉽게 끌어와요.',
   '🐚 <b>소라 껍데기 릴</b> (50,000몰랑) — 감는 속도 +12% · 줄이 팽팽해지는 속도 -8%. 분홍 소라 껍데기와 진주 손잡이.',
   '🐋 <b>황금 고래 릴</b> (120,000몰랑) — 감는 속도 +25% · 줄이 팽팽해지는 속도 -18%. 고래 꼬리 손잡이와 붉은 보석, 감을 때 금빛 반짝이.',
   '🎣 릴은 낚싯대에 달린 모습으로 보이고, 감는 동안 손잡이가 빙글빙글 돌아요. 다른 사람 눈에도 보여요. 낚싯대를 바꿔도 릴은 그대로 달려 있어요.',
@@ -3233,7 +3233,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12m';
+const BUILD='2026-11-12n';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[]};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3650,13 +3650,13 @@ function reelRow(R,mode){const lv=R?R.lv:0,own=!R||(GS.reels||[]).includes(lv),o
  else if(own){b.textContent=R?'달기':'바꾸기';b.onclick=()=>{equipReel(lv);mode==='shop'?renderShop():renderBag();};}
  else{b.innerHTML=`${fmtM(R.price)}<small>몰랑</small>`;b.className='buy'+(GS.money<R.price?' poor':'');b.onclick=()=>buyReel(lv);}
  acts.appendChild(b);row.append(c,tx,acts);return row;}
-function renderReelShop(box){const t=document.createElement('div');t.className='btitle';t.textContent='🧵 릴';box.appendChild(t);
+function renderReelShop(box){
  const p=document.createElement('div');p.className='bsub';p.textContent='릴을 달면 줄을 감는 힘이 세져서, 어려운 물고기도 더 쉽게 끌어올 수 있어요. 산 릴은 지금 든 낚싯대에 바로 달리고, 낚싯대를 바꿔도 그대로 달려 있어요.';box.appendChild(p);
  const list=document.createElement('div');list.className='ilist rels';list.appendChild(reelRow(null,'shop'));for(let i=1;i<REELS.length;i++)list.appendChild(reelRow(REELS[i],'shop'));box.appendChild(list);}
 function renderReelGear(box){const t=document.createElement('div');t.className='btitle';t.textContent='🧵 릴';box.appendChild(t);
  const list=document.createElement('div');list.className='ilist rels';list.appendChild(reelRow(null,'bag'));
  for(let i=1;i<REELS.length;i++)if((GS.reels||[]).includes(i))list.appendChild(reelRow(REELS[i],'bag'));box.appendChild(list);
- if((GS.reels||[]).length<REELS.length-1){const n=document.createElement('div');n.className='bsub';n.textContent='🐚 소라 껍데기 릴 · 🐋 황금 고래 릴은 🐉 용왕님 상점의 🎣 장비 칸에서 살 수 있어요.';box.appendChild(n);}}
+ if((GS.reels||[]).length<REELS.length-1){const n=document.createElement('div');n.className='bsub';n.textContent='🐚 소라 껍데기 릴 · 🐋 황금 고래 릴은 🐉 용왕님 상점의 🧵 릴 칸에서 살 수 있어요.';box.appendChild(n);}}
 
 /* 상점·가방 그림 */
 function drawReelIcon(c,w,h,lv){c.clearRect(0,0,w,h);c.save();c.lineJoin='round';c.lineCap='round';
