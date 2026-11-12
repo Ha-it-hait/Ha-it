@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12s">
+<meta name="amollang-build" content="2026-11-12t">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -1403,7 +1403,7 @@ function bridgeY(x,z){const l=bridgeLocal(x,z);return BRIDGE.y+0.55*Math.cos(cla
 function onStructure(x,z){return onDock(x,z)||onBridge(x,z);}
 function groundY(x,z){if(onDock(x,z))return DOCK.y;if(onBridge(x,z))return Math.max(bridgeY(x,z),terrainH(x,z));return Math.max(terrainH(x,z),0.05);}
 const OBST=[];
-function blocked(x,z){for(const o of OBST){const dx=x-o.x,dz=z-o.z;if(dx*dx+dz*dz<o.r*o.r)return true;}return false;}
+function blocked(x,z){for(const o of OBST){if(o.pass)continue;const dx=x-o.x,dz=z-o.z;if(dx*dx+dz*dz<o.r*o.r)return true;}return false;}
 function walkable(x,z){if(onStructure(x,z))return true;if(islandD(x,z)>1.15)return false;if(terrainH(x,z)<0.12)return false;return!blocked(x,z);}
 function isWater(x,z){return!onStructure(x,z)&&terrainH(x,z)<-0.05&&!inDockZone(x,z,0.1);}
 
@@ -1544,7 +1544,7 @@ function buildWorld(){
  const cg=glowSprite('#ff9a3c',5);cg.position.y=0.9;campfire.add(cg);campfire.userData={f1,f2,cg};
  campLight=new THREE.PointLight('#ff9a4a',0,18,2);campLight.position.set(PLAZA.x,2.4,PLAZA.z);scene.add(campLight);
  OBST.push({x:PLAZA.x,z:PLAZA.z,r:1.3});
- for(let i=0;i<4;i++){const a=i/4*Math.PI*2+Math.PI/4;const x=PLAZA.x+Math.cos(a)*3.4,z=PLAZA.z+Math.sin(a)*3.4;const l=addMesh(new THREE.CylinderGeometry(0.3,0.3,1.6,10),stdMat('#9a6a45',0.9),x,1.45,z);l.rotation.z=Math.PI/2;l.rotation.y=-a+Math.PI/2;OBST.push({x,z,r:0.7});}
+ for(let i=0;i<4;i++){const a=i/4*Math.PI*2+Math.PI/4;const x=PLAZA.x+Math.cos(a)*3.4,z=PLAZA.z+Math.sin(a)*3.4;const l=addMesh(new THREE.CylinderGeometry(0.3,0.3,1.6,10),stdMat('#9a6a45',0.9),x,1.45,z);l.rotation.z=Math.PI/2;l.rotation.y=-a+Math.PI/2;OBST.push({x,z,r:0.7,pass:1});}
  const bd=new THREE.Group();bd.position.set(PLAZA.x+6.2,1.2,PLAZA.z-3.5);bd.rotation.y=-0.9;scene.add(bd);
  for(const s of[-1,1])addMesh(new THREE.CylinderGeometry(0.07,0.07,1.9,6),stdMat('#6b4a33'),s*0.8,0.95,0,bd);
  addMesh(new THREE.BoxGeometry(1.9,1.1,0.1),stdMat('#b9875a'),0,1.35,0,bd);
@@ -3283,7 +3283,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12s';
+const BUILD='2026-11-12t';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
