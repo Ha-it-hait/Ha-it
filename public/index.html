@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12v">
+<meta name="amollang-build" content="2026-11-12w">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -2256,10 +2256,10 @@ function sendChat(){const inp=$('chatIn');const raw=inp.value;const text=cleanCh
  showBubble(P.label,text,false,10);P.hopT=t;sfx.pop();
  if(netMode==='ws'&&ws&&ws.readyState===1){ws.send(JSON.stringify({t:'c',m:text}));}
  else{chatSeq++;ME.cm=[chatSeq,text];ME.cl=[...(ME.cl||[]),[now,text]].slice(-5);markPresence();chatAdd({ts:now,pid:'me',name:nameOf(NAME),text,me:true});}}
-function onChatMsg(m){const me=m.id===wsMyId;const mk=checkNick(typeof m.nk==='string'?m.nk:'');const name=Array.isArray(m.n)?nameOf({a:m.n[0],b:m.n[1],nk:mk.ok?mk.nick:''}):'누군가';const text=String(m.m||'').slice(0,80);
+function onChatMsg(m){const me=m.id===wsMyId;const mk=checkNick(typeof m.nk==='string'?m.nk:'',1);const name=Array.isArray(m.n)?nameOf({a:m.n[0],b:m.n[1],nk:mk.ok?mk.nick:''}):'누군가';const text=String(m.m||'').slice(0,80);
  chatAdd({ts:+m.ts||Date.now(),pid:me?'me':String(m.id),name,text,me});
  if(me){showBubble(P.label,text,false,10);}else{const r=remote.get(String(m.id));if(r&&!mutedPeers.has(String(m.id))){showBubble(r.label,text,false,10);r.hopT=t;}}}
-function onChatHistory(list){if(!Array.isArray(list))return;for(const m of list){if(!m)continue;chatLog.push({ts:+m.ts||0,pid:'h'+m.ts,name:Array.isArray(m.n)?nameOf({a:m.n[0],b:m.n[1],nk:checkNick(typeof m.nk==='string'?m.nk:'').ok?m.nk.trim().replace(/\s+/g,' '):''}):'누군가',text:String(m.m||'').slice(0,80),me:false});}
+function onChatHistory(list){if(!Array.isArray(list))return;for(const m of list){if(!m)continue;chatLog.push({ts:+m.ts||0,pid:'h'+m.ts,name:Array.isArray(m.n)?nameOf({a:m.n[0],b:m.n[1],nk:checkNick(typeof m.nk==='string'?m.nk:'',1).ok?m.nk.trim().replace(/\s+/g,' '):''}):'누군가',text:String(m.m||'').slice(0,80),me:false});}
  chatLog.sort((a,b)=>a.ts-b.ts);const seen=new Set();chatLog=chatLog.filter(e=>{const k=e.ts+'|'+e.text;if(seen.has(k))return false;seen.add(k);return true;}).slice(-CHAT_KEEP);if(chatOpen)renderChat();}
 
 /* ---------- 다른 사람: 낚싯대·요리·채팅·프로필 (공통) ---------- */
@@ -3296,7 +3296,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12v';
+const BUILD='2026-11-12w';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3970,6 +3970,9 @@ function acBanner(){let el=$('acBar');const on=entered&&mode==='fish'&&!!acGet()
  $('release').addEventListener('click',mark('release'),true);$('toBag').addEventListener('click',mark('bag'),true);$('keep').addEventListener('click',mark('tank'),true);
  new MutationObserver(()=>{if(card.classList.contains('hidden')){if(acPend&&!fish){acSet(acPend);toast(`✅ 다음부터 낚시에 성공하면 자동으로 ${AC_LBL[acPend]} · 찌를 던지면 위쪽에서 이번만 바꿀 수 있어요`,4200);}acPend=null;}else{const b=acGet();$('acNote').textContent=b?`지금 자동 처리: ${AC_LBL[b]} (이번엔 직접 고르는 중)`:'';}}).observe(card,{attributes:true,attributeFilter:['class']});
 })();
+/* ---------- v52: 운영자 닉네임 ---------- */
+(function(){const of=window.fetch;window.fetch=function(u,o){try{if(opNickOK()&&typeof u==='string'&&u.startsWith('/api/')&&o&&typeof o.body==='string'&&o.body.includes('"name"')){const b=JSON.parse(o.body);if(b&&typeof b==='object'&&'name' in b){b.ot=_opk;o={...o,body:JSON.stringify(b)};}}}catch(e){}return arguments.length>1?of.call(window,u,o):of.call(window,u);};
+ if(opNickOK()&&location.protocol.startsWith('http'))setTimeout(()=>{of('/api/acct/op-check',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({ot:_opk})}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.ok&&!j.op){opDrop();toast('운영자 기기 인증이 맞지 않아 풀렸어요. 관리자 화면에서 다시 등록해 주세요',4200);}}).catch(()=>{});},1500);})();
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
@@ -4118,9 +4121,10 @@ async function connectRoom(){
 function startWS(n){wsIsland=n;roomState='connecting';updateHUD();
  const url=(location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws?island='+n;let sock;
  try{sock=new WebSocket(url);}catch(e){scheduleReconnect();return;}ws=sock;
- sock.onopen=()=>{wsBackoff=1000;};
+ sock.onopen=()=>{wsBackoff=1000;if(opNickOK()){try{sock.send(JSON.stringify({t:'op',k:_opk}));}catch(e){}}};
  sock.onmessage=ev=>{if(ev.data==='pong')return;let m;try{m=JSON.parse(ev.data);}catch(e){return;}
   if(m.t==='full'){sock.onclose=null;try{sock.close();}catch(e){}if(n<30)startWS(n+1);else{roomState='solo';updateHUD();toast('지금은 모든 섬이 꽉 찼어요. 잠시 후 다시 와 주세요');}return;}
+  if(m.t==='op'){if(!m.ok&&opNickOK()){opDrop();toast('운영자 기기 인증이 맞지 않아 풀렸어요. 관리자 화면에서 다시 등록해 주세요',4200);}return;}
   if(m.t==='welcome'){wsMyId=String(m.id||'');if(m.lg)setTimeout(()=>applyLegend(m.lg),900);onChatHistory(m.chat);wsPeers.clear();for(const q of(m.peers||[]))if(q&&q.id)wsPeers.set(String(q.id),q.p);roomState='online';roomSince=t;
    room={presence:p=>{if(sock.readyState===1)sock.send(JSON.stringify({t:'p',d:p}));return Promise.resolve();}};presLast=-9;markPresence();pushWsPeers();updateHUD();if(n>1)toast(`1번 섬이 꽉 차서 ${n}번 섬으로 왔어요`);return;}
   if(m.t==='p'&&m.id){wsPeers.set(String(m.id),m.p);wsPeerT.set(String(m.id),performance.now());pushWsPeers();return;}
@@ -4143,7 +4147,7 @@ function applyPeers(list){
   r.leaving=false;
   const lk=Array.isArray(pr.lk)?pr.lk:[0,0,0,0];r.look={hat:Math.abs(lk[0]|0)%7,hc:Math.abs(lk[1]|0)%COLORS.length,cloth:Math.abs(lk[2]|0)%5,cc:Math.abs(lk[3]|0)%COLORS.length};
   const key=[r.look.hat,r.look.hc,r.look.cloth,r.look.cc].join(',');if(key!==r.lookKey){if(r.char)scene.remove(r.char.root);r.char=makeCharacter(r.look);scene.add(r.char.root);r.lookKey=key;}
-  const n=Array.isArray(pr.n)?pr.n:[0,0];const nck=checkNick(typeof pr.nk==='string'?pr.nk:'');r.name=nameOf({a:n[0],b:n[1],nk:nck.ok?nck.nick:''});r.label.nm.textContent=r.name;
+  const n=Array.isArray(pr.n)?pr.n:[0,0];const nck=checkNick(typeof pr.nk==='string'?pr.nk:'',1);r.name=nameOf({a:n[0],b:n[1],nk:nck.ok?nck.nick:''});r.label.nm.textContent=r.name;
   const pp=Array.isArray(pr.p)?pr.p:[0,0,0,0];r.tx=num(pp[0],0,-120,120);r.tz=num(pp[1],0,-120,120);r.tyaw=num(pp[2],0,-50,50);r.tjy=num(pp[3],0,0,3);
   if(!r.init){r.pos.set(r.tx,groundY(r.tx,r.tz),r.tz);r.yaw=r.tyaw;r.init=true;}
   r.m=pr.m===1?1:0;const prev=r.st;r.st=['idle','cast','wait','bite','fight'].includes(pr.st)?pr.st:'idle';
@@ -4198,11 +4202,13 @@ function openCloset(first){if(mode==='fish')exitFish();mode='closet';$('closet')
 function updScrollHint(){const c=$('closet'),h=$('scrollHint');if(!h)return;h.classList.toggle('off',c.scrollTop+c.clientHeight>=c.scrollHeight-40);}
 $('closet').addEventListener('scroll',updScrollHint,{passive:true});window.addEventListener('resize',updScrollHint);
 function closeCloset(){$('closet').classList.add('hidden');mode='walk';setViewOffset();camYaw=P.yaw+Math.PI;refreshHint();refreshAct();}
-function checkNick(raw){let s=String(raw??'').replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u2064]/g,'').replace(/\s+/g,' ').trim();if(!s)return{ok:false,nick:'',err:''};
+var _opk;function opNickOK(){if(_opk===undefined){try{_opk=localStorage.getItem('monggeul-optok')||'';}catch(e){_opk='';}}return !!_opk;}
+function opDrop(){_opk='';try{localStorage.removeItem('monggeul-optok');}catch(e){}}
+function checkNick(raw,trust){let s=String(raw??'').replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u2064]/g,'').replace(/\s+/g,' ').trim();if(!s)return{ok:false,nick:'',err:''};
  const len=Array.from(s).length;if(len<2||len>10)return{ok:false,nick:s,err:'닉네임은 2~10자로 정해 주세요'};
  if(!/^[가-힣a-zA-Z0-9 _]+$/.test(s))return{ok:false,nick:s,err:'한글(완성된 글자)·영문·숫자·띄어쓰기·_ 만 쓸 수 있어요'};
- const low=s.toLowerCase().replace(/[\s_]/g,'');for(const w of['용왕','운영자','관리자','운영진','admin','gm','system','시스템','claude'])if(low.includes(w))return{ok:false,nick:s,err:`‘${w}’이(가) 들어간 닉네임은 쓸 수 없어요`};
- if(cleanChat(s)!==s)return{ok:false,nick:s,err:'쓸 수 없는 단어가 들어 있어요'};return{ok:true,nick:s,err:''};}
+ const low=s.toLowerCase().replace(/[\s_]/g,'');if(!(trust||opNickOK()))for(const w of['용왕','운영자','관리자','운영진','admin','gm','system','시스템','claude'])if(low.includes(w))return{ok:false,nick:s,err:`‘${w}’이(가) 들어간 닉네임은 쓸 수 없어요`};
+ if(!(trust||opNickOK())&&cleanChat(s)!==s)return{ok:false,nick:s,err:'쓸 수 없는 단어가 들어 있어요'};return{ok:true,nick:s,err:''};}
 function nickMsg(t,cls){const m=$('nickMsg');m.textContent=t;m.className='nickmsg'+(cls?' '+cls:'');}
 function saveNick(){const ck=checkNick($('nickIn').value);if(!ck.ok){nickMsg(ck.err||'닉네임을 입력해 주세요','bad');return;}
  NAME={a:NAME.a,b:NAME.b,nk:ck.nick};saveMe();$('myName').textContent=nameOf(NAME);P.label.nm.textContent=nameOf(NAME);markPresence();sfx.pop();$('nickIn').value='';$('nickIn').blur();nickMsg(`‘${ck.nick}’(으)로 정했어요! 머리 위와 채팅에 이 이름이 보여요`,'good');}

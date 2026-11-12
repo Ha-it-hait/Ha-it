@@ -56,19 +56,31 @@ function cleanBoard(s) {
 
 // 직접 정한 닉네임 검사 (2~10자, 한글·영문·숫자·띄어쓰기·_, 금지어 없음). 통과 못 하면 '' → 랜덤 이름으로 보인다
 const NICK_BAN = ['용왕', '운영자', '관리자', '운영진', 'admin', 'gm', 'system', '시스템', 'claude'];
-function cleanNick(v) {
+// 운영자 기기 토큰: ADMIN_KEY로 만든 서명값(키 자체는 기기에 남기지 않아요). 이 토큰이 맞으면 금지어(운영자 등)가 든 닉네임도 쓸 수 있어요
+const _opTok = new Map();
+async function opToken(env) {
+  const key = env && env.ADMIN_KEY ? String(env.ADMIN_KEY) : '';
+  if (!key) return '';
+  if (_opTok.has(key)) return _opTok.get(key);
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(key), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const sig = new Uint8Array(await crypto.subtle.sign('HMAC', k, new TextEncoder().encode('amollang-op-nick-v1')));
+  const tok = Array.from(sig, b => b.toString(16).padStart(2, '0')).join('').slice(0, 40);
+  _opTok.set(key, tok); return tok;
+}
+async function isOp(env, t) { if (typeof t !== 'string' || t.length !== 40) return false; const tok = await opToken(env); return !!tok && sameStr(t, tok); }
+function cleanNick(v, op) {
   if (typeof v !== 'string') return '';
   const s = v.replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u2064]/g, '').replace(/\s+/g, ' ').trim();
   const len = Array.from(s).length;
   if (len < 2 || len > 10 || !/^[가-힣a-zA-Z0-9 _]+$/.test(s)) return '';
   const low = s.toLowerCase().replace(/[\s_]/g, '');
-  if (NICK_BAN.some(w => low.includes(w))) return '';
-  if (cleanChat(s) !== s) return '';
+  if (!op && NICK_BAN.some(w => low.includes(w))) return '';
+  if (!op && cleanChat(s) !== s) return '';
   return s;
 }
 
 // 받은 상태값을 알려진 필드·범위로만 다시 만든다 (악성 입력 차단)
-function sanitize(d) {
+function sanitize(d, op) {
   if (!d || typeof d !== 'object') return null;
   const p = arr(d.p, 4); if (!p) return null;
   const n = arr(d.n, 2) || [0, 0], lk = arr(d.lk, 4) || [0, 0, 0, 0], f = arr(d.f, 2) || [0, 0];
@@ -76,7 +88,7 @@ function sanitize(d) {
   return {
     v: 3,
     n: [idx(n[0], N_ADJ), idx(n[1], N_NOUN)],
-    nk: cleanNick(d.nk),
+    nk: cleanNick(d.nk, op),
     lk: [idx(lk[0], 7), idx(lk[1], 12), idx(lk[2], 5), idx(lk[3], 12)],
     p: [r2(num(p[0], -120, 120, 0)), r2(num(p[1], -120, 120, 0)), r2(num(p[2], -50, 50, 0)), r2(num(p[3], 0, 3, 0))],
     m: d.m === 1 ? 1 : 0,
@@ -152,7 +164,7 @@ export class Island extends DurableObject {
     }
     this.ctx.acceptWebSocket(server);
     const id = crypto.randomUUID().replace(/-/g, '').slice(0, 10);
-    server.serializeAttachment({ id, p: null, sec: 0, cnt: 0, lc: 0, t0: Date.now() });
+    server.serializeAttachment({ id, p: null, sec: 0, cnt: 0, lc: 0, t0: Date.now(), ot: await opToken(this.env) });
     const peers = [];
     for (const w of live) { const a = w.deserializeAttachment(); if (a && a.p) peers.push({ id: a.id, p: a.p }); }
     const lgLeft = lgNow && lgNow.until > Date.now() ? lgNow.until - Date.now() : 0;
@@ -169,8 +181,13 @@ export class Island extends DurableObject {
     if (++a.cnt > MAX_RATE) { ws.serializeAttachment(a); return; }
     let m; try { m = JSON.parse(msg); } catch { ws.serializeAttachment(a); return; }
     if (!m || typeof m !== 'object') { ws.serializeAttachment(a); return; }
+    if (m.t === 'op') {
+      a.op = !!(a.ot && typeof m.k === 'string' && sameStr(m.k, a.ot)); ws.serializeAttachment(a);
+      try { ws.send(JSON.stringify({ t: 'op', ok: a.op })); } catch {}
+      return;
+    }
     if (m.t === 'p') {
-      const p = sanitize(m.d);
+      const p = sanitize(m.d, !!a.op);
       if (p) {
         // 같은 화면(sd)이 다시 연결됐다면, 남아 있던 예전 연결(유령)을 정리
         if (p.sd && a.sd !== p.sd) {
@@ -426,6 +443,8 @@ export class Vault extends DurableObject {
     try { const text = await request.text(); if (text.length > SAVE_MAX + 2000) return J({ error: '데이터가 너무 커요' }, 413); body = text ? JSON.parse(text) : {}; } catch { return J({ error: '잘못된 요청' }, 400); }
     const now = Date.now();
     const ip = request.headers.get('x-ip') || '';
+    const opNick = body && body.ot ? await isOp(this.env, body.ot) : false;
+    if (op === 'op-check') return J({ ok: true, op: opNick });
 
     if (op === 'hof-list') {
       return J({ ok: true, list: this.hofCached(now), top: this.topCached(now), lg: this.legendNow(now) });
@@ -441,7 +460,7 @@ export class Vault extends DurableObject {
       const last = this.lgByIp.get(ipKey) || (await this.ctx.storage.get(ipK)) || 0;
       if (now - last < 5 * 60 * 1000) return J({ ok: true, lg: this.legendNow(now), skipped: true });
       this.lgByIp.set(ipKey, now); await this.ctx.storage.put(ipK, now);
-      const lg = { n: cleanNick(body.name) || '익명의 낚시꾼', id, s: sz, ts: now, until: now + LEGEND_MS };
+      const lg = { n: cleanNick(body.name, opNick) || '익명의 낚시꾼', id, s: sz, ts: now, until: now + LEGEND_MS };
       this._lg = lg; await this.ctx.storage.put('legend', lg);
       return J({ ok: true, lg: this.legendNow(now), fan: lg });
     }
@@ -455,7 +474,7 @@ export class Vault extends DurableObject {
       const list = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
       if (list.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
       list.push(now); this.hofByIp.set(ipKey, list);
-      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const name = cleanNick(body.name, opNick) || '익명의 낚시꾼';
       const row = this.sql.exec('SELECT s, n, ts FROM hof WHERE id = ?', id).toArray()[0];
       if (row && row.s >= sz) return J({ ok: true, top: false, rec: { s: row.s, n: row.n, ts: row.ts } });
       this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip) VALUES (?, ?, ?, ?, ?)', id, sz, name, now, ipKey);
@@ -469,7 +488,7 @@ export class Vault extends DurableObject {
       const lst = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
       if (lst.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
       lst.push(now); this.hofByIp.set(ipKey, lst);
-      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const name = cleanNick(body.name, opNick) || '익명의 낚시꾼';
       const won = [], recs = [];
       for (const it of items) {
         const id = String(it && it.id || ''); const mx = SPECIES_MAX[id]; if (!mx) continue;
@@ -493,7 +512,7 @@ export class Vault extends DurableObject {
       const lst = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
       if (lst.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
       lst.push(now); this.hofByIp.set(ipKey, lst);
-      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const name = cleanNick(body.name, opNick) || '익명의 낚시꾼';
       const row = this.sql.exec('SELECT c FROM collectors WHERE k = ?', k).toArray()[0];
       if (!row) this.sql.exec('INSERT INTO collectors(k, n, c, ts, ip) VALUES (?, ?, ?, ?, ?)', k, name, c, now, ipKey);
       else if (c > row.c) this.sql.exec('UPDATE collectors SET n = ?, c = ?, ts = ?, ip = ? WHERE k = ?', name, c, now, ipKey, k);
@@ -509,7 +528,7 @@ export class Vault extends DurableObject {
     if (op === 'board-post') {
       const text = cleanBoard(body.text);
       if (Array.from(text).length < 2) return J({ error: '두 글자 이상 적어 주세요' }, 400);
-      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const name = cleanNick(body.name, opNick) || '익명의 낚시꾼';
       const ipKey = ip.slice(0, 64);
       const last = this.sql.exec('SELECT MAX(ts) AS t, COUNT(*) AS n FROM board WHERE ip = ? AND ts > ?', ipKey, now - 86400e3).toArray()[0];
       if (last && last.t && now - last.t < 20e3) return J({ error: '조금 천천히 남겨 주세요 (20초에 1개)' }, 429);
@@ -593,6 +612,7 @@ export class Vault extends DurableObject {
       if (fails.length >= 10) return J({ error: '관리자 키를 너무 많이 틀렸어요. 1시간 뒤에 다시 해 주세요' }, 429);
       const okKey = this.env.ADMIN_KEY && typeof body.admin === 'string' && sameStr(body.admin, String(this.env.ADMIN_KEY));
       if (!okKey) { fails.push(now); this.adminFail.set(ipKey, fails); return J({ error: this.env.ADMIN_KEY ? '관리자 키가 맞지 않아요' : '서버에 ADMIN_KEY가 설정되어 있지 않아요' }, 403); }
+      if (op === 'admin-optok') return J({ ok: true, tok: await opToken(this.env) });
       const uid = String(body.id ?? '').trim().toLowerCase();
       const row = this.sql.exec('SELECT id, data, rev, created, updated FROM users WHERE id = ?', uid).toArray()[0];
       if (!row) return J({ error: '없는 아이디예요' }, 404);
@@ -705,7 +725,7 @@ export default {
     if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
       const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
       const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear', 'admin-gift', 'admin-gifts'].includes(op)) return J({ error: 'not found' }, 404);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend', 'hof-sync', 'admin-user', 'admin-optok', 'op-check', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear', 'admin-gift', 'admin-gifts'].includes(op)) return J({ error: 'not found' }, 404);
       if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {
