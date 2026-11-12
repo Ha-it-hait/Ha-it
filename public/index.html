@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12g">
+<meta name="amollang-build" content="2026-11-12h">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑 낚시 게임</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -268,6 +268,11 @@ body.cine .boatbadge{opacity:0}
 .irow canvas{width:84px;height:50px;flex:none;border-radius:10px;background:#eef5f7}
 .irow.rod canvas{width:100px;height:60px;background:linear-gradient(#eef5f7,#dfeaf0)}
 .irow.pack canvas{width:96px;height:70px;background:linear-gradient(#fff8ec,#f3e6cf)}.irow.pack.p1{background:linear-gradient(90deg,#eaf6ff,#fff)}.irow.pack.p1 canvas{background:linear-gradient(#e6f5ff,#cfe8f8)}.irow.pack.p2{background:linear-gradient(90deg,#fff3f8,#fffbea);border-color:#f2c14e}.irow.pack.p2 canvas{background:linear-gradient(#fdf6ff,#fbe9f1)}.irow.pack.on{border-color:#4cc38a}
+.lgc{background:linear-gradient(135deg,#2a2152,#46307a 60%,#2f4f8a);color:#fff;border-radius:16px;padding:12px 14px 10px;margin:6px 0 12px;box-shadow:0 4px 14px rgba(40,20,90,.25)}
+.lgh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.lgh span{font-weight:900;font-size:15px}.lgh b{font-size:26px;font-weight:900;background:linear-gradient(90deg,#ff7a7a,#ffd24d,#7dff9a,#6fc8ff,#c48bff);-webkit-background-clip:text;background-clip:text;color:transparent}.lgh em{font-style:normal;font-weight:800;font-size:13px;background:rgba(255,255,255,.16);border-radius:10px;padding:2px 8px;margin-left:auto}
+.lgbar{position:relative;height:14px;border-radius:9px;background:rgba(255,255,255,.16);margin:8px 0 14px;overflow:visible}.lgbar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#ff5e5e,#ffb84d,#ffe55c,#5fe08a,#4db8ff,#7a6bff,#c06bff,#ff5e5e);background-size:200% 100%;animation:lgsh 4s linear infinite;box-shadow:0 0 10px rgba(255,230,140,.55)}
+.lgbar s{position:absolute;top:-2px;bottom:-2px;width:2px;background:rgba(255,255,255,.7);border-radius:2px}.lgbar u{position:absolute;top:15px;transform:translateX(-50%);font-size:10.5px;text-decoration:none;opacity:.8}.lgbar u:last-child{transform:translateX(-100%)}
+@keyframes lgsh{to{background-position:-200% 0}}.lgs{font-size:12.5px;line-height:1.55;margin-top:3px}.lgs.dim{opacity:.82}.lgs b{color:#ffe58a}.lgon{color:#9effc0!important}.lgw{color:#ffb3a8;font-weight:800}
 .irow.flt canvas{width:96px;height:70px;background:linear-gradient(#e8f6ff,#cfe6f5);border-radius:10px}.irow.flt.f1{background:linear-gradient(90deg,#eef5fb,#fff)}.irow.flt.f2{background:linear-gradient(90deg,#fff8e6,#fff);border-color:#f2c14e}.irow.flt.on{border-color:#4cc38a}.irow .itx small.ftag{color:#2a5d8a;line-height:1.5}.irow .itx small.foff{color:#c0392b;font-weight:800}
 @media (max-width:520px){.irow.flt canvas{width:70px;height:52px}}.irow .itx small.cap{color:#2f7a52;font-weight:800}
 @media (max-width:520px){.irow.pack canvas{width:70px;height:52px}}
@@ -508,6 +513,7 @@ body.cine .boatbadge{opacity:0}
   <div class="card book">
     <div class="bhead"><b>도감</b><span id="bookCount"></span><button class="x" id="bookX">✕</button></div>
     <p class="bsub">바다·강·연못마다, 시간대와 던지는 거리마다 나오는 물고기가 달라요. ❓ 도움말에서 시간대를 바꿔볼 수 있어요.</p>
+    <div id="legCard"></div>
     <div id="bookGuide"></div>
     <div id="grid"></div>
   </div>
@@ -944,7 +950,7 @@ function showCatch(f,rec){
  const L=fishL(f.sp,470,125);drawFish(cc,f.sp,c.width/2+(f.sp.shape==='beak'?24:0),c.height/2,L,false);
  $('catch').classList.remove('hidden');
 }
-function openBook(){const root=$('grid');root.innerHTML='';let found=0;$('bookGuide').innerHTML=bookGuideHTML();const E=effStar();
+function openBook(){renderLegCard();const root=$('grid');root.innerHTML='';let found=0;$('bookGuide').innerHTML=bookGuideHTML();const E=effStar();
  [['🐟 바다 물고기','sea'],['🦀 바다 친구들','critter'],['🦈 상어','shark'],['🐠 열대어','tropical'],['🏞️ 강·연못','fresh'],['✨ 신화의 친구들 (★6)','myth'],['🌈 무지개 전설 (★7)','rainbow']].forEach(([title,grp])=>{const list=SPECIES.filter(s=>s.grp===grp);const tt=document.createElement('div');tt.className='btitle';tt.textContent=`${title}  ${list.filter(s=>book[s.id]).length}/${list.length}`;const grid=document.createElement('div');grid.className='grid';
   list.forEach(sp=>{const rec=book[sp.id];if(rec)found++;const cell=document.createElement('div');cell.className='cell'+(rec?'':' locked');
    const c=document.createElement('canvas');c.width=240;c.height=112;cell.appendChild(c);
@@ -2541,9 +2547,12 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-12g';
+const NEWS_VER='2026-11-12h';
 const NEWS=[
- {d:'11월 12일',t:'🛠️ 물고기 기록 오류 고쳤어요',n:true,i:[
+ {d:'11월 12일',t:'💫 도감에서 전설의 기운이 잘 보여요',n:true,i:[
+  '📖 도감 맨 위에 <b>전설의 기운 게이지</b>가 생겼어요. 지금 몇 %인지, ★7 확률이 몇 배인지, 지금 내 ★7 확률이 얼마인지 한눈에 보여요.',
+  '🌦️ 다음 무지개까지 남은 시간과 무지개 이벤트 남은 시간도 함께 보여요.']},
+ {d:'11월 12일',t:'🛠️ 물고기 기록 오류 고쳤어요',i:[
   '📱💻 휴대폰과 PC를 오가며 하면 <b>이미 판 물고기가 가방에 다시 생기던 문제</b>를 고쳤어요.',
   '🕰️ 오래 켜 둔 예전 버전 화면이 저장하면서 지난 가방을 되살리던 문제도 막았어요. 화면 위에 🆕 새 버전 안내가 뜨면 꼭 눌러 주세요.',
   '🙏 혹시 내 것이 아닌 물고기가 있거나 사라진 물고기가 있으면 게시판에 아이디와 함께 알려 주세요. 기록을 확인해서 바로잡아 드릴게요.']},
@@ -3192,7 +3201,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12g';
+const BUILD='2026-11-12h';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[]};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3515,6 +3524,18 @@ function updFloat(f,x,z,sink,dip){updFloat0(f,x,z,sink,dip);
   U.lampMat.emissiveIntensity=(0.8+1.6*night)*blink;for(const m of U.beamMats)m.opacity=(0.2+0.4*night)*blink;U.glow.material.opacity=(0.35+0.5*night)*blink;U.pool.material.opacity=(0.1+0.25*night)*(0.8+0.2*Math.sin(t*2.2))*blink;
   for(const sp of U.sparks){const q=sp.userData;const a=q.a+t*0.35;sp.position.set(Math.cos(a)*q.r,q.y+0.02*Math.sin(t*1.3+q.ph),Math.sin(a)*q.r);
    const tw=Math.max(0,Math.sin(t*q.sp*2.2+q.ph));const k=tw*tw*tw;sp.material.opacity=k*(0.55+0.35*night)*(bite?1.3:1);const z=q.sz*(0.6+0.6*k);sp.scale.set(z,z,1);}}}
+/* ---------- v37: 도감 맨 위 '전설의 기운' 카드 ---------- */
+function legCardHTML(){const g=legGauge(),pm=legPity(),E=effStar(),F=floatOn(),rb=rainbowOn(),fm=F?F.leg:1,rf=E>=7?1:0.4;
+ const mult=rb?4:pm;const pc=x=>{const v=x*100;return v>=1?v.toFixed(1)+'%':v.toFixed(2)+'%';};
+ const boat=LEG_BASE*mult*rf*fm,shore=LEG_BASE*0.5*mult*rf*fm;const casts=LEG.n|0,full=LEG_PITY*2;
+ const st=rb?`<b class="lgon">🌈 무지개 이벤트 중!</b> 지금은 기운 대신 <b>★7 4배</b> · ${mmss(rainbowLeftMs())} 남음`:`🌦️ 다음 무지개까지 <b>${mmss(rainbowLeftMs())}</b> (뜨면 기운 대신 4배)`;
+ return`<div class="lgc"><div class="lgh"><span>💫 전설의 기운</span><b>${g}%</b><em>기운 효과 ★7 ×${pm.toFixed(1)}${rb?' (무지개 끝나면)':''}${fm>1?` · 🎯찌 ×${fm}`:''}</em></div>
+ <div class="lgbar"><i style="width:${Math.max(2,g)}%"></i><s style="left:50%"></s><u style="left:50%">×2</u><u style="left:100%">×3</u></div>
+ <div class="lgs">${st}</div>
+ <div class="lgs">🎣 지금 ★7 확률(물고기가 걸릴 때마다): 배 타고 먼 바다 <b>${pc(boat)}</b> · 해안 먼 바다·강·연못 끝 <b>${pc(shore)}</b></div>
+ <div class="lgs dim">★6 이상 낚싯대로 <b>멀리 던져 물고기가 걸릴 때마다</b> 쌓여요 (${fmtM(Math.min(casts,full))} / ${fmtM(full)}번 · 최대 ×3). ★7을 낚으면 0으로 돌아가요.${E<6?'<br><span class="lgw">⚠ 지금 낚싯대로는 기운이 쌓이지 않아요 (★6 이상 필요)</span>':''}${E<7?' ★6 낚싯대는 ★7 확률이 0.4배예요.':''}</div></div>`;}
+function renderLegCard(){const el=$('legCard');if(el)el.innerHTML=legCardHTML();}
+setInterval(()=>{if(!$('book').classList.contains('hidden'))renderLegCard();},1000);
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
