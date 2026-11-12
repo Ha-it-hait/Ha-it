@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-13g">
+<meta name="amollang-build" content="2026-11-13h">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -1566,10 +1566,10 @@ function buildWorld(){
  OBST.push({x:PLAZA.x,z:PLAZA.z,r:1.3});
  for(let i=0;i<4;i++){const a=i/4*Math.PI*2+Math.PI/4;const x=PLAZA.x+Math.cos(a)*3.4,z=PLAZA.z+Math.sin(a)*3.4;const l=addMesh(new THREE.CylinderGeometry(0.3,0.3,1.6,10),stdMat('#9a6a45',0.9),x,1.45,z);l.rotation.z=Math.PI/2;l.rotation.y=-a+Math.PI/2;OBST.push({x,z,r:0.7,pass:1});}
  const bd=new THREE.Group();bd.position.set(PLAZA.x+6.2,1.2,PLAZA.z-3.5);bd.rotation.y=-0.9;scene.add(bd);
- for(const s of[-1,1])addMesh(new THREE.CylinderGeometry(0.07,0.07,1.9,6),stdMat('#6b4a33'),s*0.8,0.95,0,bd);
- addMesh(new THREE.BoxGeometry(1.9,1.1,0.1),stdMat('#b9875a'),0,1.35,0,bd);
- const note=canvasTex(256,140,(x,w,h)=>{x.fillStyle='#fffdf3';x.fillRect(0,0,w,h);x.fillStyle='#5a4a33';x.font='bold 26px "AmoEmoji",sans-serif';x.textAlign='center';x.fillText('아몰랑아일랜드 게시판',w/2,44);x.font='bold 21px "AmoEmoji",sans-serif';x.fillStyle='#c0392b';x.fillText('게임 업데이트 요청사항',w/2,88);x.fillText('적어주세요 ✍️',w/2,120);});
- addMesh(new THREE.PlaneGeometry(1.6,0.85),new THREE.MeshStandardMaterial({map:note,roughness:0.9,emissive:'#ffffff',emissiveMap:note,emissiveIntensity:0.12}),0,1.36,0.06,bd);BOARD_G=bd;bd.traverse(o=>{o.userData.pick='board';});OBST.push({x:PLAZA.x+6.2,z:PLAZA.z-3.5,r:1.0});
+ for(const s of[-1,1])addMesh(new THREE.CylinderGeometry(0.08,0.08,2.2,6),stdMat('#6b4a33'),s*1.15,1.1,0,bd);
+ addMesh(new THREE.BoxGeometry(2.6,1.45,0.1),stdMat('#b9875a'),0,1.5,0,bd);
+ const note=canvasTex(512,256,(x,w,h)=>{x.fillStyle='#fffdf3';x.fillRect(0,0,w,h);x.textAlign='center';x.textBaseline='middle';const fit=(txt,px,y)=>{let p=px;do{x.font=`900 ${p}px "AmoEmoji","Noto Sans KR",sans-serif`;p-=2;}while(x.measureText(txt).width>w-48&&p>16);x.fillText(txt,w/2,y);};x.fillStyle='#5a4a33';fit('아몰랑아일랜드 게시판',52,64);x.fillStyle='#c0392b';fit('게임 업데이트 요청사항',42,148);fit('적어주세요 ✍️',42,206);});
+ addMesh(new THREE.PlaneGeometry(2.36,1.18),new THREE.MeshStandardMaterial({map:note,roughness:0.9,emissive:'#ffffff',emissiveMap:note,emissiveIntensity:0.12}),0,1.5,0.06,bd);BOARD_G=bd;bd.traverse(o=>{o.userData.pick='board';});OBST.push({x:PLAZA.x+6.2,z:PLAZA.z-3.5,r:1.0});
  // lighthouse on hill
  const lh=new THREE.Group();const lx=HILL.x,lz=HILL.z-1.5;lh.position.set(lx,terrainH(lx,lz)-0.1,lz);scene.add(lh);
  for(let i=0;i<5;i++){const r0=1.25-i*0.11,r1=1.25-(i+1)*0.11;addMesh(new THREE.CylinderGeometry(r1,r0,1.3,20),stdMat(i%2?'#ffffff':'#e8524a',0.6),0,0.65+i*1.3,0,lh);}
@@ -2001,13 +2001,13 @@ function buildShop(){SHOP.yaw=Math.atan2(PLAZA.x-SHOP.x,PLAZA.z-SHOP.z);const gy
  const pb=[];const P_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>pb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
  const box=new THREE.BoxGeometry(1,1,1),cyl=new THREE.CylinderGeometry(1,1,1,14),cone4=new THREE.ConeGeometry(1,1,4),sph=new THREE.SphereGeometry(1,14,10),cone=new THREE.ConeGeometry(1,1,8);
  P_(box,'#b7b0a4',0,0.18,0,0,0,0,4.8,0.42,3.6);P_(box,'#a39c90',0,0.09,2.05,0,0,0,2.2,0.2,0.6);P_(box,'#a8743f',0,0.42,0,0,0,0,4.4,0.08,3.2);
- for(const sx of[-1,1])for(const sz of[-1,1]){P_(cyl,'#c8322f',sx*2.0,1.6,sz*1.38,0,0,0,0.14,2.3,0.14);P_(cyl,'#e8b84a',sx*2.0,0.52,sz*1.38,0,0,0,0.19,0.14,0.19);P_(cyl,'#e8b84a',sx*2.0,2.72,sz*1.38,0,0,0,0.17,0.1,0.17);}
- for(const sz of[-1,1])P_(box,'#c8322f',0,2.78,sz*1.38,0,0,0,4.3,0.22,0.2);for(const sx of[-1,1])P_(box,'#c8322f',sx*2.0,2.78,0,0,0,0,0.2,0.22,2.9);
- P_(box,'#2f9a86',0,2.98,0,0,0,0,4.7,0.2,3.3);for(let i=0;i<9;i++)P_(box,i%2?'#f2c14e':'#e2554f',-2.0+i*0.5,2.98,1.66,0,0,0,0.22,0.12,0.02);
- P_(box,'#1f4f7a',0,3.12,0,0,0,0,5.6,0.14,4.3);
- P_(cone4,'#2d6aa0',0,3.85,0,0,Math.PI/4,0,4.0,1.45,3.0);P_(cone4,'#3f86c2',0,3.83,0,0,Math.PI/4,0,3.86,1.36,2.86);
- for(const sx of[-1,1])for(const sz of[-1,1]){P_(cone,'#f2c14e',sx*2.75,3.28,sz*2.1,sz*0.5,0,-sx*0.5,0.09,0.4,0.09);}
- P_(box,'#1f4f7a',0,4.52,0,0,0,0,1.0,0.12,0.18);
+ for(const sx of[-1,1])for(const sz of[-1,1]){P_(cyl,'#c8322f',sx*2.0,2.235,sz*1.38,0,0,0,0.14,3.57,0.14);P_(cyl,'#e8b84a',sx*2.0,0.52,sz*1.38,0,0,0,0.19,0.14,0.19);P_(cyl,'#e8b84a',sx*2.0,4.02,sz*1.38,0,0,0,0.17,0.1,0.17);}
+ for(const sz of[-1,1])P_(box,'#c8322f',0,4.08,sz*1.38,0,0,0,4.3,0.22,0.2);for(const sx of[-1,1])P_(box,'#c8322f',sx*2.0,4.08,0,0,0,0,0.2,0.22,2.9);
+ P_(box,'#2f9a86',0,4.28,0,0,0,0,4.7,0.2,3.3);for(let i=0;i<9;i++)P_(box,i%2?'#f2c14e':'#e2554f',-2.0+i*0.5,4.28,1.66,0,0,0,0.22,0.12,0.02);
+ P_(box,'#1f4f7a',0,4.42,0,0,0,0,5.6,0.14,4.3);
+ P_(cone4,'#2d6aa0',0,5.15,0,0,Math.PI/4,0,4.0,1.45,3.0);P_(cone4,'#3f86c2',0,5.13,0,0,Math.PI/4,0,3.86,1.36,2.86);
+ for(const sx of[-1,1])for(const sz of[-1,1]){P_(cone,'#f2c14e',sx*2.75,4.58,sz*2.1,sz*0.5,0,-sx*0.5,0.09,0.4,0.09);}
+ P_(box,'#1f4f7a',0,5.82,0,0,0,0,1.0,0.12,0.18);
  P_(box,'#7b4a2a',0,0.95,0.78,0,0,0,3.3,1.0,0.62);P_(box,'#c89b5c',0,1.47,0.78,0,0,0,3.45,0.08,0.75);P_(box,'#f2c14e',0,1.0,1.1,0,0,0,3.3,0.08,0.02);
  P_(box,'#7b4a2a',0,1.15,-1.2,0,0,0,3.4,1.4,0.2);
  for(let i=0;i<4;i++){const col=[RODS[2].c1,RODS[3].c1,RODS[4].c1,RODS[5].c1][i];P_(cyl,col,-1.2+i*0.8,1.45,-1.05,0.18,0,0,0.025,2.0,0.025);}
@@ -2018,16 +2018,16 @@ function buildShop(){SHOP.yaw=Math.atan2(PLAZA.x-SHOP.x,PLAZA.z-SHOP.z);const gy
  P_(sph,'#f7e9d7',1.35,1.58,0.78,0,0,0,0.3,0.12,0.24);P_(sph,'#e8d4bd',1.35,1.7,0.6,-0.9,0,0,0.3,0.06,0.24);
  const m=new THREE.Mesh(mergeGeometries(pb),VCMAT);m.castShadow=true;m.receiveShadow=true;g.add(m);
  const pearlM=new THREE.MeshStandardMaterial({color:'#fff6e0',emissive:'#ffd88a',emissiveIntensity:0.5,roughness:0.15});NIGHT_EMISSIVE.push([pearlM,1.6]);
- addMesh(new THREE.SphereGeometry(0.3,20,14),pearlM,0,4.85,0,g);const pg=glowSprite('#ffe08a',2.2);pg.position.set(0,4.85,0);g.add(pg);
+ addMesh(new THREE.SphereGeometry(0.3,20,14),pearlM,0,6.15,0,g);const pg=glowSprite('#ffe08a',2.2);pg.position.set(0,6.15,0);g.add(pg);
  addMesh(new THREE.SphereGeometry(0.09,14,10),pearlM,1.35,1.68,0.82,g);
  const lanM=new THREE.MeshStandardMaterial({color:'#ff5a4f',emissive:'#ff7a3c',emissiveIntensity:0.3,roughness:0.5});NIGHT_EMISSIVE.push([lanM,2.2]);const lgs=[pg];
- for(const sx of[-1,1]){addMesh(new THREE.CylinderGeometry(0.01,0.01,0.3,4),stdMat('#333'),sx*2.0,2.5,1.62,g);const l=addMesh(new THREE.SphereGeometry(0.18,14,10),lanM,sx*2.0,2.25,1.62,g);l.scale.y=1.25;const lg=glowSprite('#ff9a5a',1.4);lg.position.set(sx*2.0,2.25,1.62);g.add(lg);lgs.push(lg);}
+ for(const sx of[-1,1]){addMesh(new THREE.CylinderGeometry(0.01,0.01,0.3,4),stdMat('#333'),sx*2.0,3.25,1.62,g);const l=addMesh(new THREE.SphereGeometry(0.2,14,10),lanM,sx*2.0,3.0,1.62,g);l.scale.y=1.25;const lg=glowSprite('#ff9a5a',1.5);lg.position.set(sx*2.0,3.0,1.62);g.add(lg);lgs.push(lg);}
  const sign=canvasTex(512,128,(x,w,h)=>{const gr=x.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#2a1f5e');gr.addColorStop(1,'#14103a');x.fillStyle=gr;x.fillRect(0,0,w,h);x.strokeStyle='#f2c14e';x.lineWidth=12;x.strokeRect(6,6,w-12,h-12);x.fillStyle='#ffe29a';x.font='900 66px "AmoEmoji","Noto Sans KR",sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('🐉 용왕님 상점',w/2,h/2+4);});
- addMesh(new THREE.PlaneGeometry(2.3,0.58),new THREE.MeshStandardMaterial({map:sign,roughness:0.6,emissive:'#ffffff',emissiveMap:sign,emissiveIntensity:0.25}),0,3.02,1.69,g);
+ {const sg=new THREE.Group();sg.position.set(0,4.98,1.95);sg.rotation.x=-0.3;g.add(sg);addMesh(new THREE.BoxGeometry(3.3,0.9,0.1),stdMat('#7a4a1e',0.6),0,0,0,sg);addMesh(new THREE.BoxGeometry(3.42,0.08,0.14),stdMat('#f2c14e',0.4),0,0.47,0,sg);addMesh(new THREE.BoxGeometry(3.42,0.08,0.14),stdMat('#f2c14e',0.4),0,-0.47,0,sg);addMesh(new THREE.PlaneGeometry(3.1,0.77),new THREE.MeshStandardMaterial({map:sign,roughness:0.6,emissive:'#ffffff',emissiveMap:sign,emissiveIntensity:0.3}),0,0,0.055,sg);}
  g.userData={lgs,pick:'shop'};g.traverse(o=>{o.userData.pick='shop';});
  // 용왕님
- const npc=new THREE.Group();npc.position.set(0,0.45,-0.25);npc.scale.setScalar(1.08);g.add(npc);SHOP.npc=npc;const nb=[];const N_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>nb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
- N_(cyl,'#c0392b',0,0.75,0,0,0,0,0.42,1.1,0.38);N_(sph,'#c0392b',0,1.3,0,0,0,0,0.44,0.3,0.4);N_(new THREE.TorusGeometry(0.43,0.06,8,20),'#f2c14e',0,0.95,0,Math.PI/2,0,0,1,1,0.9);
+ const npc=new THREE.Group();npc.position.set(0,0.45,-0.35);npc.scale.set(1.62,1.5,1.62);g.add(npc);SHOP.npc=npc;const nb=[];const N_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>nb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
+ N_(cyl,'#c0392b',0,0.75,0,0,0,0,0.48,1.1,0.44);N_(sph,'#c0392b',0,1.3,0,0,0,0,0.52,0.32,0.46);for(const s of[-1,1])N_(sph,'#f2c14e',s*0.5,1.38,0,0,0,0,0.2,0.13,0.2);N_(sph,'#d9473c',0,0.95,0.12,0,0,0,0.5,0.42,0.38);N_(new THREE.TorusGeometry(0.43,0.06,8,20),'#f2c14e',0,0.95,0,Math.PI/2,0,0,1,1,0.9);
  N_(box,'#f2c14e',0,1.2,0.36,0,0,0,0.12,0.5,0.04);for(const s of[-1,1]){N_(cyl,'#c0392b',s*0.42,1.05,0.18,0.9,0,s*0.3,0.11,0.55,0.11);N_(sph,'#5cc7a5',s*0.38,1.0,0.48,0,0,0,0.1,0.1,0.1);}
  const body=new THREE.Mesh(mergeGeometries(nb),VCMAT);body.castShadow=true;npc.add(body);
  const head=new THREE.Group();head.position.set(0,1.78,0.05);npc.add(head);const hb=[];const H_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>hb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
@@ -2042,7 +2042,7 @@ function buildShop(){SHOP.yaw=Math.atan2(PLAZA.x-SHOP.x,PLAZA.z-SHOP.z);const gy
  const hm=new THREE.Mesh(mergeGeometries(hb),VCMAT);hm.castShadow=true;head.add(hm);
  const whisk=[];const wm=stdMat('#f5f0e6',0.6);for(const s of[-1,1]){const w=new THREE.Group();w.position.set(s*0.18,-0.06,0.45);head.add(w);const c=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.006,0.7,5).translate(0,-0.35,0),wm);c.rotation.z=s*1.25;w.add(c);whisk.push(w);}
  npc.userData={head,whisk};npc.traverse(o=>{o.userData.pick='shop';});
- SHOP.label=makeLabel(false);SHOP.label.el.classList.add('npc');SHOP.label.nm.textContent='🐉 용왕님';
+ SHOP.label=makeLabel(false);SHOP.label.el.classList.add('npc');SHOP.label.nm.textContent='🐉 용왕';
  OBST.push({x:SHOP.x,z:SHOP.z,r:2.3});
  const fwx=Math.sin(SHOP.yaw),fwz=Math.cos(SHOP.yaw);for(const k of[-1.4,1.4])OBST.push({x:SHOP.x+Math.cos(SHOP.yaw)*k*1.2,z:SHOP.z-Math.sin(SHOP.yaw)*k*1.2,r:1.0});
  SHOP.front={x:SHOP.x+fwx*3.1,z:SHOP.z+fwz*3.1};}
@@ -2050,7 +2050,7 @@ function updShop(dt,dd){if(!SHOP.g)return;const n=SHOP.npc,u=n.userData;n.positi
  const lp=SHOP.g.worldToLocal(_c.set(P.pos.x,P.pos.y,P.pos.z));const want=dd<9?clamp(Math.atan2(lp.x,lp.z+0.35),-0.7,0.7):Math.sin(t*0.4)*0.3;u.head.rotation.y=lerp(u.head.rotation.y,want,0.08);
  u.whisk.forEach((w,i)=>{w.rotation.x=Math.sin(t*1.8+i)*0.25;w.rotation.y=Math.sin(t*1.2+i*2)*0.2;});
  const nk=S?S.night:0;for(const s of SHOP.g.userData.lgs)s.material.opacity=0.15+0.75*nk;
- const lw=SHOP.npc.localToWorld(_c.set(0,2.75,0));if(dd<26&&mode!=='closet')placeLabel(SHOP.label,lw.x,lw.y,lw.z);else SHOP.label.el.style.display='none';
+ const lw=SHOP.npc.localToWorld(_c.set(0,2.4,0));if(dd<26&&mode!=='closet')placeLabel(SHOP.label,lw.x,lw.y,lw.z);else SHOP.label.el.style.display='none';
  if(dd<6&&t-SHOP.greetT>25&&entered){SHOP.greetT=t;showBubble(SHOP.label,['어서 오게나! 🐉','좋은 물고기를 잡았는가?','허허, 반갑구먼!','낚싯대 구경하고 가게나'][Math.floor(Math.random()*4)],false,4);}}
 
 /* ---------- 가방 ---------- */
@@ -3329,7 +3329,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-13g';
+const BUILD='2026-11-13h';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
