@@ -91,6 +91,7 @@ function sanitize(d) {
     rd: num(d.rd | 0, 1, 7, 1),
     pk: idx(d.pk, 3),
     fl: idx(d.fl, 3),
+    rl: idx(d.rl, 3),
     bt: d.bt === 1 ? 1 : 0,
     sd: typeof d.sd === 'string' && /^[a-z0-9]{6,16}$/.test(d.sd) ? d.sd : '',
     ck: ck ? [idx(ck[0], 3), idx(ck[1], 40), r2(num(ck[2], -120, 120, 0)), r2(num(ck[3], -120, 120, 0)), r2(num(ck[4], -50, 50, 0))] : [0, 0, 0, 0, 0],
@@ -102,6 +103,7 @@ function sanitizeProfile(d) {
   const k = Array.isArray(d.k) ? d.k.slice(0, 200) : [];
   return {
     r: num(d.r | 0, 1, 7, 1),
+    l: idx(d.l, 3),
     k: k.filter(x => Array.isArray(x) && x.length === 2).map(x => [idx(x[0], SPECIES_LIST.length), r2(num(x[1], 0.5, 1000, 10))]),
     m: num(d.m | 0, 0, 1e9, 0),
     b: num(d.b | 0, 0, 200, 0),
@@ -291,6 +293,7 @@ function legacyMerge(S, D) {
     packs: [...new Set([...(sg.packs || []), ...(dg.packs || [])])],
     floats: [...new Set([...(sg.floats || []), ...(dg.floats || [])])],
     tankUp: Math.max(sg.tankUp | 0, dg.tankUp | 0),
+    reels: [...new Set([...(sg.reels || []), ...(dg.reels || [])])],
     bag: itemsUnion(sg.bag, dg.bag),
   });
   return M;
