@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-13c">
+<meta name="amollang-build" content="2026-11-13d">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -30,7 +30,8 @@
 <style>
 :root{--ink:#fffaf0;--panel:rgba(40,52,70,.55);--line:rgba(255,255,255,.22)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden;background:#8fd3f0;color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;user-select:none;-webkit-user-select:none}
+@font-face{font-family:"AmoEmoji";src:local("Segoe UI Emoji"),local("SegoeUIEmoji"),local("Apple Color Emoji"),local("AppleColorEmoji"),local("Noto Color Emoji"),local("NotoColorEmoji"),local("Twemoji Mozilla");unicode-range:U+2600-2604,U+2607-2712,U+2714,U+2716-27BF,U+231A-231B,U+2328,U+23CF,U+23E9-23FA,U+2B50,U+2B55,U+3030,U+303D,U+3297,U+3299,U+FE0F,U+200D,U+20E3,U+1F000-1FAFF}
+html,body{margin:0;height:100%;overflow:hidden;background:#8fd3f0;color:var(--ink);font-family:"AmoEmoji","Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;user-select:none;-webkit-user-select:none}
 canvas#c{display:block;position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;outline:none;touch-action:none}
 .closet,.book,.emopanel{touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 button{font-family:inherit}
@@ -273,7 +274,7 @@ body.cine .boatbadge{opacity:0}
 .gfem{font-size:40px;animation:gfb 1.2s ease-in-out infinite alternate}@keyframes gfb{to{transform:translateY(-4px) rotate(-6deg)}}.gft{display:block;font-size:19px;font-weight:900;color:#c2384d;margin:2px 0 10px}
 .gflist{display:flex;flex-direction:column;gap:8px;text-align:left}.gfi{background:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}.gfi p{margin:0 0 6px;font-size:13.5px;line-height:1.55;white-space:pre-wrap}.gfi small{color:#9a8a72;font-size:11.5px}
 .gfch{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px}.gfch span{background:#fff3c4;border-radius:999px;padding:3px 9px;font-weight:800;font-size:12.5px;color:#7a4a10}
-.gfnote{font-size:12px;color:#7a6a52;margin:10px 2px 12px;line-height:1.5}.gfcard button{width:100%;border:0;border-radius:12px;padding:12px;font:900 15px system-ui,sans-serif;background:#ff7a59;color:#fff;cursor:pointer}
+.gfnote{font-size:12px;color:#7a6a52;margin:10px 2px 12px;line-height:1.5}.gfcard button{width:100%;border:0;border-radius:12px;padding:12px;font:900 15px "AmoEmoji",system-ui,sans-serif;background:#ff7a59;color:#fff;cursor:pointer}
 .gfhist{font-size:12.5px;line-height:1.6;color:#5a4c3a;background:#fffaf0;border-radius:12px;padding:8px 10px}.gfhist small{color:#9a8a72}
 .irow.lot canvas{width:96px;height:70px;background:linear-gradient(#fff8ec,#fde8ef);border-radius:10px}.irow.lot{background:linear-gradient(90deg,#fff6e0,#fff);border-color:#f2c14e}
 .lttbl{margin:10px 2px 4px;font-size:13px}.lttbl table{width:100%;border-collapse:collapse;margin:6px 0}.lttbl td{padding:4px 6px;border-bottom:1px solid #efe6d6}.lttbl td.n{text-align:right;white-space:nowrap}.lttbl small{color:#7a6a52;line-height:1.5}.lttbl tr.ltsp td{background:linear-gradient(90deg,#fff3c4,#ffe0ec);font-weight:800;color:#a8324a}
@@ -285,7 +286,7 @@ body.cine .boatbadge{opacity:0}
 @keyframes ltwin{to{transform:scale(1.08)}}
 #ltCv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;transition:opacity .5s}
 .ltres{min-height:24px;text-align:center;font-weight:800;font-size:14.5px;margin:12px 0 10px;color:#6a4a2a}.ltres.win{color:#1e8449}.ltres.big{color:#c2384d;font-size:17px}.ltres.lose{color:#7a6a52}
-.ltbtns{display:flex;gap:8px}.ltbtns button{flex:1;border:0;border-radius:12px;padding:11px 6px;font:800 14px system-ui,sans-serif;cursor:pointer;background:#ff7a59;color:#fff}.ltbtns button.ghost{background:#fff;color:#7a5a3a}.ltbtns button:disabled{opacity:.5}.ltbtns .hidden{display:none}
+.ltbtns{display:flex;gap:8px}.ltbtns button{flex:1;border:0;border-radius:12px;padding:11px 6px;font:800 14px "AmoEmoji",system-ui,sans-serif;cursor:pointer;background:#ff7a59;color:#fff}.ltbtns button.ghost{background:#fff;color:#7a5a3a}.ltbtns button:disabled{opacity:.5}.ltbtns .hidden{display:none}
 @media (min-width:521px){#shop .tabs{flex-wrap:wrap}#shop .tabs button{flex:1 1 22%}}
 .irow.rel canvas{width:96px;height:70px;background:linear-gradient(#fff5f8,#f6e6ee);border-radius:10px}.irow.rel.r2{background:linear-gradient(90deg,#fff8e1,#fff);border-color:#f2c14e}.irow.rel.r2 canvas{background:linear-gradient(#fffaf0,#f8ecc8)}.irow.rel.on{border-color:#4cc38a}
 @media (max-width:520px){.irow.rel canvas{width:70px;height:52px}#shop .tabs{flex-wrap:wrap}#shop .tabs button{flex:1 1 30%}}
@@ -295,18 +296,18 @@ body.cine .boatbadge{opacity:0}
 .acnote{font-size:11.5px;color:#8a7a62;margin-top:4px;text-align:center}.acnote:empty{display:none}
 .acbar{position:fixed;left:50%;transform:translateX(-50%);top:max(calc(var(--vvt,0px) + max(12px,env(safe-area-inset-top)) + 136px),calc(var(--hudB,0px) + 74px));z-index:5;display:none;flex-direction:column;align-items:center;gap:6px;max-width:94vw}
 .acbar.on{display:flex}
-.acbar .achead{border:2px solid #fff;border-radius:999px;background:rgba(30,40,60,.62);color:#fff;font:700 12.5px system-ui,sans-serif;padding:6px 13px;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);white-space:nowrap}
+.acbar .achead{border:2px solid #fff;border-radius:999px;background:rgba(30,40,60,.62);color:#fff;font:700 12.5px "AmoEmoji",system-ui,sans-serif;padding:6px 13px;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);white-space:nowrap}
 .acbar .achead b{color:#ffd77a}.acbar .achead u{text-decoration:none;opacity:.85;font-weight:800}
 .acbar .acopts{display:grid;grid-template-columns:1fr 1fr;width:max-content;max-width:92vw;gap:6px;background:rgba(255,250,240,.96);border-radius:16px;padding:8px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
-.acbar .acopts button{border:2px solid #e6d9c2;background:#fff;border-radius:12px;padding:8px 10px;font:800 13px system-ui,sans-serif;color:#4a3d2c;cursor:pointer;position:relative}
+.acbar .acopts button{border:2px solid #e6d9c2;background:#fff;border-radius:12px;padding:8px 10px;font:800 13px "AmoEmoji",system-ui,sans-serif;color:#4a3d2c;cursor:pointer;position:relative}
 .acbar .acopts button.sel{border-color:#f0a24a;background:#fff1dc}
 .acbar .acopts button i{font-style:normal;font-size:10px;font-weight:900;color:#fff;background:#8bb7d8;border-radius:6px;padding:0 4px;margin-left:4px;vertical-align:1px}
-.acbar .acoff{border:0;background:rgba(30,40,60,.55);color:#fff;border-radius:999px;font:700 11.5px system-ui,sans-serif;padding:5px 11px;cursor:pointer}
+.acbar .acoff{border:0;background:rgba(30,40,60,.55);color:#fff;border-radius:999px;font:700 11.5px "AmoEmoji",system-ui,sans-serif;padding:5px 11px;cursor:pointer}
 .tkask{position:fixed;inset:0;z-index:9500;background:rgba(18,28,44,.55);display:none;align-items:center;justify-content:center;padding:18px}.tkask.on{display:flex}
 .tkcard{max-width:360px;width:100%;background:#fffaf0;border-radius:18px;padding:20px 18px 16px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3);color:#3a2f22}
 .tkcard .tkem{font-size:34px}.tkcard b{display:block;font-size:17px;margin:4px 0 8px}.tkcard p{font-size:13.5px;line-height:1.6;margin:0 0 12px}.tkcard p em{font-style:normal;color:#c0392b;font-weight:800}
 .tkchk{display:flex;gap:7px;align-items:center;justify-content:center;font-size:13px;color:#5a4c3a;margin-bottom:14px;cursor:pointer}.tkchk input{width:17px;height:17px}
-.tkbtns{display:flex;gap:8px}.tkbtns button{flex:1;border:0;border-radius:12px;padding:11px 8px;font:800 14.5px system-ui,sans-serif;cursor:pointer;background:#3aa0d8;color:#fff}.tkbtns button.ghost{background:#ece3d2;color:#5a4c3a}
+.tkbtns{display:flex;gap:8px}.tkbtns button{flex:1;border:0;border-radius:12px;padding:11px 8px;font:800 14.5px "AmoEmoji",system-ui,sans-serif;cursor:pointer;background:#3aa0d8;color:#fff}.tkbtns button.ghost{background:#ece3d2;color:#5a4c3a}
 .irow.tnk canvas{width:96px;height:70px;background:linear-gradient(#f2fbff,#d9f0fb);border-radius:10px}.irow.tnk{background:linear-gradient(90deg,#eaf8ff,#fff)}.irow.tnk.on{border-color:#4cc38a}
 @media (max-width:520px){.irow.tnk canvas{width:70px;height:52px}#shop .tabs{gap:4px}#shop .tabs button{font-size:12.5px;padding-left:2px;padding-right:2px;white-space:nowrap;letter-spacing:-0.4px;min-width:0}}
 .lgc{background:linear-gradient(135deg,#2a2152,#46307a 60%,#2f4f8a);color:#fff;border-radius:16px;padding:12px 14px 10px;margin:6px 0 12px;box-shadow:0 4px 14px rgba(40,20,90,.25)}
@@ -373,6 +374,11 @@ body.cine .boatbadge{opacity:0}
 .emotes button.more{font-size:17px}
 .hint{bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 46px);font-size:12px;padding:6px 13px;max-width:calc(100vw - 2*max(64px,calc(env(safe-area-inset-left) + 56px)));white-space:normal;text-align:center;border-radius:14px;line-height:1.35}
 }
+
+button,input,textarea,select{font-family:inherit}
+@media (max-width:520px){#bCloset span{display:inline;font-size:11px}#bCloset{padding:0 7px}}
+@media (max-width:420px){body .btns{gap:3px}.btns .ic{padding:0 5px;min-width:30px}#bCloset{padding:0 5px;gap:2px}#bCloset span{font-size:10px}.hud .t{font-size:15px}}
+@media (min-width:521px){.tankbtn{width:56px;height:56px;border-radius:28px;font-size:23px;bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 80px)}.tankbtn span{font-size:10.5px}}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/utils/BufferGeometryUtils.js":"./vendor/BufferGeometryUtils.js"}}</script>
 </head>
@@ -387,7 +393,7 @@ body.cine .boatbadge{opacity:0}
   <button class="ic news" id="bNews" title="업데이트 공지사항">📢<span>공지</span><i id="newsDot" class="ndot hidden"></i></button>
   <button class="ic" id="bBook" title="도감">📖<span>도감</span></button>
   <button class="ic" id="bMap" title="섬 지도 (M)">🗺️<span>지도</span></button>
-  <button class="ic" id="bCloset" title="옷 갈아입기">👕</button>
+  <button class="ic" id="bCloset" title="옷 갈아입기 (외형)">👕<span>외형</span></button>
   <button class="ic" id="bHelp" title="낚시하는 법">❓<span>도움말</span></button>
   <button class="ic" id="bSound" title="소리 설정">🔊</button>
 </div>
@@ -3296,7 +3302,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-13c';
+const BUILD='2026-11-13d';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
