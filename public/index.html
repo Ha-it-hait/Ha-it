@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12p">
+<meta name="amollang-build" content="2026-11-12q">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -2578,9 +2578,14 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-12p';
+const NEWS_VER='2026-11-12q';
 const NEWS=[
- {d:'11월 12일',t:'🎫 아몰랑복권이 나왔어요',n:true,i:[
+ {d:'11월 12일',t:'🛠️ 산 장비가 사라지던 문제를 고쳤어요',n:true,i:[
+  '🎯 PC와 휴대폰을 오가며 할 때, 오래 켜 둔 예전 화면이 저장하면서 <b>산 찌·릴·수조 크기가 사라질 수 있던 문제</b>를 고쳤어요.',
+  '🔒 이제 산 물건(낚싯대·가방·찌·릴·수조 크기)은 어떤 경우에도 줄어들지 않게 서버가 지켜요.',
+  '🆕 너무 오래된 화면은 저장 대신 새로고침 안내가 떠요. 그동안의 기록은 기기에 보관됐다가 새로고침하면 합쳐져요.',
+  '🙏 사라졌던 장비는 게시판에 아이디를 남겨 주시면 다시 넣어 드려요.']},
+ {d:'11월 12일',t:'🎫 아몰랑복권이 나왔어요',i:[
   '🐉 용왕님 상점에 <b>🎫 복권</b> 칸이 생겼어요. 한 장 <b>3,000몰랑</b>, 은박 6칸을 긁어서 <b>같은 그림 3개</b>가 나오면 당첨이에요.',
   '🏰🏰🏰 <b>특등(0.1%)</b> — 복권에서만 나오는 전설의 <b>🏰 용궁 산호성 찌</b>! ★1·★2·★3 물고기가 안 걸리고 ★7 확률 2배 (입질 약 20% 늦게 · ★4 이상 낚싯대).',
   '🌈 1등 30,000 · 🐋 2등 12,000 · 🐬 3등 6,000 · 🐙 4등 3,000(본전) · 🦀 위로상 1,200몰랑. 확률은 상점에 모두 공개돼 있어요.',
@@ -3252,10 +3257,10 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12p';
+const BUILD='2026-11-12q';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
-var UNK={book:{},tank:[],bag:[],food:[]};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
+var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
 var HOF_MINE={};                              // 내가 명예의 전당에 올린 기록 {생물:크기}
 const SYNC_KEY='monggeul-sync-v3',HOFMINE_KEY='monggeul-hof-mine';
 try{const m=JSON.parse(localStorage.getItem(HOFMINE_KEY)||'{}');if(m&&typeof m==='object')HOF_MINE=m;}catch(e){}
@@ -3319,7 +3324,9 @@ function saveCore(d){if(!d)return'';const x=Object.assign({},d);delete x.at;retu
 /* 이 화면이 모르는 생물도 지우지 않고 보관했다가 저장할 때 그대로 돌려줘요 */
 function applySave(d){if(!d||typeof d!=='object')return false;
  const tk=sNormItems(d.tank),g=d.gs||{};
- UNK={book:{},tank:[],bag:[],food:[]};
+ UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};
+ // 이 화면이 모르는 저장 항목(앞으로 생길 새 기능)도 지우지 않고 그대로 보관했다가 저장할 때 돌려줘요
+ try{const kn=collectSave0();for(const k of Object.keys(g))if(!(k in kn.gs))UNK.gs[k]=g[k];for(const k of Object.keys(d))if(!(k in kn)&&k!=='hm'&&k!=='gs')UNK.top[k]=d[k];}catch(e){}
  if(d.book&&typeof d.book==='object')for(const[k,v]of Object.entries(d.book))if(!SP_BY[k]&&v&&typeof v==='object')UNK.book[k]=v;
  UNK.tank=tk.filter(o=>!SP_BY[o.id]);
  const bg=sNormItems(g.bag);UNK.bag=bg.filter(o=>!SP_BY[o.id]);
@@ -3329,6 +3336,7 @@ function applySave(d){if(!d||typeof d!=='object')return false;
  const d2=Object.assign({},d,{tank:tk,gs:Object.assign({},g,{bag:bg})});
  return applySave0(d2);}
 function collectSave(){const d=collectSave0();
+ if(Object.keys(UNK.gs).length)d.gs=Object.assign({},UNK.gs,d.gs);if(Object.keys(UNK.top).length)for(const k in UNK.top)if(!(k in d))d[k]=UNK.top[k];
  if(Object.keys(UNK.book).length)d.book=Object.assign({},UNK.book,d.book);
  if(UNK.tank.length)d.tank=[...d.tank,...UNK.tank];
  if(UNK.bag.length)d.gs.bag=[...d.gs.bag,...UNK.bag];
@@ -3375,7 +3383,7 @@ async function doSave(urgent,depth=0){
    const S=j.data||{},rb=resolveBase(j.dsid,j.sids,TAB_ID,SYNC.pend,SYNC.base,SYNC.baseSid);const M=mergeSafe(rb,collectSave(),S);
    SYNC.base=S;SYNC.baseSid=(j.dsid&&j.dsid[TAB_ID])||'';SYNC.rev=j.rev;SYNC.pend=[];applyMerged(M);saveDirty=true;SYNC.conflicts++;syncPersist(collectSave());
    if(depth===0)toast('🔄 다른 기기(창)에서 저장한 기록과 합쳤어요 · 잃어버린 기록은 없어요',3200);retry=depth<3;}
-  else{saveErr='저장 실패'+(j.error?': '+j.error:' ('+r.status+')');saveDirty=true;}}
+  else{saveErr='저장 실패'+(j.error?': '+j.error:' ('+r.status+')');saveDirty=true;if(j.reload){verShown=false;verCheck();}}}
  catch(e){saveErr='인터넷 연결을 확인해 주세요';saveDirty=true;}
  finally{SYNC.busy=false;}
  if(SYNC.again){SYNC.again=false;saveDirty=true;}

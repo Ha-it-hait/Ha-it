@@ -253,7 +253,11 @@ const BAK_KEEP = 40;               // 계정마다 보관하는 예전 저장본
 const BAK_GAP = 20 * 60e3;         // 예전 저장본을 남기는 최소 간격 (물고기가 크게 줄면 1분 간격으로도 남김)
 const SID_KEEP = 64;               // 서버에 반영된 최근 저장 번호(중복 저장 판별용)
 const DSID_KEEP = 80;              // 화면(창)마다 '마지막으로 반영된 저장 번호' — 다른 기기가 아무리 많이 저장해도 밀려나지 않게
-const LEGACY_NEW_MS = 5 * 60e3;    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
+const LEGACY_NEW_MS = 5 * 60e3;
+// 이 빌드보다 오래된 화면은 저장을 받지 않아요(새로고침 안내). 저장 항목이 바뀌는 업데이트를 할 때마다 올려요.
+// 막힌 화면의 기록은 그 기기에 보관됐다가, 새로고침해서 다시 로그인하면 합쳐져요.
+const MIN_CV = '2026-11-12q';
+const OWNED_LISTS = ['rods', 'packs', 'floats', 'reels'];    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
 
 // ---------- 저장 데이터 안전 합치기 (서버) ----------
 // 도감(book)은 늘어나기만 하는 기록이라 서버가 항상 '합집합 + 최댓값'으로 지켜요.
@@ -303,6 +307,19 @@ function saveSum(d) {
   return { book: d.book ? Object.keys(d.book).length : 0, tank: Array.isArray(d.tank) ? d.tank.length : 0, bag: Array.isArray(g.bag) ? g.bag.length : 0, food: Array.isArray(g.food) ? g.food.length : 0, money: +g.money || 0, at: +d.at || 0 };
 }
 const dsidOut = t => { const o = pj(t) || {}, r = {}; for (const k in o) r[k] = o[k].s; return r; };
+// 산 물건(낚싯대·가방·찌·릴·수조 크기)은 어떤 저장으로도 줄어들지 않게 지켜요.
+// 예전 화면은 새로 생긴 항목(찌·릴 등)을 몰라서 그 항목 없이 저장해요 → 서버에 있던 값을 그대로 이어 붙여요.
+function keepOwned(old, d) {
+  if (!old || typeof old !== 'object') return d;
+  for (const k of Object.keys(old)) if (!(k in d)) d[k] = old[k];
+  const og = old.gs && typeof old.gs === 'object' ? old.gs : null; if (!og) return d;
+  const g = d.gs = Object.assign({}, d.gs || {});
+  for (const k of Object.keys(og)) if (!(k in g)) g[k] = og[k];
+  for (const k of OWNED_LISTS) { const u = [...new Set([...(Array.isArray(og[k]) ? og[k] : []), ...(Array.isArray(g[k]) ? g[k] : [])].map(x => x | 0))].filter(x => x > 0).sort((a, b) => a - b); if (u.length) g[k] = u; }
+  g.tankUp = Math.max(og.tankUp | 0, g.tankUp | 0);
+  return d;
+}
+function ownedSum(d) { const g = (d && d.gs) || {}; return { rods: g.rods || [], packs: g.packs || [], floats: g.floats || [], reels: g.reels || [], tankUp: g.tankUp | 0, float: g.float | 0, reel: g.reel | 0 }; }
 const fishCount = d => { const x = saveSum(d); return x ? x.tank + x.bag : 0; };
 const SESSION_DAYS = 60;
 const PBKDF2_ITER = 50000;
@@ -529,13 +546,28 @@ export class Vault extends DurableObject {
         const cur = pj(row.data) || {};
         // merge: 저장본의 물고기·도감·장비를 지금 기록에 더해요 / replace: 그 저장본 상태로 정확히 되돌려요(도감만 지금 것과 합침)
         let d;
-        if (body.mode === 'replace') { d = old; d.book = bookUnion(cur.book, old.book); }
+        if (body.mode === 'replace') { d = old; d.book = bookUnion(cur.book, old.book); keepOwned(cur, d); }
         else d = legacyMerge(old, cur);
         d.at = now;
         this.bak(uid, row.data, now + 1, 'before-restore', true);
         const rev = (row.rev | 0) + 1;
         this.sql.exec('UPDATE users SET data = ?, updated = ?, rev = ?, sids = ? WHERE id = ?', JSON.stringify(d), now, rev, JSON.stringify([{ s: 'R' + now, r: rev }]), uid);
         return J({ ok: true, rev, sum: saveSum(d) });
+      }
+      if (op === 'admin-gear') {
+        const d = pj(row.data); if (!d) return J({ error: '기록이 없어요' }, 404);
+        const before = ownedSum(d);
+        const baks = this.sql.exec('SELECT ts, data FROM baks WHERE id = ? ORDER BY ts DESC', uid).toArray();
+        let lastFloat = 0, lastReel = 0;
+        for (const b of baks) { const o = pj(b.data); if (!o) continue; keepOwned(o, d); const og = o.gs || {}; if (!lastFloat && (og.float | 0)) lastFloat = og.float | 0; if (!lastReel && (og.reel | 0)) lastReel = og.reel | 0; }
+        const g = d.gs = d.gs || {};
+        if (!(g.float | 0) && lastFloat && (g.floats || []).includes(lastFloat)) g.float = lastFloat;
+        if (!(g.reel | 0) && lastReel && (g.reels || []).includes(lastReel)) g.reel = lastReel;
+        d.at = now;
+        this.bak(uid, row.data, now, 'before-restore', true);
+        const rev = (row.rev | 0) + 1;
+        this.sql.exec('UPDATE users SET data = ?, updated = ?, rev = ?, sids = ? WHERE id = ?', JSON.stringify(d), now, rev, JSON.stringify([{ s: 'G' + now, r: rev }]), uid);
+        return J({ ok: true, rev, before, after: ownedSum(d), baks: baks.length });
       }
       if (op === 'admin-edit') {
         // 가방·수조에서 고른 물고기를 지워요 (잘못 들어온 물고기 정리용). 지우기 직전 상태는 저장본으로 남아요
@@ -572,12 +604,13 @@ export class Vault extends DurableObject {
       const tab = typeof body.tab === 'string' && /^[a-z0-9]{6,16}$/.test(body.tab) ? body.tab : '';
       const sid = typeof body.sid === 'string' && /^[a-z0-9]{8,32}$/.test(body.sid) ? body.sid : '';
       if (sid) { const hit = sids.find(x => x.s === sid); if (hit) return hit.r === rev ? J({ ok: true, at: now, rev, dup: true }) : conflict(); }
+      if (typeof body.cv === 'string' && body.cv < MIN_CV) return J({ error: '새 버전이 나왔어요. 새로고침하면 저장돼요 (기록은 이 기기에 보관 중)', reload: true }, 426);
       let why = 'save';
       if (Number.isInteger(body.base)) {
         // 내가 마지막으로 받은 기록(base) 뒤에 다른 기기·창이 저장했다면 덮어쓰지 않고 돌려보내요 → 화면에서 합친 뒤 다시 저장
         if (body.base !== rev) return conflict();
       } else if (old) { d = legacyAddNew(old, d, now); why = 'legacy'; }
-      if (old) d.book = bookUnion(old.book, d.book); // 도감은 절대 줄어들지 않게
+      if (old) { d.book = bookUnion(old.book, d.book); keepOwned(old, d); } // 도감·산 물건은 절대 줄어들지 않게
       const s = JSON.stringify(d);
       if (s.length > SAVE_MAX) return J({ error: '데이터가 너무 커요' }, 413);
       const drop = fishCount(old) - fishCount(d);
@@ -604,7 +637,7 @@ export default {
     if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
       const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
       const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit'].includes(op)) return J({ error: 'not found' }, 404);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear'].includes(op)) return J({ error: 'not found' }, 404);
       if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {

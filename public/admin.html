@@ -51,7 +51,8 @@ async function load(){msg('불러오는 중…',true);$('view').hidden=true;
   h+=`<tr style="background:#f4f8ff"><td><b>지금</b></td><td>현재 기록</td>${sumCells(j.sum)}<td><button class="ghost" data-v="0">보기</button></td></tr>`;
   for(const b of j.baks)h+=`<tr><td>${fmt(b.ts)}</td><td>${WHY[b.why]||b.why}</td>${sumCells(b.sum)}<td><button class="ghost" data-v="${b.ts}">보기</button> <button class="warn" data-r="${b.ts}">합쳐 넣기</button> <button class="warn" data-x="${b.ts}" style="background:#7a3fb8">이 상태로 되돌리기</button></td></tr>`;
   if(!j.baks.length)h+='<tr><td colspan="8">아직 남은 저장본이 없어요 (이번 업데이트 이후부터 쌓여요)</td></tr>';
-  $('res').innerHTML=h+'</table>';$('res').hidden=false;
+  h+='</table><p style="margin-top:12px"><button id="gearBtn" style="background:#2f8a5b">🎣 산 장비 모두 되살리기</button> <small class="note">낚싯대·가방·찌·릴·수조 크기를 모든 저장본에서 찾아 다시 넣어요 (물고기·몰랑은 그대로)</small></p>';
+  $('res').innerHTML=h;$('res').hidden=false;$('gearBtn').onclick=gear;
   $('res').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>view(+b.dataset.v));
   $('res').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>restore(+b.dataset.r));
   $('res').querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>restore(+b.dataset.x,'replace'));
@@ -64,6 +65,9 @@ async function view(ts){try{const j=await call('admin-bak',{ts});const d=j.data|
   ${cur?'<p style="margin-top:12px"><button class="warn" id="delSel">선택한 물고기 지우기</button></p>':''}<details style="margin-top:10px"><summary>원본 데이터 보기</summary><pre></pre></details>`;
   $('view').querySelector('pre').textContent=JSON.stringify(d,null,1);$('view').hidden=false;
   if(cur)$('delSel').onclick=delSel;$('view').scrollIntoView({behavior:'smooth'});}catch(e){msg(e.message,false);}}
+async function gear(){if(!confirm('이 유저가 산 장비(낚싯대·가방·찌·릴·수조 크기)를 모든 저장본에서 찾아 되살릴까요?\n물고기와 몰랑은 바뀌지 않아요.'))return;
+ try{const j=await call('admin-gear');const f=o=>`낚싯대 ${o.rods.join(',')||'-'} · 가방 ${o.packs.join(',')||'-'} · 찌 ${o.floats.join(',')||'-'}(낀 찌 ${o.float||'-'}) · 릴 ${o.reels.join(',')||'-'}(단 릴 ${o.reel||'-'}) · 수조 +${o.tankUp*10}칸`;
+  msg(`되살렸어요 (저장본 ${j.baks}개 확인). 전: ${f(j.before)} → 후: ${f(j.after)}. 유저가 게임을 켜 두었다면 몇 분 안에 반영돼요.`,true);setTimeout(load,800);}catch(e){msg(e.message,false);}}
 async function delSel(){const ch=[...document.querySelectorAll('#view input[type=checkbox]:checked')];if(!ch.length){msg('지울 물고기를 골라 주세요',false);return;}
  const rm={tank:ch.filter(c=>c.dataset.k==='tank').map(c=>c.value),bag:ch.filter(c=>c.dataset.k==='bag').map(c=>c.value)};
  if(!confirm(`수조 ${rm.tank.length}마리 · 가방 ${rm.bag.length}마리를 지울까요?\n(지우기 직전 상태도 저장본으로 남아요)`))return;
