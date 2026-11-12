@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12r">
+<meta name="amollang-build" content="2026-11-12s">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -346,6 +346,20 @@ body.cine .boatbadge{opacity:0}
 .mrow i{width:16px;height:16px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px #2b3b52;flex:none}.mrow b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}
 .mrow small{flex:1;font-size:12px;color:#8a7f6a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mrow button{border:0;background:#5aa0e6;color:#fff;font-weight:900;border-radius:10px;height:32px;padding:0 10px;cursor:pointer;font-size:12.5px;white-space:nowrap;flex:none}
 
+
+/* v48: 휴대폰 왼쪽 버튼(채팅·가방·수조) 같은 크기로 축소, 감정표현 축소 */
+@media (max-width:520px),(pointer:coarse) and (max-height:520px){
+.lbtn,.tankbtn{width:42px;height:42px;border-radius:21px;border-width:2px;font-size:17px;box-shadow:0 4px 10px rgba(0,0,0,.22)}
+.lbtn span,.tankbtn span{font-size:8.5px;margin-top:1px}
+.lbtn em{min-width:17px;height:17px;font-size:10px;top:-5px;right:-5px;padding:0 4px}
+.tankbtn{bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 58px)}
+.lbtn.bag{bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 106px)}
+.lbtn.chat{bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 154px)}
+.emotes{gap:5px}
+.emotes button{width:36px;height:36px;font-size:17px}
+.emotes button.more{font-size:17px}
+.hint{bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 46px);font-size:12px;padding:6px 13px;max-width:calc(100vw - 2*max(64px,calc(env(safe-area-inset-left) + 56px)));white-space:normal;text-align:center;border-radius:14px;line-height:1.35}
+}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/utils/BufferGeometryUtils.js":"./vendor/BufferGeometryUtils.js"}}</script>
 </head>
@@ -3269,7 +3283,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12r';
+const BUILD='2026-11-12s';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
