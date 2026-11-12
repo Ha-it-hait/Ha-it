@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12n">
+<meta name="amollang-build" content="2026-11-12p">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -268,6 +268,18 @@ body.cine .boatbadge{opacity:0}
 .irow canvas{width:84px;height:50px;flex:none;border-radius:10px;background:#eef5f7}
 .irow.rod canvas{width:100px;height:60px;background:linear-gradient(#eef5f7,#dfeaf0)}
 .irow.pack canvas{width:96px;height:70px;background:linear-gradient(#fff8ec,#f3e6cf)}.irow.pack.p1{background:linear-gradient(90deg,#eaf6ff,#fff)}.irow.pack.p1 canvas{background:linear-gradient(#e6f5ff,#cfe8f8)}.irow.pack.p2{background:linear-gradient(90deg,#fff3f8,#fffbea);border-color:#f2c14e}.irow.pack.p2 canvas{background:linear-gradient(#fdf6ff,#fbe9f1)}.irow.pack.on{border-color:#4cc38a}
+.irow.lot canvas{width:96px;height:70px;background:linear-gradient(#fff8ec,#fde8ef);border-radius:10px}.irow.lot{background:linear-gradient(90deg,#fff6e0,#fff);border-color:#f2c14e}
+.lttbl{margin:10px 2px 4px;font-size:13px}.lttbl table{width:100%;border-collapse:collapse;margin:6px 0}.lttbl td{padding:4px 6px;border-bottom:1px solid #efe6d6}.lttbl td.n{text-align:right;white-space:nowrap}.lttbl small{color:#7a6a52;line-height:1.5}.lttbl tr.ltsp td{background:linear-gradient(90deg,#fff3c4,#ffe0ec);font-weight:800;color:#a8324a}
+.ltov{position:fixed;inset:0;z-index:9400;background:rgba(18,28,44,.6);display:none;align-items:center;justify-content:center;padding:16px}.ltov.on{display:flex}
+.ltcard{width:100%;max-width:360px;background:linear-gradient(160deg,#fff3c4,#ffd6e2);border-radius:20px;padding:16px 16px 14px;box-shadow:0 12px 34px rgba(0,0,0,.35);border:3px solid #fff}
+.lthead{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}.lthead span{font-size:26px}.lthead b{font-size:21px;font-weight:900;color:#c2384d;letter-spacing:-.5px}.lthead small{margin-left:auto;font-weight:800;color:#8a5a2a;font-size:12px}
+.ltgrid-wrap{position:relative;border-radius:14px;overflow:hidden;background:#fffaf0;box-shadow:inset 0 0 0 2px #f3d27a}
+.ltgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px}.ltc{aspect-ratio:1.15;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:10px;font-size:36px;transition:transform .3s}.ltc.win{background:#fff4b8;box-shadow:0 0 0 3px #ffcf3d;animation:ltwin .9s ease-in-out infinite alternate}
+@keyframes ltwin{to{transform:scale(1.08)}}
+#ltCv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;transition:opacity .5s}
+.ltres{min-height:24px;text-align:center;font-weight:800;font-size:14.5px;margin:12px 0 10px;color:#6a4a2a}.ltres.win{color:#1e8449}.ltres.big{color:#c2384d;font-size:17px}.ltres.lose{color:#7a6a52}
+.ltbtns{display:flex;gap:8px}.ltbtns button{flex:1;border:0;border-radius:12px;padding:11px 6px;font:800 14px system-ui,sans-serif;cursor:pointer;background:#ff7a59;color:#fff}.ltbtns button.ghost{background:#fff;color:#7a5a3a}.ltbtns button:disabled{opacity:.5}.ltbtns .hidden{display:none}
+@media (min-width:521px){#shop .tabs{flex-wrap:wrap}#shop .tabs button{flex:1 1 22%}}
 .irow.rel canvas{width:96px;height:70px;background:linear-gradient(#fff5f8,#f6e6ee);border-radius:10px}.irow.rel.r2{background:linear-gradient(90deg,#fff8e1,#fff);border-color:#f2c14e}.irow.rel.r2 canvas{background:linear-gradient(#fffaf0,#f8ecc8)}.irow.rel.on{border-color:#4cc38a}
 @media (max-width:520px){.irow.rel canvas{width:70px;height:52px}#shop .tabs{flex-wrap:wrap}#shop .tabs button{flex:1 1 30%}}
 .tkask{position:fixed;inset:0;z-index:9500;background:rgba(18,28,44,.55);display:none;align-items:center;justify-content:center;padding:18px}.tkask.on{display:flex}
@@ -398,7 +410,7 @@ body.cine .boatbadge{opacity:0}
 <div class="overlay hidden" id="shop"><div class="card wide">
   <div class="mhead"><b>🐉 용왕님 상점</b><span class="money" id="shopMoney"></span><button class="x" id="shopX">✕</button></div>
   <div class="bsub">“허허, 어서 오게나! 좋은 물고기는 값을 후하게 쳐주지.”</div>
-  <div class="tabs"><button data-tab="buy">🎣 낚싯대</button><button data-tab="reel">🧵 릴</button><button data-tab="pack">🎒 가방</button><button data-tab="float">🎯 찌</button><button data-tab="tank">🐠 수조</button><button data-tab="sell">💰 팔기</button></div>
+  <div class="tabs"><button data-tab="buy">🎣 낚싯대</button><button data-tab="reel">🧵 릴</button><button data-tab="pack">🎒 가방</button><button data-tab="float">🎯 찌</button><button data-tab="tank">🐠 수조</button><button data-tab="lotto">🎫 복권</button><button data-tab="sell">💰 팔기</button></div>
   <div id="shopBody"></div></div></div>
 <div class="overlay hidden" id="cook"><div class="card wide">
   <div class="mhead"><b>🍳 모닥불 요리</b><button class="x" id="cookX">✕</button></div>
@@ -465,7 +477,7 @@ body.cine .boatbadge{opacity:0}
       <li><b>기다려요</b><span>찌가 톡톡 흔들리는 건 물고기가 간을 보는 거예요. 이때 누르면 도망가요.</span></li>
       <li><b>챔질!</b><span>방울 소리와 함께 찌가 <em>쑥 들어가고 ❗가 뜨면</em> 바로 탭하세요.</span></li>
       <li><b>끌어올려요</b><span><em>누르고 있으면 감겨요.</em> 줄 장력 막대가 빨개지거나 <em>‘저항!’</em>이 뜨면 잠깐 손을 떼요. 너무 오래 떼면 바늘이 빠져요.</span></li>
-      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (기본 50마리 · 🐉 상점의 <b>🐠 수조</b> 칸에서 3만 몰랑에 10칸씩, 최대 200마리까지 늘릴 수 있어요. 🧵 상점 <b>🧵 릴</b> 칸의 릴을 달면 줄을 더 빨리, 덜 팽팽하게 감을 수 있어요(🐚 소라 껍데기 릴 · 🐋 황금 고래 릴). 수조 물고기는 <b>구경 전용</b>이라 가방으로 옮기거나 팔 수 없어요) 👑 명예의 전당 <b>도감왕 1등</b>은 머리 위에 빙글빙글 도는 금빛 왕관이 떠요. 🎒 가방은 기본 30마리이고, 🐉 상점의 <b>🎒 가방</b> 칸에서 🦈 아기 상어 가방(+20마리)·👼 아기 천사 날개 가방(+40마리)을 살 수 있어요. 물고기와 <b>3분 넘게</b> 싸우면 물고기가 지쳐서 힘이 빠져요(최대 -30%). 잡은 카드에서 PC는 키보드 <kbd>1</kbd> 놓아주기 · <kbd>2</kbd> 🎒 가방에 · <kbd>3</kbd> 🐠 수조에로도 골라요. 📖 도감에서 생물마다 📏 최소~최대 크기를 볼 수 있어요.</span></li>
+      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (기본 50마리 · 🐉 상점의 <b>🐠 수조</b> 칸에서 3만 몰랑에 10칸씩, 최대 200마리까지 늘릴 수 있어요. 🎫 상점 <b>🎫 복권</b> 칸에서 아몰랑복권(3,000몰랑, 하루 20장 · 특등은 🏰 용궁 산호성 찌)을 긁을 수 있어요. 🧵 상점 <b>🧵 릴</b> 칸의 릴을 달면 줄을 더 빨리, 덜 팽팽하게 감을 수 있어요(🐚 소라 껍데기 릴 · 🐋 황금 고래 릴). 수조 물고기는 <b>구경 전용</b>이라 가방으로 옮기거나 팔 수 없어요) 👑 명예의 전당 <b>도감왕 1등</b>은 머리 위에 빙글빙글 도는 금빛 왕관이 떠요. 🎒 가방은 기본 30마리이고, 🐉 상점의 <b>🎒 가방</b> 칸에서 🦈 아기 상어 가방(+20마리)·👼 아기 천사 날개 가방(+40마리)을 살 수 있어요. 물고기와 <b>3분 넘게</b> 싸우면 물고기가 지쳐서 힘이 빠져요(최대 -30%). 잡은 카드에서 PC는 키보드 <kbd>1</kbd> 놓아주기 · <kbd>2</kbd> 🎒 가방에 · <kbd>3</kbd> 🐠 수조에로도 골라요. 📖 도감에서 생물마다 📏 최소~최대 크기를 볼 수 있어요.</span></li>
     </ol>
     <div class="btitle">💡 물고기 찾기 팁</div>
     <ul class="tips">
@@ -2042,6 +2054,7 @@ function renderShop(){$('shopMoney').textContent=`${fmtM(GS.money)} 몰랑`;docu
  if(shopTab==='reel'){renderReelShop(box);return;}
  if(shopTab==='float'){renderFloatShop(box);return;}
  if(shopTab==='tank'){renderTankShop(box);return;}
+ if(shopTab==='lotto'){renderLottoShop(box);return;}
  if(shopTab==='buy'){
   const p=document.createElement('div');p.className='bsub';p.textContent='낚싯대 ★가 높을수록 더 힘센(★ 많은) 물고기를 낚을 수 있어요. 산 낚싯대는 바로 장착돼요.';box.appendChild(p);
   const list=document.createElement('div');list.className='ilist rods';
@@ -2329,7 +2342,7 @@ function doCtx(){if(ctxKind==='boat'){boardBoat();return;}if(ctxKind==='unboat')
 const SAVE_KEY='monggeul-save-v2',ACCT_KEY='monggeul-acct',GUEST_BAK='monggeul-guest-backup';
 var acct=null,cloud=null,saveBusy=false,lastSaveAt=0,lastSaveOk=0,saveErr='';
 function loveAll(){const o={};for(const d of ANIM_DEFS){try{const n=+localStorage.getItem('monggeul-love-'+d.id)||0;if(n)o[d.id]=n;}catch(e){}}return o;}
-function collectSave0(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,floats:GS.floats||[],float:GS.float|0,tankUp:GS.tankUp|0,reels:GS.reels||[],reel:GS.reel|0,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
+function collectSave0(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,floats:GS.floats||[],float:GS.float|0,tankUp:GS.tankUp|0,reels:GS.reels||[],reel:GS.reel|0,lotPend:GS.lotPend||null,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
 function applySave0(d){if(!d||typeof d!=='object')return false;
  const L=d.look;if(L&&[L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK={hat:clamp(L.hat,0,6),hc:clamp(L.hc,0,COLORS.length-1),cloth:clamp(L.cloth,0,4),cc:clamp(L.cc,0,COLORS.length-1)};
  if(d.name&&Number.isInteger(d.name.a)&&Number.isInteger(d.name.b)){const ck=checkNick(d.name.nk||'');NAME={a:d.name.a,b:d.name.b,nk:ck.ok?ck.nick:''};}
@@ -2338,7 +2351,7 @@ function applySave0(d){if(!d||typeof d!=='object')return false;
  if(d.love&&typeof d.love==='object')for(const[k,v]of Object.entries(d.love))try{localStorage.setItem('monggeul-love-'+k,String(v|0));}catch(e){}
  if(Array.isArray(d.emoji)){const f=d.emoji.filter(e=>EMOJI_SET.has(e)).slice(0,5);if(f.length===5)recentEmoji=f;}
  const g=d.gs||{};GS.money=clamp(Math.floor(+g.money||0),0,1e9);GS.rods=[...new Set([1,...(Array.isArray(g.rods)?g.rods:[]).map(x=>x|0).filter(x=>x>=1&&x<=7)])].sort();GS.rod=GS.rods.includes(g.rod|0)?g.rod|0:Math.max(...GS.rods);
- GS.packs=[...new Set((Array.isArray(g.packs)?g.packs:[]).map(x=>x|0).filter(x=>x>=1&&x<PACKS.length))].sort();GS.pack=GS.packs.includes(g.pack|0)?g.pack|0:0;GS.floats=[...new Set((Array.isArray(g.floats)?g.floats:[]).map(x=>x|0).filter(x=>x>=1&&x<FLOATS.length))].sort((a,b)=>a-b);GS.float=GS.floats.includes(g.float|0)?g.float|0:0;GS.tankUp=clamp(g.tankUp|0,0,TANK_LV_MAX);tankCr=[];GS.reels=[...new Set((Array.isArray(g.reels)?g.reels:[]).map(x=>x|0).filter(x=>x>=1&&x<REELS.length))].sort((a,b)=>a-b);GS.reel=GS.reels.includes(g.reel|0)?g.reel|0:0;if(P.char)setCharReel(P.char,GS.reel);if(P.char)setCharPack(P.char,GS.pack);
+ GS.packs=[...new Set((Array.isArray(g.packs)?g.packs:[]).map(x=>x|0).filter(x=>x>=1&&x<PACKS.length))].sort();GS.pack=GS.packs.includes(g.pack|0)?g.pack|0:0;GS.floats=[...new Set((Array.isArray(g.floats)?g.floats:[]).map(x=>x|0).filter(x=>x>=1&&x<FLOATS.length))].sort((a,b)=>a-b);GS.float=GS.floats.includes(g.float|0)?g.float|0:0;GS.tankUp=clamp(g.tankUp|0,0,TANK_LV_MAX);tankCr=[];GS.reels=[...new Set((Array.isArray(g.reels)?g.reels:[]).map(x=>x|0).filter(x=>x>=1&&x<REELS.length))].sort((a,b)=>a-b);GS.reel=GS.reels.includes(g.reel|0)?g.reel|0:0;GS.lotPend=(g.lotPend&&Array.isArray(g.lotPend.c)&&g.lotPend.c.length===6&&[0,1200,3000,6000,12000,30000,2000,5000,10000,20000,50000].includes(g.lotPend.p|0))?{p:g.lotPend.p|0,c:g.lotPend.c.map(String),n:String(g.lotPend.n||''),...(g.lotPend.f?{f:1}:{})}:null;if(P.char)setCharReel(P.char,GS.reel);if(P.char)setCharPack(P.char,GS.pack);
  GS.bag=(Array.isArray(g.bag)?g.bag:[]).filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,1000).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
  GS.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&(DISH[f.k]||/^f\d$/.test(f.k))).slice(0,300).map(f=>({k:f.k,s:SP_BY[f.s]?f.s:''}));
  GS.buffUntil=Number.isFinite(+g.buffUntil)?+g.buffUntil:0;GS.ease=clamp(+g.ease||0,0,0.2);GS.easeUntil=Number.isFinite(+g.easeUntil)?+g.easeUntil:0;GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});LEG.n=Math.max(LEG.n,(+GS.stats.leg||0)|0);if(Array.isArray(GS.stats.nofol)){NOFOL.clear();for(const id of GS.stats.nofol)NOFOL.add(String(id));try{localStorage.setItem('monggeul-nofollow',JSON.stringify([...NOFOL]));}catch(e){}}
@@ -2565,9 +2578,15 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-12m';
+const NEWS_VER='2026-11-12p';
 const NEWS=[
- {d:'11월 12일',t:'🧵 릴이 나왔어요',n:true,i:[
+ {d:'11월 12일',t:'🎫 아몰랑복권이 나왔어요',n:true,i:[
+  '🐉 용왕님 상점에 <b>🎫 복권</b> 칸이 생겼어요. 한 장 <b>3,000몰랑</b>, 은박 6칸을 긁어서 <b>같은 그림 3개</b>가 나오면 당첨이에요.',
+  '🏰🏰🏰 <b>특등(0.1%)</b> — 복권에서만 나오는 전설의 <b>🏰 용궁 산호성 찌</b>! ★1·★2·★3 물고기가 안 걸리고 ★7 확률 2배 (입질 약 20% 늦게 · ★4 이상 낚싯대).',
+  '🌈 1등 30,000 · 🐋 2등 12,000 · 🐬 3등 6,000 · 🐙 4등 3,000(본전) · 🦀 위로상 1,200몰랑. 확률은 상점에 모두 공개돼 있어요.',
+  '📅 하루 20장까지 살 수 있어요. 1등·특등이 나오면 섬 채팅에 자동으로 알려져요.',
+  '💾 긁다가 창을 닫아도 괜찮아요. 결과는 산 순간 정해지고 저장돼서, 다음에 상점에서 이어서 긁을 수 있어요.']},
+ {d:'11월 12일',t:'🧵 릴이 나왔어요',i:[
   '🐉 용왕님 상점에 <b>🧵 릴</b> 칸이 생겼어요. 릴을 달면 줄을 감는 힘이 세져서 어려운 물고기도 더 쉽게 끌어와요.',
   '🐚 <b>소라 껍데기 릴</b> (50,000몰랑) — 감는 속도 +12% · 줄이 팽팽해지는 속도 -8%. 분홍 소라 껍데기와 진주 손잡이.',
   '🐋 <b>황금 고래 릴</b> (120,000몰랑) — 감는 속도 +25% · 줄이 팽팽해지는 속도 -18%. 고래 꼬리 손잡이와 붉은 보석, 감을 때 금빛 반짝이.',
@@ -3233,7 +3252,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12n';
+const BUILD='2026-11-12p';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[]};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3272,14 +3291,14 @@ function merge3(B,L,S){B=B&&typeof B==='object'?B:null;L=L||{};S=S||{};
  const hm={},LH=L.hm||{},SH=S.hm||{};for(const k of new Set([...Object.keys(SH),...Object.keys(LH)]))hm[k]=Math.max(+SH[k]||0,+LH[k]||0);M.hm=hm;
  const bg=B?(B.gs||{}):null,lg=L.gs||{},sg=S.gs||{};const g=Object.assign({},sg);
  g.money=nm(bg&&bg.money,lg.money,sg.money);
- g.rods=[...new Set([...(sg.rods||[]),...(lg.rods||[])])].sort((a,b)=>a-b);g.packs=[...new Set([...(sg.packs||[]),...(lg.packs||[])])].sort((a,b)=>a-b);g.floats=[...new Set([...(sg.floats||[]),...(lg.floats||[])])].sort((a,b)=>a-b);g.tankUp=Math.max(sg.tankUp|0,lg.tankUp|0);g.reels=[...new Set([...(sg.reels||[]),...(lg.reels||[])])].sort((a,b)=>a-b);g.reel=pk(bg&&bg.reel,lg.reel,sg.reel);g.float=pk(bg&&bg.float,lg.float,sg.float);
+ g.rods=[...new Set([...(sg.rods||[]),...(lg.rods||[])])].sort((a,b)=>a-b);g.packs=[...new Set([...(sg.packs||[]),...(lg.packs||[])])].sort((a,b)=>a-b);g.floats=[...new Set([...(sg.floats||[]),...(lg.floats||[])])].sort((a,b)=>a-b);g.tankUp=Math.max(sg.tankUp|0,lg.tankUp|0);g.reels=[...new Set([...(sg.reels||[]),...(lg.reels||[])])].sort((a,b)=>a-b);g.reel=pk(bg&&bg.reel,lg.reel,sg.reel);g.lotPend=pk(bg&&bg.lotPend,lg.lotPend,sg.lotPend);g.float=pk(bg&&bg.float,lg.float,sg.float);
  g.rod=pk(bg&&bg.rod,lg.rod,sg.rod);g.pack=pk(bg&&bg.pack,lg.pack,sg.pack);
  g.bag=mergeItems(bg&&bg.bag,lg.bag,sg.bag);g.food=mergeFood(bg&&bg.food,lg.food,sg.food);
  g.buffUntil=Math.max(+sg.buffUntil||0,+lg.buffUntil||0);
  if((+lg.easeUntil||0)>(+sg.easeUntil||0)){g.ease=lg.ease;g.easeUntil=lg.easeUntil;}
  const bs=(bg&&bg.stats)||{},ls=lg.stats||{},ss=sg.stats||{};const st=Object.assign({},ss);
  for(const k of new Set([...Object.keys(ss),...Object.keys(ls)])){
-  if(k==='leg')st.leg=Math.max(+ss.leg||0,+ls.leg||0);
+  if(k==='leg'||k==='lotBest')st[k]=Math.max(+ss[k]||0,+ls[k]||0);
   else if(typeof ls[k]==='number'||typeof ss[k]==='number')st[k]=nm(bs[k],ls[k],ss[k]);
   else st[k]=pk(bs[k],ls[k],ss[k]);}
  g.stats=st;M.gs=g;return M;}
@@ -3446,11 +3465,13 @@ var FLOATS=[null,
  {lv:1,name:'상어 지느러미찌',em:'🦈',short:'🦈찌',price:70000,block:1,slow:0.2,leg:1.2,minRod:2,
   desc:'수면 위로 쏙 나온 상어 지느러미가 찌 주변을 빙글빙글 돌아요. 상어가 지키는 자리라 작은 ★1 물고기는 얼씬도 못 해요.'},
  {lv:2,name:'꼬마 등대찌',em:'💡',short:'💡등대찌',price:150000,block:2,slow:0.3,leg:1.5,minRod:3,
-  desc:'빨강·하양 줄무늬 꼬마 등대예요. 꼭대기 불빛이 빙글 돌며 바다를 비추면 작은 ★1·★2 물고기는 눈이 부셔 비켜 가고, 큰 물고기만 불빛을 따라와요.'}];
+  desc:'빨강·하양 줄무늬 꼬마 등대예요. 꼭대기 불빛이 빙글 돌며 바다를 비추면 작은 ★1·★2 물고기는 눈이 부셔 비켜 가고, 큰 물고기만 불빛을 따라와요.'},
+ {lv:3,name:'용궁 산호성 찌',em:'🏰',short:'🏰산호성찌',price:0,lotto:true,block:3,slow:0.2,leg:2,minRod:4,
+  desc:'용궁의 산호성 하나를 통째로 띄운 전설의 찌예요. 분홍·하늘빛 산호 탑과 금빛 지붕, 빛나는 물방울이 보글보글 올라와요. 용왕님이 초대한 귀한 손님(★4 이상)만 다가와요. 🎫 아몰랑복권 특등에서만 얻을 수 있어요.'}];
 var FL_LEG=1.5,FBLK=0;
 function floatOn(){const F=FLOATS[GS.float|0];if(!F||!(GS.floats||[]).includes(F.lv))return null;return GS.rod>=F.minRod?F:null;}
 function floatSlow(){const F=floatOn();return 1+(F?F.slow:0);}
-function blockTxt(F){return F.block>1?'★1·★2':'★1';}
+function blockTxt(F){return F.block>2?'★1·★2·★3':F.block>1?'★1·★2':'★1';}
 function floatHud(){const F=FLOATS[GS.float|0];if(!F)return'';return floatOn()?` · ${F.short}`:` · ${F.short}(꺼짐)`;}
 function floatTags(F){return`🚫 <b>${blockTxt(F)} 물고기가 걸리지 않아요</b> · 🌈 ★7 무지개 전설 확률 <b>${F.leg}배</b><br>⏳ 예민한 찌라 입질이 조금 늦게 와요 (약 ${Math.round(F.slow*100)}%) · 🎣 ★${F.minRod} 이상 낚싯대에서 쓸 수 있어요<br>📖 끼운 동안 ${blockTxt(F)} 물고기는 도감에 안 들어와요 (도감을 채우려면 잠깐 빼 두세요)`;}
 function equipFloat(lv,quiet){lv=lv|0;if(lv&&!(GS.floats||[]).includes(lv))return false;const F=FLOATS[lv];
@@ -3459,7 +3480,7 @@ function equipFloat(lv,quiet){lv=lv|0;if(lv&&!(GS.floats||[]).includes(lv))retur
  if(!quiet){sfx.pop();toast(F?`${F.em} ${F.name}${josa(F.name,'을','를')}끼웠어요! ${blockTxt(F)} 물고기가 안 걸리고 ★7 확률이 ${F.leg}배예요 · 입질은 조금 늦어요`:'🎣 기본 찌로 바꿨어요. 모든 물고기가 다시 걸려요',4200);}
  return true;}
 function floatRodCheck(){const F=FLOATS[GS.float|0];if(F&&GS.rod<F.minRod)setTimeout(()=>toast(`${F.em} ${F.name}${josa(F.name,'은','는')} ★${F.minRod} 이상 낚싯대에서만 효과가 있어서 지금은 꺼져 있어요`,3800),900);}
-function buyFloat(lv){const F=FLOATS[lv];if(!F||(GS.floats||[]).includes(lv))return;
+function buyFloat(lv){const F=FLOATS[lv];if(!F||F.lotto||(GS.floats||[]).includes(lv))return;
  if(GS.money<F.price){toast(`몰랑이 ${fmtM(F.price-GS.money)} 부족해요. 물고기를 잡아서 팔아 보세요!`,3000);return;}
  GS.money-=F.price;GS.floats=[...new Set([...(GS.floats||[]),lv])].sort((a,b)=>a-b);markSave();updateHUD();
  if(GS.rod>=F.minRod){equipFloat(lv,true);toast(`${F.em} ${F.name}${josa(F.name,'을','를')} 끼웠어요! 가방 › 🎣 장비·옷에서 언제든 빼거나 바꿀 수 있어요`,4200);}
@@ -3475,6 +3496,7 @@ function floatRow(F,mode){const lv=F?F.lv:0,own=!F||(GS.floats||[]).includes(lv)
  const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');
  if(on){b.textContent=F?'빼기':'사용 중';if(F)b.onclick=()=>{equipFloat(0);mode==='shop'?renderShop():renderBag();};else b.disabled=true;}
  else if(own){b.textContent=F?'끼우기':'바꾸기';b.onclick=()=>{if(equipFloat(lv))mode==='shop'?renderShop():renderBag();};}
+ else if(F.lotto){b.innerHTML='🎫 복권<small>특등 전용</small>';b.disabled=true;}
  else{b.innerHTML=`${fmtM(F.price)}<small>몰랑</small>`;b.className='buy'+(GS.money<F.price?' poor':'');b.onclick=()=>buyFloat(lv);}
  acts.appendChild(b);row.append(c,tx,acts);return row;}
 function renderFloatShop(box){const F=FLOATS[GS.float|0];
@@ -3484,7 +3506,7 @@ function renderFloatShop(box){const F=FLOATS[GS.float|0];
 function renderFloatGear(box){const t=document.createElement('div');t.className='btitle';t.textContent='🎯 찌';box.appendChild(t);
  const list=document.createElement('div');list.className='ilist flts';list.appendChild(floatRow(null,'bag'));
  for(let i=1;i<FLOATS.length;i++)if((GS.floats||[]).includes(i))list.appendChild(floatRow(FLOATS[i],'bag'));box.appendChild(list);
- if((GS.floats||[]).length<FLOATS.length-1){const n=document.createElement('div');n.className='bsub';n.textContent='🦈 상어 지느러미찌 · 💡 꼬마 등대찌는 🐉 용왕님 상점의 🎯 찌 칸에서 살 수 있어요.';box.appendChild(n);}}
+ if((GS.floats||[]).length<FLOATS.length-1){const n=document.createElement('div');n.className='bsub';n.textContent='🦈 상어 지느러미찌 · 💡 꼬마 등대찌는 🐉 용왕님 상점의 🎯 찌 칸에서 살 수 있어요. 🏰 용궁 산호성 찌는 🎫 아몰랑복권 특등에서만 나와요.';box.appendChild(n);}}
 
 /* 상점·가방 그림 */
 function drawFloatIcon(c,w,h,lv){c.clearRect(0,0,w,h);c.save();c.lineJoin='round';c.lineCap='round';
@@ -3505,6 +3527,18 @@ function drawFloatIcon(c,w,h,lv){c.clearRect(0,0,w,h);c.save();c.lineJoin='round
   c.fillStyle='#2d3440';c.fillRect(cx-10,y1-2,20,3);
   const gl=c.createRadialGradient(cx,top+8,0,cx,top+8,20);gl.addColorStop(0,'rgba(255,240,150,1)');gl.addColorStop(1,'rgba(255,220,90,0)');c.fillStyle=gl;c.beginPath();c.arc(cx,top+8,20,0,Math.PI*2);c.fill();
   c.fillStyle='#fff3b0';c.fillRect(cx-6,top+3,12,10);c.fillStyle='#d8323a';c.beginPath();c.moveTo(cx-9,top+3);c.lineTo(cx,top-7);c.lineTo(cx+9,top+3);c.closePath();c.fill();}
+ else if(lv===3){const gold='#f5c443';
+  const glow=c.createRadialGradient(cx,wy-26,4,cx,wy-26,48);glow.addColorStop(0,'rgba(255,240,170,.55)');glow.addColorStop(1,'rgba(255,240,170,0)');c.fillStyle=glow;c.fillRect(0,0,w,h);
+  c.fillStyle='#f3a6b8';c.beginPath();c.ellipse(cx,wy+1,30,7,0,0,Math.PI*2);c.fill();
+  const tower=(x,bw,th,col,roofCol)=>{c.fillStyle=col;c.fillRect(x-bw/2,wy-th,bw,th);c.fillStyle='rgba(255,255,255,.35)';c.fillRect(x-bw/2+2,wy-th,3,th);
+   for(let i=0;i<3;i++){c.fillStyle=col;c.fillRect(x-bw/2+i*bw/2.5-1,wy-th-4,bw/5,4);}
+   c.fillStyle=roofCol;c.beginPath();c.moveTo(x-bw/2-3,wy-th-4);c.lineTo(x,wy-th-4-bw*1.1);c.lineTo(x+bw/2+3,wy-th-4);c.closePath();c.fill();
+   c.fillStyle='#ffe58a';c.beginPath();c.ellipse(x,wy-th*0.6,bw*0.16,bw*0.22,0,0,Math.PI*2);c.fill();};
+  tower(cx-20,13,30,'#8fd8ff',gold);tower(cx+20,13,30,'#8fd8ff',gold);tower(cx,17,46,'#ff9fbf',gold);
+  c.fillStyle='#fffaf2';c.beginPath();c.arc(cx,wy-46-4-17*1.1-3,3.5,0,Math.PI*2);c.fill();
+  c.fillStyle=gold;c.beginPath();c.moveTo(cx-6,wy);c.lineTo(cx-6,wy-9);c.quadraticCurveTo(cx,wy-16,cx+6,wy-9);c.lineTo(cx+6,wy);c.closePath();c.fill();
+  c.strokeStyle='#ff7a8a';c.lineWidth=3;for(const[x,d]of[[cx-32,-1],[cx+32,1]]){c.beginPath();c.moveTo(x,wy);c.lineTo(x+d*2,wy-12);c.moveTo(x+d*1,wy-6);c.lineTo(x+d*6,wy-10);c.stroke();}
+  c.fillStyle='rgba(255,255,255,.85)';for(const[x,y,rr]of[[cx-30,wy-30,3],[cx+28,wy-40,2.5],[cx+34,wy-22,2],[cx-36,wy-48,2]]){c.beginPath();c.arc(x,y,rr,0,Math.PI*2);c.fill();}}
  else{c.fillStyle='#ff8a3d';c.beginPath();c.ellipse(cx,wy-6,9,12,0,0,Math.PI*2);c.fill();c.fillStyle='#fff';c.fillRect(cx-1.5,wy-36,3,20);c.fillStyle='#ff4d4d';c.beginPath();c.arc(cx,wy-38,6,0,Math.PI*2);c.fill();}
  c.restore();}
 
@@ -3538,10 +3572,37 @@ function buildLighthouseFloat(){const g=new THREE.Group();
  const sparks=[];for(let i=0;i<6;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:lhSparkTex(),color:i%3===1?'#fff2b8':'#ffffff',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0,fog:false}));
   const a=i/6*Math.PI*2+Math.random()*0.5;sp.userData={a,r:0.12+Math.random()*0.08,y:0.08+Math.random()*0.32,ph:Math.random()*6.3,sp:0.9+Math.random()*0.8,sz:0.085+Math.random()*0.045};g.add(sp);sparks.push(sp);}
  g.userData={lampMat,glow,beam,beamMats,pool,sparks};return g;}
+function buildCastleFloat(){const g=new THREE.Group();
+ const pink=new THREE.MeshStandardMaterial({color:'#ff9fbf',roughness:0.5,emissive:'#7a2a44',emissiveIntensity:0.35});
+ const sky=new THREE.MeshStandardMaterial({color:'#8fd8ff',roughness:0.5,emissive:'#1d5478',emissiveIntensity:0.35});
+ const gold=new THREE.MeshStandardMaterial({color:'#ffd05a',metalness:0.75,roughness:0.28,emissive:'#6a4a00',emissiveIntensity:0.35});
+ const pearl=new THREE.MeshStandardMaterial({color:'#fffaf2',metalness:0.3,roughness:0.12});
+ const winM=new THREE.MeshStandardMaterial({color:'#fff1a8',emissive:'#ffd24d',emissiveIntensity:0.8,roughness:0.4});
+ const coral=new THREE.MeshStandardMaterial({color:'#ff7a8a',roughness:0.7});const sand=new THREE.MeshStandardMaterial({color:'#f6c9d4',roughness:0.85});
+ const add=(geom,mat,x,y,z,rx=0,ry=0,rz=0)=>{const m=new THREE.Mesh(geom,mat);m.position.set(x,y,z);m.rotation.set(rx,ry,rz);g.add(m);return m;};
+ add(geo('csBase',()=>new THREE.CylinderGeometry(0.1,0.12,0.04,16)),sand,0,0.005,0);
+ add(geo('csRing',()=>new THREE.TorusGeometry(0.105,0.008,6,24).rotateX(Math.PI/2)),gold,0,0.026,0);
+ const tower=(x,z,r,h,mat,roofH)=>{add(geo('csT'+r+h,()=>new THREE.CylinderGeometry(r,r*1.08,h,14)),mat,x,0.025+h/2,z);
+  for(let i=0;i<6;i++){const a=i/6*Math.PI*2;add(geo('csBt'+r,()=>new THREE.BoxGeometry(r*0.42,r*0.45,r*0.42)),mat,x+Math.cos(a)*r*0.92,0.025+h+r*0.2,z+Math.sin(a)*r*0.92,0,-a,0);}
+  add(geo('csRf'+r,()=>new THREE.ConeGeometry(r*1.18,roofH,14)),gold,x,0.025+h+r*0.42+roofH/2,z);
+  add(geo('csWin'+r,()=>new THREE.SphereGeometry(r*0.3,10,8)),winM,x,0.025+h*0.62,z+r*0.97).scale.set(0.8,1.15,0.3);
+  return 0.025+h+r*0.42+roofH;};
+ const top=tower(0,0,0.04,0.2,pink,0.09);tower(-0.068,0.02,0.027,0.12,sky,0.065);tower(0.068,0.02,0.027,0.12,sky,0.065);tower(0,-0.06,0.024,0.1,sky,0.055);
+ add(geo('csPearl',()=>new THREE.SphereGeometry(0.018,14,10)),pearl,0,top+0.012,0);
+ add(geo('csFlagP',()=>new THREE.CylinderGeometry(0.003,0.003,0.05,6)),gold,0.068,0.31,0.02);
+ add(geo('csFlag',()=>new THREE.PlaneGeometry(0.035,0.022)),new THREE.MeshStandardMaterial({color:'#ff5e7e',side:THREE.DoubleSide,roughness:0.6}),0.087,0.322,0.02);
+ const gate=add(geo('csGate',()=>{const s=new THREE.Shape();s.moveTo(-0.022,0);s.lineTo(-0.022,0.035);s.quadraticCurveTo(0,0.06,0.022,0.035);s.lineTo(0.022,0);s.closePath();return new THREE.ExtrudeGeometry(s,{depth:0.01,bevelEnabled:false});}),gold,0,0.026,0.036);
+ for(const[x,z,ry]of[[-0.1,0.03,0.4],[0.1,0.04,-0.5],[-0.06,-0.08,1.2]]){add(geo('csC1',()=>new THREE.CylinderGeometry(0.005,0.009,0.07,6)),coral,x,0.05,z,0.25,ry,0.2);add(geo('csC2',()=>new THREE.CylinderGeometry(0.004,0.006,0.04,6)),coral,x+0.012,0.07,z,0,ry,-0.7);}
+ const glow=glowSprite('#ffe6a0',0.5);glow.position.y=0.2;g.add(glow);
+ const pool=new THREE.Mesh(geo('lhPl',()=>new THREE.PlaneGeometry(1.1,1.1).rotateX(-Math.PI/2)),new THREE.MeshBasicMaterial({map:GLOW_TEX,color:'#ffcf6a',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.2,fog:false}));pool.position.y=0.012;pool.scale.setScalar(0.8);g.add(pool);
+ const bubbles=[];for(let i=0;i<8;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW_TEX,color:i%3===0?'#ffe7a8':(i%2?'#bff0ff':'#ffd1e6'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0,fog:false}));
+  sp.userData={a:Math.random()*6.3,r:0.08+Math.random()*0.08,ph:Math.random(),sp:0.25+Math.random()*0.2,sz:0.035+Math.random()*0.03};g.add(sp);bubbles.push(sp);}
+ const sparks=[];for(let i=0;i<5;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:lhSparkTex(),color:'#fff2b8',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0,fog:false}));sp.userData={a:i/5*Math.PI*2,y:0.1+Math.random()*0.25,ph:Math.random()*6};g.add(sp);sparks.push(sp);}
+ g.scale.setScalar(1.35);g.userData={winM,gold,glow,pool,bubbles,sparks,gate};return g;}
 function setFloatStyle(f,lv){if(f.userData.lv===lv)return;f.userData.lv=lv;
  if(f.userData.deco){f.remove(f.userData.deco);f.userData.deco=null;}
  for(let i=0;i<4;i++)if(f.children[i])f.children[i].visible=!lv;
- const d=lv===1?buildFinFloat():lv===2?buildLighthouseFloat():null;if(d){f.add(d);f.userData.deco=d;}}
+ const d=lv===1?buildFinFloat():lv===2?buildLighthouseFloat():lv===3?buildCastleFloat():null;if(d){f.add(d);f.userData.deco=d;}}
 const FOAM=[];
 function foam(x,z,sc){let o=FOAM.find(q=>q.life<=0);if(!o){if(FOAM.length>=70)return;const m=new THREE.Mesh(geo('foamPl',()=>new THREE.PlaneGeometry(1,1).rotateX(-Math.PI/2)),new THREE.MeshBasicMaterial({map:GLOW_TEX,color:'#ffffff',transparent:true,depthWrite:false,opacity:0,fog:false}));m.renderOrder=3;scene.add(m);o={m,life:0,sc:1};FOAM.push(o);}
  o.life=0.95;o.sc=sc;o.m.position.set(x,waveH(x,z,t)+0.03,z);o.m.visible=true;}
@@ -3552,6 +3613,9 @@ function updFloat(f,x,z,sink,dip){updFloat0(f,x,z,sink,dip);
  const lt=f.userData.lt??t;const dt=clamp(t-lt,0,0.1);f.userData.lt=t;const bite=sink>0.05,night=S?S.night:0,U=D.userData;
  if(want===1){U.ang+=dt*(bite?7:2.4);U.pivot.rotation.y=U.ang;U.fin.position.y=bite?-0.05*Math.abs(Math.sin(t*14)):0.006*Math.sin(t*3);
   U.ft-=dt;if(U.ft<=0){U.ft=bite?0.05:0.09;U.fin.getWorldPosition(_fv);foam(_fv.x,_fv.z,f.scale.x);}}
+ else if(want===3){const pulse=0.8+0.2*Math.sin(t*2);U.winM.emissiveIntensity=(0.6+1.4*night)*(bite?1.6:1);U.glow.material.opacity=(0.3+0.45*night)*pulse*(bite?1.5:1);U.pool.material.opacity=(0.12+0.25*night)*pulse;U.gold.emissiveIntensity=bite?0.9+0.5*Math.sin(t*20):0.35;
+  for(const b of U.bubbles){const q=b.userData;q.ph+=dt*q.sp*(bite?3:1);if(q.ph>1){q.ph-=1;q.a=Math.random()*6.3;q.r=0.08+Math.random()*0.08;}const k=q.ph;b.position.set(Math.cos(q.a+k*1.5)*q.r,0.03+k*0.42,Math.sin(q.a+k*1.5)*q.r);b.material.opacity=Math.sin(k*Math.PI)*(0.55+0.3*night);const z=q.sz*(0.7+0.6*k);b.scale.set(z,z,1);}
+  for(const sp of U.sparks){const q=sp.userData;const a=q.a+t*0.4;sp.position.set(Math.cos(a)*0.15,q.y+0.02*Math.sin(t+q.ph),Math.sin(a)*0.15);const tw=Math.max(0,Math.sin(t*2.4+q.ph));const k2=tw*tw*tw;sp.material.opacity=k2*(0.5+0.4*night);const z=0.07*(0.6+0.6*k2);sp.scale.set(z,z,1);}}
  else if(want===2){U.beam.rotation.y+=dt*(bite?6:1.9);const blink=bite?(Math.sin(t*22)>0?1:0.25):1;
   U.lampMat.emissiveIntensity=(0.8+1.6*night)*blink;for(const m of U.beamMats)m.opacity=(0.2+0.4*night)*blink;U.glow.material.opacity=(0.35+0.5*night)*blink;U.pool.material.opacity=(0.1+0.25*night)*(0.8+0.2*Math.sin(t*2.2))*blink;
   for(const sp of U.sparks){const q=sp.userData;const a=q.a+t*0.35;sp.position.set(Math.cos(a)*q.r,q.y+0.02*Math.sin(t*1.3+q.ph),Math.sin(a)*q.r);
@@ -3713,6 +3777,84 @@ function updReels(dt){const list=[[P.char,mode==='fish'&&fstate==='fight'&&holdi
  for(const[c,reeling]of list){if(!c||!c.reelG)continue;const U=c.reelG.userData.reel;const sp=reeling?14:0;U.spin.rotation.x+=dt*sp;U.arm.rotation.x+=dt*sp;
   if(U.glow)U.glow.material.opacity=0.35+0.4*(S?S.night:0)+(reeling?0.25:0);
   for(const s of U.sparks){const q=s.userData;const a=q.a+t*(reeling?6:0.8);s.position.set(-0.01,Math.cos(a)*0.07,Math.sin(a)*0.07);const tw=Math.max(0,Math.sin(t*(reeling?9:2.5)+q.ph));const k=tw*tw;s.material.opacity=k*(reeling?0.95:0.45);const z=0.035*(0.6+0.7*k);s.scale.set(z,z,1);}}}
+/* ---------- v43: 🎫 아몰랑복권 (긁는 복권) ---------- */
+var LOT_PRICE=3000,LOT_DAY_MAX=20,LOT_FLOAT=3;
+var LOT_TIERS=[{p:0,f:1,sym:'🏰',w:0.1,name:'특등',x:'용궁 산호성 찌'},{p:30000,sym:'🌈',w:1,name:'1등',x:'×10'},{p:12000,sym:'🐋',w:3,name:'2등',x:'×4'},{p:6000,sym:'🐬',w:8,name:'3등',x:'×2'},{p:3000,sym:'🐙',w:22,name:'4등',x:'본전'},{p:1200,sym:'🦀',w:20,name:'위로상',x:'×0.4'},{p:0,sym:'',w:45.9,name:'꽝',x:''}];
+const LOT_SYMS=['🌈','🐋','🐬','🐙','🦀','🐟','🏰'];
+function lotToday(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function lotSt(){const s=GS.stats||(GS.stats={});if(s.lotDay!==lotToday()){s.lotDay=lotToday();s.lotDayN=0;}return s;}
+function lotLeft(){return Math.max(0,LOT_DAY_MAX-(lotSt().lotDayN|0));}
+function lotDraw(){let r=Math.random()*100,T=LOT_TIERS[LOT_TIERS.length-1];for(const x of LOT_TIERS){if(r<x.w){T=x;break;}r-=x.w;}
+ // 그림 6칸: 당첨이면 그 그림 3개, 나머지는 어떤 그림도 3개가 되지 않게
+ const cells=[];const cnt={};const put=s=>{cells.push(s);cnt[s]=(cnt[s]||0)+1;};
+ const win=T.p>0||T.f;if(win)for(let i=0;i<3;i++)put(T.sym);
+ let guard=0;while(cells.length<6&&guard++<200){const s=LOT_SYMS[(Math.random()*LOT_SYMS.length)|0];if(s===T.sym&&win)continue;if((cnt[s]||0)>=2)continue;put(s);}
+ for(let i=cells.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[cells[i],cells[j]]=[cells[j],cells[i]];}
+ return{p:T.p,c:cells,n:T.name,...(T.f?{f:1}:{})};}
+// 산 순간 결과가 정해지고 저장돼요 → 새로고침해도 다시 뽑을 수 없고, 긁다가 꺼도 당첨금은 다음에 꼭 받아요
+function buyLotto(){if(GS.lotPend){openLotto();return;}
+ if(lotLeft()<=0){toast(`오늘은 복권을 다 샀어요 (하루 ${LOT_DAY_MAX}장). 내일 또 만나요!`,3200);return;}
+ if(GS.money<LOT_PRICE){toast(`몰랑이 ${fmtM(LOT_PRICE-GS.money)} 부족해요. 물고기를 잡아서 팔아 보세요!`,3000);return;}
+ const s=lotSt();GS.money-=LOT_PRICE;s.lotDayN=(s.lotDayN|0)+1;s.lotN=(s.lotN|0)+1;GS.lotPend=lotDraw();markSave();updateHUD();sfx.pop();openLotto();}
+function lotPayout(){const L=GS.lotPend;if(!L)return null;GS.lotPend=null;const s=lotSt();
+ if(L.f){if((GS.floats||[]).includes(LOT_FLOAT)){L.dup=1;L.p=LOT_TIERS[1].p;}else{GS.floats=[...new Set([...(GS.floats||[]),LOT_FLOAT])].sort((a,b)=>a-b);s.lotFloat=(s.lotFloat|0)+1;if(GS.rod>=FLOATS[LOT_FLOAT].minRod)equipFloat(LOT_FLOAT,true);}}
+ if(L.p>0){GS.money+=L.p;s.lotWon=(s.lotWon|0)+L.p;s.lotBest=Math.max(s.lotBest|0,L.p);}
+ markSave();updateHUD();return L;}
+function openLotto(){if(!GS.lotPend)return;let el=$('lotto');
+ if(!el){el=document.createElement('div');el.id='lotto';el.className='ltov';
+  el.innerHTML=`<div class="ltcard"><div class="lthead"><span>🐉</span><b>아몰랑복권</b><small>같은 그림 3개면 당첨!</small></div>
+  <div class="ltgrid-wrap"><div class="ltgrid" id="ltGrid"></div><canvas id="ltCv"></canvas></div>
+  <div class="ltres" id="ltRes">은박을 문질러 긁어 보세요</div>
+  <div class="ltbtns"><button class="ghost" id="ltAll">한 번에 긁기</button><button id="ltMore" class="hidden">🎫 한 장 더</button><button class="ghost" id="ltClose">닫기</button></div></div>`;
+  document.body.appendChild(el);$('ltAll').onclick=()=>lotReveal();$('ltClose').onclick=closeLotto;$('ltMore').onclick=()=>{closeLotto();buyLotto();};
+  const cv=$('ltCv');let down=false,moves=0;const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height];};
+  const scratch=e=>{if(!down||LOT_UI.done)return;const[x,y]=pos(e);const c=cv.getContext('2d');c.globalCompositeOperation='destination-out';c.beginPath();c.arc(x,y,cv.width*0.07,0,Math.PI*2);c.fill();if(LOT_UI.last){c.lineWidth=cv.width*0.14;c.lineCap='round';c.beginPath();c.moveTo(LOT_UI.last[0],LOT_UI.last[1]);c.lineTo(x,y);c.stroke();}LOT_UI.last=[x,y];
+   if(++moves%6===0){sfx.tick();if(lotScratched()>0.62)lotReveal();}};
+  cv.addEventListener('pointerdown',e=>{down=true;LOT_UI.last=null;cv.setPointerCapture(e.pointerId);scratch(e);e.preventDefault();});
+  cv.addEventListener('pointermove',e=>{scratch(e);e.preventDefault();});
+  const up=()=>{down=false;LOT_UI.last=null;if(!LOT_UI.done&&lotScratched()>0.62)lotReveal();};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+  el.addEventListener('click',e=>{if(e.target===el&&LOT_UI.done)closeLotto();});}
+ LOT_UI.done=false;const L=GS.lotPend;
+ $('ltGrid').innerHTML=L.c.map(s=>`<div class="ltc"><span>${s}</span></div>`).join('');
+ $('ltRes').textContent='은박을 문질러 긁어 보세요';$('ltRes').className='ltres';$('ltAll').classList.remove('hidden');$('ltMore').classList.add('hidden');
+ el.classList.add('on');requestAnimationFrame(()=>{const cv=$('ltCv');const r=cv.getBoundingClientRect();cv.width=Math.max(10,Math.round(r.width*1.5));cv.height=Math.max(10,Math.round(r.height*1.5));const c=cv.getContext('2d');c.globalCompositeOperation='source-over';
+  const g=c.createLinearGradient(0,0,cv.width,cv.height);g.addColorStop(0,'#d9dde3');g.addColorStop(0.45,'#f4f6f8');g.addColorStop(0.55,'#c3c9d1');g.addColorStop(1,'#e6e9ed');c.fillStyle=g;c.fillRect(0,0,cv.width,cv.height);
+  c.fillStyle='rgba(120,130,145,.55)';c.font=`900 ${Math.round(cv.width*0.07)}px system-ui,sans-serif`;c.textAlign='center';c.textBaseline='middle';
+  for(let i=0;i<6;i++){const x=(i%3+0.5)*cv.width/3,y=(Math.floor(i/3)+0.5)*cv.height/2;c.fillText('?',x,y);}
+  c.font=`800 ${Math.round(cv.width*0.045)}px system-ui,sans-serif`;c.fillStyle='rgba(110,118,130,.6)';c.fillText('✨ 여기를 긁어요 ✨',cv.width/2,cv.height/2);
+  $('ltCv').style.opacity='1';});}
+var LOT_UI={done:false,last:null};
+function lotScratched(){const cv=$('ltCv');if(!cv)return 0;const c=cv.getContext('2d');const d=c.getImageData(0,0,cv.width,cv.height).data;let clr=0,n=0;for(let i=3;i<d.length;i+=4*37){n++;if(d[i]<40)clr++;}return n?clr/n:0;}
+function lotReveal(){if(LOT_UI.done)return;LOT_UI.done=true;const cv=$('ltCv');cv.style.opacity='0';const L=lotPayout();if(!L)return;
+ const T=L.f?LOT_TIERS[0]:(LOT_TIERS.find(x=>x.p===L.p&&!x.f)||LOT_TIERS[LOT_TIERS.length-1]);
+ if(L.p>0||L.f){document.querySelectorAll('#ltGrid .ltc').forEach((e,i)=>{if(L.c[i]===T.sym)e.classList.add('win');});}
+ const res=$('ltRes');
+ if(L.f){const F=FLOATS[LOT_FLOAT];res.innerHTML=L.dup?`🏰🏰🏰 <b>특등!</b> 이미 ${F.name}${josa(F.name,'이','가')} 있어서 <b>+${fmtM(L.p)} 몰랑</b>으로 바꿔 드렸어요`:`🏰🏰🏰 <b>특등 당첨!</b><br>전설의 <b>${F.name}</b>를 얻었어요!${GS.rod>=F.minRod?' 바로 끼웠어요':` (★${F.minRod} 이상 낚싯대에서 쓸 수 있어요)`}`;res.className='ltres big';for(let i=0;i<8;i++)setTimeout(()=>sfx.pop(),i*100);sfx.bell();burstHearts(P.pos.x,P.pos.y+2.2,P.pos.z,16);lotAnnounce(L.dup?`🎫 아몰랑복권 특등 🏰🏰🏰 당첨! 🎉`:`🎫 아몰랑복권 특등 🏰🏰🏰 당첨! 전설의 ${F.name}를 얻었어요 🎉`);}
+ else if(L.p>=30000){res.innerHTML=`🎉🎉 <b>1등 당첨!</b> ${T.sym}${T.sym}${T.sym} <b>+${fmtM(L.p)} 몰랑</b>`;res.className='ltres big';for(let i=0;i<6;i++)setTimeout(()=>sfx.pop(),i*110);sfx.bell();burstHearts(P.pos.x,P.pos.y+2.2,P.pos.z,14);lotAnnounce(`🎫 아몰랑복권 1등 당첨! 🌈🌈🌈 ${fmtM(L.p)}몰랑 🎉`);}
+ else if(L.p>=6000){res.innerHTML=`🎉 <b>${T.name} 당첨!</b> ${T.sym}${T.sym}${T.sym} <b>+${fmtM(L.p)} 몰랑</b>`;res.className='ltres big';for(let i=0;i<3;i++)setTimeout(()=>sfx.pop(),i*110);burstHearts(P.pos.x,P.pos.y+2.2,P.pos.z,8);}
+ else if(L.p>0){res.innerHTML=`${T.name}! ${T.sym}${T.sym}${T.sym} <b>+${fmtM(L.p)} 몰랑</b>${L.p===LOT_PRICE?' (본전!)':''}`;res.className='ltres win';sfx.pop();}
+ else{res.innerHTML='🐟 꽝… 아몰랑~ 다음엔 될 거야!';res.className='ltres lose';}
+ $('ltAll').classList.add('hidden');const more=$('ltMore');more.classList.remove('hidden');more.textContent=lotLeft()>0?`🎫 한 장 더 (오늘 ${lotLeft()}장 남음)`:'오늘은 다 샀어요';more.disabled=lotLeft()<=0;
+ if(!$('shop').classList.contains('hidden'))renderShop();}
+function closeLotto(){const el=$('lotto');if(!el)return;if(GS.lotPend&&!LOT_UI.done){el.classList.remove('on');toast('긁지 않은 복권은 상점 🎫 복권 칸에서 이어서 긁을 수 있어요',3000);return;}el.classList.remove('on');}
+function lotAnnounce(text){try{const inp=$('chatIn');if(!inp)return;const old=inp.value;inp.value=text;lastChatSend=0;sendChat();inp.value=old;}catch(e){}}
+function drawLottoIcon(c,w,h){c.clearRect(0,0,w,h);c.save();const x=w*0.12,y=h*0.14,tw=w*0.76,th=h*0.72;
+ const g=c.createLinearGradient(x,y,x+tw,y+th);g.addColorStop(0,'#ffe27a');g.addColorStop(1,'#ff9fb8');c.fillStyle=g;c.beginPath();c.roundRect?c.roundRect(x,y,tw,th,10):c.rect(x,y,tw,th);c.fill();
+ c.fillStyle='#fff';c.font='900 15px system-ui,sans-serif';c.textAlign='center';c.fillText('아몰랑복권',x+tw/2,y+19);
+ for(let i=0;i<6;i++){const cx=x+tw*(0.2+0.3*(i%3)),cy=y+th*(0.47+0.3*Math.floor(i/3));c.fillStyle=i<3?'#cfd5dc':'#e6e9ed';c.fillRect(cx-12,cy-9,24,18);}
+ c.font='16px system-ui';c.fillText('🏰',x+tw*0.2,y+th*0.53);c.restore();}
+function renderLottoShop(box){const s=lotSt(),left=lotLeft();
+ const p=document.createElement('div');p.className='bsub';p.innerHTML=`🐉 “한 장 긁어 보겠나? 같은 그림 3개면 당첨일세!” · 오늘 남은 복권 <b>${left} / ${LOT_DAY_MAX}장</b>`;box.appendChild(p);
+ const list=document.createElement('div');list.className='ilist';const row=document.createElement('div');row.className='irow lot';
+ const c=document.createElement('canvas');c.width=150;c.height=110;drawLottoIcon(c.getContext('2d'),150,110);
+ const tx=document.createElement('div');tx.className='itx';tx.innerHTML=`<b>🎫 아몰랑복권</b><small>은박 6칸을 긁어서 <b>같은 그림 3개</b>가 나오면 당첨! 최고 <b>30,000 몰랑</b>, 그리고 <b>0.1%</b> 확률로 복권에서만 나오는 전설의 <b>🏰 용궁 산호성 찌</b>를 받을 수 있어요.</small><small>내 기록: ${fmtM(s.lotN|0)}장 · 당첨 합계 ${fmtM(s.lotWon|0)} 몰랑 · 최고 ${fmtM(s.lotBest|0)} 몰랑${s.lotFloat?' · 🏰 특등 '+s.lotFloat+'번':''}</small>`;
+ const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');
+ if(GS.lotPend){b.textContent='🎫 이어서 긁기';b.onclick=openLotto;}
+ else if(left<=0){b.textContent='내일 또';b.disabled=true;}
+ else{b.innerHTML=`${fmtM(LOT_PRICE)}<small>몰랑</small>`;b.className='buy'+(GS.money<LOT_PRICE?' poor':'');b.onclick=buyLotto;}
+ acts.appendChild(b);row.append(c,tx,acts);list.appendChild(row);box.appendChild(list);
+ const t=document.createElement('div');t.className='lttbl';
+ t.innerHTML='<b>📋 당첨 확률 (모두 공개)</b><table>'+LOT_TIERS.map(x=>`<tr${x.f?' class="ltsp"':''}><td>${x.p||x.f?x.sym.repeat(3):'그 밖'}</td><td>${x.name}</td><td class="n">${x.f?'🏰 용궁 산호성 찌':x.p?fmtM(x.p)+' 몰랑':'0'}</td><td class="n">${x.w}%</td></tr>`).join('')+`</table><small>평균적으로 한 장에 ${fmtM(LOT_TIERS.reduce((a,x)=>a+x.p*x.w/100,0))} 몰랑을 돌려받아요(환급률 ${Math.round(LOT_TIERS.reduce((a,x)=>a+x.p*x.w/100,0)/LOT_PRICE*100)}%). 복권은 재미로만! 하루 ${LOT_DAY_MAX}장까지 살 수 있어요. 특등 찌를 이미 갖고 있으면 1등 상금(${fmtM(LOT_TIERS[1].p)} 몰랑)으로 바꿔 드려요.</small>`;box.appendChild(t);}
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}

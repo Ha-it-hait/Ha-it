@@ -90,7 +90,7 @@ function sanitize(d) {
     lv: Array.isArray(d.lv) ? d.lv.slice(0, 5).filter(e => Array.isArray(e) && e.length === 2).map(e => [idx(e[0], 32), Math.floor(num(e[1], 0, 1e6, 0))]) : [],
     rd: num(d.rd | 0, 1, 7, 1),
     pk: idx(d.pk, 3),
-    fl: idx(d.fl, 3),
+    fl: idx(d.fl, 4),
     rl: idx(d.rl, 3),
     bt: d.bt === 1 ? 1 : 0,
     sd: typeof d.sd === 'string' && /^[a-z0-9]{6,16}$/.test(d.sd) ? d.sd : '',
