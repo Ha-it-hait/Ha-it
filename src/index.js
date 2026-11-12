@@ -6,7 +6,7 @@ import { DurableObject } from 'cloudflare:workers';
 const CAP = 40;          // 섬 하나 정원
 const MAX_ISLANDS = 30;  // 섬 개수 상한
 const HOF_CACHE_MS = 15000; // 명예의 전당 목록 기억 시간
-const LEGEND_MS = 10 * 60 * 1000; // ★7을 잡으면 모두에게 축하 알림 + 무지개 이벤트 (10분)
+const LEGEND_MS = 3 * 60 * 1000; // ★7을 잡으면 모두에게 축하 알림 + 무지개 이벤트 (3분)
 const LEGEND_IDS = new Set(['rainbowwhale', 'auroraray', 'rainbowflyer', 'prismjelly', 'rainbowseahorse', 'chaeunryong', 'chilbokoi', 'rainbowtrout', 'rainbowveil', 'rainbowsturgeon']);
 const MAX_MSG = 4096;    // 메시지 최대 크기(바이트)
 const MAX_RATE = 20;     // 접속자 1명당 초당 최대 메시지 수
@@ -90,6 +90,7 @@ function sanitize(d) {
     lv: Array.isArray(d.lv) ? d.lv.slice(0, 5).filter(e => Array.isArray(e) && e.length === 2).map(e => [idx(e[0], 32), Math.floor(num(e[1], 0, 1e6, 0))]) : [],
     rd: num(d.rd | 0, 1, 7, 1),
     pk: idx(d.pk, 3),
+    fl: idx(d.fl, 3),
     bt: d.bt === 1 ? 1 : 0,
     sd: typeof d.sd === 'string' && /^[a-z0-9]{6,16}$/.test(d.sd) ? d.sd : '',
     ck: ck ? [idx(ck[0], 3), idx(ck[1], 40), r2(num(ck[2], -120, 120, 0)), r2(num(ck[3], -120, 120, 0)), r2(num(ck[4], -50, 50, 0))] : [0, 0, 0, 0, 0],
@@ -274,6 +275,7 @@ function legacyMerge(S, D) {
     money: Math.max(+sg.money || 0, +dg.money || 0),
     rods: [...new Set([...(sg.rods || []), ...(dg.rods || [])])],
     packs: [...new Set([...(sg.packs || []), ...(dg.packs || [])])],
+    floats: [...new Set([...(sg.floats || []), ...(dg.floats || [])])],
     bag: itemsUnion(sg.bag, dg.bag),
   });
   return M;

@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12c">
+<meta name="amollang-build" content="2026-11-12f">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑 낚시 게임</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -267,7 +267,9 @@ body.cine .boatbadge{opacity:0}
 .irow.on{border-color:#4cc38a;background:#f0fbf4}
 .irow canvas{width:84px;height:50px;flex:none;border-radius:10px;background:#eef5f7}
 .irow.rod canvas{width:100px;height:60px;background:linear-gradient(#eef5f7,#dfeaf0)}
-.irow.pack canvas{width:96px;height:70px;background:linear-gradient(#fff8ec,#f3e6cf)}.irow.pack.p1{background:linear-gradient(90deg,#eaf6ff,#fff)}.irow.pack.p1 canvas{background:linear-gradient(#e6f5ff,#cfe8f8)}.irow.pack.p2{background:linear-gradient(90deg,#fff3f8,#fffbea);border-color:#f2c14e}.irow.pack.p2 canvas{background:linear-gradient(#fdf6ff,#fbe9f1)}.irow.pack.on{border-color:#4cc38a}.irow .itx small.cap{color:#2f7a52;font-weight:800}
+.irow.pack canvas{width:96px;height:70px;background:linear-gradient(#fff8ec,#f3e6cf)}.irow.pack.p1{background:linear-gradient(90deg,#eaf6ff,#fff)}.irow.pack.p1 canvas{background:linear-gradient(#e6f5ff,#cfe8f8)}.irow.pack.p2{background:linear-gradient(90deg,#fff3f8,#fffbea);border-color:#f2c14e}.irow.pack.p2 canvas{background:linear-gradient(#fdf6ff,#fbe9f1)}.irow.pack.on{border-color:#4cc38a}
+.irow.flt canvas{width:96px;height:70px;background:linear-gradient(#e8f6ff,#cfe6f5);border-radius:10px}.irow.flt.f1{background:linear-gradient(90deg,#eef5fb,#fff)}.irow.flt.f2{background:linear-gradient(90deg,#fff8e6,#fff);border-color:#f2c14e}.irow.flt.on{border-color:#4cc38a}.irow .itx small.ftag{color:#2a5d8a;line-height:1.5}.irow .itx small.foff{color:#c0392b;font-weight:800}
+@media (max-width:520px){.irow.flt canvas{width:70px;height:52px}}.irow .itx small.cap{color:#2f7a52;font-weight:800}
 @media (max-width:520px){.irow.pack canvas{width:70px;height:52px}}
 .irow.epic{background:linear-gradient(90deg,#f3f0ff,#fff)}.irow.legend{background:linear-gradient(90deg,#fff3d6,#ffe9f1);border-color:#f2c14e}
 .irow .itx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.irow .itx b{font-size:14.5px}.irow .itx em{font-style:normal;color:#8a7f6a;font-weight:700;font-size:12.5px}
@@ -382,7 +384,7 @@ body.cine .boatbadge{opacity:0}
 <div class="overlay hidden" id="shop"><div class="card wide">
   <div class="mhead"><b>🐉 용왕님 상점</b><span class="money" id="shopMoney"></span><button class="x" id="shopX">✕</button></div>
   <div class="bsub">“허허, 어서 오게나! 좋은 물고기는 값을 후하게 쳐주지.”</div>
-  <div class="tabs"><button data-tab="buy">🎣 낚싯대</button><button data-tab="pack">🎒 가방</button><button data-tab="sell">💰 물고기 팔기</button></div>
+  <div class="tabs"><button data-tab="buy">🎣 낚싯대</button><button data-tab="pack">🎒 가방</button><button data-tab="float">🎯 찌</button><button data-tab="sell">💰 물고기 팔기</button></div>
   <div id="shopBody"></div></div></div>
 <div class="overlay hidden" id="cook"><div class="card wide">
   <div class="mhead"><b>🍳 모닥불 요리</b><button class="x" id="cookX">✕</button></div>
@@ -466,7 +468,7 @@ body.cine .boatbadge{opacity:0}
       <li>낚싯대 ★가 물고기보다 높으면 훨씬 쉽게 끌려와요. 📖 도감에서 물고기별 ★와 필요한 낚싯대를 볼 수 있어요.</li>
     </ul>
     <div class="btitle">🌈 ★7 무지개 전설</div>
-    <ul class="tips"><li><b>럭키비키 일곱 빛깔 무지개 낚싯대</b>(177,777몰랑)를 들면 무지개 꼬리가 따라오고, 던지면 찌를 따라 무지개다리가 놓여요.</li><li>★7 생물은 배 타고 먼 바다(강·연못은 끝까지 멀리)에서만 아주 드물게 나와요. <b>30분마다 3분 동안 무지개가 뜨면 4배</b>로 잘 나오고, <b>누군가 ★7을 잡으면 모두에게 10분 동안 축하 무지개</b>가 떠요. 또 오래 못 만나면 <b>전설의 기운</b>이 쌓여 최대 3배까지 올라가요. ★6 낚싯대로도 도전할 수 있지만 훨씬 어렵고 덜 나와요.</li></ul>
+    <ul class="tips"><li><b>럭키비키 일곱 빛깔 무지개 낚싯대</b>(177,777몰랑)를 들면 무지개 꼬리가 따라오고, 던지면 찌를 따라 무지개다리가 놓여요.</li><li>★7 생물은 배 타고 먼 바다(강·연못은 끝까지 멀리)에서만 아주 드물게 나와요. <b>30분마다 3분 동안 무지개가 뜨면 4배</b>로 잘 나오고, <b>누군가 ★7을 잡으면 모두에게 3분 동안 축하 무지개</b>가 떠요. 또 오래 못 만나면 <b>전설의 기운</b>이 쌓여 최대 3배까지 올라가요(무지개가 뜬 동안에는 기운 대신 딱 4배). 🎯 찌를 끼우면 ★7 확률이 올라가요(🦈 상어 지느러미찌 1.2배 · 💡 꼬마 등대찌 1.5배. 예: 해안 먼 바다 0.1% → 등대찌 0.15% → 무지개 0.6%). ★6 낚싯대로도 도전할 수 있지만 훨씬 어렵고 덜 나와요.</li></ul>
     <div class="btitle">🏆 명예의 전당</div>
     <ul class="tips"><li>모닥불 옆 <b>금빛 비석</b>이 명예의 전당이에요. 생물마다 <b>가장 큰 크기를 잡은 사람</b>의 이름이 새겨지고, 더 큰 걸 잡으면 내 이름으로 바뀌어요. 아직 아무도 못 잡은 생물도 모두 볼 수 있어요.</li></ul>
     <div class="btitle">⛵ 선상낚시</div>
@@ -713,10 +715,11 @@ const SPECIES=[
  {id:"rainbowsturgeon",hab:"fresh",grp:"rainbow",name:"무지개 철갑상어",w:1,time:['night','dawn'],min:150,max:280,str:1,r:7,minP:0.9,shape:"fish",h:0.17,c1:"#4a5a7a",c2:"#e6f0ff",pat:"scales",eye:0.11,rainbow:true,riverOnly:true,flavor:"등에 늘어선 갑옷 비늘판마다 다른 빛이 깃든 강의 고대 왕. 무지개가 강물에 비칠 때 깊은 곳에서 올라온대요.",hint:"밤·새벽 강, 끝까지 멀리 · 무지개 전설(★7)"}
 ];
 SPECIES.forEach(sp=>{if(!sp.grp)sp.grp=sp.hab==='fresh'?'fresh':(sp.id==='starfish'?'critter':'sea');});
-function pickFish(p,hab){
+function pickFish(p,hab,noF){const _F=noF?null:floatOn();FBLK=_F?_F.block:0;
  const ph=phaseOf(hourNow());const fresh=hab!=='sea';let tot=0;
  const ws=SPECIES.map(sp=>{if((sp.hab==='fresh')!==fresh)return 0;if(sp.pondOnly&&hab!=='pond')return 0;if(sp.riverOnly&&hab!=='river')return 0;
-  let w=sp.w;if(sp.riverPref&&hab==='pond')w*=0.3;if(sp.near)w*=1.6-1.2*p;if(!sp.time.includes('any'))w*=sp.time.includes(ph)?2.4:0.3;if(p<sp.minP)w*=0.1;if(starOf(sp)>=7)return 0;w*=starW(starOf(sp),p);if(BOAT.on&&BOAT.far&&!fresh&&starOf(sp)>=4)w*=2;if(starOf(sp)>effStar())w*=0.4;tot+=w;return w;});
+  let w=sp.w;if(sp.riverPref&&hab==='pond')w*=0.3;if(sp.near)w*=1.6-1.2*p;if(!sp.time.includes('any'))w*=sp.time.includes(ph)?2.4:0.3;if(p<sp.minP)w*=0.1;if(starOf(sp)>=7)return 0;if(starOf(sp)<=FBLK)return 0;w*=starW(starOf(sp),p);if(BOAT.on&&BOAT.far&&!fresh&&starOf(sp)>=4)w*=2;if(starOf(sp)>effStar())w*=0.4;tot+=w;return w;});
+ if(!tot&&FBLK)return pickFish(p,hab,true);
  let r=Math.random()*tot,i=0;while(i<ws.length-1&&(ws[i]===0||r>ws[i])){r-=ws[i];i++;}
  const sp=SPECIES[i];const frac=Math.pow(Math.random(),2.2-1.4*p);
  const size=Math.round((sp.min+(sp.max-sp.min)*frac)*10)/10;
@@ -1627,7 +1630,7 @@ function makeFloat(tipHex){const g=new THREE.Group();const b=new THREE.Mesh(geo(
  const st=new THREE.Mesh(geo('flS',()=>new THREE.CylinderGeometry(0.018,0.018,0.3,6)),stdMat('#ffffff',0.5));st.position.y=0.16;g.add(st);
  const tm=new THREE.MeshStandardMaterial({color:tipHex,emissive:tipHex,emissiveIntensity:0.3,roughness:0.4});const tip=new THREE.Mesh(geo('flT',()=>new THREE.SphereGeometry(0.045,10,8)),tm);tip.position.y=0.33;g.add(tip);
  const gl=glowSprite(tipHex,0.9);gl.position.y=0.33;g.add(gl);g.userData={tm,gl};g.visible=false;scene.add(g);return g;}
-function updFloat(f,x,z,sink,dip){const y=waveH(x,z,t)-sink-dip;f.position.set(x,y,z);const dist=camera.position.distanceTo(f.position);f.scale.setScalar(1+dist/16);f.userData.tm.emissiveIntensity=0.3+2.2*S.night;f.userData.gl.material.opacity=0.85*S.night;f.visible=true;}
+function updFloat0(f,x,z,sink,dip){const y=waveH(x,z,t)-sink-dip;f.position.set(x,y,z);const dist=camera.position.distanceTo(f.position);f.scale.setScalar(1+dist/16);f.userData.tm.emissiveIntensity=0.3+2.2*S.night;f.userData.gl.material.opacity=0.85*S.night;f.visible=true;}
 function floatTip(f,out){return out.set(f.position.x,f.position.y+0.33*f.scale.y,f.position.z);}
 function makeLine(){const N=22;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(N*3),3));const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.7}));l.frustumCulled=false;l.visible=false;scene.add(l);return l;}
 function setLine(l,a,b,sag){const p=l.geometry.attributes.position,N=p.count;const mx=(a.x+b.x)/2,my=(a.y+b.y)/2-sag,mz=(a.z+b.z)/2;for(let i=0;i<N;i++){const k=i/(N-1),u=1-k;p.setXYZ(i,u*u*a.x+2*u*k*mx+k*k*b.x,u*u*a.y+2*u*k*my+k*k*b.y,u*u*a.z+2*u*k*mz+k*k*b.z);}p.needsUpdate=true;l.visible=true;}
@@ -1814,7 +1817,7 @@ const RODS=[null,
  {lv:6,name:'신화급 불빠따 낚싯대',price:30000,c1:'#ff5a1f',c2:'#ffd23f',desc:'🔥 신화급! 전국 개미들의 “제발 떡상 가즈아” 기원이 모이고 모여 활활 불타오르는 방망이 낚싯대. 한 번 휘두르면 차트도 물고기도 수직 상승 📈 끝에 달린 빨간 양봉이 위로만 솟아요. ★6 신화의 바다 친구들까지 낚아요. (※ 실제 주가와는 아무 상관 없어요)'},
  {lv:7,name:'럭키비키 일곱 빛깔 무지개 낚싯대',price:177777,c1:'#ff4d4d',c2:'#a65cff',desc:'🌈 비 갠 하늘에 걸린 무지개다리를 한 가닥 떼어 만든 낚싯대. 일곱 빛깔이 모두 모여야 비로소 ★7 무지개 전설에 닿을 수 있대요. 들고 다니면 무지개 꼬리가 따라오고, 던지면 찌를 따라 무지개다리가 놓여요.'},
 ];
-var GS={money:0,rods:[1],rod:1,packs:[],pack:0,bag:[],food:[],buffUntil:0,ease:0,easeUntil:0,stats:{sold:0,cooked:0,earned:0}};
+var GS={money:0,rods:[1],rod:1,packs:[],pack:0,floats:[],float:0,bag:[],food:[],buffUntil:0,ease:0,easeUntil:0,stats:{sold:0,cooked:0,earned:0}};
 const BAG_MAX=30,FOOD_MAX=20,BAG_KEEP_MAX=120;
 var saveDirty=false;
 function markSave(){saveDirty=true;}
@@ -1983,6 +1986,7 @@ function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
    const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');if(GS.rod===lv){b.textContent='장착 중';b.disabled=true;}else{b.textContent='장착하기';b.onclick=()=>{equipRod(lv);renderBag();};}acts.appendChild(b);
    row.append(c,tx,acts);list.appendChild(row);});box.appendChild(list);
   if(GS.rods.length<6){const n=document.createElement('div');n.className='bsub';n.textContent='더 좋은 낚싯대는 마을 모닥불 옆 🐉 용왕님 상점에서 살 수 있어요.';box.appendChild(n);}
+  renderFloatGear(box);
   const t2=document.createElement('div');t2.className='btitle';t2.textContent='👕 옷차림';box.appendChild(t2);
   const o=document.createElement('div');o.className='outfit';const sw=(i)=>`<i style="background:${COLORS[i]}"></i>`;
   o.innerHTML=`<div><span>모자</span><b>${HAT_NAMES[LOOK.hat]}</b>${LOOK.hat===6?'':sw(LOOK.hc)}</div><div><span>옷</span><b>${CLOTH_NAMES[LOOK.cloth]}</b>${sw(LOOK.cc)}</div><div><span>이름</span><b>${nameOf(NAME)}</b></div>`;
@@ -2003,7 +2007,7 @@ function itemRow(sp,size,sub){const row=document.createElement('div');row.classN
  drawFish(c.getContext('2d'),sp,60+(sp.shape==='beak'?6:0),36,fishL(sp,100,30),false);
  const tx=document.createElement('div');tx.className='itx';tx.innerHTML=`<b>${sp.name} <em>${fmtSize(size)}</em></b><small>${sub}</small>`;
  const acts=document.createElement('div');acts.className='acts';row.append(c,tx,acts);return row;}
-function equipRod(lv){if(!GS.rods.includes(lv))return;GS.rod=lv;setCharRod(P.char,lv);markSave();markPresence();sfx.pop();toast(`🎣 ${RODS[lv].name} 장착! ${starRangeTxt(effStar())}`);updateHUD();}
+function equipRod(lv){if(!GS.rods.includes(lv))return;GS.rod=lv;setCharRod(P.char,lv);markSave();markPresence();sfx.pop();toast(`🎣 ${RODS[lv].name} 장착! ${starRangeTxt(effStar())}`);updateHUD();floatRodCheck();}
 
 /* ---------- 상점 UI ---------- */
 let shopTab='buy',sellArm=0;
@@ -2013,6 +2017,7 @@ function closeShop(){$('shop').classList.add('hidden');}
 function renderShop(){$('shopMoney').textContent=`${fmtM(GS.money)} 몰랑`;document.querySelectorAll('#shop .tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===shopTab));
  const box=$('shopBody');box.innerHTML='';
  if(shopTab==='pack'){renderPackShop(box);return;}
+ if(shopTab==='float'){renderFloatShop(box);return;}
  if(shopTab==='buy'){
   const p=document.createElement('div');p.className='bsub';p.textContent='낚싯대 ★가 높을수록 더 힘센(★ 많은) 물고기를 낚을 수 있어요. 산 낚싯대는 바로 장착돼요.';box.appendChild(p);
   const list=document.createElement('div');list.className='ilist rods';
@@ -2051,7 +2056,7 @@ function bookGuideHTML(){const E=effStar(),bl=buffLeft();
  return`<div class="guide"><b>🎣 낚싯대와 물고기의 ★</b><p>물고기의 ★(희귀도)는 잡기 어려운 정도예요. <em>내 낚싯대 ★와 같거나 낮은</em> 물고기는 편하게, <em>★1 높은 물고기</em>는 힘들지만 노력하면 잡을 수 있어요. ★2 이상 높으면 줄을 끊고 달아나요.</p>
  <p>지금: <em>${RODS[GS.rod].name} (★${GS.rod})</em>${bl>0?` + 요리 효과 ★1 (${fmtLeft(bl)} 남음)`:''} → <em>${starRangeTxt(E)}</em></p>
  <p>낚싯대 ★가 물고기 ★보다 높을수록 훨씬 쉽게 끌려와요. ★가 같으면 <em>줄이 빨개질 때 잠깐 손을 떼는</em> 요령이 필요해요. 몰랑은 🐉 용왕님 상점에서 물고기를 팔아 모으고, 요리를 먹으면 ★+1 효과와 함께 낚시 난이도가 쉬워져요(재료 ★가 높을수록 더 쉽게, 오래 걸린 요리일수록 더 오래).</p>
- <p>🌈 <em>★7 무지개 전설</em>: 배 타고 먼 바다(또는 강·연못 끝까지 멀리)에서만 아주 드물게 나와요. 30분마다 3분 동안 <b>무지개가 뜨면 4배</b>! 오래 못 만나면 <b>전설의 기운</b>이 쌓여 최대 3배까지 올라가요. 지금 전설의 기운 <em>${legGauge()}%</em> (×${legPity().toFixed(1)}) · ${rainbowOn()?`🌈 무지개 이벤트 중 (${mmss(rainbowLeftMs())} 남음)`:`다음 무지개까지 ${mmss(rainbowLeftMs())}`}</p>
+ <p>🌈 <em>★7 무지개 전설</em>: 배 타고 먼 바다(또는 강·연못 끝까지 멀리)에서만 아주 드물게 나와요. 30분마다 3분 동안 <b>무지개가 뜨면 4배</b>! 오래 못 만나면 <b>전설의 기운</b>이 쌓여 최대 3배까지 올라가요(무지개가 뜬 동안에는 기운 대신 딱 4배). 🎯 찌를 끼우면 상어 지느러미찌 1.2배 · 꼬마 등대찌 1.5배${floatOn()?' <em>· 지금 '+FLOATS[GS.float].name+' 효과 중</em>':''}. 지금 전설의 기운 <em>${legGauge()}%</em> (×${legPity().toFixed(1)}) · ${rainbowOn()?`🌈 무지개 이벤트 중 (${mmss(rainbowLeftMs())} 남음)`:`다음 무지개까지 ${mmss(rainbowLeftMs())}`}</p>
  <p>📐 <em>물고기 크기</em>: 생물마다 <b>최소~최대 크기</b>가 정해져 있고(각 칸의 📏), 그 사이에서 무작위로 잡혀요. <em>멀리 던질수록 큰 개체</em>가 나올 확률이 높아요. 같은 생물이라도 클수록 상점 가격이 올라가요. 최대 크기는 최소 크기보다 값을 약 1.75배 받아요. 잡은 생물은 📏 아래 막대로 내 최고 기록이 최대 크기의 어디쯤인지 보여줘요. 명예의 전당은 생물별 가장 큰 기록을 겨뤄요.</p>
  <p>📏 <em>거리 힌트</em> (바다는 해안선에서 찌까지 거리): 가까운 물가 0~10m · 조금 멀리 10m~ · 멀리 15~25m~ · 아주 멀리 약 30m(해안에서 끝까지 던지기) · 끝까지 멀리 35m~(부두 끝이나 배). 강·연못은 던지는 힘 기준이에요.</p></div>`;}
 
@@ -2188,7 +2193,7 @@ function onChatHistory(list){if(!Array.isArray(list))return;for(const m of list)
 
 /* ---------- 다른 사람: 낚싯대·요리·채팅·프로필 (공통) ---------- */
 function v2Peer(r,pr,isNew){
- const rd=clamp(pr.rd|0,1,7);r.rd=rd;if(r.char&&r.char.rodLv!==rd)setCharRod(r.char,rd);r.pk=clamp(pr.pk|0,0,PACKS.length-1);if(r.char)setCharPack(r.char,r.pk);if(r.char)r.char.root.userData.peer=r.peer;
+ const rd=clamp(pr.rd|0,1,7);r.rd=rd;if(r.char&&r.char.rodLv!==rd)setCharRod(r.char,rd);r.pk=clamp(pr.pk|0,0,PACKS.length-1);r.fl=clamp(pr.fl|0,0,FLOATS.length-1);if(r.char)setCharPack(r.char,r.pk);if(r.char)r.char.root.userData.peer=r.peer;
  const ck=Array.isArray(pr.ck)&&pr.ck.length===5?pr.ck:[0,0,0,0,0];const st=clamp(ck[0]|0,0,2),code=clamp(ck[1]|0,0,DISH_CODES.length-1);
  if(st===0){if(r.cookT){scene.remove(r.cookT);r.cookT=null;}}
  else{const x=num(ck[2],0,-120,120),z=num(ck[3],0,-120,120),yaw=num(ck[4],0,-50,50);if(!r.cookT){r.cookT=buildTable();scene.add(r.cookT);}r.cookT.position.set(x,groundY(x,z),z);r.cookT.rotation.y=yaw;setTableStage(r.cookT,st,code);
@@ -2200,7 +2205,7 @@ function v2Peer(r,pr,isNew){
   if(isNew||r.cmSeq===undefined){r.cmSeq=seq;if(Array.isArray(pr.cl))for(const e of pr.cl.slice(-5))if(Array.isArray(e))chatAdd({ts:+e[0]||0,pid:r.peer,name:r.name,text:cleanChat(e[1]),me:false});}
   else if(seq!==r.cmSeq){r.cmSeq=seq;const text=cleanChat(cm[1]);if(text){chatAdd({ts:Date.now(),pid:r.peer,name:r.name,text,me:false});if(!mutedPeers.has(r.peer)){showBubble(r.label,text,false,10);r.hopT=t;}}}}}
 function myProfile(){return{r:GS.rod,k:tank.slice(0,50).map(o=>[SP_IDX.get(o.id)??0,o.s]),b:Object.keys(book).length};}
-function v2Presence(o){o.bt=BOAT.on?1:0;o.sd=MY_SID;o.lv=myLoveTop();o.rd=GS.rod;o.pk=GS.pack|0;o.nk=NAME.nk||'';o.ck=ME.ck||[0,0,0,0,0];if(netMode!=='ws'){o.cm=ME.cm||[0,''];o.cl=ME.cl||[];o.pf=myProfile();}return o;}
+function v2Presence(o){o.bt=BOAT.on?1:0;o.sd=MY_SID;o.lv=myLoveTop();o.rd=GS.rod;o.pk=GS.pack|0;o.fl=floatOn()?GS.float|0:0;o.nk=NAME.nk||'';o.ck=ME.ck||[0,0,0,0,0];if(netMode!=='ws'){o.cm=ME.cm||[0,''];o.cl=ME.cl||[];o.pf=myProfile();}return o;}
 function onNetMsg(m){if(m.t==='c'){onChatMsg(m);return true;}
  if(m.t==='lg'){applyLegend(m);return true;}
  if(m.t==='gp'&&m.from){try{ws.send(JSON.stringify({t:'pf',to:String(m.from),d:myProfile()}));}catch(e){}return true;}
@@ -2300,7 +2305,7 @@ function doCtx(){if(ctxKind==='boat'){boardBoat();return;}if(ctxKind==='unboat')
 const SAVE_KEY='monggeul-save-v2',ACCT_KEY='monggeul-acct',GUEST_BAK='monggeul-guest-backup';
 var acct=null,cloud=null,saveBusy=false,lastSaveAt=0,lastSaveOk=0,saveErr='';
 function loveAll(){const o={};for(const d of ANIM_DEFS){try{const n=+localStorage.getItem('monggeul-love-'+d.id)||0;if(n)o[d.id]=n;}catch(e){}}return o;}
-function collectSave0(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
+function collectSave0(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,floats:GS.floats||[],float:GS.float|0,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
 function applySave0(d){if(!d||typeof d!=='object')return false;
  const L=d.look;if(L&&[L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK={hat:clamp(L.hat,0,6),hc:clamp(L.hc,0,COLORS.length-1),cloth:clamp(L.cloth,0,4),cc:clamp(L.cc,0,COLORS.length-1)};
  if(d.name&&Number.isInteger(d.name.a)&&Number.isInteger(d.name.b)){const ck=checkNick(d.name.nk||'');NAME={a:d.name.a,b:d.name.b,nk:ck.ok?ck.nick:''};}
@@ -2309,7 +2314,7 @@ function applySave0(d){if(!d||typeof d!=='object')return false;
  if(d.love&&typeof d.love==='object')for(const[k,v]of Object.entries(d.love))try{localStorage.setItem('monggeul-love-'+k,String(v|0));}catch(e){}
  if(Array.isArray(d.emoji)){const f=d.emoji.filter(e=>EMOJI_SET.has(e)).slice(0,5);if(f.length===5)recentEmoji=f;}
  const g=d.gs||{};GS.money=clamp(Math.floor(+g.money||0),0,1e9);GS.rods=[...new Set([1,...(Array.isArray(g.rods)?g.rods:[]).map(x=>x|0).filter(x=>x>=1&&x<=7)])].sort();GS.rod=GS.rods.includes(g.rod|0)?g.rod|0:Math.max(...GS.rods);
- GS.packs=[...new Set((Array.isArray(g.packs)?g.packs:[]).map(x=>x|0).filter(x=>x>=1&&x<PACKS.length))].sort();GS.pack=GS.packs.includes(g.pack|0)?g.pack|0:0;if(P.char)setCharPack(P.char,GS.pack);
+ GS.packs=[...new Set((Array.isArray(g.packs)?g.packs:[]).map(x=>x|0).filter(x=>x>=1&&x<PACKS.length))].sort();GS.pack=GS.packs.includes(g.pack|0)?g.pack|0:0;GS.floats=[...new Set((Array.isArray(g.floats)?g.floats:[]).map(x=>x|0).filter(x=>x>=1&&x<FLOATS.length))].sort((a,b)=>a-b);GS.float=GS.floats.includes(g.float|0)?g.float|0:0;if(P.char)setCharPack(P.char,GS.pack);
  GS.bag=(Array.isArray(g.bag)?g.bag:[]).filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,1000).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
  GS.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&(DISH[f.k]||/^f\d$/.test(f.k))).slice(0,300).map(f=>({k:f.k,s:SP_BY[f.s]?f.s:''}));
  GS.buffUntil=Number.isFinite(+g.buffUntil)?+g.buffUntil:0;GS.ease=clamp(+g.ease||0,0,0.2);GS.easeUntil=Number.isFinite(+g.easeUntil)?+g.easeUntil:0;GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});LEG.n=Math.max(LEG.n,(+GS.stats.leg||0)|0);if(Array.isArray(GS.stats.nofol)){NOFOL.clear();for(const id of GS.stats.nofol)NOFOL.add(String(id));try{localStorage.setItem('monggeul-nofollow',JSON.stringify([...NOFOL]));}catch(e){}}
@@ -2355,9 +2360,9 @@ async function logout(){if(!acct)return;await doSave(false);try{await authCall('
 
 /* ---------- 매 프레임 ---------- */
 let v2HudAcc=0;
-function updV2(dt){updHappy(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
+function updV2(dt){updHappy(dt);updFoam(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
  for(const r of remote.values()){if(r.cookT)animTable(r.cookT,r.ckSt,dt);}
- v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();const bs=buffShort();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}`+(bs?` · ${bs}`:'');$('hudG').classList.toggle('buff',!!bs);
+ v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();const bs=buffShort();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}${floatHud()}`+(bs?` · ${bs}`:'');$('hudG').classList.toggle('buff',!!bs);
   if(GS._buffWas&&bl<=0)toast('🍳 요리 효과가 끝났어요',2400);GS._buffWas=bl>0;saveTick();}}
 
 /* ---------- 게시판 (업데이트 요청) ---------- */
@@ -2536,9 +2541,16 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-12c';
+const NEWS_VER='2026-11-12e';
 const NEWS=[
- {d:'11월 12일',t:'🎵 물고기를 잡으면 기분이 좋아요',n:true,i:[
+ {d:'11월 12일',t:'🎯 상점에 찌가 생겼어요',n:true,i:[
+  '🦈 <b>상어 지느러미찌</b> (70,000몰랑) — ★1 물고기가 걸리지 않아요. 지느러미가 찌 주변을 빙글빙글 돌며 물살을 일으켜요. ★2 이상 낚싯대에서 쓸 수 있어요.',
+  '💡 <b>꼬마 등대찌</b> (150,000몰랑) — ★1·★2 물고기가 걸리지 않아요. 꼭대기 불빛이 빙글 돌며 바다를 비춰요(밤에 더 밝아요). ★3 이상 낚싯대에서 쓸 수 있어요.',
+  '🌈 찌를 끼우면 ★7 무지개 전설 확률이 올라가요: 🦈 상어 지느러미찌 1.2배 · 💡 꼬마 등대찌 1.5배. 대신 예민한 찌라 입질이 조금 늦게 와요(상어 약 20% · 등대 약 30%).',
+  '🎒 산 찌는 가방 › 🎣 장비·옷에서 끼우고 뺄 수 있어요. 끼운 동안 막힌 ★ 물고기는 도감에 안 들어와요.',
+  '🌦️ 무지개 이벤트는 이제 <b>딱 4배</b>예요 (전설의 기운과 겹쳐서 커지지 않아요). 예) 해안 먼 바다 0.1% → 무지개 0.4% · 상어 지느러미찌 0.12% → 무지개 0.48% · 꼬마 등대찌 0.15% → 무지개 0.6%',
+  '🎉 누군가 ★7을 잡았을 때 열리는 축하 무지개는 <b>3분</b>으로 바뀌었어요.']},
+ {d:'11월 12일',t:'🎵 물고기를 잡으면 기분이 좋아요',i:[
   '🎶 물고기를 낚으면 캐릭터가 살짝 움찔하고 머리 위에 작은 음표가 떠올라요. 다른 사람이 낚을 때도 보여요.',
   '🌈 무지개 낚싯대는 던질 때와 걸을 때만 무지개가 보이도록 정리했어요. (찌가 물에 떠 있을 때 · 잡았을 때의 무지개는 없앴어요)']},
  {d:'11월 12일',t:'💾 잡은 물고기 기록을 더 단단하게 지켜요',i:[
@@ -2864,11 +2876,11 @@ function mmss(ms){const s=Math.max(0,Math.ceil(ms/1000));return`${Math.floor(s/6
 const LEG={n:0};try{LEG.n=Math.max(0,(+(localStorage.getItem('monggeul-leg')||0))|0);}catch(e){}
 function saveLeg(){try{localStorage.setItem('monggeul-leg',String(LEG.n));}catch(e){}GS.stats.leg=LEG.n;}
 function legPity(){return 1+Math.min(2,LEG.n/LEG_PITY);}
-function legMult(){return(rainbowOn()?4:1)*legPity();}
+function legMult(){return rainbowOn()?4:legPity();}
 function legGauge(){return Math.min(100,Math.round(LEG.n/(LEG_PITY*2)*100));}
 function legBase(p,hab){if(hab==='sea'){if(p<0.8)return 0;return LEG_BASE*(BOAT.on&&BOAT.far?1:0.5);}if(p<0.85)return 0;return LEG_BASE*0.5;}
 function pickFish7(p,hab){if(window.__pick)return null;const b=legBase(p,hab);if(!b)return null;const E=effStar();const rf=E>=7?1:0.4;if(E>=6){LEG.n++;saveLeg();}
- if(Math.random()>=b*legMult()*rf)return null;
+ if(Math.random()>=b*legMult()*rf*(floatOn()?floatOn().leg:1))return null;
  const ph=phaseOf(hourNow()),fresh=hab!=='sea',cand=[];let tot=0;
  for(const sp of SPECIES){if(starOf(sp)!==7)continue;if((sp.hab==='fresh')!==fresh)continue;if(sp.pondOnly&&hab!=='pond')continue;if(sp.riverOnly&&hab!=='river')continue;if(sp.eventOnly&&!rainbowOn())continue;
   let w=sp.w;if(!sp.time.includes('any'))w*=sp.time.includes(ph)?2.4:0.3;cand.push([sp,w]);tot+=w;}
@@ -3145,14 +3157,14 @@ function layoutTopStack(){{const h=document.querySelector('.hud');if(h){const r=
  const v=y?Math.round(y+8):0;if(v!==TOP_PUSH){TOP_PUSH=v;document.documentElement.style.setProperty('--toastPush',v+'px');}}
 setInterval(layoutTopStack,200);
 /* ---------- v29: 누군가 ★7을 잡으면 모두에게 10분 축하 알림 + 축하 무지개 이벤트 ---------- */
-const LEGEND_MS=10*60*1000;
+const LEGEND_MS=3*60*1000;
 var LGEV={key:'',n:'',id:'',s:0,until:0};
 function legendOn(){return!!(LGEV&&Date.now()<LGEV.until);}
 function applyLegend(o,mine){if(!o||!SP_BY[o.id])return;const left=clamp(+o.left||0,0,LEGEND_MS);if(left<1000)return;const until=Date.now()+left;const key=o.id+'|'+o.n+'|'+o.s;
  const isNew=key!==LGEV.key||until>LGEV.until+20000;LGEV={key,n:String(o.n||''),id:o.id,s:+o.s||0,until};updLegendBanner();if(!isNew||!entered)return;
  const sp=SP_BY[o.id],nm=`${sp.name} ${fmtSize(LGEV.s)}`;
  if(mine){toast(`🎉 ★7 ${nm}! 모두에게 축하 무지개를 선물했어요 · 10분 동안 ★7이 4배 잘 나와요`,6000);}
- else if(left>LEGEND_MS-20000){toast(`🎉 ${LGEV.n}님이 ★7 ${nm}${josa(sp.name,'을','를')} 낚았어요! 10분 동안 축하 무지개가 떠서 ★7이 4배 잘 나와요`,6500);
+ else if(left>LEGEND_MS-20000){toast(`🎉 ${LGEV.n}님이 ★7 ${nm}${josa(sp.name,'을','를')} 낚았어요! 3분 동안 축하 무지개가 떠서 ★7이 4배 잘 나와요`,6500);
   [784,988,1175,1568,1976].forEach((f,i)=>tone(f,i*0.11,0.22,0.05,'triangle'));fwdOf(P.yaw,_f);rbPop(P.pos.x+_f.x*2,P.pos.y+2.6,P.pos.z+_f.z*2,true);}
  else toast(`🌈 지금 ${LGEV.n}님의 ★7 축하 무지개가 떠 있어요 · ${mmss(LGEV.until-Date.now())} 남음`,4200);}
 async function legendReport(f){const body={id:f.sp.id,s:Math.round(f.size*10)/10,name:hofName()};
@@ -3176,7 +3188,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12c';
+const BUILD='2026-11-12f';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[]};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3215,7 +3227,7 @@ function merge3(B,L,S){B=B&&typeof B==='object'?B:null;L=L||{};S=S||{};
  const hm={},LH=L.hm||{},SH=S.hm||{};for(const k of new Set([...Object.keys(SH),...Object.keys(LH)]))hm[k]=Math.max(+SH[k]||0,+LH[k]||0);M.hm=hm;
  const bg=B?(B.gs||{}):null,lg=L.gs||{},sg=S.gs||{};const g=Object.assign({},sg);
  g.money=nm(bg&&bg.money,lg.money,sg.money);
- g.rods=[...new Set([...(sg.rods||[]),...(lg.rods||[])])].sort((a,b)=>a-b);g.packs=[...new Set([...(sg.packs||[]),...(lg.packs||[])])].sort((a,b)=>a-b);
+ g.rods=[...new Set([...(sg.rods||[]),...(lg.rods||[])])].sort((a,b)=>a-b);g.packs=[...new Set([...(sg.packs||[]),...(lg.packs||[])])].sort((a,b)=>a-b);g.floats=[...new Set([...(sg.floats||[]),...(lg.floats||[])])].sort((a,b)=>a-b);g.float=pk(bg&&bg.float,lg.float,sg.float);
  g.rod=pk(bg&&bg.rod,lg.rod,sg.rod);g.pack=pk(bg&&bg.pack,lg.pack,sg.pack);
  g.bag=mergeItems(bg&&bg.bag,lg.bag,sg.bag);g.food=mergeFood(bg&&bg.food,lg.food,sg.food);
  g.buffUntil=Math.max(+sg.buffUntil||0,+lg.buffUntil||0);
@@ -3373,6 +3385,121 @@ function updHappy(dt){
   const yaw=o===P?P.yaw:(o.yaw||0);const rx=Math.cos(yaw),rz=-Math.sin(yaw);const sway=Math.sin(n.ph+k*7)*0.1;
   n.s.position.set(o.pos.x+rx*(n.side+sway),o.pos.y+(o.jy||0)+1.5+k*0.85,o.pos.z+rz*(n.side+sway));
   const sc=0.24+0.08*Math.min(1,k*4);n.s.scale.set(sc,sc,sc);n.s.material.opacity=Math.min(1,k*6)*(k>0.6?(1-k)/0.4:1);n.s.visible=true;}}
+/* ---------- v36: 🎯 찌 (상어 지느러미찌 · 꼬마 등대찌) ---------- */
+var FLOATS=[null,
+ {lv:1,name:'상어 지느러미찌',em:'🦈',short:'🦈찌',price:70000,block:1,slow:0.2,leg:1.2,minRod:2,
+  desc:'수면 위로 쏙 나온 상어 지느러미가 찌 주변을 빙글빙글 돌아요. 상어가 지키는 자리라 작은 ★1 물고기는 얼씬도 못 해요.'},
+ {lv:2,name:'꼬마 등대찌',em:'💡',short:'💡등대찌',price:150000,block:2,slow:0.3,leg:1.5,minRod:3,
+  desc:'빨강·하양 줄무늬 꼬마 등대예요. 꼭대기 불빛이 빙글 돌며 바다를 비추면 작은 ★1·★2 물고기는 눈이 부셔 비켜 가고, 큰 물고기만 불빛을 따라와요.'}];
+var FL_LEG=1.5,FBLK=0;
+function floatOn(){const F=FLOATS[GS.float|0];if(!F||!(GS.floats||[]).includes(F.lv))return null;return GS.rod>=F.minRod?F:null;}
+function floatSlow(){const F=floatOn();return 1+(F?F.slow:0);}
+function blockTxt(F){return F.block>1?'★1·★2':'★1';}
+function floatHud(){const F=FLOATS[GS.float|0];if(!F)return'';return floatOn()?` · ${F.short}`:` · ${F.short}(꺼짐)`;}
+function floatTags(F){return`🚫 <b>${blockTxt(F)} 물고기가 걸리지 않아요</b> · 🌈 ★7 무지개 전설 확률 <b>${F.leg}배</b><br>⏳ 예민한 찌라 입질이 조금 늦게 와요 (약 ${Math.round(F.slow*100)}%) · 🎣 ★${F.minRod} 이상 낚싯대에서 쓸 수 있어요<br>📖 끼운 동안 ${blockTxt(F)} 물고기는 도감에 안 들어와요 (도감을 채우려면 잠깐 빼 두세요)`;}
+function equipFloat(lv,quiet){lv=lv|0;if(lv&&!(GS.floats||[]).includes(lv))return false;const F=FLOATS[lv];
+ if(F&&GS.rod<F.minRod){toast(`${F.em} ${F.name}${josa(F.name,'은','는')} ★${F.minRod} 이상 낚싯대에서 쓸 수 있어요. 지금은 ★${GS.rod} 낚싯대예요`,3800);return false;}
+ GS.float=lv;markSave();markPresence();updateHUD();
+ if(!quiet){sfx.pop();toast(F?`${F.em} ${F.name}${josa(F.name,'을','를')}끼웠어요! ${blockTxt(F)} 물고기가 안 걸리고 ★7 확률이 ${F.leg}배예요 · 입질은 조금 늦어요`:'🎣 기본 찌로 바꿨어요. 모든 물고기가 다시 걸려요',4200);}
+ return true;}
+function floatRodCheck(){const F=FLOATS[GS.float|0];if(F&&GS.rod<F.minRod)setTimeout(()=>toast(`${F.em} ${F.name}${josa(F.name,'은','는')} ★${F.minRod} 이상 낚싯대에서만 효과가 있어서 지금은 꺼져 있어요`,3800),900);}
+function buyFloat(lv){const F=FLOATS[lv];if(!F||(GS.floats||[]).includes(lv))return;
+ if(GS.money<F.price){toast(`몰랑이 ${fmtM(F.price-GS.money)} 부족해요. 물고기를 잡아서 팔아 보세요!`,3000);return;}
+ GS.money-=F.price;GS.floats=[...new Set([...(GS.floats||[]),lv])].sort((a,b)=>a-b);markSave();updateHUD();
+ if(GS.rod>=F.minRod){equipFloat(lv,true);toast(`${F.em} ${F.name}${josa(F.name,'을','를')} 끼웠어요! 가방 › 🎣 장비·옷에서 언제든 빼거나 바꿀 수 있어요`,4200);}
+ else toast(`${F.em} ${F.name}${josa(F.name,'을','를')} 샀어요! ★${F.minRod} 이상 낚싯대를 들면 가방 › 🎣 장비·옷에서 끼울 수 있어요`,4200);
+ showBubble(SHOP.label,lv===2?'허허, 등대라니! 귀한 물고기들이 불빛을 보고 몰려올 걸세 💡':'상어 지느러미로구먼! 작은 녀석들은 이제 얼씬도 못 하겠어 🦈',false,4);
+ for(let i=0;i<3;i++)setTimeout(()=>sfx.pop(),i*120);burstHearts(P.pos.x,P.pos.y+2.2,P.pos.z,6);renderShop();}
+function floatRow(F,mode){const lv=F?F.lv:0,own=!F||(GS.floats||[]).includes(lv),on=(GS.float|0)===lv;
+ const row=document.createElement('div');row.className='irow flt f'+lv+(on?' on':'');
+ const c=document.createElement('canvas');c.width=150;c.height=110;drawFloatIcon(c.getContext('2d'),150,110,lv);
+ const tx=document.createElement('div');tx.className='itx';
+ if(!F)tx.innerHTML=`<b>🎣 기본 찌</b><small>주황색 동그란 찌예요. 모든 물고기가 걸려요.</small>`;
+ else{const off=on&&!floatOn();tx.innerHTML=`<b>${F.em} ${F.name}</b><small class="ftag">${floatTags(F)}</small>${mode==='shop'?`<small>${F.desc}</small>`:''}${off?`<small class="foff">⚠ 지금 낚싯대(★${GS.rod})로는 효과가 꺼져 있어요</small>`:''}`;}
+ const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');
+ if(on){b.textContent=F?'빼기':'사용 중';if(F)b.onclick=()=>{equipFloat(0);mode==='shop'?renderShop():renderBag();};else b.disabled=true;}
+ else if(own){b.textContent=F?'끼우기':'바꾸기';b.onclick=()=>{if(equipFloat(lv))mode==='shop'?renderShop():renderBag();};}
+ else{b.innerHTML=`${fmtM(F.price)}<small>몰랑</small>`;b.className='buy'+(GS.money<F.price?' poor':'');b.onclick=()=>buyFloat(lv);}
+ acts.appendChild(b);row.append(c,tx,acts);return row;}
+function renderFloatShop(box){const F=FLOATS[GS.float|0];
+ const p=document.createElement('div');p.className='bsub';p.innerHTML=`찌를 끼우면 작은 물고기가 안 걸려서 <b>희귀한 물고기가 더 자주</b> 나와요. 지금 <b>${F?F.em+' '+F.name+(floatOn()?'':' (꺼짐)'):'🎣 기본 찌'}</b>`;box.appendChild(p);
+ const list=document.createElement('div');list.className='ilist flts';list.appendChild(floatRow(null,'shop'));for(let i=1;i<FLOATS.length;i++)list.appendChild(floatRow(FLOATS[i],'shop'));box.appendChild(list);
+ const n=document.createElement('div');n.className='bsub';n.textContent='산 찌는 🎒 가방 › 🎣 장비·옷에서 끼우고 뺄 수 있어요. 한 번에 하나만 끼울 수 있고, 다른 사람들 눈에도 내 찌가 보여요. ★7 무지개 전설은 지금처럼 멀리 던졌을 때만 나와요.';box.appendChild(n);}
+function renderFloatGear(box){const t=document.createElement('div');t.className='btitle';t.textContent='🎯 찌';box.appendChild(t);
+ const list=document.createElement('div');list.className='ilist flts';list.appendChild(floatRow(null,'bag'));
+ for(let i=1;i<FLOATS.length;i++)if((GS.floats||[]).includes(i))list.appendChild(floatRow(FLOATS[i],'bag'));box.appendChild(list);
+ if((GS.floats||[]).length<FLOATS.length-1){const n=document.createElement('div');n.className='bsub';n.textContent='🦈 상어 지느러미찌 · 💡 꼬마 등대찌는 🐉 용왕님 상점의 🎯 찌 칸에서 살 수 있어요.';box.appendChild(n);}}
+
+/* 상점·가방 그림 */
+function drawFloatIcon(c,w,h,lv){c.clearRect(0,0,w,h);c.save();c.lineJoin='round';c.lineCap='round';
+ const sea=c.createLinearGradient(0,h*0.62,0,h);sea.addColorStop(0,'#5cc3ec');sea.addColorStop(1,'#2a86c4');c.fillStyle=sea;c.fillRect(0,h*0.64,w,h*0.36);
+ c.strokeStyle='rgba(255,255,255,.75)';c.lineWidth=2;for(let k=0;k<2;k++){c.beginPath();for(let x=0;x<=w;x+=6){const y=h*(0.66+k*0.13)+Math.sin(x/9+k*2)*2;x?c.lineTo(x,y):c.moveTo(x,y);}c.stroke();}
+ const cx=w/2,wy=h*0.66;
+ if(lv===1){c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=3;c.beginPath();c.ellipse(cx,wy+4,34,8,0,Math.PI*0.08,Math.PI*0.92);c.stroke();c.beginPath();c.ellipse(cx,wy+4,34,8,0,Math.PI*1.15,Math.PI*1.6);c.stroke();
+  c.fillStyle='#eef4f8';c.beginPath();c.ellipse(cx,wy+2,13,6,0,0,Math.PI*2);c.fill();
+  c.beginPath();c.moveTo(cx-16,wy+1);c.quadraticCurveTo(cx-6,wy-30,cx+12,wy-50);c.quadraticCurveTo(cx+8,wy-24,cx+20,wy+1);c.closePath();
+  const g=c.createLinearGradient(cx,wy-50,cx,wy);g.addColorStop(0,'#3f6585');g.addColorStop(1,'#7d9db6');c.fillStyle=g;c.fill();c.strokeStyle='#2c4a63';c.lineWidth=2;c.stroke();
+  c.fillStyle='rgba(255,255,255,.35)';c.beginPath();c.moveTo(cx-10,wy-2);c.quadraticCurveTo(cx-3,wy-24,cx+9,wy-40);c.quadraticCurveTo(cx-1,wy-20,cx-4,wy-2);c.closePath();c.fill();}
+ else if(lv===2){const top=wy-60;
+  c.globalAlpha=0.55;const bg=c.createLinearGradient(cx,0,w,0);bg.addColorStop(0,'rgba(255,230,120,.9)');bg.addColorStop(1,'rgba(255,230,120,0)');c.fillStyle=bg;c.beginPath();c.moveTo(cx,top+8);c.lineTo(w,top-6);c.lineTo(w,top+26);c.closePath();c.fill();
+  const bg2=c.createLinearGradient(cx,0,0,0);bg2.addColorStop(0,'rgba(255,230,120,.7)');bg2.addColorStop(1,'rgba(255,230,120,0)');c.fillStyle=bg2;c.beginPath();c.moveTo(cx,top+8);c.lineTo(0,top);c.lineTo(0,top+18);c.closePath();c.fill();c.globalAlpha=1;
+  c.fillStyle='#5d6670';c.beginPath();c.ellipse(cx,wy+2,18,6,0,0,Math.PI*2);c.fill();
+  const bw=11,tw=7,y0=wy,y1=top+16;const bands=5;for(let i=0;i<bands;i++){const a=y0-(y0-y1)*i/bands,b=y0-(y0-y1)*(i+1)/bands;const wa=bw-(bw-tw)*i/bands,wb=bw-(bw-tw)*(i+1)/bands;c.fillStyle=i%2?'#ffffff':'#e0353d';c.beginPath();c.moveTo(cx-wa,a);c.lineTo(cx+wa,a);c.lineTo(cx+wb,b);c.lineTo(cx-wb,b);c.closePath();c.fill();}
+  c.strokeStyle='#8a2026';c.lineWidth=1.5;c.beginPath();c.moveTo(cx-bw,y0);c.lineTo(cx-tw,y1);c.moveTo(cx+bw,y0);c.lineTo(cx+tw,y1);c.stroke();
+  c.fillStyle='#2d3440';c.fillRect(cx-10,y1-2,20,3);
+  const gl=c.createRadialGradient(cx,top+8,0,cx,top+8,20);gl.addColorStop(0,'rgba(255,240,150,1)');gl.addColorStop(1,'rgba(255,220,90,0)');c.fillStyle=gl;c.beginPath();c.arc(cx,top+8,20,0,Math.PI*2);c.fill();
+  c.fillStyle='#fff3b0';c.fillRect(cx-6,top+3,12,10);c.fillStyle='#d8323a';c.beginPath();c.moveTo(cx-9,top+3);c.lineTo(cx,top-7);c.lineTo(cx+9,top+3);c.closePath();c.fill();}
+ else{c.fillStyle='#ff8a3d';c.beginPath();c.ellipse(cx,wy-6,9,12,0,0,Math.PI*2);c.fill();c.fillStyle='#fff';c.fillRect(cx-1.5,wy-36,3,20);c.fillStyle='#ff4d4d';c.beginPath();c.arc(cx,wy-38,6,0,Math.PI*2);c.fill();}
+ c.restore();}
+
+/* 바다 위 찌 모양 · 이펙트 (나 · 다른 사람 모두) */
+let _lhTex=null,_beamTex=null,_lhSparkTex=null;
+function lhSparkTex(){if(_lhSparkTex)return _lhSparkTex;_lhSparkTex=canvasTex(64,64,(c,w,h)=>{const g=c.createRadialGradient(32,32,0,32,32,30);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(0.18,'rgba(255,248,210,.9)');g.addColorStop(1,'rgba(255,240,180,0)');c.fillStyle=g;
+ c.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4,rr=i%2?7:30;c.lineTo(32+Math.cos(a)*rr,32+Math.sin(a)*rr);}c.closePath();c.fill();c.beginPath();c.arc(32,32,6,0,Math.PI*2);c.fillStyle='#fff';c.fill();});return _lhSparkTex;}
+function lhTex(){if(_lhTex)return _lhTex;_lhTex=canvasTex(32,64,(c,w,h)=>{for(let i=0;i<5;i++){c.fillStyle=i%2?'#ffffff':'#e0353d';c.fillRect(0,h-(i+1)*h/5,w,h/5+1);}});return _lhTex;}
+function beamTex(){if(_beamTex)return _beamTex;_beamTex=canvasTex(128,32,(c,w,h)=>{const g=c.createLinearGradient(0,0,w,0);g.addColorStop(0,'rgba(255,240,170,1)');g.addColorStop(0.5,'rgba(255,225,120,.5)');g.addColorStop(1,'rgba(255,220,100,0)');c.fillStyle=g;c.fillRect(0,0,w,h);const v=c.createLinearGradient(0,0,0,h);v.addColorStop(0,'rgba(0,0,0,1)');v.addColorStop(0.5,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,1)');c.globalCompositeOperation='destination-out';c.fillStyle=v;c.fillRect(0,0,w,h);});return _beamTex;}
+function buildFinFloat(){const g=new THREE.Group();
+ const body=new THREE.Mesh(geo('ffB',()=>new THREE.SphereGeometry(0.075,14,10)),stdMat('#e9f1f6',0.5));body.scale.set(1,0.45,1);g.add(body);
+ const pivot=new THREE.Group();g.add(pivot);
+ const fin=new THREE.Mesh(geo('ffF',()=>{const s=new THREE.Shape();s.moveTo(-0.075,0);s.quadraticCurveTo(-0.03,0.12,0.045,0.27);s.quadraticCurveTo(0.03,0.13,0.085,0);s.lineTo(-0.075,0);const e=new THREE.ExtrudeGeometry(s,{depth:0.022,bevelEnabled:true,bevelThickness:0.008,bevelSize:0.006,bevelSegments:2,curveSegments:10});e.translate(0,-0.01,-0.011);e.scale(1.35,1.35,1.2);return e;}),new THREE.MeshStandardMaterial({color:'#6f95b8',roughness:0.45,emissive:'#24425e',emissiveIntensity:0.6}));
+ fin.position.set(0.13,0,0);fin.rotation.y=-Math.PI/2;pivot.add(fin);
+ g.userData={pivot,fin,ang:Math.random()*6,ft:0};return g;}
+function buildLighthouseFloat(){const g=new THREE.Group();
+ const rock=new THREE.Mesh(geo('lhR',()=>new THREE.CylinderGeometry(0.085,0.1,0.05,10)),stdMat('#5d6670',0.9));g.add(rock);
+ const tower=new THREE.Mesh(geo('lhT',()=>new THREE.CylinderGeometry(0.042,0.062,0.24,14,1)),new THREE.MeshStandardMaterial({map:lhTex(),roughness:0.6}));tower.position.y=0.145;g.add(tower);
+ const gal=new THREE.Mesh(geo('lhG',()=>new THREE.CylinderGeometry(0.06,0.06,0.014,14)),stdMat('#2d3440',0.6));gal.position.y=0.272;g.add(gal);
+ const goldM=new THREE.MeshStandardMaterial({color:'#ffd56a',metalness:0.6,roughness:0.3,emissive:'#7a5a10',emissiveIntensity:0.5});
+ for(const[y,rad]of[[0.282,0.062],[0.03,0.096]]){const tr=new THREE.Mesh(geo('lhGold'+rad,()=>new THREE.TorusGeometry(rad,0.006,6,20).rotateX(Math.PI/2)),goldM);tr.position.y=y;g.add(tr);}
+ const tipB=new THREE.Mesh(geo('lhTip',()=>new THREE.SphereGeometry(0.014,10,8)),goldM);tipB.position.y=0.395;g.add(tipB);
+ const lampMat=new THREE.MeshStandardMaterial({color:'#fff3b0',emissive:'#ffd84d',emissiveIntensity:1.2,roughness:0.3});const lamp=new THREE.Mesh(geo('lhL',()=>new THREE.CylinderGeometry(0.032,0.032,0.05,12)),lampMat);lamp.position.y=0.303;g.add(lamp);
+ const roof=new THREE.Mesh(geo('lhC',()=>new THREE.ConeGeometry(0.05,0.06,14)),stdMat('#d8323a',0.5));roof.position.y=0.358;g.add(roof);
+ const glow=glowSprite('#ffe27a',0.6);glow.position.y=0.303;g.add(glow);
+ const beam=new THREE.Group();beam.position.y=0.303;g.add(beam);const beamMats=[];
+ for(const dir of[0,Math.PI]){const arm=new THREE.Group();arm.rotation.y=dir;beam.add(arm);
+  for(const rx of[0,Math.PI/2]){const m=new THREE.MeshBasicMaterial({map:beamTex(),color:'#ffe58a',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,opacity:0.3,fog:false});beamMats.push(m);
+   const pl=new THREE.Mesh(geo('lhBm',()=>{const p=new THREE.PlaneGeometry(1.7,0.16);p.translate(0.85,0,0);return p;}),m);pl.rotation.x=rx;pl.rotation.z=-0.1;arm.add(pl);}}
+ const pool=new THREE.Mesh(geo('lhPl',()=>new THREE.PlaneGeometry(1.1,1.1).rotateX(-Math.PI/2)),new THREE.MeshBasicMaterial({map:GLOW_TEX,color:'#ffd95a',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.2,fog:false}));pool.position.y=0.012;g.add(pool);
+ const sparks=[];for(let i=0;i<6;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:lhSparkTex(),color:i%3===1?'#fff2b8':'#ffffff',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0,fog:false}));
+  const a=i/6*Math.PI*2+Math.random()*0.5;sp.userData={a,r:0.12+Math.random()*0.08,y:0.08+Math.random()*0.32,ph:Math.random()*6.3,sp:0.9+Math.random()*0.8,sz:0.085+Math.random()*0.045};g.add(sp);sparks.push(sp);}
+ g.userData={lampMat,glow,beam,beamMats,pool,sparks};return g;}
+function setFloatStyle(f,lv){if(f.userData.lv===lv)return;f.userData.lv=lv;
+ if(f.userData.deco){f.remove(f.userData.deco);f.userData.deco=null;}
+ for(let i=0;i<4;i++)if(f.children[i])f.children[i].visible=!lv;
+ const d=lv===1?buildFinFloat():lv===2?buildLighthouseFloat():null;if(d){f.add(d);f.userData.deco=d;}}
+const FOAM=[];
+function foam(x,z,sc){let o=FOAM.find(q=>q.life<=0);if(!o){if(FOAM.length>=70)return;const m=new THREE.Mesh(geo('foamPl',()=>new THREE.PlaneGeometry(1,1).rotateX(-Math.PI/2)),new THREE.MeshBasicMaterial({map:GLOW_TEX,color:'#ffffff',transparent:true,depthWrite:false,opacity:0,fog:false}));m.renderOrder=3;scene.add(m);o={m,life:0,sc:1};FOAM.push(o);}
+ o.life=0.95;o.sc=sc;o.m.position.set(x,waveH(x,z,t)+0.03,z);o.m.visible=true;}
+function updFoam(dt){for(const o of FOAM){if(o.life<=0)continue;o.life-=dt;if(o.life<=0){o.m.visible=false;continue;}const k=1-o.life/0.95;const s=o.sc*(0.14+0.34*k);o.m.scale.set(s,1,s);o.m.material.opacity=0.95*(1-k);}}
+const _fv=new THREE.Vector3();
+function updFloat(f,x,z,sink,dip){updFloat0(f,x,z,sink,dip);
+ const want=f===myFloat?(floatOn()?GS.float|0:0):(f.userData.owner?f.userData.owner.fl|0:0);setFloatStyle(f,want);const D=f.userData.deco;if(!D)return;
+ const lt=f.userData.lt??t;const dt=clamp(t-lt,0,0.1);f.userData.lt=t;const bite=sink>0.05,night=S?S.night:0,U=D.userData;
+ if(want===1){U.ang+=dt*(bite?7:2.4);U.pivot.rotation.y=U.ang;U.fin.position.y=bite?-0.05*Math.abs(Math.sin(t*14)):0.006*Math.sin(t*3);
+  U.ft-=dt;if(U.ft<=0){U.ft=bite?0.05:0.09;U.fin.getWorldPosition(_fv);foam(_fv.x,_fv.z,f.scale.x);}}
+ else if(want===2){U.beam.rotation.y+=dt*(bite?6:1.9);const blink=bite?(Math.sin(t*22)>0?1:0.25):1;
+  U.lampMat.emissiveIntensity=(0.8+1.6*night)*blink;for(const m of U.beamMats)m.opacity=(0.2+0.4*night)*blink;U.glow.material.opacity=(0.35+0.5*night)*blink;U.pool.material.opacity=(0.1+0.25*night)*(0.8+0.2*Math.sin(t*2.2))*blink;
+  for(const sp of U.sparks){const q=sp.userData;const a=q.a+t*0.35;sp.position.set(Math.cos(a)*q.r,q.y+0.02*Math.sin(t*1.3+q.ph),Math.sin(a)*q.r);
+   const tw=Math.max(0,Math.sin(t*q.sp*2.2+q.ph));const k=tw*tw*tw;sp.material.opacity=k*(0.55+0.35*night)*(bite?1.3:1);const z=q.sz*(0.6+0.6*k);sp.scale.set(z,z,1);}}}
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
@@ -3443,7 +3570,7 @@ function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=fa
  if(!ok){toast('여기선 던질 수 없어요. 물 쪽을 바라봐요');setF('idle');return;}
  castTgt.set(P.pos.x+_f.x*dd,0,P.pos.z+_f.z*dd);habitat=habitatAt(castTgt.x,castTgt.z);castDist=dd;castMeters=Math.round(dd);power=clamp((dd-minD)/(maxD-minD),0,1);
  rodTipWorld(P.char,castFrom);castDur=0.5+0.45*p;castT0=t;rbCastStart();sfx.whoosh(p);setF('casting');}
-function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(habitat==='sea')toast(farZoneTxt(fishFar())+(BOAT.on&&BOAT.far?' · 🌊 선상 보너스 ★4↑ 2배':''),2000);biteAt=t+rand(3.2,9.5);nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
+function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(habitat==='sea')toast(farZoneTxt(fishFar())+(BOAT.on&&BOAT.far?' · 🌊 선상 보너스 ★4↑ 2배':''),2000);biteAt=t+rand(3.2,9.5)*floatSlow();nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
 function startBite(){setF('bite');biteT0=t;sfx.bell();try{navigator.vibrate&&navigator.vibrate([60,40,60]);}catch(e){}ripple(castTgt.x,castTgt.z,1.3);}
 function hook(){fish=pickFish7(fishFar(),habitat)||pickFish(fishFar(),habitat);fish.D=fightD(fish.sp,fish.frac);fish.ease=easeNow();if(fish.ease>0)fish.D=Math.max(0.04,fish.D*(1-fish.ease));fish.over=starOf(fish.sp)>effStar()+1;fish.hard=!fish.over&&starOf(fish.sp)>effStar();$('tHard').textContent=fish.hard?hardTag(fish.sp):'';$('tHard').classList.toggle('hidden',!fish.hard);fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);if(fish.hard){toast(hardTxt(fish.sp)+'. 줄이 빨개지면 잠깐 손을 떼요!',4200);sfx.splash(0.25);}else toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
 function startRetrieve(from){retrieveFrom.copy(from);rT0=t;setF('retrieve');}
@@ -3569,7 +3696,7 @@ function updateRemote(dt){
   const c=r.char;const s=r.sc<1?(1-Math.pow(1-r.sc,3)):1;c.root.scale.setScalar(Math.max(0.001,s));c.root.position.set(r.pos.x,r.pos.y+r.jy,r.pos.z);c.root.rotation.y=r.yaw;remoteBoat(r,s);
   animChar(c,dt,r.bt===1?0:r.speed,r.m===1,hopOf(r.hopT));poseRod(c,r.m===1,dt);cookPose(c);
   let bend=r.st==='fight'?r.ft*0.5:r.st==='bite'?0.15+Math.sin(t*40)*0.06:0;c.rodPivot.rotation.x=lerp(c.rodPivot.rotation.x,0.95+bend,0.3);
-  if(r.m===1&&(r.st==='wait'||r.st==='bite'||r.st==='fight')){if(!r.float){r.float=makeFloat('#5dff7a');r.line=makeLine();}rodTipWorld(c,_b);
+  if(r.m===1&&(r.st==='wait'||r.st==='bite'||r.st==='fight')){if(!r.float){r.float=makeFloat('#5dff7a');r.float.userData.owner=r;r.line=makeLine();}rodTipWorld(c,_b);
    if(r.st==='fight'){r.float.visible=false;fwdOf(r.yaw,_f);const ex=r.pos.x+_f.x*1.6,ez=r.pos.z+_f.z*1.6;const wob=Math.sin(t*1.6+r.eid)*0.6*(0.3+r.fd);_c.set(lerp(ex,r.fx,r.fd)-_f.z*wob,0,lerp(ez,r.fz,r.fd)+_f.x*wob);_c.y=waveH(_c.x,_c.z,t);setLine(r.line,_b,_c,(1-r.ft)*r.cd*0.05);if(Math.random()<dt*3)ripple(_c.x,_c.z,0.8);}
    else{updFloat(r.float,r.fx,r.fz,r.st==='bite'?0.18:0,0);floatTip(r.float,_c);setLine(r.line,_b,_c,r.st==='bite'?0.1:0.25+r.cd*0.03);}}
   else if(r.float){r.float.visible=false;r.line.visible=false;}
