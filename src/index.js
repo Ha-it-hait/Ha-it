@@ -244,7 +244,45 @@ export class Island extends DurableObject {
 // ---------- 계정 / 저장 ----------
 const ID_RE = /^[a-z0-9가-힣_]{3,12}$/;
 const PW_MIN = 4, PW_MAX = 40;
-const SAVE_MAX = 60000;            // 저장 데이터 최대 크기(바이트)
+const SAVE_MAX = 300000;           // 저장 데이터 최대 크기(바이트) — 넉넉하게 (실제 저장은 보통 수십 KB 이하)
+const BAK_KEEP = 40;               // 계정마다 보관하는 예전 저장본 수 (복구용)
+const BAK_GAP = 20 * 60e3;         // 예전 저장본을 남기는 최소 간격 (물고기가 크게 줄면 1분 간격으로도 남김)
+const SID_KEEP = 16;               // 서버에 반영된 최근 저장 번호(중복·유실 판별용)
+
+// ---------- 저장 데이터 안전 합치기 (서버) ----------
+// 도감(book)은 늘어나기만 하는 기록이라 서버가 항상 '합집합 + 최댓값'으로 지켜요.
+const pj = t => { try { return t ? JSON.parse(t) : null; } catch { return null; } };
+function bookUnion(a, b) {
+  const o = {}; a = a && typeof a === 'object' ? a : {}; b = b && typeof b === 'object' ? b : {};
+  for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) {
+    const x = a[k], y = b[k];
+    const n = Math.max(x ? +x.n || 0 : 0, y ? +y.n || 0 : 0), best = Math.max(x ? +x.best || 0 : 0, y ? +y.best || 0 : 0);
+    if (n > 0 || best > 0) o[k] = { n: Math.max(1, n | 0), best };
+  }
+  return o;
+}
+const normItems = a => (Array.isArray(a) ? a : []).filter(o => o && typeof o.id === 'string').map((o, i) => (+o.t ? o : Object.assign({}, o, { t: 1000 + i })));
+const ikey = o => o.id + '|' + (+o.t) + '|' + (+o.s);
+function itemsUnion(a, b) { const out = [], seen = new Set(); for (const o of [...normItems(a), ...normItems(b)]) { const k = ikey(o); if (!seen.has(k)) { seen.add(k); out.push(o); } } return out; }
+// 예전 버전 화면(합치기 기능이 없는 화면)이 보낸 저장: 서버에 있던 물고기·도감을 지우지 않도록 합쳐서 저장
+function legacyMerge(S, D) {
+  const M = Object.assign({}, S, D);
+  M.book = bookUnion(S.book, D.book);
+  M.tank = itemsUnion(S.tank, D.tank);
+  const sg = S.gs || {}, dg = D.gs || {};
+  M.gs = Object.assign({}, sg, dg, {
+    money: Math.max(+sg.money || 0, +dg.money || 0),
+    rods: [...new Set([...(sg.rods || []), ...(dg.rods || [])])],
+    packs: [...new Set([...(sg.packs || []), ...(dg.packs || [])])],
+    bag: itemsUnion(sg.bag, dg.bag),
+  });
+  return M;
+}
+function saveSum(d) {
+  if (!d) return null; const g = d.gs || {};
+  return { book: d.book ? Object.keys(d.book).length : 0, tank: Array.isArray(d.tank) ? d.tank.length : 0, bag: Array.isArray(g.bag) ? g.bag.length : 0, food: Array.isArray(g.food) ? g.food.length : 0, money: +g.money || 0, at: +d.at || 0 };
+}
+const fishCount = d => { const x = saveSum(d); return x ? x.tank + x.bag : 0; };
 const SESSION_DAYS = 60;
 const PBKDF2_ITER = 50000;
 const enc = new TextEncoder();
@@ -264,6 +302,12 @@ export class Vault extends DurableObject {
     this.sql = ctx.storage.sql;
     this.sql.exec(`CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY, salt TEXT, hash TEXT, data TEXT, created INTEGER, updated INTEGER, fails INTEGER DEFAULT 0, lock_until INTEGER DEFAULT 0);
       CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, id TEXT, exp INTEGER);`);
+    // 저장 번호(rev)·최근 저장 기록(sids): 여러 기기/창이 서로의 기록을 덮어쓰지 않게 해요
+    const cols = new Set(this.sql.exec('PRAGMA table_info(users)').toArray().map(r => r.name));
+    if (!cols.has('rev')) this.sql.exec('ALTER TABLE users ADD COLUMN rev INTEGER DEFAULT 0');
+    if (!cols.has('sids')) this.sql.exec('ALTER TABLE users ADD COLUMN sids TEXT');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS baks(id TEXT, ts INTEGER, why TEXT, data TEXT, PRIMARY KEY(id, ts))');
+    this.adminFail = new Map();
     this.regByIp = new Map();
     this.sql.exec('CREATE TABLE IF NOT EXISTS hof(id TEXT PRIMARY KEY, s REAL, n TEXT, ts INTEGER, ip TEXT)');
     this.hofByIp = new Map();
@@ -283,6 +327,15 @@ export class Vault extends DurableObject {
     const r = this.sql.exec('SELECT id, exp FROM sessions WHERE token = ?', token).toArray()[0];
     if (!r || r.exp < Date.now()) return null;
     return r.id;
+  }
+  // 덮어쓰기 전에 예전 저장본을 남겨요 (계정마다 최근 BAK_KEEP개)
+  bak(id, oldText, now, why, force) {
+    if (!oldText) return;
+    const last = this.sql.exec('SELECT MAX(ts) AS t FROM baks WHERE id = ?', id).toArray()[0];
+    const gap = last && last.t ? now - last.t : Infinity;
+    if (why !== 'before-restore' && gap < (force ? 60e3 : BAK_GAP)) return;
+    this.sql.exec('INSERT OR REPLACE INTO baks(id, ts, why, data) VALUES (?, ?, ?, ?)', id, now, why, oldText);
+    this.sql.exec('DELETE FROM baks WHERE id = ? AND ts NOT IN (SELECT ts FROM baks WHERE id = ? ORDER BY ts DESC LIMIT ?)', id, id, BAK_KEEP);
   }
   legendNow(now) { const lg = this._lg; return lg && lg.until > now ? { n: lg.n, id: lg.id, s: lg.s, left: lg.until - now } : null; }
   colTop() { return this.sql.exec('SELECT n, MAX(c) AS c, MIN(ts) AS ts FROM collectors GROUP BY n ORDER BY c DESC, ts ASC LIMIT 5').toArray(); }
@@ -323,7 +376,7 @@ export class Vault extends DurableObject {
       if (!Number.isFinite(sz) || sz <= 0 || sz > mx + 0.05) return J({ error: '크기가 이상해요' }, 400);
       const ipKey = ip.slice(0, 64);
       const list = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
-      if (list.length >= 30) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
+      if (list.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
       list.push(now); this.hofByIp.set(ipKey, list);
       const name = cleanNick(body.name) || '익명의 낚시꾼';
       const row = this.sql.exec('SELECT s, n, ts FROM hof WHERE id = ?', id).toArray()[0];
@@ -331,6 +384,26 @@ export class Vault extends DurableObject {
       this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip) VALUES (?, ?, ?, ?, ?)', id, sz, name, now, ipKey);
       this._hofC = null;
       return J({ ok: true, top: true, name, prev: row ? { s: row.s, n: row.n } : null });
+    }
+    if (op === 'hof-sync') {
+      // 도감의 '내 최고 기록'이 명예의 전당보다 크면 다시 올려요 (전송 실패로 빠진 기록 자동 복구)
+      const items = Array.isArray(body.list) ? body.list.slice(0, SPECIES_LIST.length) : [];
+      const ipKey = ip.slice(0, 64);
+      const lst = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
+      if (lst.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
+      lst.push(now); this.hofByIp.set(ipKey, lst);
+      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const won = [], recs = [];
+      for (const it of items) {
+        const id = String(it && it.id || ''); const mx = SPECIES_MAX[id]; if (!mx) continue;
+        const sz = Math.round(Number(it.s) * 10) / 10; if (!Number.isFinite(sz) || sz <= 0 || sz > mx + 0.05) continue;
+        const row = this.sql.exec('SELECT s, n, ts FROM hof WHERE id = ?', id).toArray()[0];
+        if (row && row.s >= sz) { recs.push({ id, s: row.s, n: row.n, ts: row.ts }); continue; }
+        this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip) VALUES (?, ?, ?, ?, ?)', id, sz, name, now, ipKey);
+        won.push({ id, s: sz, prev: row ? { s: row.s, n: row.n } : null });
+      }
+      if (won.length) this._hofC = null;
+      return J({ ok: true, name, won, recs });
     }
     if (op === 'hof-collect') {
       // 도감왕: 도감에 등록한 생물 종류 수. 계정(a_아이디)은 로그인 토큰이 맞아야만 기록
@@ -341,7 +414,7 @@ export class Vault extends DurableObject {
       if (!Number.isFinite(c) || c < 1 || c > SPECIES_LIST.length) return J({ error: '잘못된 숫자' }, 400);
       const ipKey = ip.slice(0, 64);
       const lst = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
-      if (lst.length >= 30) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
+      if (lst.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
       lst.push(now); this.hofByIp.set(ipKey, lst);
       const name = cleanNick(body.name) || '익명의 낚시꾼';
       const row = this.sql.exec('SELECT c FROM collectors WHERE k = ?', k).toArray()[0];
@@ -405,28 +478,80 @@ export class Vault extends DurableObject {
       this.sql.exec('UPDATE users SET fails = 0, lock_until = 0 WHERE id = ?', id);
       if (Math.random() < 0.05) this.sql.exec('DELETE FROM sessions WHERE exp < ?', now);
       let data = null; try { data = row.data ? JSON.parse(row.data) : null; } catch { data = null; }
-      return J({ ok: true, id, token: this.newSession(id), data });
+      return J({ ok: true, id, token: this.newSession(id), data, rev: row.rev | 0, sids: (pj(row.sids) || []).map(x => x.s) });
+    }
+    if (op.startsWith('admin-')) {
+      const ipKey = ip.slice(0, 64);
+      const fails = (this.adminFail.get(ipKey) || []).filter(x => now - x < 3600e3);
+      if (fails.length >= 10) return J({ error: '관리자 키를 너무 많이 틀렸어요. 1시간 뒤에 다시 해 주세요' }, 429);
+      const okKey = this.env.ADMIN_KEY && typeof body.admin === 'string' && sameStr(body.admin, String(this.env.ADMIN_KEY));
+      if (!okKey) { fails.push(now); this.adminFail.set(ipKey, fails); return J({ error: this.env.ADMIN_KEY ? '관리자 키가 맞지 않아요' : '서버에 ADMIN_KEY가 설정되어 있지 않아요' }, 403); }
+      const uid = String(body.id ?? '').trim().toLowerCase();
+      const row = this.sql.exec('SELECT id, data, rev, created, updated FROM users WHERE id = ?', uid).toArray()[0];
+      if (!row) return J({ error: '없는 아이디예요' }, 404);
+      if (op === 'admin-user') {
+        const baks = this.sql.exec('SELECT ts, why, data FROM baks WHERE id = ? ORDER BY ts DESC', uid).toArray().map(b => ({ ts: b.ts, why: b.why, sum: saveSum(pj(b.data)) }));
+        return J({ ok: true, id: uid, rev: row.rev | 0, created: row.created, updated: row.updated, sum: saveSum(pj(row.data)), baks });
+      }
+      if (op === 'admin-bak') {
+        const ts = Number(body.ts);
+        if (ts === 0) return J({ ok: true, data: pj(row.data) });
+        const b = this.sql.exec('SELECT data FROM baks WHERE id = ? AND ts = ?', uid, ts).toArray()[0];
+        return b ? J({ ok: true, data: pj(b.data) }) : J({ error: '그 저장본이 없어요' }, 404);
+      }
+      if (op === 'admin-restore') {
+        const ts = Number(body.ts);
+        const b = this.sql.exec('SELECT data FROM baks WHERE id = ? AND ts = ?', uid, ts).toArray()[0];
+        if (!b) return J({ error: '그 저장본이 없어요' }, 404);
+        const old = pj(b.data); if (!old) return J({ error: '저장본이 깨져 있어요' }, 500);
+        // 저장본에 있던 물고기·도감·장비를 지금 기록에 다시 합쳐 넣어요 (지금 있는 것은 그대로 두고, 몰랑은 더 큰 쪽)
+        const d = legacyMerge(old, pj(row.data) || {});
+        d.at = now;
+        this.bak(uid, row.data, now + 1, 'before-restore', true);
+        const rev = (row.rev | 0) + 1;
+        this.sql.exec('UPDATE users SET data = ?, updated = ?, rev = ?, sids = ? WHERE id = ?', JSON.stringify(d), now, rev, JSON.stringify([{ s: 'R' + now, r: rev }]), uid);
+        return J({ ok: true, rev, sum: saveSum(d) });
+      }
+      return J({ error: 'not found' }, 404);
     }
     const id = this.who(body.token);
     if (!id) return J({ error: '다시 로그인해 주세요' }, 401);
     if (op === 'load') {
-      const row = this.sql.exec('SELECT data FROM users WHERE id = ?', id).toArray()[0];
-      let data = null; try { data = row && row.data ? JSON.parse(row.data) : null; } catch { data = null; }
-      return J({ ok: true, id, data });
+      const row = this.sql.exec('SELECT data, rev, sids FROM users WHERE id = ?', id).toArray()[0];
+      const rev = row ? row.rev | 0 : 0;
+      if (Number.isInteger(body.have) && body.have === rev) return J({ ok: true, id, same: true, rev });
+      return J({ ok: true, id, data: row ? pj(row.data) : null, rev, sids: (pj(row && row.sids) || []).map(x => x.s) });
     }
     if (op === 'save') {
-      const d = body.data;
+      let d = body.data;
       if (!d || typeof d !== 'object' || Array.isArray(d)) return J({ error: '잘못된 데이터' }, 400);
+      const row = this.sql.exec('SELECT data, rev, sids FROM users WHERE id = ?', id).toArray()[0];
+      if (!row) return J({ error: '다시 로그인해 주세요' }, 401);
+      const rev = row.rev | 0, sids = pj(row.sids) || [], old = pj(row.data);
+      const conflict = () => J({ conflict: true, rev, data: old, sids: sids.map(x => x.s) }, 409);
+      const sid = typeof body.sid === 'string' && /^[a-z0-9]{8,32}$/.test(body.sid) ? body.sid : '';
+      if (sid) { const hit = sids.find(x => x.s === sid); if (hit) return hit.r === rev ? J({ ok: true, at: now, rev, dup: true }) : conflict(); }
+      let why = 'save';
+      if (Number.isInteger(body.base)) {
+        // 내가 마지막으로 받은 기록(base) 뒤에 다른 기기·창이 저장했다면 덮어쓰지 않고 돌려보내요 → 화면에서 합친 뒤 다시 저장
+        if (body.base !== rev) return conflict();
+      } else if (old) { d = legacyMerge(old, d); why = 'legacy'; }
+      if (old) d.book = bookUnion(old.book, d.book); // 도감은 절대 줄어들지 않게
       const s = JSON.stringify(d);
       if (s.length > SAVE_MAX) return J({ error: '데이터가 너무 커요' }, 413);
-      this.sql.exec('UPDATE users SET data = ?, updated = ? WHERE id = ?', s, now, id);
-      return J({ ok: true, at: now });
+      const drop = fishCount(old) - fishCount(d);
+      this.bak(id, row.data, now, drop >= 3 ? 'drop' : why, drop >= 3 || why === 'legacy');
+      const nrev = rev + 1;
+      sids.push({ s: sid || 'L' + now, r: nrev }); while (sids.length > SID_KEEP) sids.shift();
+      this.sql.exec('UPDATE users SET data = ?, updated = ?, rev = ?, sids = ? WHERE id = ?', s, now, nrev, JSON.stringify(sids), id);
+      return J({ ok: true, at: now, rev: nrev, merged: why === 'legacy' || undefined });
     }
     if (op === 'logout') { this.sql.exec('DELETE FROM sessions WHERE token = ?', body.token); return J({ ok: true }); }
     return J({ error: 'not found' }, 404);
   }
 }
 
+let VER_C = null;
 export default {
   async fetch(request, env, cctx) {
     const url = new URL(request.url);
@@ -436,7 +561,7 @@ export default {
     if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
       const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
       const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend'].includes(op)) return J({ error: 'not found' }, 404);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore'].includes(op)) return J({ error: 'not found' }, 404);
       if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {
@@ -456,6 +581,16 @@ export default {
       } catch (e) {
         return J({ error: '계정 서버 오류: ' + String(e && e.message || e).slice(0, 120) }, 500);
       }
+    }
+    if (url.pathname === '/api/ver') {
+      // 지금 배포된 화면(index.html)의 빌드 번호 — 오래 열어 둔 창에 '새로고침' 안내를 띄우는 데 써요
+      const now = Date.now();
+      if (!VER_C || now - VER_C.at > 60e3) {
+        let b = '';
+        try { const r = await env.ASSETS.fetch(new Request(url.origin + '/')); const t = await r.text(); const m = t.match(/name="amollang-build" content="([^"]+)"/); b = m ? m[1] : ''; } catch {}
+        VER_C = { at: now, b };
+      }
+      return Response.json({ b: VER_C.b }, { headers: { 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/ws') {
       let n = parseInt(url.searchParams.get('island') || '1', 10);

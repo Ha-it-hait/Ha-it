@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<meta name="amollang-build" content="2026-11-12b">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑 낚시 게임</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -1183,7 +1184,7 @@ function drawFish(c,sp,x,y,L,sil){if(!sil){drawFishBase(c,sp,x,y,L,false);return
  const cv2=document.createElement('canvas');cv2.width=c.canvas.width;cv2.height=c.canvas.height;const c2=cv2.getContext('2d');c2.__noAura=1;drawFishBase(c2,sp,x,y,L,false);c2.globalCompositeOperation='source-in';c2.fillStyle='#2a3048';c2.fillRect(0,0,cv2.width,cv2.height);c.drawImage(cv2,0,0);}
 /* ---------- aquarium (수조) ---------- */
 const TANK_KEY='monggeul-tank',TANK_MAX=50;let tank=[];
-try{const a=JSON.parse(localStorage.getItem(TANK_KEY)||'[]');if(Array.isArray(a))tank=a.filter(o=>o&&SPECIES.some(s=>s.id===o.id)&&Number.isFinite(+o.s)).slice(0,TANK_MAX);}catch(e){}
+try{const a=JSON.parse(localStorage.getItem(TANK_KEY)||'[]');if(Array.isArray(a))tank=a.filter(o=>o&&SPECIES.some(s=>s.id===o.id)&&Number.isFinite(+o.s)).slice(0,1000).map((o,i)=>(+o.t?o:Object.assign({},o,{t:1000+i})));}catch(e){}
 function saveTank(){try{localStorage.setItem(TANK_KEY,JSON.stringify(tank));}catch(e){}markSave();markPresence();}
 let tankOpen=false,tankCr=[],tankRAF=0,tankSel=null,tankT=0,tankLast=0;const tankBub=[];
 const T_BOTTOM=new Set(['crab','lobster','star','urchin']),T_FLOAT=new Set(['jelly','seahorse']);
@@ -1193,7 +1194,7 @@ function tankSprite(sp,size,k=1){const big=sp.shape==='shark'||sp.shape==='hamme
 function tankDims(){const cv=$('tankCv');const r=cv.getBoundingClientRect();const dpr=Math.min(2,devicePixelRatio||1);const W2=Math.max(10,Math.round(r.width*dpr)),H2=Math.max(10,Math.round(r.height*dpr));if(cv.width!==W2||cv.height!==H2){cv.width=W2;cv.height=H2;}return{w:r.width,h:r.height,dpr};}
 function buildTank(){const{w,h}=tankDims();$('tankCount').textContent=`${tank.length} / ${TANK_MAX}`;$('tankEmpty').classList.toggle('hidden',tank.length>0);
  const old=new Map(tankCr.map(c=>[c.key,c]));const sandY=h*0.86;
- tankCr=tank.map(o=>{const key=o.t+'_'+o.id;if(old.has(key))return old.get(key);const sp=SPECIES.find(s=>s.id===o.id);const spr=tankSprite(sp,+o.s,clamp(w/780,0.55,1.25));
+ tankCr=tank.map(o=>{const key=tankKeyOf(o);if(old.has(key))return old.get(key);const sp=SPECIES.find(s=>s.id===o.id);const spr=tankSprite(sp,+o.s,clamp(w/780,0.55,1.25));
   const kind=T_BOTTOM.has(sp.shape)?'bottom':T_FLOAT.has(sp.shape)?'float':'swim';const slow=(sp.shape==='turtle'||sp.shape==='sunfish'||sp.shape==='shark'||sp.shape==='hammer'||sp.shape==='seal'||sp.shape==='orca'||sp.shape==='seaotter')?0.55:1;
   return{key,o,sp,spr,kind,x:rand(spr.w*0.5+4,Math.max(spr.w*0.5+6,w-spr.w*0.5-4)),y:kind==='bottom'?sandY-spr.h*0.3:rand(h*0.2,h*0.7),vx:(kind==='bottom'?rand(8,16):rand(20,42))*slow*(Math.random()<0.5?-1:1),ty:0,ph:rand(0,6)};});
  if(tankSel&&!tankCr.includes(tankSel))tankSel=null;showTinfo();}
@@ -1201,10 +1202,10 @@ function openTank(){closeEmoPanel();$('tank').classList.remove('hidden');tankOpe
 function closeTank(){$('tank').classList.add('hidden');tankOpen=false;cancelAnimationFrame(tankRAF);}
 function showTinfo(){const tx=$('tinfoTxt'),rb=$('tinfoRel');$('tinfoBag').classList.toggle('hidden',!tankSel);if(!tankSel){tx.textContent=tank.length?'물고기를 누르면 이름과 크기가 보여요 · 크기에 따라 다르게 보여요':'';rb.classList.add('hidden');return;}
  const sp=tankSel.sp;tx.textContent=`${sp.name} · ${fmtSize(tankSel.o.s)} · ${starStr(starOf(sp))}`;rb.classList.remove('hidden');}
-function tankToBag(){if(!tankSel)return;if(GS.bag.length>=bagCap()){toast(`가방이 꽉 찼어요 (${bagCap()}마리)${bagFullTip()}`,3400);return;}const k=tankSel.key;const o=tankSel.o;tank=tank.filter(x=>x.t+'_'+x.id!==k);GS.bag.push({id:o.id,s:o.s,t:Date.now(),...(o.x===3?{x:3}:{})});saveTank();tankSel=null;buildTank();sfx.pop();toast(`🎒 ${SP_BY[o.id].name}을(를) 가방으로 옮겼어요`);}
-function releaseFromTank(){if(!tankSel)return;const k=tankSel.key;const sp=tankSel.sp;tank=tank.filter(o=>o.t+'_'+o.id!==k);saveTank();tankSel=null;buildTank();sfx.splash(0.2);toast(`잘 가, ${sp.name}! ${sp.hab==='fresh'?'강':'바다'}로 돌려보냈어요`);}
+function tankToBag(){if(!tankSel)return;if(GS.bag.length>=bagCap()){toast(`가방이 꽉 찼어요 (${bagCap()}마리)${bagFullTip()}`,3400);return;}const k=tankSel.key;const o=tankSel.o;tank=tank.filter(x=>x!==o);GS.bag.push({id:o.id,s:o.s,t:newT(),...(o.x===3?{x:3}:{})});saveTank();tankSel=null;buildTank();sfx.pop();toast(`🎒 ${SP_BY[o.id].name}을(를) 가방으로 옮겼어요`);}
+function releaseFromTank(){if(!tankSel)return;const k=tankSel.key;const sp=tankSel.sp;tank=tank.filter(o=>o!==tankSel.o);saveTank();tankSel=null;buildTank();sfx.splash(0.2);toast(`잘 가, ${sp.name}! ${sp.hab==='fresh'?'강':'바다'}로 돌려보냈어요`);}
 function keepFish(){if(!fish)return;if(tank.length>=TANK_MAX){toast(`수조가 꽉 찼어요 (${TANK_MAX}마리). 🐠 수조에서 몇 마리 놓아주세요`,3200);return;}
- tank.push({id:fish.sp.id,s:fish.size,t:Date.now(),...(fishBonus(fish)===3?{x:3}:{})});saveTank();$('catch').classList.add('hidden');sfx.pop();toast(`🐠 수조에 넣었어요 (${tank.length}/${TANK_MAX}) · 왼쪽 아래 수조 버튼에서 볼 수 있어요`,3000);fish=null;setF('idle');}
+ tank.push({id:fish.sp.id,s:fish.size,t:newT(),...(fishBonus(fish)===3?{x:3}:{})});saveTank();$('catch').classList.add('hidden');sfx.pop();toast(`🐠 수조에 넣었어요 (${tank.length}/${TANK_MAX}) · 왼쪽 아래 수조 버튼에서 볼 수 있어요`,3000);fish=null;setF('idle');}
 function seaweed(c,w,h,back){const n=back?6:4;for(let i=0;i<n;i++){const x=w*(back?0.06+i*0.17:0.03+i*0.31)+hash(i+(back?0:20))*30;const hh=h*(back?0.3+hash(i+5)*0.25:0.16+hash(i+9)*0.12);
   c.strokeStyle=back?`rgba(${50+i*6},${140+i*5},90,.55)`:`rgba(${70+i*10},${175},${85},.95)`;c.lineWidth=back?9:11;c.lineCap='round';c.beginPath();c.moveTo(x,h*0.9);for(let k=1;k<=8;k++){c.lineTo(x+Math.sin(tankT*1.1+k*0.55+i)*9*k/8,h*0.9-hh*k/8);}c.stroke();}}
 function drawTankBg(c,w,h){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#9be6f5');g.addColorStop(0.5,'#3fa6dc');g.addColorStop(1,'#1f6dab');c.fillStyle=g;c.fillRect(0,0,w,h);
@@ -1970,7 +1971,7 @@ function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
   if(!GS.bag.length){const e=document.createElement('div');e.className='empty';e.innerHTML='가방이 비어 있어요.<br>물고기를 잡은 뒤 <b>‘🎒 가방에 넣기’</b>를 눌러 보세요.';box.appendChild(e);}
   const list=document.createElement('div');list.className='ilist';
   [...GS.bag].sort((a,b)=>starOf(SP_BY[b.id])-starOf(SP_BY[a.id])||b.s-a.s).forEach(it=>{const sp=SP_BY[it.id];if(!sp)return;const row=itemRow(sp,it.s,`${starStr(starOf(sp))} · ${fmtM(itemPrice(it))} 몰랑${it.x===3?' · 🔥×3':''}`);
-   const b1=document.createElement('button');b1.textContent='🐠 수조로';b1.onclick=()=>{if(tank.length>=TANK_MAX){toast(`수조가 꽉 찼어요 (${TANK_MAX}마리)`);return;}GS.bag=GS.bag.filter(x=>x!==it);tank.push({id:it.id,s:it.s,t:Date.now(),...(it.x===3?{x:3}:{})});saveTank();markSave();sfx.pop();renderBag();toast(`🐠 ${sp.name}을(를) 수조에 넣었어요`);};
+   const b1=document.createElement('button');b1.textContent='🐠 수조로';b1.onclick=()=>{if(tank.length>=TANK_MAX){toast(`수조가 꽉 찼어요 (${TANK_MAX}마리)`);return;}GS.bag=GS.bag.filter(x=>x!==it);tank.push({id:it.id,s:it.s,t:newT(),...(it.x===3?{x:3}:{})});saveTank();markSave();sfx.pop();renderBag();toast(`🐠 ${sp.name}을(를) 수조에 넣었어요`);};
    const b2=document.createElement('button');b2.className='ghost';b2.textContent='놓아주기';b2.onclick=()=>{GS.bag=GS.bag.filter(x=>x!==it);markSave();sfx.splash(0.2);renderBag();toast(`잘 가, ${sp.name}!`);};
    row.querySelector('.acts').append(b1,b2);list.appendChild(row);});box.appendChild(list);}
  if(bagTab==='gear'){
@@ -2299,25 +2300,25 @@ function doCtx(){if(ctxKind==='boat'){boardBoat();return;}if(ctxKind==='unboat')
 const SAVE_KEY='monggeul-save-v2',ACCT_KEY='monggeul-acct',GUEST_BAK='monggeul-guest-backup';
 var acct=null,cloud=null,saveBusy=false,lastSaveAt=0,lastSaveOk=0,saveErr='';
 function loveAll(){const o={};for(const d of ANIM_DEFS){try{const n=+localStorage.getItem('monggeul-love-'+d.id)||0;if(n)o[d.id]=n;}catch(e){}}return o;}
-function collectSave(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
-function applySave(d){if(!d||typeof d!=='object')return false;
+function collectSave0(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
+function applySave0(d){if(!d||typeof d!=='object')return false;
  const L=d.look;if(L&&[L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK={hat:clamp(L.hat,0,6),hc:clamp(L.hc,0,COLORS.length-1),cloth:clamp(L.cloth,0,4),cc:clamp(L.cc,0,COLORS.length-1)};
  if(d.name&&Number.isInteger(d.name.a)&&Number.isInteger(d.name.b)){const ck=checkNick(d.name.nk||'');NAME={a:d.name.a,b:d.name.b,nk:ck.ok?ck.nick:''};}
  if(d.book&&typeof d.book==='object'){const nb={};for(const[k,v]of Object.entries(d.book))if(SP_BY[k]&&v&&Number.isFinite(+v.n)&&Number.isFinite(+v.best))nb[k]={n:Math.max(1,+v.n|0),best:+v.best};book=nb;}
- if(Array.isArray(d.tank))tank=d.tank.filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,TANK_MAX).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
+ if(Array.isArray(d.tank))tank=d.tank.filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,1000).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
  if(d.love&&typeof d.love==='object')for(const[k,v]of Object.entries(d.love))try{localStorage.setItem('monggeul-love-'+k,String(v|0));}catch(e){}
  if(Array.isArray(d.emoji)){const f=d.emoji.filter(e=>EMOJI_SET.has(e)).slice(0,5);if(f.length===5)recentEmoji=f;}
  const g=d.gs||{};GS.money=clamp(Math.floor(+g.money||0),0,1e9);GS.rods=[...new Set([1,...(Array.isArray(g.rods)?g.rods:[]).map(x=>x|0).filter(x=>x>=1&&x<=7)])].sort();GS.rod=GS.rods.includes(g.rod|0)?g.rod|0:Math.max(...GS.rods);
  GS.packs=[...new Set((Array.isArray(g.packs)?g.packs:[]).map(x=>x|0).filter(x=>x>=1&&x<PACKS.length))].sort();GS.pack=GS.packs.includes(g.pack|0)?g.pack|0:0;if(P.char)setCharPack(P.char,GS.pack);
- GS.bag=(Array.isArray(g.bag)?g.bag:[]).filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,BAG_KEEP_MAX).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
- GS.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&(DISH[f.k]||/^f\d$/.test(f.k))).slice(0,FOOD_MAX).map(f=>({k:f.k,s:SP_BY[f.s]?f.s:''}));
+ GS.bag=(Array.isArray(g.bag)?g.bag:[]).filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,1000).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
+ GS.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&(DISH[f.k]||/^f\d$/.test(f.k))).slice(0,300).map(f=>({k:f.k,s:SP_BY[f.s]?f.s:''}));
  GS.buffUntil=Number.isFinite(+g.buffUntil)?+g.buffUntil:0;GS.ease=clamp(+g.ease||0,0,0.2);GS.easeUntil=Number.isFinite(+g.easeUntil)?+g.easeUntil:0;GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});LEG.n=Math.max(LEG.n,(+GS.stats.leg||0)|0);if(Array.isArray(GS.stats.nofol)){NOFOL.clear();for(const id of GS.stats.nofol)NOFOL.add(String(id));try{localStorage.setItem('monggeul-nofollow',JSON.stringify([...NOFOL]));}catch(e){}}
  try{localStorage.setItem('monggeul-me',JSON.stringify({look:LOOK,name:NAME}));localStorage.setItem(KEY,JSON.stringify(book));localStorage.setItem(TANK_KEY,JSON.stringify(tank));}catch(e){}
- if(P.char){rebuildMe();}buildEmoteBar();updateHUD();return true;}
+ if(P.char&&!window.__applyQuiet){rebuildMe();}buildEmoteBar();updateHUD();return true;}
 function loadLocalGS(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s&&s.gs){const keep={look:LOOK,name:NAME,book,tank};applySave(Object.assign({},s,keep,{gs:s.gs}));}}catch(e){}}
 function saveLocal(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(collectSave()));}catch(e){}}
 function saveStatusText(){const who=acct?`아이디 ‘${acct.id}’로 서버에 저장`:cloud?'claude.ai 계정에 자동 저장':'이 기기(브라우저)에만 저장';const when=lastSaveOk?` · 마지막 저장 ${new Date(lastSaveOk).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}`:'';return`💾 ${who}${when}${saveErr?' · ⚠ '+saveErr:''}`;}
-async function doSave(urgent){saveDirty=false;lastSaveAt=Date.now();const data=collectSave();if(!acct)saveLocal();
+async function doSave0(urgent){saveDirty=false;lastSaveAt=Date.now();const data=collectSave();if(!acct)saveLocal();
  if(acct){try{const r=await fetch('/api/acct/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:acct.token,data}),keepalive:!!urgent});
    if(r.status===401){saveErr='다시 로그인이 필요해요';toast('로그인이 만료됐어요. 기록은 이 기기에 임시로 저장해 둘게요',3500);saveLocal();acct=null;}else if(r.ok){lastSaveOk=Date.now();saveErr='';}else{saveErr='저장 실패';saveDirty=true;}}catch(e){saveErr='인터넷 연결을 확인해 주세요';saveDirty=true;}}
  else if(cloud){if(saveBusy){saveDirty=true;return;}saveBusy=true;try{await cloud.ref.set(data);lastSaveOk=Date.now();saveErr='';}catch(e){if(e&&e.code==='invalid_argument'){cloud=null;saveErr='';}else{saveErr='저장 실패';saveDirty=true;}}saveBusy=false;}
@@ -2342,14 +2343,14 @@ async function authSubmit(){const id=$('authId').value.trim().toLowerCase(),pw=$
  try{const j=await authCall(authTab,{id,pw});finishAuth(j,authTab==='register');}catch(e){err.textContent=e.message;}finally{$('authGo').disabled=false;renderAuthTabBtn();}}
 function renderAuthTabBtn(){$('authGo').textContent=authTab==='login'?'로그인하고 섬으로':'아이디 만들기';}
 async function authQuick(){const s=(()=>{try{return JSON.parse(localStorage.getItem(ACCT_KEY)||'null');}catch(e){return null;}})();if(!s)return;$('authQuickBtn').disabled=true;
- try{const j=await authCall('load',{token:s.token});finishAuth({id:j.id,token:s.token,data:j.data},false);}catch(e){$('authErr').textContent=e.message+' — 아이디와 비밀번호로 다시 로그인해 주세요';$('authQuick').classList.add('hidden');}finally{$('authQuickBtn').disabled=false;}}
+ try{const j=await authCall('load',{token:s.token});finishAuth({id:j.id,token:s.token,data:j.data,rev:j.rev,sids:j.sids},false);}catch(e){$('authErr').textContent=e.message+' — 아이디와 비밀번호로 다시 로그인해 주세요';$('authQuick').classList.add('hidden');}finally{$('authQuickBtn').disabled=false;}}
 function finishAuth(j,isNew){if(!acct){try{if(!localStorage.getItem(GUEST_BAK))localStorage.setItem(GUEST_BAK,JSON.stringify(collectSave()));}catch(e){}}
  acct={id:j.id,token:j.token};try{localStorage.setItem(ACCT_KEY,JSON.stringify(acct));}catch(e){}
- if(j.data&&j.data.v===2){applySave(j.data);}else{markSave();doSave(false);}
+ syncOnAuth(j);
  $('auth').classList.add('hidden');openCloset(true);$('closetTitle').textContent=isNew?`환영해요, ${acct.id} 님!`:`다시 오셨네요, ${acct.id} 님!`;
  if(!isNew&&j.data&&j.data.v===2){$('go').click();toast(`👋 다시 오셨네요, ${acct.id} 님! 💾 저장된 기록을 불러왔어요 · 옷은 👕 버튼에서 갈아입어요`,3600);return;}
  toast(isNew?'아이디를 만들었어요! 이제 기록이 서버에 저장돼요 💾':'💾 저장된 기록을 불러왔어요',3000);}
-function authGuest(){$('auth').classList.add('hidden');openCloset(true);toast('둘러보기 모드: 기록은 이 기기에만 저장돼요',2600);}
+function authGuest(){tabClaim();$('auth').classList.add('hidden');openCloset(true);toast('둘러보기 모드: 기록은 이 기기에만 저장돼요',2600);}
 async function logout(){if(!acct)return;await doSave(false);try{await authCall('logout',{token:acct.token});}catch(e){}acct=null;try{localStorage.removeItem(ACCT_KEY);const g=localStorage.getItem(GUEST_BAK);if(g){const d=JSON.parse(g);localStorage.setItem('monggeul-me',JSON.stringify({look:d.look,name:d.name}));localStorage.setItem(KEY,JSON.stringify(d.book||{}));localStorage.setItem(TANK_KEY,JSON.stringify(d.tank||[]));localStorage.setItem(SAVE_KEY,g);localStorage.removeItem(GUEST_BAK);}}catch(e){}location.reload();}
 
 /* ---------- 매 프레임 ---------- */
@@ -2535,9 +2536,15 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-12a';
+const NEWS_VER='2026-11-12b';
 const NEWS=[
- {d:'11월 12일',t:'🕹️ 조작이 편해졌어요',n:true,i:[
+ {d:'11월 12일',t:'💾 잡은 물고기 기록을 더 단단하게 지켜요',n:true,i:[
+  '📱💻 휴대폰과 PC(또는 창 여러 개)에서 번갈아 해도 <b>서로의 기록을 덮어쓰지 않고 합쳐서</b> 저장해요.',
+  '🪟 같은 브라우저에서 게임 창을 여러 개 열면, 마지막에 연 창만 저장하고 나머지 창은 멈춰요.',
+  '🏆 전송이 실패해서 명예의 전당에 빠진 기록이 있으면, 도감의 내 최고 기록으로 <b>자동으로 다시 올려요</b>. 내 기록이 깨지면 알려 드려요.',
+  '🐠 수조에서 물고기가 겹쳐 보이거나 한꺼번에 사라질 수 있던 문제를 고쳤어요.',
+  '⚠ 저장이 계속 안 되면 화면 아래에 빨간 안내가 떠요. 새 버전이 나오면 새로고침 안내가 떠요.']},
+ {d:'11월 12일',t:'🕹️ 조작이 편해졌어요',i:[
   '👋 저장된 아이디로 <b>계속하기</b>를 누르면 옷 고르기 없이 <b>바로 섬에서 시작</b>해요. 옷은 👕 버튼에서 언제든 갈아입어요.',
   '⌨️ PC에서 <b>Q</b> / <b>E</b>로 시점을 왼쪽 / 오른쪽으로 돌릴 수 있어요. (동물 교감은 버튼을 눌러요)',
   '🤏 휴대폰에서 <b>두 손가락을 모으면 멀리, 벌리면 가까이</b> 보여요.',
@@ -2769,7 +2776,7 @@ async function hofSubmit(sp,size){
  const id=sp.id,s=Math.round(size*10)/10;const cur=HOF.map[id];if(cur&&cur.s>=s)return;const name=hofName();
  try{
   if(netMode==='ws'){const r=await fetch('/api/hof/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id,s,name})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)return;
-   if(j.top){HOF.map[id]={s,n:j.name||name,ts:Date.now()};hofCheer(sp,s,j.prev);}else if(j.rec)HOF.map[id]={s:+j.rec.s,n:String(j.rec.n||''),ts:+j.rec.ts||0};}
+   if(j.top){HOF.map[id]={s,n:j.name||name,ts:Date.now()};hofMineSet(id,s);hofCheer(sp,s,j.prev);}else if(j.rec)HOF.map[id]={s:+j.rec.s,n:String(j.rec.n||''),ts:+j.rec.ts||0};}
   else{if(!HOF.db)await hofLoad(true);if(!HOF.db)return;const ref=HOF.db.collection('hof').doc(id);const snap=await ref.get();const old=snap&&snap.exists?snap.data():null;if(old&&+old.s>=s)return;
    await ref.set({s,n:name,ts:Date.now()});HOF.map[id]={s,n:name,ts:Date.now()};hofCheer(sp,s,old?{s:+old.s,n:old.n}:null);}
   hofRefresh();}catch(e){}}
@@ -2821,11 +2828,11 @@ function renderHof(){$('hofKing').innerHTML=colHTML();const box=$('hofList');con
  box.innerHTML='';const stars=HOF.tab==='all'?[7,6,5,4,3,2,1]:[+HOF.tab];
  for(const st of stars){const list=SPECIES.filter(sp=>starOf(sp)===st);const got=list.filter(sp=>HOF.map[sp.id]).length;
   const h=document.createElement('div');h.className='hofh s'+st;h.innerHTML=`<b>${'★'.repeat(st)}</b><span>${st===7?'무지개 전설':st===6?'신화':st===5?'전설':st===4?'희귀':st===3?'고급':st===2?'보통':'흔함'} · ${list.length}종</span><small>${got}종 기록됨</small>`;box.appendChild(h);
-  for(const sp of list.sort((a,b)=>(HOF.map[b.id]?1:0)-(HOF.map[a.id]?1:0)||a.name.localeCompare(b.name,'ko'))){const rec=HOF.map[sp.id];const row=document.createElement('div');row.className='hofr'+(rec?'':' none')+(rec&&rec.n===me?' mine':'');
+  for(const sp of list.sort((a,b)=>(HOF.map[b.id]?1:0)-(HOF.map[a.id]?1:0)||a.name.localeCompare(b.name,'ko'))){const rec=HOF.map[sp.id];const row=document.createElement('div');row.className='hofr'+(rec?'':' none')+(hofIsMine(sp.id,rec)?' mine':'');
    const cv=document.createElement('canvas');cv.width=120;cv.height=60;drawFish(cv.getContext('2d'),sp,60+(sp.shape==='beak'?6:0),30,fishL(sp,96,24),!rec);
    const nm=document.createElement('div');nm.className='hn';nm.innerHTML=`<b></b><small></small>`;nm.firstChild.textContent=sp.name;const mb=book[sp.id];nm.lastChild.textContent=`최대 ${fmtSize(sp.max)}`+(mb?` · 내 최고 ${fmtSize(mb.best)}`:'');
    const rc=document.createElement('div');rc.className='hrec';
-   if(rec){const d=new Date(rec.ts||0);rc.innerHTML=`<b></b><span></span><small></small>`;rc.children[0].textContent=fmtSize(rec.s);rc.children[1].textContent=(rec.n===me?'👑 ':'🏅 ')+String(rec.n).slice(0,12);rc.children[2].textContent=rec.ts?`${d.getMonth()+1}/${d.getDate()}`:'';}
+   if(rec){const d=new Date(rec.ts||0);rc.innerHTML=`<b></b><span></span><small></small>`;rc.children[0].textContent=fmtSize(rec.s);rc.children[1].textContent=(hofIsMine(sp.id,rec)?'👑 ':'🏅 ')+String(rec.n).slice(0,12);rc.children[2].textContent=rec.ts?`${d.getMonth()+1}/${d.getDate()}`:'';}
    else rc.innerHTML='<span class="nobody">— 아직 아무도 잡지 못했어요</span>';
    row.append(cv,nm,rc);box.appendChild(row);}}}
 
@@ -3169,6 +3176,183 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
+const BUILD='2026-11-12b';
+/* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
+var SYNC={rev:null,base:null,own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
+var UNK={book:{},tank:[],bag:[],food:[]};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
+var HOF_MINE={};                              // 내가 명예의 전당에 올린 기록 {생물:크기}
+const SYNC_KEY='monggeul-sync-v3',HOFMINE_KEY='monggeul-hof-mine';
+try{const m=JSON.parse(localStorage.getItem(HOFMINE_KEY)||'{}');if(m&&typeof m==='object')HOF_MINE=m;}catch(e){}
+function rid(n=16){let k='';for(let i=0;i<n;i++)k+='abcdefghijklmnopqrstuvwxyz0123456789'[Math.random()*36|0];return k;}
+function newT(){return Date.now()+Math.floor(Math.random()*1000);}
+const TAB_ID=rid(12);
+const TKEY=new WeakMap();let tkeyN=0;function tankKeyOf(o){let k=TKEY.get(o);if(!k){k='k'+(++tkeyN);TKEY.set(o,k);}return k;}
+
+/* 저장 데이터 합치기: B = 마지막으로 서버와 맞춘 기록, L = 이 화면의 기록, S = 서버의 최신 기록 */
+function sNormItems(a){return(Array.isArray(a)?a:[]).filter(o=>o&&typeof o.id==='string').map((o,i)=>(+o.t?o:Object.assign({},o,{t:1000+i})));}
+const sIkey=o=>o.id+'|'+(+o.t)+'|'+(+o.s);
+function mergeItems(B,L,S){const b=B?sNormItems(B):null,l=sNormItems(L),s=sNormItems(S);
+ const bk=b?new Set(b.map(sIkey)):null,lk=new Set(l.map(sIkey));const out=[],seen=new Set();
+ for(const o of s){const k=sIkey(o);if(seen.has(k))continue;if(bk&&bk.has(k)&&!lk.has(k))continue;/* 이 화면에서 팔기·놓아주기·옮기기 한 것 */seen.add(k);out.push(o);}
+ for(const o of l){const k=sIkey(o);if(seen.has(k))continue;if(bk&&bk.has(k))continue;/* 다른 기기에서 이미 뺀 것 */seen.add(k);out.push(o);}
+ return out;}
+function mergeFood(B,L,S){const c=a=>{const m=new Map();for(const f of(Array.isArray(a)?a:[]))if(f&&typeof f.k==='string'){const k=f.k+'|'+(f.s||'');m.set(k,(m.get(k)||0)+1);}return m;};
+ const mb=B?c(B):null,ml=c(L),ms=c(S);const out=[];
+ for(const k of new Set([...ms.keys(),...ml.keys()])){const sn=ms.get(k)||0,ln=ml.get(k)||0;let n=mb?sn+(ln-(mb.get(k)||0)):Math.max(sn,ln);n=Math.max(0,n);const j=k.indexOf('|');for(let i=0;i<n;i++)out.push({k:k.slice(0,j),s:k.slice(j+1)});}
+ return out;}
+function mergeBook(B,L,S){B=B||{};L=L||{};S=S||{};const o={};
+ for(const k of new Set([...Object.keys(S),...Object.keys(L)])){const s=S[k],l=L[k],b=B[k];const sn=s?+s.n||0:0,ln=l?+l.n||0:0,bn=b?+b.n||0:0;
+  const n=Math.max(sn,ln,sn+Math.max(0,ln-bn)),best=Math.max(s?+s.best||0:0,l?+l.best||0:0);if(n>0||best>0)o[k]={n:Math.max(1,n|0),best};}
+ return o;}
+function merge3(B,L,S){B=B&&typeof B==='object'?B:null;L=L||{};S=S||{};
+ const J=x=>JSON.stringify(x===undefined?null:x);
+ const pk=(b,l,s)=>B?(J(l)===J(b)?(s===undefined?l:s):l):(l===undefined?s:l);
+ const nm=(b,l,s)=>{b=+b||0;l=+l||0;s=+s||0;return B?Math.max(0,s+(l-b)):Math.max(s,l);};
+ const M=Object.assign({},S);M.v=2;M.at=Date.now();
+ M.look=pk(B&&B.look,L.look,S.look);M.name=pk(B&&B.name,L.name,S.name);M.emoji=pk(B&&B.emoji,L.emoji,S.emoji);
+ M.book=mergeBook(B&&B.book,L.book,S.book);M.tank=mergeItems(B&&B.tank,L.tank,S.tank);
+ const lv={},LL=L.love||{},SL=S.love||{},BL=(B&&B.love)||{};for(const k of new Set([...Object.keys(SL),...Object.keys(LL)]))lv[k]=Math.max(+SL[k]||0,+LL[k]||0,B?nm(BL[k],LL[k],SL[k]):0);M.love=lv;
+ const hm={},LH=L.hm||{},SH=S.hm||{};for(const k of new Set([...Object.keys(SH),...Object.keys(LH)]))hm[k]=Math.max(+SH[k]||0,+LH[k]||0);M.hm=hm;
+ const bg=B?(B.gs||{}):null,lg=L.gs||{},sg=S.gs||{};const g=Object.assign({},sg);
+ g.money=nm(bg&&bg.money,lg.money,sg.money);
+ g.rods=[...new Set([...(sg.rods||[]),...(lg.rods||[])])].sort((a,b)=>a-b);g.packs=[...new Set([...(sg.packs||[]),...(lg.packs||[])])].sort((a,b)=>a-b);
+ g.rod=pk(bg&&bg.rod,lg.rod,sg.rod);g.pack=pk(bg&&bg.pack,lg.pack,sg.pack);
+ g.bag=mergeItems(bg&&bg.bag,lg.bag,sg.bag);g.food=mergeFood(bg&&bg.food,lg.food,sg.food);
+ g.buffUntil=Math.max(+sg.buffUntil||0,+lg.buffUntil||0);
+ if((+lg.easeUntil||0)>(+sg.easeUntil||0)){g.ease=lg.ease;g.easeUntil=lg.easeUntil;}
+ const bs=(bg&&bg.stats)||{},ls=lg.stats||{},ss=sg.stats||{};const st=Object.assign({},ss);
+ for(const k of new Set([...Object.keys(ss),...Object.keys(ls)])){
+  if(k==='leg')st.leg=Math.max(+ss.leg||0,+ls.leg||0);
+  else if(typeof ls[k]==='number'||typeof ss[k]==='number')st[k]=nm(bs[k],ls[k],ss[k]);
+  else st[k]=pk(bs[k],ls[k],ss[k]);}
+ g.stats=st;M.gs=g;return M;}
+function saveCore(d){if(!d)return'';const x=Object.assign({},d);delete x.at;return JSON.stringify(x);}
+
+/* 이 화면이 모르는 생물도 지우지 않고 보관했다가 저장할 때 그대로 돌려줘요 */
+function applySave(d){if(!d||typeof d!=='object')return false;
+ const tk=sNormItems(d.tank),g=d.gs||{};
+ UNK={book:{},tank:[],bag:[],food:[]};
+ if(d.book&&typeof d.book==='object')for(const[k,v]of Object.entries(d.book))if(!SP_BY[k]&&v&&typeof v==='object')UNK.book[k]=v;
+ UNK.tank=tk.filter(o=>!SP_BY[o.id]);
+ const bg=sNormItems(g.bag);UNK.bag=bg.filter(o=>!SP_BY[o.id]);
+ UNK.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&!(DISH[f.k]||/^f\d$/.test(f.k)));
+ if(d.hm&&typeof d.hm==='object')for(const[k,v]of Object.entries(d.hm))if(+v>(+HOF_MINE[k]||0))HOF_MINE[k]=+v;
+ try{localStorage.setItem(HOFMINE_KEY,JSON.stringify(HOF_MINE));}catch(e){}
+ const d2=Object.assign({},d,{tank:tk,gs:Object.assign({},g,{bag:bg})});
+ return applySave0(d2);}
+function collectSave(){const d=collectSave0();
+ if(Object.keys(UNK.book).length)d.book=Object.assign({},UNK.book,d.book);
+ if(UNK.tank.length)d.tank=[...d.tank,...UNK.tank];
+ if(UNK.bag.length)d.gs.bag=[...d.gs.bag,...UNK.bag];
+ if(UNK.food.length)d.gs.food=[...d.gs.food,...UNK.food];
+ d.hm=Object.assign({},HOF_MINE);return d;}
+
+/* 합친 기록을 화면에 적용 (옷·이름이 같으면 캐릭터를 다시 만들지 않아요) */
+function applyMerged(M){const same=JSON.stringify([M.look,M.name])===JSON.stringify([LOOK,NAME]);
+ window.__applyQuiet=same;try{applySave(M);}finally{window.__applyQuiet=false;}
+ if(same&&P.char){setCharRod(P.char,GS.rod);setCharPack(P.char,GS.pack|0);}
+ try{if(tankOpen)buildTank();if(!$('bag').classList.contains('hidden'))renderBag();if(!$('shop').classList.contains('hidden'))renderShop();if(!$('cook').classList.contains('hidden'))renderCook();if(!$('book').classList.contains('hidden'))openBook();}catch(e){}
+ updateHUD();}
+
+/* 이 기기에 '마지막으로 서버와 맞춘 기록 + 아직 못 보낸 기록'을 함께 보관 → 다음에 로그인하면 합쳐요 */
+function syncPersist(data){if(!SYNC.own)return;try{localStorage.setItem(SYNC_KEY,JSON.stringify({own:SYNC.own,rev:SYNC.rev,base:SYNC.base,data,pend:SYNC.pend.slice(-3),at:Date.now()}));}catch(e){}}
+function syncLoadLocal(){try{return JSON.parse(localStorage.getItem(SYNC_KEY)||'null');}catch(e){return null;}}
+function effBase(sids,pend,base){sids=Array.isArray(sids)?sids:[];for(let i=(pend||[]).length-1;i>=0;i--)if(sids.includes(pend[i].sid))return pend[i].data;return base;}
+
+function syncOnAuth(j){
+ SYNC.own=j.id;SYNC.rev=Number.isInteger(j.rev)?j.rev:null;SYNC.pend=[];SYNC.frozen=false;
+ const S=j.data&&j.data.v===2?j.data:null;const loc=syncLoadLocal();let M=S,merged=false;
+ if(loc&&loc.own===j.id&&loc.data&&loc.data.v===2){
+  const B=effBase(j.sids,loc.pend,loc.base);
+  if(S){if(B){M=merge3(B,loc.data,S);}else if((+loc.data.at||0)>(+S.at||0)+1000){M=merge3(null,loc.data,S);}merged=M!==S&&saveCore(M)!==saveCore(S);}
+  else{M=loc.data;merged=true;}}
+ SYNC.base=S;
+ if(M)applySave(M);
+ if(merged||!S){markSave();doSave(false);}
+ if(merged&&S)setTimeout(()=>toast('💾 이 기기에 남아 있던 기록까지 합쳐서 불러왔어요',3200),400);
+ syncPersist(collectSave());tabClaim();}
+
+async function doSave(urgent,depth=0){
+ if(SYNC.frozen)return;
+ if(!acct){if(SYNC.own)syncPersist(collectSave());return doSave0(urgent);}
+ if(SYNC.busy){saveDirty=true;SYNC.again=true;if(urgent)syncPersist(collectSave());return;}
+ SYNC.busy=true;saveDirty=false;lastSaveAt=Date.now();
+ const data=collectSave(),sid=rid(16);SYNC.pend.push({sid,data});if(SYNC.pend.length>4)SYNC.pend.shift();syncPersist(data);
+ let retry=false;
+ try{const body=JSON.stringify({token:acct.token,data,base:SYNC.rev,sid,cv:BUILD});
+  const r=await fetch('/api/acct/save',{method:'POST',headers:{'content-type':'application/json'},body,keepalive:!!urgent&&body.length<60000});
+  const j=await r.json().catch(()=>({}));
+  if(r.status===401){saveErr='다시 로그인이 필요해요';toast('로그인이 풀렸어요. 기록은 이 기기에 안전하게 보관해 둘게요 — 다시 로그인하면 합쳐져요',4200);acct=null;saveDirty=true;}
+  else if(r.ok&&j.ok){if(Number.isInteger(j.rev))SYNC.rev=j.rev;SYNC.base=data;SYNC.pend=[];lastSaveOk=Date.now();saveErr='';syncPersist(data);}
+  else if(r.status===409&&j.conflict){
+   const S=j.data||{},B=effBase(j.sids,SYNC.pend,SYNC.base);const M=merge3(B,collectSave(),S);
+   SYNC.base=S;SYNC.rev=j.rev;SYNC.pend=[];applyMerged(M);saveDirty=true;SYNC.conflicts++;syncPersist(collectSave());
+   if(depth===0)toast('🔄 다른 기기(창)에서 저장한 기록과 합쳤어요 · 잃어버린 기록은 없어요',3200);retry=depth<3;}
+  else{saveErr='저장 실패'+(j.error?': '+j.error:' ('+r.status+')');saveDirty=true;}}
+ catch(e){saveErr='인터넷 연결을 확인해 주세요';saveDirty=true;}
+ finally{SYNC.busy=false;}
+ if(SYNC.again){SYNC.again=false;saveDirty=true;}
+ const si=$('saveInfo');if(si)si.textContent=saveStatusText();
+ if(retry)return doSave(false,depth+1);}
+
+/* 다른 기기에서 저장한 기록 가져오기 (화면으로 돌아왔을 때 · 3분마다) */
+async function pullSync(){if(!acct||SYNC.busy||SYNC.frozen||!Number.isInteger(SYNC.rev))return;
+ if(!entered||mode!=='walk'||modalOpen()){SYNC.pullWant=true;return;}
+ SYNC.pullWant=false;SYNC.lastPull=performance.now();
+ try{const r=await fetch('/api/acct/load',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:acct.token,have:SYNC.rev})});
+  const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok||j.same||!Number.isInteger(j.rev)||j.rev===SYNC.rev||!j.data)return;
+  if(SYNC.busy||!acct||mode!=='walk'||modalOpen()){SYNC.pullWant=true;return;}
+  const B=effBase(j.sids,SYNC.pend,SYNC.base);const M=merge3(B,collectSave(),j.data);const mine=saveCore(M)!==saveCore(j.data);
+  SYNC.base=j.data;SYNC.rev=j.rev;SYNC.pend=[];applyMerged(M);if(mine)markSave();syncPersist(collectSave());
+  toast('🔄 다른 기기에서 저장한 기록을 불러왔어요',2600);}catch(e){}}
+
+/* 같은 브라우저에서 창(탭)을 여러 개 열면 마지막 창만 저장해요 */
+function tabClaim(){try{localStorage.setItem('monggeul-tab',TAB_ID+'|'+Date.now());}catch(e){}}
+async function tabFreeze(){if(SYNC.frozen)return;try{if(saveDirty||acct)await doSave(false);}catch(e){}SYNC.frozen=true;
+ let el=$('tabLock');if(!el){el=document.createElement('div');el.id='tabLock';el.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(20,30,48,.82);display:flex;align-items:center;justify-content:center;padding:20px;color:#fff;font:600 15px/1.6 system-ui,sans-serif;text-align:center';
+  el.innerHTML='<div style="max-width:340px;background:#263450;border-radius:18px;padding:22px 20px;box-shadow:0 8px 30px rgba(0,0,0,.35)"><div style="font-size:34px">🪟</div><div style="font-size:17px;font-weight:900;margin:6px 0 8px">다른 창에서 게임을 열었어요</div><div style="font-size:13.5px;opacity:.9">기록이 서로 덮이지 않도록 이 창은 멈췄어요.<br>지금까지의 기록은 저장했어요.</div><button id="tabLockGo" style="margin-top:16px;border:0;border-radius:12px;padding:11px 18px;font:800 15px system-ui;background:#ffd36a;color:#3a2a00;cursor:pointer">이 창에서 계속하기</button></div>';
+  document.body.appendChild(el);$('tabLockGo').onclick=()=>location.reload();}
+ el.style.display='flex';}
+addEventListener('storage',e=>{if(e.key!=='monggeul-tab'||!e.newValue)return;if(e.newValue.split('|')[0]!==TAB_ID&&entered)tabFreeze();});
+
+/* 새 버전이 배포되면 오래 열어 둔 창에 새로고침 안내 */
+let verShown=false;
+async function verCheck(){if(netMode!=='ws'||verShown)return;try{const r=await fetch('/api/ver',{cache:'no-store'});if(!r.ok)return;const j=await r.json();if(!(j&&j.b&&j.b>BUILD))return;verShown=true;
+ const el=document.createElement('div');el.id='verBar';el.style.cssText='position:fixed;left:50%;top:calc(var(--vvt,0px) + 8px);transform:translateX(-50%);z-index:60;background:#2f6bd8;color:#fff;border-radius:14px;padding:8px 10px 8px 14px;font:700 13px system-ui,sans-serif;display:flex;gap:10px;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:92vw';
+ el.innerHTML='<span>🆕 새 버전이 나왔어요</span><button style="border:0;border-radius:10px;padding:6px 12px;font:800 13px system-ui;background:#fff;color:#2f6bd8;cursor:pointer">저장하고 새로고침</button>';
+ el.querySelector('button').onclick=async()=>{el.querySelector('button').disabled=true;try{if(acct)await doSave(false);else saveLocal();}catch(e){}location.reload();};
+ document.body.appendChild(el);}catch(e){}}
+
+/* 저장이 계속 안 되면 화면에 크게 알려요 */
+function saveWarnTick(){let el=$('saveWarn');const lost=!acct&&SYNC.own;const stuck=acct&&saveDirty&&saveErr&&Date.now()-(lastSaveOk||lastSaveAt||Date.now())>30000;
+ if(!(entered&&(lost||stuck))){if(el)el.style.display='none';return;}
+ if(!el){el=document.createElement('button');el.id='saveWarn';el.style.cssText='position:fixed;left:50%;bottom:calc(var(--vvb,0px) + 92px);transform:translateX(-50%);z-index:55;border:0;border-radius:14px;padding:9px 14px;background:#d9443a;color:#fff;font:800 13px system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:92vw';document.body.appendChild(el);
+  el.onclick=()=>{if(!acct&&SYNC.own){showAuth();}else doSave(false);};}
+ el.textContent=lost?'⚠ 로그인이 풀렸어요 · 기록은 이 기기에 보관 중 — 눌러서 다시 로그인':`⚠ 저장이 안 되고 있어요 (${saveErr}) · 눌러서 다시 저장`;el.style.display='block';}
+
+/* 명예의 전당: 도감의 '내 최고 기록'이 빠져 있으면 자동으로 다시 올려요 · 내 기록이 깨지면 알려 줘요 */
+let hofSyncAt=-1e9,hofLostSeen={};
+function hofMineSet(id,s){if(!(s>0))return;if(s>(+HOF_MINE[id]||0)){HOF_MINE[id]=s;try{localStorage.setItem(HOFMINE_KEY,JSON.stringify(HOF_MINE));}catch(e){}markSave();}}
+function hofIsMine(id,rec){if(!rec)return false;if(rec.n===hofName())return true;const m=+HOF_MINE[id]||0;return m>0&&Math.abs(m-rec.s)<0.05;}
+async function hofReconcile(){if(netMode!=='ws'||!HOF.ok||HOF.mode!=='ws'||performance.now()-hofSyncAt<60000)return;
+ const list=[];for(const[id,v]of Object.entries(book)){const sp=SP_BY[id];if(!sp||!v)continue;const s=Math.round(+v.best*10)/10;if(!(s>0)||s>sp.max+0.05)continue;const cur=HOF.map[id];if(!cur||s>cur.s)list.push({id,s});}
+ if(!list.length)return;hofSyncAt=performance.now();
+ try{const r=await fetch('/api/hof/sync',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:hofName(),list})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)return;
+  for(const w of j.won||[]){HOF.map[w.id]={s:w.s,n:j.name||hofName(),ts:Date.now()};hofMineSet(w.id,w.s);}
+  for(const c of j.recs||[])if(SP_BY[c.id])HOF.map[c.id]={s:+c.s,n:String(c.n||''),ts:+c.ts||0};
+  if(j.won&&j.won.length)toast(`🏆 명예의 전당에 빠져 있던 내 기록 ${j.won.length}개를 다시 올렸어요`,3400);
+  hofRefresh();}catch(e){}}
+function hofLostCheck(){if(!HOF.ok)return;const me=hofName();
+ for(const[id,s]of Object.entries(HOF_MINE)){const rec=HOF.map[id],sp=SP_BY[id];if(!rec||!sp)continue;
+  if(rec.s>s+0.05&&rec.n!==me){const k=id+'|'+rec.s;if(hofLostSeen[k])continue;hofLostSeen[k]=1;
+   let seen={};try{seen=JSON.parse(localStorage.getItem('monggeul-hof-lost')||'{}')||{};}catch(e){}
+   if(seen[k])continue;seen[k]=1;try{localStorage.setItem('monggeul-hof-lost',JSON.stringify(seen));}catch(e){}
+   toast(`😮 ${String(rec.n).slice(0,12)} 님이 ${sp.name} 기록을 깼어요 (내 기록 ${fmtSize(s)} → ${fmtSize(rec.s)})`,4200);break;}}}
+
+setInterval(()=>{try{saveWarnTick();if(acct&&SYNC.pullWant&&!SYNC.busy)pullSync();else if(acct&&performance.now()-SYNC.lastPull>180000)pullSync();hofReconcile();hofLostCheck();}catch(e){}},3000);
+setInterval(()=>{verCheck();},10*60e3);setTimeout(()=>verCheck(),8000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(acct)pullSync();verCheck();}});
+addEventListener('pageshow',e=>{if(e.persisted&&acct)pullSync();});
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}

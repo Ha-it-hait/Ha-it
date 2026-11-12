@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>아몰랑아일랜드 · 기록 복구 (관리자)</title>
+<style>
+ body{font:15px/1.55 system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;margin:0;background:#f3f6fb;color:#1f2a3a}
+ main{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+ h1{font-size:20px;margin:6px 0 4px}p.note{color:#56637a;font-size:13px;margin:0 0 14px}
+ .card{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:14px}
+ label{display:block;font-size:13px;font-weight:700;margin:6px 0 4px}
+ input{width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #c9d3e2;border-radius:10px;font:inherit}
+ button{border:0;border-radius:10px;padding:9px 14px;font:700 14px system-ui;background:#2f6bd8;color:#fff;cursor:pointer}
+ button.ghost{background:#e8eef9;color:#2f4b7c}button.warn{background:#d9443a}
+ table{width:100%;border-collapse:collapse;font-size:13.5px}th,td{padding:7px 6px;border-bottom:1px solid #e6ebf3;text-align:left;white-space:nowrap}
+ th{font-size:12px;color:#56637a}td.n{text-align:right}.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.row>div{flex:1;min-width:180px}
+ #msg{font-weight:700;margin:8px 0}.err{color:#c0392b}.ok{color:#1e8449}
+ pre{white-space:pre-wrap;word-break:break-all;background:#0f1726;color:#cfe3ff;border-radius:10px;padding:10px;font-size:12px;max-height:320px;overflow:auto}
+</style>
+</head>
+<body>
+<main>
+ <h1>🛟 계정 기록 복구 (관리자 전용)</h1>
+ <p class="note">서버는 계정마다 예전 저장본을 최근 40개까지 남겨 둬요(약 20분 간격, 물고기가 크게 줄면 바로). 유저가 “물고기가 사라졌다”고 하면 아이디를 넣고, 사라지기 전 저장본을 골라 <b>합쳐 넣기</b>를 누르세요. 그 저장본에 있던 물고기·도감·장비가 <b>지금 기록에 다시 더해져요</b> (지금 있는 물고기는 그대로, 몰랑은 둘 중 큰 값). 합치기 직전 상태도 따로 저장본으로 남아요.</p>
+ <div class="card">
+  <div class="row">
+   <div><label>관리자 키 (Cloudflare의 ADMIN_KEY)</label><input id="k" type="password" autocomplete="off"></div>
+   <div><label>유저 아이디</label><input id="u" autocomplete="off"></div>
+   <div style="flex:0"><button id="go">불러오기</button></div>
+  </div>
+  <div id="msg"></div>
+ </div>
+ <div class="card" id="res" hidden></div>
+ <div class="card" id="view" hidden></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const fmt=ts=>ts?new Date(ts).toLocaleString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}):'-';
+const WHY={save:'정기 저장',drop:'물고기가 줄기 직전',legacy:'예전 버전 화면 저장 직전','before-restore':'합쳐 넣기 직전'};
+async function call(op,body){const r=await fetch('/api/acct/'+op,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({admin:$('k').value,id:$('u').value.trim().toLowerCase()},body||{}))});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||('오류 '+r.status));return j;}
+function msg(t,ok){$('msg').textContent=t;$('msg').className=ok?'ok':'err';}
+const sumCells=s=>s?`<td class="n">${s.book}</td><td class="n">${s.tank}</td><td class="n">${s.bag}</td><td class="n">${s.food}</td><td class="n">${(s.money||0).toLocaleString()}</td>`:'<td colspan="5">-</td>';
+async function load(){msg('불러오는 중…',true);$('view').hidden=true;
+ try{const j=await call('admin-user');msg(`‘${j.id}’ · 가입 ${fmt(j.created)} · 마지막 저장 ${fmt(j.updated)} · 저장 번호 ${j.rev}`,true);
+  let h='<table><tr><th>시각</th><th>종류</th><th>도감</th><th>수조</th><th>가방</th><th>요리</th><th>몰랑</th><th></th></tr>';
+  h+=`<tr style="background:#f4f8ff"><td><b>지금</b></td><td>현재 기록</td>${sumCells(j.sum)}<td><button class="ghost" data-v="0">보기</button></td></tr>`;
+  for(const b of j.baks)h+=`<tr><td>${fmt(b.ts)}</td><td>${WHY[b.why]||b.why}</td>${sumCells(b.sum)}<td><button class="ghost" data-v="${b.ts}">보기</button> <button class="warn" data-r="${b.ts}">합쳐 넣기</button></td></tr>`;
+  if(!j.baks.length)h+='<tr><td colspan="8">아직 남은 저장본이 없어요 (이번 업데이트 이후부터 쌓여요)</td></tr>';
+  $('res').innerHTML=h+'</table>';$('res').hidden=false;
+  $('res').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>view(+b.dataset.v));
+  $('res').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>restore(+b.dataset.r));
+ }catch(e){msg(e.message,false);$('res').hidden=true;}}
+async function view(ts){try{const j=await call('admin-bak',{ts});const d=j.data||{},g=d.gs||{};
+  const list=a=>(a||[]).map(o=>`${o.id} ${o.s}cm`).join(', ')||'(없음)';
+  $('view').innerHTML=`<b>${ts?fmt(ts)+' 저장본':'현재 기록'}</b><p class="note">수조: ${list(d.tank)}<br>가방: ${list(g.bag)}<br>도감: ${Object.keys(d.book||{}).length}종 · 몰랑 ${(g.money||0).toLocaleString()}</p><pre></pre>`;
+  $('view').querySelector('pre').textContent=JSON.stringify(d,null,1);$('view').hidden=false;$('view').scrollIntoView({behavior:'smooth'});}catch(e){msg(e.message,false);}}
+async function restore(ts){if(!confirm(`${fmt(ts)} 저장본의 물고기·도감을 지금 기록에 합쳐 넣을까요?\n(지금 상태도 따로 저장본으로 남아요)`))return;
+ try{const j=await call('admin-restore',{ts});msg(`합쳐 넣었어요 · 수조 ${j.sum.tank} · 가방 ${j.sum.bag} · 도감 ${j.sum.book}종. 유저가 게임을 켜 두었다면 몇 분 안에 자동으로 반영돼요.`,true);setTimeout(load,800);}catch(e){msg(e.message,false);}}
+$('go').onclick=load;$('u').addEventListener('keydown',e=>{if(e.key==='Enter')load();});
+</script>
+</body>
+</html>
