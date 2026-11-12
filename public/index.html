@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-13h">
+<meta name="amollang-build" content="2026-11-13i">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -2005,7 +2005,7 @@ function buildShop(){SHOP.yaw=Math.atan2(PLAZA.x-SHOP.x,PLAZA.z-SHOP.z);const gy
  for(const sz of[-1,1])P_(box,'#c8322f',0,4.08,sz*1.38,0,0,0,4.3,0.22,0.2);for(const sx of[-1,1])P_(box,'#c8322f',sx*2.0,4.08,0,0,0,0,0.2,0.22,2.9);
  P_(box,'#2f9a86',0,4.28,0,0,0,0,4.7,0.2,3.3);for(let i=0;i<9;i++)P_(box,i%2?'#f2c14e':'#e2554f',-2.0+i*0.5,4.28,1.66,0,0,0,0.22,0.12,0.02);
  P_(box,'#1f4f7a',0,4.42,0,0,0,0,5.6,0.14,4.3);
- P_(cone4,'#2d6aa0',0,5.15,0,0,Math.PI/4,0,4.0,1.45,3.0);P_(cone4,'#3f86c2',0,5.13,0,0,Math.PI/4,0,3.86,1.36,2.86);
+ {const c4=new THREE.ConeGeometry(1,1,4).rotateY(Math.PI/4);P_(c4,'#2d6aa0',0,5.15,0,0,0,0,4.0,1.45,3.0);P_(c4,'#3f86c2',0,5.13,0,0,0,0,3.86,1.36,2.86);}
  for(const sx of[-1,1])for(const sz of[-1,1]){P_(cone,'#f2c14e',sx*2.75,4.58,sz*2.1,sz*0.5,0,-sx*0.5,0.09,0.4,0.09);}
  P_(box,'#1f4f7a',0,5.82,0,0,0,0,1.0,0.12,0.18);
  P_(box,'#7b4a2a',0,0.95,0.78,0,0,0,3.3,1.0,0.62);P_(box,'#c89b5c',0,1.47,0.78,0,0,0,3.45,0.08,0.75);P_(box,'#f2c14e',0,1.0,1.1,0,0,0,3.3,0.08,0.02);
@@ -2943,7 +2943,7 @@ function buildHof(){const g=new THREE.Group();const y0=groundY(HOF_POS.x,HOF_POS
  const stone=stdMat('#4a4f5a',0.6),stone2=stdMat('#5c6370',0.55);
  addMesh(new THREE.BoxGeometry(3.6,0.35,2.0),stone,0,0.17,0,g);addMesh(new THREE.BoxGeometry(3.1,0.3,1.6),stone2,0,0.48,0,g);
  addMesh(new THREE.BoxGeometry(2.5,3.3,0.5),gold,0,2.28,0,g);
- const top=addMesh(new THREE.CylinderGeometry(0,1.4,0.7,4),gold,0,4.28,0,g);top.rotation.y=Math.PI/4;top.scale.set(1,1,0.36);
+ const top=addMesh(new THREE.CylinderGeometry(0,1.4,0.7,4).rotateY(Math.PI/4),gold,0,4.28,0,g);top.scale.set(1.3,1,0.4);
  const orb=addMesh(new THREE.SphereGeometry(0.34,20,14),new THREE.MeshStandardMaterial({color:'#fff2b0',emissive:'#ffcc33',emissiveIntensity:1.1,roughness:0.2}),0,4.95,0,g);HOF.orb=orb;
  for(const s of[-1,1]){addMesh(new THREE.BoxGeometry(0.22,3.5,0.62),gold,s*1.32,2.3,0,g);addMesh(new THREE.SphereGeometry(0.2,12,10),gold,s*1.32,4.15,0,g);}
  const cv=document.createElement('canvas');cv.width=512;cv.height=640;HOF.cv=cv;const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;HOF.tex=tex;
@@ -3329,7 +3329,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-13h';
+const BUILD='2026-11-13i';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
