@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12k">
+<meta name="amollang-build" content="2026-11-12l">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -526,7 +526,14 @@ body.cine .boatbadge{opacity:0}
   </div>
 </div>
 
-<script>setTimeout(function(){if(!window.__started){var e=document.getElementById('err');e.textContent='3D 화면을 불러오지 못했어요. 새로고침하거나 최신 크롬·사파리에서 열어주세요.';e.classList.remove('hidden');var l=document.getElementById('loading');if(l)l.remove();}},20000);</script>
+<script>(function(){window.__errs=[];
+window.addEventListener('error',function(ev){try{var t=ev.target;if(t&&t!==window&&(t.src||t.href)){__errs.push('파일을 못 불러옴: '+(t.src||t.href).replace(location.origin,''));}else if(t&&t.tagName==='SCRIPT'){__errs.push('게임 코드가 필요한 파일(three.js)을 불러오지 못했어요');probe();}else{__errs.push((ev.message||'오류')+(ev.filename?' ('+String(ev.filename).split('/').pop().split('?')[0]+' '+ev.lineno+':'+ev.colno+')':''));}}catch(x){}show(false);},true);
+window.addEventListener('unhandledrejection',function(ev){try{__errs.push('오류: '+String(ev.reason&&ev.reason.message||ev.reason));}catch(x){}show(false);});
+var probed=0;function probe(){if(probed++)return;['./vendor/three.module.min.js','./vendor/BufferGeometryUtils.js'].forEach(function(u){fetch(u,{cache:'no-store'}).then(function(r){if(!r.ok){__errs.push(u.slice(2)+' → '+r.status);show(false);}}).catch(function(){__errs.push(u.slice(2)+' → 연결 실패');show(false);});});}
+function show(force){if(window.__started)return;if(!force&&!__errs.length)return;var e=document.getElementById('err');if(!e)return;
+ e.innerHTML='3D 화면을 불러오지 못했어요. <b>Ctrl+F5(맥은 Cmd+Shift+R)</b>로 새로고침하거나 최신 크롬·사파리에서 열어 주세요.'+(__errs.length?'<br><small style="opacity:.75;word-break:break-all">원인: '+__errs.slice(0,3).join(' / ').replace(/</g,'&lt;')+'</small>':'')+'<br><small style="opacity:.6">화면 버전 '+((document.querySelector('meta[name=amollang-build]')||{}).content||'?')+'</small>';
+ e.classList.remove('hidden');var l=document.getElementById('loading');if(l)l.remove();}
+setTimeout(function(){probe();show(true);},20000);})();</script>
 <script type="module">
 import * as THREE from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
@@ -3217,7 +3224,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12k';
+const BUILD='2026-11-12l';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[]};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
