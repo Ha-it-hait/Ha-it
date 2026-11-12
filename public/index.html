@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-12u">
+<meta name="amollang-build" content="2026-11-12v">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -289,6 +289,19 @@ body.cine .boatbadge{opacity:0}
 @media (min-width:521px){#shop .tabs{flex-wrap:wrap}#shop .tabs button{flex:1 1 22%}}
 .irow.rel canvas{width:96px;height:70px;background:linear-gradient(#fff5f8,#f6e6ee);border-radius:10px}.irow.rel.r2{background:linear-gradient(90deg,#fff8e1,#fff);border-color:#f2c14e}.irow.rel.r2 canvas{background:linear-gradient(#fffaf0,#f8ecc8)}.irow.rel.on{border-color:#4cc38a}
 @media (max-width:520px){.irow.rel canvas{width:70px;height:52px}#shop .tabs{flex-wrap:wrap}#shop .tabs button{flex:1 1 30%}}
+
+.acchk{display:flex;align-items:center;justify-content:center;gap:7px;margin:10px auto 0;font-size:12.5px;color:#5a4c3a;cursor:pointer;line-height:1.35;text-align:left;max-width:340px}
+.acchk input{width:18px;height:18px;flex:none;accent-color:#f0a24a}
+.acnote{font-size:11.5px;color:#8a7a62;margin-top:4px;text-align:center}.acnote:empty{display:none}
+.acbar{position:fixed;left:50%;transform:translateX(-50%);top:max(calc(var(--vvt,0px) + max(12px,env(safe-area-inset-top)) + 136px),calc(var(--hudB,0px) + 74px));z-index:5;display:none;flex-direction:column;align-items:center;gap:6px;max-width:94vw}
+.acbar.on{display:flex}
+.acbar .achead{border:2px solid #fff;border-radius:999px;background:rgba(30,40,60,.62);color:#fff;font:700 12.5px system-ui,sans-serif;padding:6px 13px;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);white-space:nowrap}
+.acbar .achead b{color:#ffd77a}.acbar .achead u{text-decoration:none;opacity:.85;font-weight:800}
+.acbar .acopts{display:grid;grid-template-columns:1fr 1fr;width:max-content;max-width:92vw;gap:6px;background:rgba(255,250,240,.96);border-radius:16px;padding:8px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.acbar .acopts button{border:2px solid #e6d9c2;background:#fff;border-radius:12px;padding:8px 10px;font:800 13px system-ui,sans-serif;color:#4a3d2c;cursor:pointer;position:relative}
+.acbar .acopts button.sel{border-color:#f0a24a;background:#fff1dc}
+.acbar .acopts button i{font-style:normal;font-size:10px;font-weight:900;color:#fff;background:#8bb7d8;border-radius:6px;padding:0 4px;margin-left:4px;vertical-align:1px}
+.acbar .acoff{border:0;background:rgba(30,40,60,.55);color:#fff;border-radius:999px;font:700 11.5px system-ui,sans-serif;padding:5px 11px;cursor:pointer}
 .tkask{position:fixed;inset:0;z-index:9500;background:rgba(18,28,44,.55);display:none;align-items:center;justify-content:center;padding:18px}.tkask.on{display:flex}
 .tkcard{max-width:360px;width:100%;background:#fffaf0;border-radius:18px;padding:20px 18px 16px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3);color:#3a2f22}
 .tkcard .tkem{font-size:34px}.tkcard b{display:block;font-size:17px;margin:4px 0 8px}.tkcard p{font-size:13.5px;line-height:1.6;margin:0 0 12px}.tkcard p em{font-style:normal;color:#c0392b;font-weight:800}
@@ -989,7 +1002,7 @@ function drawFishBase(c,sp,x,y,L,sil){if(sp.rainbow&&!c.__rb){rbOverlay(c,sp,x,y
 
 
 const HAB_KO={sea:'🌊 바다',river:'🏞️ 강',pond:'🪷 연못'};
-function showCatch(f,rec){
+function showCatch(f,rec){if(acSkip)acSkip=false;else if(autoCatch(f,rec))return;
  $('cName').textContent=f.sp.name;$('cSize').textContent=fmtSize(f.size);
  $('cStars').textContent=starStr(starOf(f.sp));$('cPrice').textContent=fishBonus(f)===3?`💰 상점 가격 ${fmtM(priceOf(f.sp.id,f.size)*3)}몰랑 · 🔥 한 단계 위 도전 성공! 몰랑 3배`:`💰 상점 가격 ${fmtM(priceOf(f.sp.id,f.size))}몰랑`;
  $('cFlavor').textContent=f.sp.flavor;const ph=PHASES[phaseOf(hourNow())];$('cMeta').textContent=`${ph.em} ${ph.ko} · ${HAB_KO[habitat]} · ${castMeters}m`;
@@ -3283,7 +3296,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-12u';
+const BUILD='2026-11-12v';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3917,6 +3930,46 @@ function showGift(){const list=giftUnseen();if(!list.length)return;giftOpen=true
 setInterval(()=>{try{if(entered&&!giftOpen&&giftUnseen().length&&!modalOpen()&&mode!=='closet')showGift();}catch(e){}},2000);
 function renderGiftGear(box){if(!MAIL.length)return;const t=document.createElement('div');t.className='btitle';t.textContent='📮 받은 선물';box.appendChild(t);
  const w=document.createElement('div');w.className='gfhist';w.innerHTML=MAIL.slice(-8).reverse().map(m=>`<div><small>${new Date(m.ts||0).toLocaleDateString('ko-KR')}</small> ${escH(giftItems(m.it).join(' · ')||'메시지')}${m.msg?` — ${escH(m.msg)}`:''}</div>`).join('');box.appendChild(w);}
+/* ---------- v51: 낚시 후 자동 처리 (정보창 생략) ---------- */
+var AC_KEY='monggeul-autocatch',acOnce=null,acPend=null,acOpen=false;
+const AC_LBL={show:'📋 직접 고르기',release:'🌊 놓아주기',bag:'🎒 가방에',tank:'🐠 수조에'};
+function acGet(){try{const v=localStorage.getItem(AC_KEY);return(v==='release'||v==='bag'||v==='tank')?v:'';}catch(_){return'';}}
+function acSet(v){try{if(v)localStorage.setItem(AC_KEY,v);else localStorage.removeItem(AC_KEY);}catch(_){}}
+function acNow(){return acOnce||acGet()||'show';}
+/* showCatch 앞에서 호출: true면 정보창을 띄우지 않고 자동 처리 */
+function autoCatch(f,rec){
+ const want=acNow();acOnce=null;acOpen=false;acBanner();
+ const ck=$('acChk');if(ck)ck.checked=false;acPend=null;
+ if(want==='show')return false;
+ if(want==='release'&&(rec&&rec.isNew||starOf(f.sp)>=6)){setTimeout(()=>toast(rec&&rec.isNew?'📖 처음 잡은 물고기라 자동으로 놓아주지 않았어요. 직접 골라 주세요':'✨ 귀한 물고기라 자동으로 놓아주지 않았어요. 직접 골라 주세요',3200),50);return false;}
+ const fishRef=f;
+ setTimeout(()=>{if(fish!==fishRef||fstate!=='caught')return;
+  if(want==='bag')$('toBag').click();else if(want==='tank')keepFish0();else $('release').click();
+  if(fish===fishRef){acSkip=true;showCatch(fishRef,rec);}},380);
+ return true;}
+var acSkip=false;
+function acStateHook(s){if(s==='charging'){acOnce=null;acOpen=false;}acBanner();}
+function acBanner(){let el=$('acBar');const on=entered&&mode==='fish'&&!!acGet()&&['charging','casting','waiting','bite','fight','retrieve'].includes(fstate);
+ if(!el){if(!on)return;el=document.createElement('div');el.id='acBar';el.className='acbar';document.body.appendChild(el);
+  el.addEventListener('pointerdown',e=>e.stopPropagation());
+  el.addEventListener('click',e=>{e.stopPropagation();const b=e.target.closest('[data-ac]');if(!b)return;const v=b.dataset.ac;
+   if(v==='toggle'){acOpen=!acOpen;}
+   else if(v==='off'){acSet('');acOnce=null;acOpen=false;toast('자동 처리를 껐어요. 다음부터 다시 정보창에서 골라요',2600);}
+   else{acOnce=(v===acGet())?null:v;acOpen=false;toast(`이번 낚시만: ${AC_LBL[v]}`,1800);}
+   acBanner();});}
+ el.classList.toggle('on',on);if(!on)return;
+ const base=acGet(),cur=acNow();
+ const head=`<button class="achead" data-ac="toggle">${acOnce?'이번만':'자동'} <b>${AC_LBL[cur]}</b> · <u>${acOpen?'닫기 ▴':'이번만 바꾸기 ▾'}</u></button>`;
+ const body=acOpen?`<div class="acopts">${['show','release','bag','tank'].map(k=>`<button data-ac="${k}" class="${k===cur?'sel':''}">${AC_LBL[k]}${k===base?'<i>기본</i>':''}</button>`).join('')}</div><button class="acoff" data-ac="off">자동 처리 끄기 (매번 정보창 보기)</button>`:'';
+ el.innerHTML=head+body;}
+/* 정보창 체크박스: 다음부터 이 선택으로 자동 처리 */
+(function(){const card=$('catch');if(!card)return;const row=document.createElement('label');row.className='acchk';row.innerHTML='<input type="checkbox" id="acChk"><span><b>다음부터 자동으로</b> 이렇게 하기 · 이 창 안 띄움</span>';
+ const btns=card.querySelector('.cbtns');btns.after(row);
+ const note=document.createElement('div');note.className='acnote';note.id='acNote';row.after(note);
+ const mark=k=>()=>{acPend=$('acChk').checked?k:null;};
+ $('release').addEventListener('click',mark('release'),true);$('toBag').addEventListener('click',mark('bag'),true);$('keep').addEventListener('click',mark('tank'),true);
+ new MutationObserver(()=>{if(card.classList.contains('hidden')){if(acPend&&!fish){acSet(acPend);toast(`✅ 다음부터 낚시에 성공하면 자동으로 ${AC_LBL[acPend]} · 찌를 던지면 위쪽에서 이번만 바꿀 수 있어요`,4200);}acPend=null;}else{const b=acGet();$('acNote').textContent=b?`지금 자동 처리: ${AC_LBL[b]} (이번엔 직접 고르는 중)`:'';}}).observe(card,{attributes:true,attributeFilter:['class']});
+})();
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
@@ -3967,7 +4020,7 @@ let biteAt=0,nibbles=[],biteT0=0;const BITE_WIN=1.2;
 let fish=null,d=1,tension=0,slackT=0,nextSurge=0,surgeUntil=0,holding=false,tickAcc=0,rippleAcc=0,fightPresAcc=0;
 const retrieveFrom=new THREE.Vector3();let rT0=0;
 let myFloat,myLine;
-function setF(s){fstate=s;markPresence();refreshHint();$('bang').classList.toggle('hidden',s!=='bite');}
+function setF(s){fstate=s;markPresence();refreshHint();acStateHook(s);$('bang').classList.toggle('hidden',s!=='bite');}
 function refreshHint(){const h=$('hint');let txt='';
  if(!entered||mode==='closet')txt='';else if(mode==='fish')txt=HINTS[fstate]||'';else if(mode==='cook')txt='🍳 요리하는 중이에요… 잠깐만 기다려요';
  else if(nearAnimal)txt=isTouch?`🐾 ${nearAnimal.d.name}${josa(nearAnimal.d.name,'이랑','랑')} 놀아줘요`:`🐾 ${nearAnimal.d.name} · 🤚 쓰다듬기 · 🤗 껴안기 버튼을 눌러요`+(canFish?' · R 낚시':'');
@@ -3982,7 +4035,7 @@ function chargePower(){const k=(t-chargeT0)/1.1;return 1-Math.abs((k%2)-1);}
 function enterFish(){if(!canFish)return;mode='fish';fwdOf(P.yaw,_f);const q=[P.pos.x+_f.x*1.7,P.pos.z+_f.z*1.7];habitat=habitatAt(q[0],q[1]);
  minD=habitat==='sea'?6:3;maxD=habitat==='sea'?30:12;P.char.rodPivot.visible=true;closeEmoPanel();setF('idle');refreshAct();
  toast(habitat==='sea'?'🌊 바다 낚시':habitat==='river'?'🏞️ 강 낚시':'🪷 연못 낚시',1600);}
-function exitFish(){mode='walk';P.char.rodPivot.visible=false;myFloat.visible=false;myLine.visible=false;holding=false;fish=null;fstate='idle';$('charge').classList.add('hidden');$('tension').classList.add('hidden');$('bang').classList.add('hidden');camYaw=P.yaw+Math.PI;markPresence();refreshHint();refreshAct();}
+function exitFish(){mode='walk';P.char.rodPivot.visible=false;myFloat.visible=false;myLine.visible=false;holding=false;fish=null;fstate='idle';$('charge').classList.add('hidden');$('tension').classList.add('hidden');$('bang').classList.add('hidden');camYaw=P.yaw+Math.PI;markPresence();refreshHint();refreshAct();acOnce=null;acOpen=false;acBanner();}
 function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=false;
  for(;dd>=1.5;dd-=0.4){const x=P.pos.x+_f.x*dd,z=P.pos.z+_f.z*dd;if(isWater(x,z)){ok=true;break;}}
  if(!ok){toast('여기선 던질 수 없어요. 물 쪽을 바라봐요');setF('idle');return;}
