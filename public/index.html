@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-13l">
+<meta name="amollang-build" content="2026-11-13n">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -2665,7 +2665,7 @@ function followStep(A,dt){const L=leaderPos(A.fol);if(!L)return null;const fx=Ma
  let dx=tx-A.x,dz=tz-A.z,d=Math.hypot(dx,dz);
  if(d>18){for(let k=0;k<12;k++){const a=k/12*6.283;const x=L.x+Math.cos(a)*1.6,z=L.z+Math.sin(a)*1.6;if(walkable(x,z)){A.x=x;A.z=z;break;}}dx=tx-A.x;dz=tz-A.z;d=Math.hypot(dx,dz);}
  if(d<0.35)return{x:A.x,z:A.z,yaw:Math.atan2(L.x-A.x,L.z-A.z),moving:false};
- const sp=Math.min(d*2.4,6.8),s=Math.min(d,sp*dt);let x=A.x+dx/d*s,z=A.z+dz/d*s;
+ const sp=Math.min(d*2.4,8.2),s=Math.min(d,sp*dt);let x=A.x+dx/d*s,z=A.z+dz/d*s;
  if(!walkable(x,z)){if(walkable(x,A.z))z=A.z;else if(walkable(A.x,z))x=A.x;else{x=A.x;z=A.z;}}
  return{x,z,yaw:Math.atan2(dx,dz),moving:sp>0.4};}
 function updFollow(dt){folAcc+=dt;if(folAcc>0.5){folAcc=0;computeFollow();}}
@@ -2897,7 +2897,7 @@ function sailable(x,z){if(Math.hypot(x,z)>BOAT_R)return false;if(islandD(x,z)<1.
 function hullOK(x,z,yaw){const fx=Math.sin(yaw),fz=Math.cos(yaw);return sailable(x,z)&&sailable(x+fx*1.9,z+fz*1.9)&&sailable(x-fx*1.1,z-fz*1.1);}
 function boatMove(ix,iy,mag,dt){let tx=0,tz=0;
  if(mag>0.08&&!cine){const fx=-Math.sin(camYaw),fz=-Math.cos(camYaw);const rx=-fz,rz=fx;const mx=fx*iy+rx*ix,mz=fz*iy+rz*ix;const l=Math.hypot(mx,mz)||1;
-  const run=keys.has('ShiftLeft')||keys.has('ShiftRight')||(joy.id!==null&&mag>0.92);const spd=(run?9.5:6.2)*Math.min(1,mag);tx=mx/l*spd;tz=mz/l*spd;
+  const spd=6.2*Math.min(1,mag);tx=mx/l*spd;tz=mz/l*spd;
   P.yaw=lerpAngle(P.yaw,Math.atan2(mx,mz),1-Math.pow(0.06,dt));}
  const k=1-Math.pow(mag>0.08?0.3:0.45,dt);BOAT.vx=lerp(BOAT.vx,tx,k);BOAT.vz=lerp(BOAT.vz,tz,k);
  const v=Math.hypot(BOAT.vx,BOAT.vz);if(v<0.03){BOAT.vx=BOAT.vz=0;return;}
@@ -3372,7 +3372,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-13l';
+const BUILD='2026-11-13n';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -4191,7 +4191,7 @@ function updatePlayer(dt){
   if(joy.id!==null){ix+=joy.x;iy+=-joy.y;}}
  const mag=Math.min(1,Math.hypot(ix,iy));let sp=0;
  if(BOAT.on){if(mode==='walk')boatMove(ix,iy,mag,dt);}else if(mag>0.08){const fx=-Math.sin(camYaw),fz=-Math.cos(camYaw);const rx=-fz,rz=fx;let mx=fx*iy+rx*ix,mz=fz*iy+rz*ix;const l=Math.hypot(mx,mz);mx/=l;mz/=l;
-  const run=keys.has('ShiftLeft')||keys.has('ShiftRight')||(joy.id!==null&&mag>0.92);sp=(run?6.2:3.8)*mag;
+  sp=6.2*mag;
   const nx=P.pos.x+mx*sp*dt,nz=P.pos.z+mz*sp*dt;
   if(walkable(nx,P.pos.z))P.pos.x=nx;if(walkable(P.pos.x,nz))P.pos.z=nz;
   P.yaw=lerpAngle(P.yaw,Math.atan2(mx,mz),1-Math.pow(0.0005,dt));markPresence();}
@@ -4436,7 +4436,7 @@ function fishSpot(kind){
 function goSpot(kind){const s=fishSpot(kind);if(!s){toast('길을 찾지 못했어요');return;}if(mode==='fish')exitFish();P.pos.set(s.x,groundY(s.x,s.z),s.z);P.yaw=s.yaw;camYaw=s.yaw+Math.PI;camPos.set(s.x-Math.sin(s.yaw)*8,P.pos.y+6,s.z-Math.cos(s.yaw)*8);markPresence();closeHelp();splash(s.x+Math.sin(s.yaw)*2.2,s.z+Math.cos(s.yaw)*2.2,0.5);
  toast({dock:'⛵ 나무 부두에 왔어요! 🎣 버튼을 눌러보세요',river:'🏞️ 강가에 왔어요! 🎣 버튼을 눌러보세요',pond:'🪷 연못가에 왔어요! 🎣 버튼을 눌러보세요'}[kind],3200);}
 function buildTimeChips(){const el=$('timeChips');el.innerHTML='';[['real','🕐 지금'],['dawn','🌅 새벽'],['day','☀️ 낮'],['dusk','🌇 해질녘'],['night','🌙 밤']].forEach(([m,l])=>{const b=document.createElement('button');b.textContent=l;if(timeMode===m)b.classList.add('on');b.addEventListener('click',()=>{timeMode=m;buildTimeChips();updateHUD();});el.appendChild(b);});}
-function openHelp(){closeEmoPanel();buildTimeChips();$('moveHelp').textContent=isTouch?'화면 왼쪽을 끌면 이동, 오른쪽을 끌면 시점이 돌아가요. 두 손가락을 모으면 멀리, 벌리면 가까이 보여요.':'WASD/방향키로 이동, Shift 달리기, Space 점프, Q/E로 시점을 왼쪽/오른쪽으로 돌려요(마우스로 끌어도 돼요). 마우스 휠로 멀리/가까이.';$('help').classList.remove('hidden');}
+function openHelp(){closeEmoPanel();buildTimeChips();$('moveHelp').textContent=isTouch?'화면 왼쪽을 끌면 이동, 오른쪽을 끌면 시점이 돌아가요. 두 손가락을 모으면 멀리, 벌리면 가까이 보여요.':'WASD/방향키로 이동, Space 점프, Q/E로 시점을 왼쪽/오른쪽으로 돌려요(마우스로 끌어도 돼요). 마우스 휠로 멀리/가까이.';$('help').classList.remove('hidden');}
 function closeHelp(){$('help').classList.add('hidden');}
 $('bHelp').addEventListener('click',openHelp);$('helpX').addEventListener('click',closeHelp);$('helpOk').addEventListener('click',closeHelp);
 $('help').addEventListener('click',e=>{if(e.target.id==='help')closeHelp();});
