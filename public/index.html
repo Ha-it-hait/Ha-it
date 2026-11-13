@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-13t">
+<meta name="amollang-build" content="2026-11-13v">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -317,9 +317,9 @@ body.cine .boatbadge{opacity:0}
 .rwpanel.closed .rws:not(.ink){opacity:.55;cursor:not-allowed}
 .rwchips{display:flex;align-items:center;gap:6px;margin:7px 0 5px;flex-wrap:wrap}.rwchips span{font-weight:800}.rwchips button{border:2px solid #e2d4bb;background:#fff;border-radius:999px;padding:4px 10px;font:800 12.5px system-ui,sans-serif;cursor:pointer}.rwchips button.sel{border-color:#f0a24a;background:#fff1dc}.rwchips small{margin-left:auto;font-weight:800;color:#6a5a40}
 .rwwho{background:#f6efe0;border-radius:10px;padding:5px 8px;max-height:96px;overflow:auto}.rwwho>b{font-size:12px}.rwp{display:flex;gap:8px;font-size:12px;padding:1px 0}.rwp b{min-width:96px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rwp.me b{color:#c0582c}.rwp.none{color:#8a7a62}
-.rwlast{margin-top:6px;background:#eef6f2;border-radius:10px;padding:5px 8px;font-size:12px;line-height:1.5}.rwlast b.p{color:#1f8a4c}.rwlast b.m{color:#c0392b}.rwoff{color:#b5462a;font-weight:700}.rwhist{color:#6a5a40;font-size:11.5px}.rwhist span{margin-left:4px;letter-spacing:1px}.rwhist i{font-style:normal}.rwhist i:first-child{background:#ffe9a8;border-radius:6px;padding:0 2px}
+.rwlast{margin-top:6px;background:#eef6f2;border-radius:10px;padding:5px 8px;font-size:12px;line-height:1.5}.rwlast b.p{color:#e0262b}.rwlast b.m{color:#1b63d6}.rwoff{color:#b5462a;font-weight:700}.rwhist{color:#6a5a40;font-size:11.5px}.rwhist span{margin-left:4px;letter-spacing:1px}.rwhist i{font-style:normal}.rwhist i:first-child{background:#ffe9a8;border-radius:6px;padding:0 2px}
 .rwundo{display:flex;align-items:center;gap:6px;margin:0 0 6px;flex-wrap:wrap}.rwundo button{border:2px solid #e2d4bb;background:#fff7ea;border-radius:999px;padding:3px 10px;font:800 12px system-ui,sans-serif;cursor:pointer;color:#7a4a00}.rwundo span{flex:1;min-width:180px;font-size:11px;color:#7a6a50;line-height:1.35}.rwpanel.closed .rwundo{display:none}
-.rwfoot{margin-top:6px;font-size:11.5px;color:#6a5a40;text-align:center}.rwfoot b.p{color:#1f8a4c}.rwfoot b.m{color:#c0392b}
+.rwfoot{margin-top:6px;font-size:11.5px;color:#6a5a40;text-align:center}.rwfoot b.p{color:#e0262b}.rwfoot b.m{color:#1b63d6}.toast.rwup{color:#ff7b7b}.toast.rwdn{color:#8cc4ff}
 .lbl.rwl .nm{background:rgba(18,61,82,.88);color:#fff1c4;font-size:13px}
 @media (max-width:520px){.rwpanel.closed #rwCv{width:150px;height:158px}#rwCv{width:70px;height:74px}.rwpanel{bottom:calc(var(--vvb,0px) + max(8px,env(safe-area-inset-bottom)) + 50px);padding:8px 9px}.rws{min-height:76px}.rws em{font-size:21px}.rwsyms{gap:4px}.rwwho{max-height:70px}}
 /* v67: 베팅판 크게 · 버튼 글씨는 항상 진한 색 (다크 모드에서도) */
@@ -1591,7 +1591,7 @@ function freeSpot(x,z,opt){
  if(distPoly(x,z,RIVER)<RIVER_W+(opt.water??2.6))return false;
  if(Math.hypot(x-POND.x,z-POND.z)<POND.r+(opt.water??2.6))return false;
  if(Math.hypot(x-PLAZA.x,z-PLAZA.z)<PLAZA.r+2)return false;
- {const dw=Math.hypot(x-RW_POS.x,z-RW_POS.z);if(dw<RW_POS.r+19)return false;if(dw<42){const fx=PLAZA.x-RW_POS.x,fz=PLAZA.z-RW_POS.z,fl=Math.hypot(fx,fz)||1;if(((x-RW_POS.x)*fx+(z-RW_POS.z)*fz)/(dw*fl)>0.3)return false;}}
+ {const dw=Math.hypot(x-RW_POS.x,z-RW_POS.z);if(dw<RW_POS.r+4)return false;if(dw<42){const fx=PLAZA.x-RW_POS.x,fz=PLAZA.z-RW_POS.z,fl=Math.hypot(fx,fz)||1;if(((x-RW_POS.x)*fx+(z-RW_POS.z)*fz)/(dw*fl)>0.3)return false;}}
  if(Math.abs(x)<4&&z>shoreZ-14)return false;
  if(inDockZone(x,z,3.5))return false;
  if(BRIDGE&&Math.hypot(x-BRIDGE.x,z-BRIDGE.z)<8)return false;
@@ -2722,14 +2722,14 @@ const NEWS=[
   '🗺️ 룰렛 광장을 집들이 없는 <b>지도 왼쪽 위 언덕 옆</b>으로 옮겼어요. 훨씬 넓고 시원해요.',
   '⏳ 이제 <b>30초마다</b> 바퀴가 돌아가요 (20초 베팅 → 7초 회전 → 3초 결과).',
   '🎡 바퀴가 부드럽게 돌다가 천천히 멈춰요. 룰렛 창 안에도 <b>작은 바퀴</b>가 함께 돌아서 어디서나 잘 보여요.',
-  '🧾 판이 끝나면 <b>얼마를 걸고 얼마를 받았는지</b>(또는 잃었는지)가 알림과 룰렛 창, 채팅창에 남아요. 최근 결과 10판도 보여요.',
+  '🧾 판이 끝나면 <b>얼마를 걸고 얼마를 받았는지</b>(또는 잃었는지)가 알림과 룰렛 창에 보여요. 최근 결과 10판도 보여요.',
   '🪙 같은 칸을 여러 번 누르면 그만큼 <b>더 걸려요</b>(알림으로 알려 드려요). 마감 전까지 <b>↩️ 되돌리기</b>로 마지막 1번, <b>✖ 모두 빼기</b>로 전부 돌려받을 수 있어요.',
   '🔧 베팅이 정산되지 않고 멈춰 있던 문제를 고쳤어요. 결과를 받지 못한 판은 건 몰랑을 그대로 돌려드려요.']},
  {d:'11월 13일',t:'🐚 용궁 소라 룰렛이 생겼어요',i:[
   '🗺️ 지도 <b>왼쪽 위 언덕 옆</b>에 새 광장이 생기고 <b>🎰 용궁 소라 룰렛</b>이 들어섰어요. 가까이 가서 <b>🎰 소라 룰렛</b> 버튼을 누르면 걸 수 있어요.',
   '⏳ <b>30초마다</b> 바퀴가 돌아가요. 20초 동안 걸고 → 7초 동안 돌고 → 3초 동안 결과를 보여 줘요. 남은 시간이 실시간으로 보여요.',
   '🐟 붕어 2배(12칸) · 🦀 꽃게 4배(6칸) · 🐙 문어 6배(4칸) · 🐬 돌고래 11배(2칸) · 🐋 고래 21배(1칸) · 🦑 먹물은 모두 꽝(1칸). 26칸 중 하나에 멈춰요.',
-  '🙋 같은 섬 사람들이 <b>누가 어디에 얼마를 걸었는지</b> 실시간으로 보이고, 탁자 위에 칩도 쌓여요. 🐋 고래 당첨은 채팅창에 남아요.',
+  '🙋 같은 섬 사람들이 <b>누가 어디에 얼마를 걸었는지</b> 실시간으로 보이고, 탁자 위에 칩도 쌓여요.',
   '💰 한 판에 낚싯대 ★1~2는 500 · ★3은 1,000 · ★4는 2,000 · ★5 이상은 5,000몰랑까지 걸 수 있어요. 룰렛으로 <b>하루에 얻을 수 있는 몰랑은 최대 100,000</b>이에요.',
   '💾 걸어 둔 채 창을 닫아도 괜찮아요. 결과는 서버가 정해서 보관하고, 다시 들어오면 그 판 결과로 정산돼요.']},
  {d:'11월 13일',t:'✨ 희귀종 26마리가 나타났어요 · 용궁 맛잔치 사건',i:[
@@ -3422,7 +3422,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-13t';
+const BUILD='2026-11-13v';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -4248,8 +4248,9 @@ function rwMine(){const P0=GS.rwPend;return P0&&P0.r===rwCur()?P0.b.slice():[0,0
 function nearRw(){return RWS.g&&Math.hypot(P.pos.x-RW_POS.x,P.pos.z-RW_POS.z)<6.5;}
 function rwSolo(){return typeof NET_DONE!=='undefined'&&NET_DONE&&netMode!=='ws';}
 function rwOffline(){return netMode==='ws'&&RWS.srv===false;}
+function rwToast(msg,ms,up){toast(msg,ms);const el=$('toast');el.classList.remove('rwup','rwdn');if(up!=null)el.classList.add(up?'rwup':'rwdn');}
 function rwRefund(why){const P0=GS.rwPend;if(!P0)return;const tot=rwSum(P0.b);GS.money+=tot;GS.rwPend=null;RWS.ask=null;clearTimeout(RWS.settleT);markSave();try{updateHUD();}catch(e){}
- toast(`🐚 ${why} 걸어 둔 ${fmtM(tot)}몰랑을 그대로 돌려드렸어요`,3600);try{sysChat(`🎰 소라 룰렛: ${why} 걸어 둔 ${fmtM(tot)}몰랑을 돌려받았어요`);}catch(e){}rwRender();}
+ toast(`🐚 ${why} 걸어 둔 ${fmtM(tot)}몰랑을 그대로 돌려드렸어요`,3600);rwRender();}
 function rwSend(o){if(netMode==='ws'&&ws&&ws.readyState===1){try{ws.send(JSON.stringify(o));return true;}catch(e){}}return false;}
 /* ---- 베팅 ---- */
 function rwBet(k){const st=rwPhase();if(performance.now()-RWS.tapT<140)return;RWS.tapT=performance.now();if(st.ph!=='bet'||st.left<800){toast('이번 판 베팅이 마감됐어요. 다음 판에 걸어 주세요 🐚',2000);return;}
@@ -4294,12 +4295,11 @@ function rwGot(r,s){if(s<0||s>=RW_N)return;const had=RWS.res.has(r);RWS.res.set(
  if(r===st.r)setTimeout(()=>rwAnnounce(r,s),Math.max(0,r*RW.ROUND+RW.BET+RW.SPIN-rwNow())+80);}
 function rwSettle(r,s){const P0=GS.rwPend;if(!P0||P0.r!==r)return;const sym=RW_WHEEL[s],b=P0.b,tot=rwSum(b);const win=sym<5?b[sym]*(RW_SYM[sym].m+1):0;
  GS.money+=win;const D=rwDay();D.net+=win-tot;D.n++;GS.rwPend=null;RWS.ask=null;RWS.last={r,s,tot,win};try{localStorage.setItem('monggeul-rwlast',JSON.stringify(RWS.last));}catch(e){}
- try{sysChat(`🎰 소라 룰렛 결과 ${RW_SYM[sym].em} ${RW_SYM[sym].name}${sym<5?` ${RW_SYM[sym].m+1}배`:''} · ${fmtM(tot)}몰랑 걸고 ${win>0?`${fmtM(win)}몰랑 받음 (${win-tot>=0?'+':'−'}${fmtM(Math.abs(win-tot))})`:`잃음 (−${fmtM(tot)})`}`);}catch(e){}if(GS.stats){GS.stats.rwN=(GS.stats.rwN|0)+1;if(win>0)GS.stats.earned=(GS.stats.earned||0);}markSave();try{updateHUD();}catch(e){}
- if(win>0){toast(`🎉 ${RW_SYM[sym].em} ${RW_SYM[sym].name} 당첨! ${fmtM(b[sym])} → +${fmtM(win)}몰랑`,4200);[784,988,1175,1568].forEach((f,i)=>tone(f,i*0.08,0.18,0.05,'triangle'));}
- else toast(sym===5?`🦑 먹물 칸이에요… 이번엔 용왕님 몫! (−${fmtM(tot)}몰랑)`:`${RW_SYM[sym].em} ${RW_SYM[sym].name} 칸이에요. 이번엔 아쉽게 꽝! (−${fmtM(tot)}몰랑)`,3200);
+if(GS.stats){GS.stats.rwN=(GS.stats.rwN|0)+1;if(win>0)GS.stats.earned=(GS.stats.earned||0);}markSave();try{updateHUD();}catch(e){}
+ const nt=win-tot;if(win>0){rwToast(`🎉 ${RW_SYM[sym].em} ${RW_SYM[sym].name} 당첨! ${fmtM(tot)} 걸고 ${fmtM(win)} 받음 (${nt>=0?'+':'−'}${fmtM(Math.abs(nt))}몰랑)`,4200,nt>0?true:nt<0?false:null);[784,988,1175,1568].forEach((f,i)=>tone(f,i*0.08,0.18,0.05,'triangle'));}
+ else rwToast(sym===5?`🦑 먹물 칸이에요… 이번엔 용왕님 몫! (−${fmtM(tot)}몰랑)`:`${RW_SYM[sym].em} ${RW_SYM[sym].name} 칸이에요. 이번엔 아쉽게 꽝! (−${fmtM(tot)}몰랑)`,3200,false);
  rwRender();}
 function rwAnnounce(r,s){if(RWS.annR===r)return;RWS.annR=r;const sym=RW_WHEEL[s];RWS.banner=`${RW_SYM[sym].em} ${RW_SYM[sym].name}${sym<5?` · ${RW_SYM[sym].m+1}배`:' · 모두 꽝'}`;RWS.bannerUntil=rwNow()+3000;
- if(RWS.br===r&&sym===4)for(const[id,x]of RWS.bets){if(x.b[4]>0)sysChat(`🐋 ${x.n}님이 소라 룰렛 고래 칸 당첨! ${fmtM(x.b[4])} → ${fmtM(x.b[4]*21)}몰랑 🎉`);}
  rwRender();}
 function rwCheckPend(force){const P0=GS.rwPend;if(!P0)return;const st=rwPhase();if(P0.r>st.r+1||st.r-P0.r>1500){rwRefund('룰렛 시간표가 바뀌어서(40초 → 30초) 지난 판을 정산할 수 없어서');return;}if(P0.r>st.r)return;if(P0.r===st.r&&st.ph==='bet')return;
  if(RWS.res.has(P0.r)){if(P0.r<st.r||st.ph==='show')rwSettle(P0.r,RWS.res.get(P0.r));return;}
@@ -4408,9 +4408,9 @@ function rwRender(){if(!$('rwPanel'))return;const st=rwPhase();rwRenderTop(st);c
  [...$('rwWho').querySelectorAll('.rwp b')].forEach((b,i)=>{b.textContent=list[i]?list[i].n:'';});
  const L=RWS.last,LS=L?RW_WHEEL[L.s]:0;const hist=[...RWS.res.entries()].filter(([r])=>r<st.r||st.ph==='show').sort((a,b)=>b[0]-a[0]).slice(0,10).map(([r,v])=>`<i title="${RW_SYM[RW_WHEEL[v]].name}">${RW_SYM[RW_WHEEL[v]].em}</i>`).join('');
  $('rwLast').innerHTML=(rwOffline()?'<div class="rwoff">⚠️ 이 섬 서버에 아직 소라 룰렛이 준비되지 않았어요 (서버 업데이트 필요)</div>':'')
-  +(L?`<div>🧾 내 지난 판 · ${RW_SYM[LS].em} ${RW_SYM[LS].name} · ${fmtM(L.tot)} 걸고 ${L.win>0?`<b class="p">${fmtM(L.win)} 받음 (${L.win-L.tot>=0?'+':'−'}${fmtM(Math.abs(L.win-L.tot))})</b>`:`<b class="m">꽝 (−${fmtM(L.tot)})</b>`}</div>`:'<div>🧾 내 지난 판 결과가 여기에 보여요</div>')
+  +(L?`<div>🧾 내 지난 판 · ${RW_SYM[LS].em} ${RW_SYM[LS].name} · ${fmtM(L.tot)} 걸고 ${L.win>0?`<b class="${L.win>L.tot?'p':L.win<L.tot?'m':''}">${fmtM(L.win)} 받음 (${L.win-L.tot>=0?'+':'−'}${fmtM(Math.abs(L.win-L.tot))})</b>`:`<b class="m">꽝 (−${fmtM(L.tot)})</b>`}</div>`:'<div>🧾 내 지난 판 결과가 여기에 보여요</div>')
   +(hist?`<div class="rwhist">최근 결과 <span>${hist}</span></div>`:'');
- const net=D.net;$('rwFoot').innerHTML=`오늘 룰렛으로 얻은 몰랑 <b class="${net>=0?'p':'m'}">${net>=0?'+':''}${fmtM(net)}</b> / 최대 ${fmtM(RW.DAY_GAIN)} · 내 몰랑 ${fmtM(GS.money)}`+(GS.rwPend&&GS.rwPend.r!==st.r?' · ⏳ 지난 판 정산 중':'');}
+ const net=D.net;$('rwFoot').innerHTML=`오늘 룰렛으로 얻은 몰랑 <b class="${net>0?'p':net<0?'m':''}">${net>=0?'+':''}${fmtM(net)}</b> / 최대 ${fmtM(RW.DAY_GAIN)} · 내 몰랑 ${fmtM(GS.money)}`+(GS.rwPend&&GS.rwPend.r!==st.r?' · ⏳ 지난 판 정산 중':'');}
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
@@ -4620,7 +4620,7 @@ function peopleCount(){let n=1;for(const r of remote.values())if(!r.leaving)n++;
 /* ---------- UI ---------- */
 let toastTimer=0;
 function toast(m,ms){layoutTopStack();return toast_(m,ms);}
-function toast_(msg,ms=2600){const el=$('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),ms);}
+function toast_(msg,ms=2600){const el=$('toast');el.textContent=msg;el.classList.remove('rwup','rwdn');el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),ms);}
 function updateHUD(){const ph=PHASES[phaseOf(hourNow())];const cl=cycleLeft();const tm=timeMode==='real'?(cl.isDay?`밤까지 ${cl.txt}`:`아침까지 ${cl.txt}`):'미리보기';
  const who=roomState==='online'?(netMode==='ws'?`${wsIsland}번 섬 · ${peopleCount()}명`:`이 섬에 ${peopleCount()}명`):roomState==='connecting'?'연결 중…':'혼자 모드';$('hudS').textContent=W<520?`${ph.em} ${ph.ko}${timeMode==='real'?' '+cl.txt:''} · ${who}`:`${ph.em} ${ph.ko} · ${tm} · ${who}`;}
 function modalOpen(){return tankOpen||!!profPeer||mapOpen||['shop','bag','cook','auth','boardM','newsM','hofM'].some(id=>!$(id).classList.contains('hidden'))||!$('catch').classList.contains('hidden')||!$('book').classList.contains('hidden')||!$('help').classList.contains('hidden');}
