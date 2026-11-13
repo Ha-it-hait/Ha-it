@@ -25,7 +25,7 @@ const N_ADJ = 40, N_NOUN = 40;
 // 🐚 용궁 소라 룰렛: 30초마다 (20초 베팅 · 7초 회전 · 3초 결과). 결과는 베팅 마감 뒤에 섬 서버가 정해요
 const RW_ROUND = 30000, RW_BET = 20000, RW_GRACE = 1500;
 const RW_N = 26;                 // 🐟12 · 🦀6 · 🐙4 · 🐬2 · 🐋1 · 🦑1 (칸 배치는 화면과 같아요)
-const RW_CAP = [5000, 3000, 2000, 1000, 1000], RW_MAX = 5000;
+const RW_CAP = [5000, 5000, 5000, 5000, 5000], RW_MAX = 5000;  // 한 판 합계 5,000 · 한 칸에 전부 걸어도 돼요
 const STATES = new Set(['idle', 'cast', 'wait', 'bite', 'fight']);
 
 const num = (v, a, b, d) => { v = +v; return Number.isFinite(v) ? Math.min(b, Math.max(a, v)) : d; };
@@ -83,7 +83,7 @@ function sanitize(d) {
     v: 3,
     n: [idx(n[0], N_ADJ), idx(n[1], N_NOUN)],
     nk: cleanNick(d.nk),
-    lk: [idx(lk[0], 7), idx(lk[1], 12), idx(lk[2], 5), idx(lk[3], 12)],
+    lk: [idx(lk[0], 8), idx(lk[1], 12), idx(lk[2], 5), idx(lk[3], 12)],
     p: [r2(num(p[0], -120, 120, 0)), r2(num(p[1], -120, 120, 0)), r2(num(p[2], -50, 50, 0)), r2(num(p[3], 0, 3, 0))],
     m: d.m === 1 ? 1 : 0,
     st: STATES.has(d.st) ? d.st : 'idle',
@@ -95,7 +95,8 @@ function sanitize(d) {
     ai: idx(d.ai, 32), ak: d.ak === 1 ? 1 : 0, an: idx(d.an, 1e9),
     lv: Array.isArray(d.lv) ? d.lv.slice(0, 5).filter(e => Array.isArray(e) && e.length === 2).map(e => [idx(e[0], 32), Math.floor(num(e[1], 0, 1e6, 0))]) : [],
     rd: num(d.rd | 0, 1, 7, 1),
-    pk: idx(d.pk, 3),
+    pk: idx(d.pk, 4),
+    pt: d.pt === 1 ? 1 : 0,
     fl: idx(d.fl, 4),
     rl: idx(d.rl, 3),
     bt: d.bt === 1 ? 1 : 0,
@@ -306,8 +307,8 @@ const DSID_KEEP = 80;              // 화면(창)마다 '마지막으로 반영�
 const LEGACY_NEW_MS = 5 * 60e3;
 // 이 빌드보다 오래된 화면은 저장을 받지 않아요(새로고침 안내). 저장 항목이 바뀌는 업데이트를 할 때마다 올려요.
 // 막힌 화면의 기록은 그 기기에 보관됐다가, 새로고침해서 다시 로그인하면 합쳐져요.
-const MIN_CV = '2026-11-13s';
-const OWNED_LISTS = ['rods', 'packs', 'floats', 'reels'];    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
+const MIN_CV = '2026-11-13x';
+const OWNED_LISTS = ['rods', 'packs', 'floats', 'reels', 'hats', 'pets'];  // hats·pets: 출석 보상(꽃게 모자·아기 해달)    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
 
 // ---------- 저장 데이터 안전 합치기 (서버) ----------
 // 도감(book)은 늘어나기만 하는 기록이라 서버가 항상 '합집합 + 최댓값'으로 지켜요.
@@ -350,6 +351,8 @@ function legacyMerge(S, D) {
     tankUp: Math.max(sg.tankUp | 0, dg.tankUp | 0),
     freeLot: Math.max(sg.freeLot | 0, dg.freeLot | 0),
     reels: [...new Set([...(sg.reels || []), ...(dg.reels || [])])],
+    hats: [...new Set([...(sg.hats || []), ...(dg.hats || [])])],
+    pets: [...new Set([...(sg.pets || []), ...(dg.pets || [])])],
     bag: itemsUnion(sg.bag, dg.bag),
   });
   return M;
