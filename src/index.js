@@ -22,6 +22,10 @@ const SPECIES = new Set(SPECIES_LIST);
 // 희귀종(★6 색깔 다른 친구들): 잡으면 모든 섬에 알림만 (무지개 이벤트 없음)
 const RARE_IDS = new Set(SPECIES_LIST.filter(x => x.endsWith('_r')));
 const N_ADJ = 40, N_NOUN = 40;
+// 🐚 용궁 소라 룰렛: 40초마다 (30초 베팅 · 7초 회전 · 3초 결과). 결과는 베팅 마감 뒤에 섬 서버가 정해요
+const RW_ROUND = 40000, RW_BET = 30000, RW_GRACE = 1500;
+const RW_N = 26;                 // 🐟12 · 🦀6 · 🐙4 · 🐬2 · 🐋1 · 🦑1 (칸 배치는 화면과 같아요)
+const RW_CAP = [5000, 3000, 2000, 1000, 1000], RW_MAX = 5000;
 const STATES = new Set(['idle', 'cast', 'wait', 'bite', 'fight']);
 
 const num = (v, a, b, d) => { v = +v; return Number.isFinite(v) ? Math.min(b, Math.max(a, v)) : d; };
@@ -121,6 +125,26 @@ export class Island extends DurableObject {
     this.sql = ctx.storage.sql;
     this.sql.exec('CREATE TABLE IF NOT EXISTS chat2(id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER, a INTEGER, b INTEGER, nk TEXT, m TEXT)');
     this.sql.exec('DROP TABLE IF EXISTS chat'); // 예전 형식 채팅 표는 정리
+    this.sql.exec('CREATE TABLE IF NOT EXISTS rw(r INTEGER PRIMARY KEY, s INTEGER, ts INTEGER)');
+  }
+
+  // 룰렛 결과: 있으면 그대로, 없으면(마감 뒤에만) 새로 뽑아 저장 · 최근 600판(약 6시간 40분)만 보관
+  rwRes(r, make) {
+    const row = this.sql.exec('SELECT s FROM rw WHERE r = ?', r).toArray()[0];
+    if (row) return row.s;
+    if (!make) return null;
+    const u = new Uint32Array(1); let s;
+    do { crypto.getRandomValues(u); } while (u[0] >= Math.floor(0x100000000 / RW_N) * RW_N);
+    s = u[0] % RW_N;
+    this.sql.exec('INSERT OR IGNORE INTO rw(r, s, ts) VALUES (?, ?, ?)', r, s, Date.now());
+    this.sql.exec('DELETE FROM rw WHERE r < ?', r - 600);
+    return this.sql.exec('SELECT s FROM rw WHERE r = ?', r).toArray()[0].s;
+  }
+  rwState(live) {
+    const now = Date.now(), r = Math.floor(now / RW_ROUND), bets = [];
+    for (const w of live) { const a = w.deserializeAttachment(); if (a && a.rb && a.rb.r === r && a.p) bets.push({ id: a.id, n: a.p.n, nk: a.p.nk || '', b: a.rb.b }); }
+    const last = this.sql.exec('SELECT r, s FROM rw ORDER BY r DESC LIMIT 12').toArray().map(x => [x.r, x.s]);
+    return { now, r, bets, last };
   }
 
   recentChat() {
@@ -163,7 +187,7 @@ export class Island extends DurableObject {
     const peers = [];
     for (const w of live) { const a = w.deserializeAttachment(); if (a && a.p) peers.push({ id: a.id, p: a.p }); }
     const lgLeft = lgNow && lgNow.until > Date.now() ? lgNow.until - Date.now() : 0;
-    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat(), lg: lgLeft ? { n: lgNow.n, id: lgNow.id, s: lgNow.s, left: lgLeft } : null }));
+    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat(), lg: lgLeft ? { n: lgNow.n, id: lgNow.id, s: lgNow.s, left: lgLeft } : null, rw: this.rwState(live) }));
     return new Response(null, { status: 101, webSocket: client });
   }
 
@@ -200,6 +224,25 @@ export class Island extends DurableObject {
         this.sql.exec('DELETE FROM chat2 WHERE id NOT IN (SELECT id FROM chat2 ORDER BY id DESC LIMIT ?)', CHAT_KEEP);
         this.broadcast({ t: 'c', id: a.id, n, nk, m: text, ts: now }, null);
         return;
+      }
+    } else if (m.t === 'rb') {
+      // 룰렛 베팅: 이번 판·베팅 시간·한도를 확인하고 모두에게 알려요
+      const now = Date.now(), cur = Math.floor(now / RW_ROUND), r = Math.floor(+m.r);
+      const b = Array.isArray(m.b) && m.b.length === 5 ? m.b.map(x => Math.floor(+x || 0)) : null;
+      const ok = b && r === cur && now - cur * RW_ROUND < RW_BET + RW_GRACE && b.every((x, k) => x >= 0 && x <= RW_CAP[k] && x % 100 === 0) && b.reduce((p, q) => p + q, 0) <= RW_MAX;
+      if (ok) {
+        a.rb = { r, b }; ws.serializeAttachment(a);
+        this.broadcast({ t: 'rbs', r, id: a.id, n: a.p ? a.p.n : [0, 0], nk: a.p ? a.p.nk || '' : '', b }, null);
+        return;
+      }
+    } else if (m.t === 'rq') {
+      // 룰렛 결과 요청: 베팅 마감 전에는 절대 알려 주지 않아요
+      const now = Date.now(), cur = Math.floor(now / RW_ROUND), r = Math.floor(+m.r);
+      if (Number.isFinite(r) && r <= cur && r > cur - 2000 && !(r === cur && now - cur * RW_ROUND < RW_BET)) {
+        const had = this.rwRes(r, false);
+        const s = had != null ? had : this.rwRes(r, true);
+        const out = { t: 'rwr', r, s, now };
+        if (had == null && r === cur) this.broadcast(out, null); else { try { ws.send(JSON.stringify(out)); } catch {} }
       }
     } else if (m.t === 'gp' && typeof m.id === 'string') {
       // 다른 사람의 수조를 보고 싶다는 요청 → 그 사람에게 전달
@@ -263,7 +306,7 @@ const DSID_KEEP = 80;              // 화면(창)마다 '마지막으로 반영�
 const LEGACY_NEW_MS = 5 * 60e3;
 // 이 빌드보다 오래된 화면은 저장을 받지 않아요(새로고침 안내). 저장 항목이 바뀌는 업데이트를 할 때마다 올려요.
 // 막힌 화면의 기록은 그 기기에 보관됐다가, 새로고침해서 다시 로그인하면 합쳐져요.
-const MIN_CV = '2026-11-13k';
+const MIN_CV = '2026-11-13o';
 const OWNED_LISTS = ['rods', 'packs', 'floats', 'reels'];    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
 
 // ---------- 저장 데이터 안전 합치기 (서버) ----------
