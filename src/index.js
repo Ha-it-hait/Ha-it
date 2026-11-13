@@ -22,8 +22,8 @@ const SPECIES = new Set(SPECIES_LIST);
 // 희귀종(★6 색깔 다른 친구들): 잡으면 모든 섬에 알림만 (무지개 이벤트 없음)
 const RARE_IDS = new Set(SPECIES_LIST.filter(x => x.endsWith('_r')));
 const N_ADJ = 40, N_NOUN = 40;
-// 🐚 용궁 소라 룰렛: 40초마다 (30초 베팅 · 7초 회전 · 3초 결과). 결과는 베팅 마감 뒤에 섬 서버가 정해요
-const RW_ROUND = 40000, RW_BET = 30000, RW_GRACE = 1500;
+// 🐚 용궁 소라 룰렛: 30초마다 (20초 베팅 · 7초 회전 · 3초 결과). 결과는 베팅 마감 뒤에 섬 서버가 정해요
+const RW_ROUND = 30000, RW_BET = 20000, RW_GRACE = 1500;
 const RW_N = 26;                 // 🐟12 · 🦀6 · 🐙4 · 🐬2 · 🐋1 · 🦑1 (칸 배치는 화면과 같아요)
 const RW_CAP = [5000, 3000, 2000, 1000, 1000], RW_MAX = 5000;
 const STATES = new Set(['idle', 'cast', 'wait', 'bite', 'fight']);
@@ -128,7 +128,7 @@ export class Island extends DurableObject {
     this.sql.exec('CREATE TABLE IF NOT EXISTS rw(r INTEGER PRIMARY KEY, s INTEGER, ts INTEGER)');
   }
 
-  // 룰렛 결과: 있으면 그대로, 없으면(마감 뒤에만) 새로 뽑아 저장 · 최근 600판(약 6시간 40분)만 보관
+  // 룰렛 결과: 있으면 그대로, 없으면(마감 뒤에만) 새로 뽑아 저장 · 최근 600판(약 5시간)만 보관
   rwRes(r, make) {
     const row = this.sql.exec('SELECT s FROM rw WHERE r = ?', r).toArray()[0];
     if (row) return row.s;
@@ -306,7 +306,7 @@ const DSID_KEEP = 80;              // 화면(창)마다 '마지막으로 반영�
 const LEGACY_NEW_MS = 5 * 60e3;
 // 이 빌드보다 오래된 화면은 저장을 받지 않아요(새로고침 안내). 저장 항목이 바뀌는 업데이트를 할 때마다 올려요.
 // 막힌 화면의 기록은 그 기기에 보관됐다가, 새로고침해서 다시 로그인하면 합쳐져요.
-const MIN_CV = '2026-11-13o';
+const MIN_CV = '2026-11-13s';
 const OWNED_LISTS = ['rods', 'packs', 'floats', 'reels'];    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
 
 // ---------- 저장 데이터 안전 합치기 (서버) ----------
