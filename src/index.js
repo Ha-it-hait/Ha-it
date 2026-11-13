@@ -341,9 +341,12 @@ function cleanGift(b) {
     lot: Math.max(0, Math.min(GIFT_LIM.lot, Math.floor(Number(b.lot) || 0))),
     tank: Math.max(0, Math.min(GIFT_LIM.tank, Math.floor(Number(b.tank) || 0))),
     floats: ints(b.floats, 1, 3), reels: ints(b.reels, 1, 2), rods: ints(b.rods, 1, 7),
+    // 잃어버린 물고기 되찾아 주기: [{id, s(cm), to:'bag'|'tank'}] 최대 30마리
+    fish: (Array.isArray(b.fish) ? b.fish : []).slice(0, 30).map(f => ({ id: String((f && f.id) || ''), s: Math.round((Number(f && f.s) || 0) * 10) / 10, to: f && f.to === 'tank' ? 'tank' : 'bag' }))
+      .filter(f => /^[a-z0-9_]{1,32}$/.test(f.id) && f.s >= 1 && f.s <= 2000),
   };
   const msg = String(b.msg || '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 200);
-  const any = it.money || it.lot || it.tank || it.floats.length || it.reels.length || it.rods.length;
+  const any = it.money || it.lot || it.tank || it.floats.length || it.reels.length || it.rods.length || it.fish.length;
   return any || msg ? { it, msg } : null;
 }
 function applyGift(d, gift, now, gid) {
@@ -352,6 +355,13 @@ function applyGift(d, gift, now, gid) {
   g.freeLot = Math.max(0, (g.freeLot | 0) + it.lot);
   g.tankUp = Math.min(GIFT_LIM.tank, (g.tankUp | 0) + it.tank);
   for (const [k, add] of [['floats', it.floats], ['reels', it.reels], ['rods', it.rods]]) if (add.length) g[k] = [...new Set([...(Array.isArray(g[k]) ? g[k] : []), ...add])].sort((a, b) => a - b);
+  if (it.fish && it.fish.length) {
+    // 새 물고기는 시각(t)을 겹치지 않게 붙여서, 게임 화면의 3-way 합치기에서 '새로 생긴 물고기'로 그대로 들어가요
+    const bag = g.bag = Array.isArray(g.bag) ? g.bag.slice() : [], tank = d.tank = Array.isArray(d.tank) ? d.tank.slice() : [];
+    const used = new Set([...bag, ...tank].map(o => o && o.id + '|' + o.t + '|' + o.s));
+    let tt = now;
+    for (const f of it.fish) { let o; do { o = { id: f.id, s: f.s, t: tt++ }; } while (used.has(o.id + '|' + o.t + '|' + o.s)); used.add(o.id + '|' + o.t + '|' + o.s); (f.to === 'tank' ? tank : bag).push(o); }
+  }
   d.mail = mergeMail(d.mail, [{ id: gid, ts: now, msg: gift.msg, it, seen: 0 }]);
   d.at = now;
   return d;

@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-13i">
+<meta name="amollang-build" content="2026-11-13j">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -376,8 +376,6 @@ body.cine .boatbadge{opacity:0}
 }
 
 button,input,textarea,select{font-family:inherit}
-@media (max-width:520px){#bCloset span{display:inline;font-size:11px}#bCloset{padding:0 7px}}
-@media (max-width:420px){body .btns{gap:3px}.btns .ic{padding:0 5px;min-width:30px}#bCloset{padding:0 5px;gap:2px}#bCloset span{font-size:10px}.hud .t{font-size:15px}}
 @media (min-width:521px){.tankbtn{width:56px;height:56px;border-radius:28px;font-size:23px;bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 80px)}.tankbtn span{font-size:10.5px}}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/utils/BufferGeometryUtils.js":"./vendor/BufferGeometryUtils.js"}}</script>
@@ -3329,7 +3327,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-13i';
+const BUILD='2026-11-13j';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -4019,7 +4017,8 @@ function giftItems(it){it=it||{};const out=[];
  for(const lv of it.floats||[])if(FLOATS[lv])out.push(`${FLOATS[lv].em} ${FLOATS[lv].name}`);
  for(const lv of it.reels||[])if(REELS[lv])out.push(`${REELS[lv].em} ${REELS[lv].name}`);
  for(const lv of it.rods||[])if(RODS[lv])out.push(`🎣 ${RODS[lv].name}`);
- if(it.tank>0)out.push(`🐠 수조 +${it.tank*TANK_STEP}칸`);return out;}
+ if(it.tank>0)out.push(`🐠 수조 +${it.tank*TANK_STEP}칸`);
+ for(const f of Array.isArray(it.fish)?it.fish:[]){const sp=SP_BY[f.id];if(sp)out.push(`🐟 ${sp.name} ${(+f.s).toFixed(1)}cm → ${f.to==='tank'?'수조':'가방'}`);}return out;}
 function giftUnseen(){return MAIL.filter(m=>!(m.seen|0));}
 function showGift(){const list=giftUnseen();if(!list.length)return;giftOpen=true;let el=$('giftM');
  if(!el){el=document.createElement('div');el.id='giftM';el.className='gfov';document.body.appendChild(el);}
