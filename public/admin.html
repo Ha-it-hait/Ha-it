@@ -52,6 +52,12 @@
   <div id="gOut"></div>
  </div>
 <style>.frow{display:flex;gap:6px;align-items:center;margin:4px 0;flex-wrap:wrap}.frow select,.frow input{padding:8px;border-radius:10px;border:1px solid #c9d3e2;font:inherit}.frow .fsp{flex:1 1 240px;min-width:200px}.frow .fsz{width:110px}.frow .fto{width:96px}.frow .fhint{font-size:12px;color:#7a8597;min-width:90px}.frow .fdel{padding:6px 10px}</style>
+ <div class="card" id="hofCard">
+  <b style="font-size:16px">🏆 명예의 전당 이름 정리</b>
+  <p class="note" style="margin-top:4px">이름을 바꾼 유저의 예전 기록을 지금 이름으로 바꿔요. <b>자동 정리</b>는 모든 계정의 지금 기록과 예전 저장본(최대 40개)을 살펴, <b>크기가 똑같고 + 그때 쓰던 이름도 같은</b> 기록만 바꿔요(확실한 것만). 남은 기록은 아래 목록에서 직접 고칠 수 있어요. 위의 ‘유저 아이디’ 칸은 비워 둬도 돼요.</p>
+  <p><button id="hFix" style="background:#b8862a">🔧 자동 정리 실행</button> <button class="ghost" id="hList">기록 목록 보기</button> <label style="display:inline-flex;gap:5px;align-items:center;font-weight:600;margin-left:8px"><input type="checkbox" id="hNoOwn" style="width:auto"> 주인 표시가 없는 기록만</label></p>
+  <div id="hOut"></div>
+ </div>
  <div class="card" id="res" hidden></div>
  <div class="card" id="view" hidden></div>
 </main>
@@ -126,6 +132,18 @@ function fishList(){const out=[],bad=[];[...$('gFish').children].forEach((r,i)=>
 $('gFishAdd').onclick=addFishRow;addFishRow();
 $('gSend').onclick=sendGift;$('gHist').onclick=giftHist;
 $('go').onclick=load;$('u').addEventListener('keydown',e=>{if(e.key==='Enter')load();});
+/* 🏆 명예의 전당 이름 정리 */
+const hEsc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+$('hFix').onclick=async()=>{const out=$('hOut');let after='',seen=0,fixed=0,all=[];out.innerHTML='살펴보는 중…';
+ try{for(let i=0;i<400;i++){const j=await call('admin-hoffix',{after});seen+=j.seen;fixed+=j.fixed;all=all.concat(j.done||[]);out.innerHTML=`살펴보는 중… 계정 ${seen} / ${j.total}`;if(!j.next){out.innerHTML=`<p class="ok">✅ 끝났어요 · 계정 ${seen}개를 살펴서 이름 ${fixed}건을 지금 이름으로 바꿨어요 · 주인을 아직 모르는 기록 ${j.left}개</p>`+(all.length?'<table><tr><th>생물</th><th>새 이름</th></tr>'+all.map(x=>`<tr><td>${hEsc((NM[x.id]||[x.id])[0])}</td><td>${hEsc(x.n)}</td></tr>`).join('')+'</table>':'')+(j.left?'<p class="note">남은 기록은 [기록 목록 보기]에서 이름(과 주인 아이디)을 직접 고칠 수 있어요.</p>':'');break;}after=j.next;}}
+ catch(e){out.innerHTML=`<p class="err">${hEsc(e.message)}</p>`;}};
+async function hLoad(){const out=$('hOut');out.innerHTML='불러오는 중…';
+ try{const j=await call('admin-hofls',{});let L=j.list.slice().sort((a,b)=>(NM[a.id]||[a.id])[0].localeCompare((NM[b.id]||[b.id])[0],'ko'));if($('hNoOwn').checked)L=L.filter(x=>!x.own);
+  out.innerHTML=`<p class="note">기록 ${L.length}개 · 이름을 고친 뒤 [저장]을 눌러요. 주인 아이디를 함께 적으면, 그 유저가 나중에 이름을 바꿀 때 이 기록도 자동으로 따라 바뀌어요.</p><table><tr><th>생물</th><th class="n">크기</th><th>지금 이름</th><th>주인</th><th>새 이름</th><th>주인 아이디(선택)</th><th></th></tr>`+
+  L.map(x=>`<tr data-id="${hEsc(x.id)}"><td>${hEsc((NM[x.id]||[x.id])[0])}</td><td class="n">${x.s}cm</td><td>${hEsc(x.n)}</td><td>${x.own?hEsc(x.own):'<span style="color:#c0392b">모름</span>'}</td><td><input class="hn" value="${hEsc(x.n)}" maxlength="10" style="width:130px;padding:6px"></td><td><input class="ho" placeholder="아이디" style="width:110px;padding:6px"></td><td><button class="hs" style="padding:6px 10px">저장</button></td></tr>`).join('')+'</table>';
+  out.querySelectorAll('.hs').forEach(b=>b.onclick=async()=>{const tr=b.closest('tr');b.disabled=true;try{await call('admin-hofset',{sid:tr.dataset.id,name:tr.querySelector('.hn').value.trim(),own:tr.querySelector('.ho').value.trim()});b.textContent='✅';tr.children[2].textContent=tr.querySelector('.hn').value.trim();}catch(e){alert(e.message);b.disabled=false;}});}
+ catch(e){out.innerHTML=`<p class="err">${hEsc(e.message)}</p>`;}}
+$('hList').onclick=hLoad;$('hNoOwn').onchange=()=>{if($('hOut').querySelector('table'))hLoad();};
 </script>
 </body>
 </html>

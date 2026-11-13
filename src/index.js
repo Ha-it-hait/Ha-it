@@ -22,6 +22,15 @@ const SPECIES = new Set(SPECIES_LIST);
 // 희귀종(★6 색깔 다른 친구들): 잡으면 모든 섬에 알림만 (무지개 이벤트 없음)
 const RARE_IDS = new Set(SPECIES_LIST.filter(x => x.endsWith('_r')));
 const N_ADJ = 40, N_NOUN = 40;
+// 화면과 같은 랜덤 이름 낱말 (예전 이름을 찾을 때 써요)
+const NAME_ADJ = ['졸린','느긋한','수줍은','배고픈','행복한','조용한','용감한','꼼꼼한','엉뚱한','다정한','새벽의','반짝이는','동글동글한','씩씩한','몽글몽글한','하품하는','기다리는','낭만적인','차분한','깜찍한','부지런한','느릿느릿한','콧노래하는','멍때리는','설레는','포근한','잔잔한','노을빛','별빛','따끈한','말랑한','성실한','수상한','신난','꿈꾸는','해맑은','소심한','당당한','폭신한','산책하는'];
+const NAME_NOUN = ['망둥어','갈매기','고등어','볼락','우럭','광어','문어','해파리','소라','조개','꽃게','전갱이','붕어','잉어','메기','낚시꾼','선장','등대지기','파도','물결','돌고래','해달','펭귄','수달','불가사리','오징어','새우','미역','거북이','물개','복어','고래','해마','다람쥐','너구리','토끼','고양이','강아지','부엉이','반딧불이'];
+function nameStr(nm) {
+  if (!nm || typeof nm !== 'object') return '';
+  if (typeof nm.nk === 'string' && nm.nk.trim()) return cleanNick(nm.nk) || '';
+  if (!Number.isInteger(nm.a) || !Number.isInteger(nm.b)) return '';
+  return cleanNick(NAME_ADJ[Math.abs(nm.a) % NAME_ADJ.length] + ' ' + NAME_NOUN[Math.abs(nm.b) % NAME_NOUN.length]) || '';
+}
 // 🐚 용궁 소라 룰렛: 30초마다 (20초 베팅 · 7초 회전 · 3초 결과). 결과는 베팅 마감 뒤에 섬 서버가 정해요
 const RW_ROUND = 30000, RW_BET = 20000, RW_GRACE = 1500;
 const RW_N = 26;                 // 🐟12 · 🦀6 · 🐙4 · 🐬2 · 🐋1 · 🦑1 (칸 배치는 화면과 같아요)
@@ -491,6 +500,34 @@ export class Vault extends DurableObject {
     this.sql.exec('INSERT OR REPLACE INTO baks(id, ts, why, data) VALUES (?, ?, ?, ?)', id, now, why, oldText);
     this.sql.exec('DELETE FROM baks WHERE id = ? AND ts NOT IN (SELECT ts FROM baks WHERE id = ? ORDER BY ts DESC LIMIT ?)', id, id, BAK_KEEP);
   }
+  // 계정의 지금 기록 + 예전 저장본(최대 BAK_KEEP개)에서: 썼던 이름들 · 도감 최고 크기 · 내가 올린 명예의 전당 크기
+  userHist(uid) {
+    const names = new Set(), mine = new Map(), best = new Map();
+    const add = (m, id, v) => { const x = Math.round(Number(v) * 10) / 10; if (!(x > 0)) return; let st = m.get(id); if (!st) m.set(id, st = new Set()); st.add(x); };
+    const rows = this.sql.exec('SELECT data FROM users WHERE id = ?', uid).toArray().concat(this.sql.exec('SELECT data FROM baks WHERE id = ?', uid).toArray());
+    let cur = '';
+    rows.forEach((r, i) => {
+      const d = pj(r.data); if (!d || typeof d !== 'object') return;
+      const nm = nameStr(d.name); if (nm) { names.add(nm); if (i === 0) cur = nm; }
+      if (d.book && typeof d.book === 'object') for (const [id, v] of Object.entries(d.book)) if (v && SPECIES_MAX[id]) add(best, id, v.best);
+      if (d.hm && typeof d.hm === 'object') for (const [id, v] of Object.entries(d.hm)) if (SPECIES_MAX[id]) add(mine, id, v);
+    });
+    return { names, mine, best, cur };
+  }
+  // 주인 표시가 없는 예전 기록 중 '이 사람 것'이 확실한 기록을 찾아요
+  //  · '내가 명예의 전당에 올린 크기'(hm)와 똑같으면 내 기록 (같은 크기로는 기록을 갈아치울 수 없어요)
+  //  · 도감 최고 크기만 같을 때는(최대 크기는 여러 명이 같을 수 있어요) 그때 쓰던 이름(계정의 예전 저장본에서 확인)까지 같아야 해요
+  //    (IP는 여러 사람이 함께 쓰는 경우가 있어 증거로 쓰지 않아요)
+  legacyRows(h, ip, cMine, cBest) {
+    const out = [];
+    const near = (st, x) => !!st && [...st].some(y => Math.abs(y - x) < 0.05);
+    for (const r of this.sql.exec("SELECT id, s, n, ip FROM hof WHERE k IS NULL OR k = ''").toArray()) {
+      if (near(h && h.mine.get(r.id), r.s) || near(cMine && cMine.get(r.id), r.s)) { out.push(r.id); continue; }
+      if (!(near(h && h.best.get(r.id), r.s) || near(cBest && cBest.get(r.id), r.s))) continue;
+      if (!!h && h.names.has(r.n) && r.n !== '익명의 낚시꾼') out.push(r.id);
+    }
+    return out;
+  }
   // 명예의 전당 주인 열쇠 확인: 계정(a_)은 로그인 토큰이 맞아야 해요
   ownKey(k, token) {
     k = String(k || '');
@@ -589,14 +626,10 @@ export class Vault extends DurableObject {
       lst.push(now); this.hofByIp.set(ipKey, lst);
       const name = cleanNick(body.name) || '익명의 낚시꾼';
       let hof = 0, board = 0;
-      // 예전 기록(주인 표시 없음): 내가 올린 기록 크기와 똑같으면 내 기록이에요 (같은 크기로는 기록을 갈아치울 수 없어서 겹치지 않아요)
-      const claims = Array.isArray(body.claims) ? body.claims.slice(0, SPECIES_LIST.length) : [];
-      for (const c of claims) {
-        const id = String(c && c.id || ''); if (!SPECIES_MAX[id]) continue;
-        const sz = Math.round(Number(c.s) * 10) / 10; if (!Number.isFinite(sz) || sz <= 0) continue;
-        const row = this.sql.exec('SELECT s, k FROM hof WHERE id = ?', id).toArray()[0];
-        if (row && Math.abs(row.s - sz) < 0.05 && (!row.k || row.k === k)) { this.sql.exec('UPDATE hof SET n = ?, k = ? WHERE id = ?', name, k, id); hof++; }
-      }
+      // 예전 기록(주인 표시 없음): 크기가 맞고, 예전에 쓰던 이름(계정 저장본에서 확인)이나 올린 곳(IP)이 같으면 내 기록이에요
+      const toMap = a => { const m = new Map(); for (const c of (Array.isArray(a) ? a : []).slice(0, SPECIES_LIST.length)) { const id = String(c && c.id || ''); if (!SPECIES_MAX[id]) continue; const sz = Math.round(Number(c.s) * 10) / 10; if (!Number.isFinite(sz) || sz <= 0) continue; let st = m.get(id); if (!st) m.set(id, st = new Set()); st.add(sz); } return m; };
+      const h = k.startsWith('a_') ? this.userHist(k.slice(2)) : null;
+      for (const id of this.legacyRows(h, ipKey, toMap(body.claims), toMap(body.bests))) { this.sql.exec('UPDATE hof SET n = ?, k = ? WHERE id = ?', name, k, id); hof++; }
       hof += this.sql.exec('SELECT COUNT(*) AS c FROM hof WHERE k = ? AND n != ?', k, name).toArray()[0].c;
       this.sql.exec('UPDATE hof SET n = ? WHERE k = ?', name, k);
       this.sql.exec('UPDATE collectors SET n = ? WHERE k = ?', name, k);
@@ -716,6 +749,39 @@ export class Vault extends DurableObject {
       if (fails.length >= 10) return J({ error: '관리자 키를 너무 많이 틀렸어요. 1시간 뒤에 다시 해 주세요' }, 429);
       const okKey = this.env.ADMIN_KEY && typeof body.admin === 'string' && sameStr(body.admin, String(this.env.ADMIN_KEY));
       if (!okKey) { fails.push(now); this.adminFail.set(ipKey, fails); return J({ error: this.env.ADMIN_KEY ? '관리자 키가 맞지 않아요' : '서버에 ADMIN_KEY가 설정되어 있지 않아요' }, 403); }
+      if (op === 'admin-hofls') {
+        const list = this.sql.exec('SELECT id, s, n, ts, k FROM hof').toArray().map(r => ({ id: r.id, s: r.s, n: r.n, ts: r.ts, own: r.k ? (r.k.startsWith('a_') ? r.k.slice(2) : '기기(손님)') : '' }));
+        return J({ ok: true, list });
+      }
+      if (op === 'admin-hofset') {
+        const sid = String(body.sid || ''); if (!SPECIES_MAX[sid]) return J({ error: '알 수 없는 생물이에요' }, 400);
+        const nm = cleanNick(String(body.name || '')); if (!nm) return J({ error: '이름은 한글·영문·숫자 2~10자예요' }, 400);
+        const r = this.sql.exec('SELECT id FROM hof WHERE id = ?', sid).toArray()[0]; if (!r) return J({ error: '그 생물은 아직 기록이 없어요' }, 404);
+        const own = String(body.own || '').trim().toLowerCase();
+        if (own && !this.sql.exec('SELECT id FROM users WHERE id = ?', own).toArray()[0]) return J({ error: '없는 아이디예요 (주인 아이디)' }, 404);
+        if (own) this.sql.exec('UPDATE hof SET n = ?, k = ? WHERE id = ?', nm, 'a_' + own, sid); else this.sql.exec('UPDATE hof SET n = ? WHERE id = ?', nm, sid);
+        this._hofC = null;
+        return J({ ok: true });
+      }
+      if (op === 'admin-hoffix') {
+        // 모든 계정을 차례로 살펴, 주인 표시가 없는 예전 기록 중 확실한 것만 지금 이름으로 바꿔요 (한 번에 25개 계정씩)
+        const after = String(body.after || '');
+        const users = this.sql.exec('SELECT id FROM users WHERE id > ? ORDER BY id LIMIT 25', after).toArray().map(r => r.id);
+        let fixed = 0, named = 0; const done = [];
+        for (const uid2 of users) {
+          const h = this.userHist(uid2); if (!h.cur) continue;
+          const k2 = 'a_' + uid2;
+          for (const id of this.legacyRows(h, '', null, null)) { this.sql.exec('UPDATE hof SET n = ?, k = ? WHERE id = ?', h.cur, k2, id); fixed++; done.push({ id, n: h.cur }); }
+          // 이미 주인 표시가 있는 기록·도감왕은 지금 이름으로
+          named += this.sql.exec('SELECT COUNT(*) AS c FROM hof WHERE k = ? AND n != ?', k2, h.cur).toArray()[0].c;
+          this.sql.exec('UPDATE hof SET n = ? WHERE k = ?', h.cur, k2);
+          this.sql.exec('UPDATE collectors SET n = ? WHERE k = ?', h.cur, k2);
+        }
+        if (fixed || named) { this._hofC = null; this._topC = null; }
+        const total = this.sql.exec('SELECT COUNT(*) AS c FROM users').toArray()[0].c;
+        const left = this.sql.exec("SELECT COUNT(*) AS c FROM hof WHERE k IS NULL OR k = ''").toArray()[0].c;
+        return J({ ok: true, next: users.length === 25 ? users[users.length - 1] : '', seen: users.length, total, fixed: fixed + named, done, left });
+      }
       const uid = String(body.id ?? '').trim().toLowerCase();
       const row = this.sql.exec('SELECT id, data, rev, created, updated FROM users WHERE id = ?', uid).toArray()[0];
       if (!row) return J({ error: '없는 아이디예요' }, 404);
@@ -828,7 +894,7 @@ export default {
     if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
       const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
       const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-rename', 'hof-legend', 'hof-rare', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear', 'admin-gift', 'admin-gifts'].includes(op)) return J({ error: 'not found' }, 404);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-rename', 'hof-legend', 'hof-rare', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear', 'admin-gift', 'admin-gifts', 'admin-hofls', 'admin-hofset', 'admin-hoffix'].includes(op)) return J({ error: 'not found' }, 404);
       if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {

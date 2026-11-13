@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-13zb">
+<meta name="amollang-build" content="2026-11-13zc">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -3474,7 +3474,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-13zb';
+const BUILD='2026-11-13zc';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -4680,15 +4680,16 @@ function nmFix(m){if(!Array.isArray(m.ts)||!Array.isArray(m.n))return;const ck=c
 function nmMine(){const nw=nameOf(NAME);let ch=false;for(const e of chatLog)if(e.pid==='me'&&e.name!==nw){e.name=nw;ch=true;}if(ch&&chatOpen)renderChat();
  try{const b=RWS.bets.get(wsMyId||'me');if(b){b.n=nw;rwRender();}}catch(e){}
  clearTimeout(NMR.t);NMR.t=setTimeout(()=>nmRename(true),1800);}
-function nmSig(){return(colKey()||'')+'|'+hofName();}
+function nmSig(){return'v2|'+(colKey()||'')+'|'+hofName();}
 /* 명예의 전당(내가 가진 기록) · 도감왕 · 게시판의 내 글 이름을 새 이름으로 */
 async function nmRename(force){if(NMR.busy)return;const sig=nmSig();let last='';try{last=localStorage.getItem('monggeul-hofname')||'';}catch(e){}
  if(!force&&last===sig)return;NMR.busy=true;const name=hofName();
  const claims=Object.entries(HOF_MINE||{}).filter(([id,s])=>SP_BY[id]&&+s>0).slice(0,400).map(([id,s])=>({id,s:Math.round(+s*10)/10}));
+ const bests=Object.entries(book||{}).filter(([id,v])=>SP_BY[id]&&v&&+v.best>0).slice(0,400).map(([id,v])=>({id,s:Math.round(+v.best*10)/10}));
  const mine=boardMine();
  try{
   if(netMode==='ws'){const key=colKey();if(!key)return;const dks=Object.values(mine).filter(v=>typeof v==='string'&&/^[0-9a-f]{24}$/.test(v)).slice(0,200);
-   const r=await fetch('/api/hof/rename',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key,token:acct&&acct.token||'',name,claims,dks})});const j=await r.json().catch(()=>({}));
+   const r=await fetch('/api/hof/rename',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key,token:acct&&acct.token||'',name,claims,bests,dks})});const j=await r.json().catch(()=>({}));
    if(!r.ok||!j.ok)return;}
   else{if(!HOF.db)await hofLoad(true);if(!HOF.db)return;
    for(const c of claims){try{const ref=HOF.db.collection('hof').doc(c.id);const sn=await ref.get();const o=sn&&sn.exists?sn.data():null;if(o&&Math.abs(+o.s-c.s)<0.05&&o.n!==name)await ref.set({s:+o.s,n:name,ts:+o.ts||Date.now()});}catch(e){}}
