@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-13y">
+<meta name="amollang-build" content="2026-11-13zb">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -357,7 +357,7 @@ body.cine .boatbadge{opacity:0}
 .agot{background:linear-gradient(135deg,#fff3cf,#ffe0ea);border:2px solid #ffc94d;border-radius:14px;padding:10px 12px;margin:10px 0 4px;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}.agot.hidden{display:none}
 .agot .agt{font-weight:900;font-size:16px;color:#7a4a00}.agot .agi{font-size:14.5px;margin:4px 0 6px;line-height:1.65;font-weight:700;color:#3a3326}.agot small{font-weight:600;color:#7a6a50}
 .arule{font-size:11.5px;color:#8a7a62;line-height:1.55;margin:8px 0 10px}
-.chips button.lock{opacity:.62;border-style:dashed}
+.chips button.lock{opacity:.62;border-style:dashed}.petnote{flex-basis:100%;font-size:11.5px;color:#7a6a50;margin-top:2px;line-height:1.4}
 .irow .acts button.attlock{background:#eef3ff;color:#3a5aa8;border:2px dashed #a9bfee;cursor:default;opacity:1}
 @media (max-width:520px){.attc{padding:12px 10px 12px}.agrid{gap:3px}.ac{font-size:11px;padding:2px 3px;border-radius:8px}.ar{padding:5px 1px}.ar .ai{font-size:21px}.ar .al{font-size:10.5px}.ar .as{font-size:10px}.astreak{font-size:13.5px}}
 .tkask{position:fixed;inset:0;z-index:9500;background:rgba(18,28,44,.55);display:none;align-items:center;justify-content:center;padding:18px}.tkask.on{display:flex}
@@ -878,7 +878,10 @@ const RARE_DEF=[
  ['mihojonggae','초고추장 미호종개','#e2432f','#ff8c7a','sauce','미꾸라지 친척답게 초고추장 그릇에 쏙! 새콤달콤 빨개졌어요. (그래도 천연기념물이라 꼭 놓아주세요)']];
 const RARE_OF={};
 for(const[bid,name,c1,c2,top,flavor]of RARE_DEF){const b=SPECIES.find(s=>s.id===bid);if(!b)continue;
- const r=Object.assign({},b,{id:bid+'_r',name,c1,c2,top,flavor,rare:bid,w:0,hint:`✨ ${b.name}의 희귀종 · ${b.name} 100마리 중 1마리꼴 · ${b.hint||''}`});SPECIES.push(r);RARE_OF[bid]=r;}
+ const r=Object.assign({},b,{id:bid+'_r',name,c1,c2,top,flavor,rare:bid,w:0});
+ /* 기본형을 아직 못 잡았으면 기본형 이름을 감춰요 (???의 희귀종) */
+ Object.defineProperty(r,'hint',{enumerable:true,configurable:true,get(){let known=false;try{known=!!(book&&book[bid]);}catch(e){}const bn=known?b.name:'???';return`✨ ${bn}의 희귀종 · ${bn} 100마리 중 1마리꼴 · ${b.hint||''}`;}});
+ SPECIES.push(r);RARE_OF[bid]=r;}
 function pickFish(p,hab,noF){const _F=noF?null:floatOn();FBLK=_F?_F.block:0;
  const ph=phaseOf(hourNow());const fresh=hab!=='sea';let tot=0;
  const ws=SPECIES.map(sp=>{if((sp.hab==='fresh')!==fresh)return 0;if(sp.pondOnly&&hab!=='pond')return 0;if(sp.riverOnly&&hab!=='river')return 0;
@@ -2395,7 +2398,7 @@ function v2Peer(r,pr,isNew){
   else if(seq!==r.cmSeq){r.cmSeq=seq;const text=cleanChat(cm[1]);if(text){chatAdd({ts:Date.now(),pid:r.peer,name:r.name,text,me:false});if(!mutedPeers.has(r.peer)){showBubble(r.label,text,false,10);r.hopT=t;}}}}}
 function myProfile(){return{r:GS.rod,l:reelOn()?GS.reel|0:0,k:tank.slice(0,200).map(o=>[SP_IDX.get(o.id)??0,o.s]),b:Object.keys(book).length,c:tankCap()};}
 function v2Presence(o){o.bt=BOAT.on?1:0;o.sd=MY_SID;o.lv=myLoveTop();o.rd=GS.rod;o.pk=GS.pack|0;o.pt=petOn()?1:0;o.fl=floatOn()?GS.float|0:0;o.rl=reelOn()?GS.reel|0:0;o.nk=NAME.nk||'';o.ck=ME.ck||[0,0,0,0,0];if(netMode!=='ws'){o.cm=ME.cm||[0,''];o.cl=ME.cl||[];o.pf=myProfile();}return o;}
-function onNetMsg(m){if(m.t==='c'){onChatMsg(m);return true;}
+function onNetMsg(m){if(m.t==='c'){onChatMsg(m);return true;}if(m.t==='rn'){nmFix(m);return true;}
  if(m.t==='lg'){applyLegend(m);return true;}
  if(m.t==='rbs'||m.t==='rwr'){rwNet(m);return true;}
  if(m.t==='rr'){applyRare(m);return true;}
@@ -2553,7 +2556,7 @@ async function logout(){if(!acct)return;await doSave(false);try{await authCall('
 
 /* ---------- 매 프레임 ---------- */
 let v2HudAcc=0;
-function updV2(dt){updHappy(dt);updFoam(dt);updReels(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);rwTick(dt);petTick(dt);attTick(dt);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
+function updV2(dt){updHappy(dt);updFoam(dt);updReels(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);rwTick(dt);nmTick(dt);petTick(dt);attTick(dt);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
  for(const r of remote.values()){if(r.cookT)animTable(r.cookT,r.ckSt,dt);}
  v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();const bs=buffShort();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}${reelHud()}${floatHud()}`+(bs?` · ${bs}`:'');$('hudG').classList.toggle('buff',!!bs);
   if(GS._buffWas&&bl<=0)toast('🍳 요리 효과가 끝났어요',2400);GS._buffWas=bl>0;saveTick();}}
@@ -2743,14 +2746,18 @@ const HARD_D=0.16;
 function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-13x';
+const NEWS_VER='2026-11-13za';
 const NEWS=[
- {d:'11월 13일',t:'📅 출석 달력이 생겼어요',n:true,i:[
+ {d:'11월 13일',t:'🐚 룰렛 하루 제한 해제 · ✏️ 이름 바꾸면 기록도 함께',n:true,i:[
+  '✏️ 닉네임을 바꾸면 <b>🏆 명예의 전당</b> 기록, <b>👑 도감왕</b>, <b>📋 게시판</b>에 남긴 내 글, 섬 <b>💬 채팅 기록</b>의 이름도 새 이름으로 바뀌어요. 예전에 세운 기록도 다음 접속 때 새 이름으로 바뀌어요.',
+  '🐚 소라 룰렛의 <b>하루 최대 수익 제한(100,000몰랑)을 없앴어요</b>. 이제 한 판 한도 안에서 언제든 한 칸에 전부 걸 수 있어요 (예: ★5 낚싯대로 🐋 고래에 5,000 올인).',
+  '🔍 도감에서 아직 못 잡은 희귀종은 기본형을 잡기 전까지 <b>???의 희귀종</b>으로 보여요.']},
+ {d:'11월 13일',t:'📅 출석 달력이 생겼어요',i:[
   '📅 오른쪽 위 <b>📅 출석</b> 버튼에서 출석 달력을 볼 수 있어요. 하루 중 처음 섬에 들어오면 오늘 칸에 <b>🐬 돌고래 도장</b>이 쾅! 찍혀요.',
   '🎁 <b>연속 출석 보상</b> · 3일: 🎫 무료 복권 3장 · 5일: 🎫 7장 · 7일: 🎫 10장 + 🦀 <b>꽃게 모자</b> · 10일: 🎫 15장 + 🐧 <b>아기 펭귄 가방</b>(물고기 80마리) · 20일: 🦦 <b>아기 해달 친구</b>',
-  '🦦 아기 해달과 함께 다니면 <b>★7 무지개 전설 확률이 1.5배</b>(희귀종 확률은 그대로)! 해달은 나를 졸졸 따라다니고, ⛵ 배를 타고 바다에 나가면 배 옆에서 등을 대고 둥둥 헤엄쳐 따라와요. 같은 섬 사람들에게도 보여요.',
+  '🦦 아기 해달은 <b>가지고만 있어도 ★7 무지개 전설 확률이 1.5배</b>(데리고 다니지 않아도 돼요 · 희귀종 확률은 그대로)! 데리고 다니면 해달은 나를 졸졸 따라다니고, ⛵ 배를 타고 바다에 나가면 배 옆에서 등을 대고 둥둥 헤엄쳐 따라와요. 같은 섬 사람들에게도 보여요.',
   '🎩 꽃게 모자와 🦦 해달 친구는 👕 외형에서, 🐧 펭귄 가방은 용왕님 상점 🎒 가방 칸에서 바꿀 수 있어요. 모두 <b>출석으로만</b> 얻을 수 있어요.',
-  '📌 하루라도 빠지면 1일째부터 다시 세요. 같은 달에는 같은 보상을 한 번만 받고, 날짜는 한국 시간 자정 기준이에요. 30일을 채우면 다시 1일째부터 이어져요. 🎫 무료 복권은 하루 구매 제한과 별개예요.']},
+  '📌 하루라도 빠지면 1일째부터 다시 세요. 같은 달에는 같은 보상을 한 번만 받고, 날짜는 한국 시간 자정 기준이에요. 20일을 다 채우면 다음 출석 보상 생성까지 기다려주세요! 🎫 무료 복권은 하루 구매 제한과 별개예요.']},
  {d:'11월 13일',t:'🐚 소라 룰렛 손질했어요',i:[
   '🗺️ 룰렛 광장을 집들이 없는 <b>지도 왼쪽 위 언덕 옆</b>으로 옮겼어요. 훨씬 넓고 시원해요.',
   '⏳ 이제 <b>30초마다</b> 바퀴가 돌아가요 (20초 베팅 → 7초 회전 → 3초 결과).',
@@ -2764,7 +2771,7 @@ const NEWS=[
   '⏳ <b>30초마다</b> 바퀴가 돌아가요. 20초 동안 걸고 → 7초 동안 돌고 → 3초 동안 결과를 보여 줘요. 남은 시간이 실시간으로 보여요.',
   '🐟 붕어 2배(12칸) · 🦀 꽃게 4배(6칸) · 🐙 문어 6배(4칸) · 🐬 돌고래 11배(2칸) · 🐋 고래 21배(1칸) · 🦑 먹물은 모두 꽝(1칸). 26칸 중 하나에 멈춰요.',
   '🙋 같은 섬 사람들이 <b>누가 어디에 얼마를 걸었는지</b> 실시간으로 보이고, 탁자 위에 칩도 쌓여요.',
-  '💰 한 판에 낚싯대 ★1~2는 500 · ★3은 1,000 · ★4는 2,000 · ★5 이상은 5,000몰랑까지 걸 수 있어요. 룰렛으로 <b>하루에 얻을 수 있는 몰랑은 최대 100,000</b>이에요.',
+  '💰 한 판에 낚싯대 ★1~2는 500 · ★3은 1,000 · ★4는 2,000 · ★5 이상은 5,000몰랑까지 걸 수 있어요.',
   '💾 걸어 둔 채 창을 닫아도 괜찮아요. 결과는 서버가 정해서 보관하고, 다시 들어오면 그 판 결과로 정산돼요.']},
  {d:'11월 13일',t:'✨ 희귀종 26마리가 나타났어요 · 용궁 맛잔치 사건',i:[
   '🎉 용왕님의 <b>용궁 맛잔치</b>에서 음식을 너무 좋아한 ★6 친구들이 음식 색으로 물들어 버렸어요! 그 뒤로 아주 가끔 그 색을 닮은 아이들이 태어난대요.',
@@ -3057,7 +3064,7 @@ async function hofLoad(force){
 async function hofSubmit(sp,size){
  const id=sp.id,s=Math.round(size*10)/10;const cur=HOF.map[id];if(cur&&cur.s>=s)return;const name=hofName();
  try{
-  if(netMode==='ws'){const r=await fetch('/api/hof/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id,s,name})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)return;
+  if(netMode==='ws'){const r=await fetch('/api/hof/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id,s,name,key:colKey()||'',token:acct&&acct.token||''})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)return;
    if(j.top){HOF.map[id]={s,n:j.name||name,ts:Date.now()};hofMineSet(id,s);hofCheer(sp,s,j.prev);}else if(j.rec)HOF.map[id]={s:+j.rec.s,n:String(j.rec.n||''),ts:+j.rec.ts||0};}
   else{if(!HOF.db)await hofLoad(true);if(!HOF.db)return;const ref=HOF.db.collection('hof').doc(id);const snap=await ref.get();const old=snap&&snap.exists?snap.data():null;if(old&&+old.s>=s)return;
    await ref.set({s,n:name,ts:Date.now()});HOF.map[id]={s,n:name,ts:Date.now()};hofCheer(sp,s,old?{s:+old.s,n:old.n}:null);}
@@ -3467,7 +3474,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-13y';
+const BUILD='2026-11-13zb';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3643,7 +3650,7 @@ function hofIsMine(id,rec){if(!rec)return false;if(rec.n===hofName())return true
 async function hofReconcile(){if(netMode!=='ws'||!HOF.ok||HOF.mode!=='ws'||performance.now()-hofSyncAt<60000)return;
  const list=[];for(const[id,v]of Object.entries(book)){const sp=SP_BY[id];if(!sp||!v)continue;const s=Math.round(+v.best*10)/10;if(!(s>0)||s>sp.max+0.05)continue;const cur=HOF.map[id];if(!cur||s>cur.s)list.push({id,s});}
  if(!list.length)return;hofSyncAt=performance.now();
- try{const r=await fetch('/api/hof/sync',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:hofName(),list})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)return;
+ try{const r=await fetch('/api/hof/sync',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:hofName(),list,key:colKey()||'',token:acct&&acct.token||''})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)return;
   for(const w of j.won||[]){HOF.map[w.id]={s:w.s,n:j.name||hofName(),ts:Date.now()};hofMineSet(w.id,w.s);}
   for(const c of j.recs||[])if(SP_BY[c.id])HOF.map[c.id]={s:+c.s,n:String(c.n||''),ts:+c.ts||0};
   if(j.won&&j.won.length)toast(`🏆 명예의 전당에 빠져 있던 내 기록 ${j.won.length}개를 다시 올렸어요`,3400);
@@ -4307,7 +4314,6 @@ function rwBet(k){const st=rwPhase();if(performance.now()-RWS.tapT<140)return;RW
  if(rwSum(b)+amt>rwTierCap()){toast(`한 판에 ${fmtM(rwTierCap())}몰랑까지 걸 수 있어요`+(rwTierCap()<5000?' · 낚싯대 ★가 높을수록 한도가 올라가요':''),2600);return;}
  if(b[k]+amt>rwSymCap(k)){toast(`${RW_SYM[k].em} ${RW_SYM[k].name} 칸은 한 판에 ${fmtM(rwSymCap(k))}몰랑까지 걸 수 있어요`+(rwTierCap()<5000?' (낚싯대 ★가 높을수록 한도가 올라가요)':''),2600);return;}
  const nb=b.slice();nb[k]+=amt;const D=rwDay();
- if(D.net+rwMaxNet(nb)>RW.DAY_GAIN){toast(`룰렛으로 하루에 얻을 수 있는 몰랑은 ${fmtM(RW.DAY_GAIN)}까지예요. 이만큼 걸면 넘을 수 있어서 더 걸 수 없어요`,3200);return;}
  GS.money-=amt;GS.rwPend={r:st.r,b:nb};markSave();try{updateHUD();}catch(e){}
  tone(880+k*90,0,0.06,0.04,'triangle');if(RWS.hr!==st.r){RWS.hr=st.r;RWS.hist=[];}RWS.hist.push([k,amt]);
  const S0=RW_SYM[k];toast(b[k]>0?`${S0.em} ${S0.name}에 ${fmtM(amt)} 더 걸었어요 → 이 칸 합계 ${fmtM(nb[k])}몰랑 (누를 때마다 쌓여요) · 빼려면 ↩️ 되돌리기`:`${S0.em} ${S0.name}에 ${fmtM(amt)}몰랑 걸었어요 · 한 번 더 누르면 ${fmtM(amt)}씩 더 쌓여요 · 빼려면 ↩️ 되돌리기`,2600);
@@ -4455,7 +4461,7 @@ function rwRender(){if(!$('rwPanel'))return;const st=rwPhase();rwRenderTop(st);c
  $('rwLast').innerHTML=(rwOffline()?'<div class="rwoff">⚠️ 이 섬 서버에 아직 소라 룰렛이 준비되지 않았어요 (서버 업데이트 필요)</div>':'')
   +(L?`<div>🧾 내 지난 판 · ${RW_SYM[LS].em} ${RW_SYM[LS].name} · ${fmtM(L.tot)} 걸고 ${L.win>0?`<b class="${L.win>L.tot?'p':L.win<L.tot?'m':''}">${fmtM(L.win)} 받음 (${L.win-L.tot>=0?'+':'−'}${fmtM(Math.abs(L.win-L.tot))})</b>`:`<b class="m">꽝 (−${fmtM(L.tot)})</b>`}</div>`:'<div>🧾 내 지난 판 결과가 여기에 보여요</div>')
   +(hist?`<div class="rwhist">최근 결과 <span>${hist}</span></div>`:'');
- const net=D.net;$('rwFoot').innerHTML=`오늘 룰렛으로 얻은 몰랑 <b class="${net>0?'p':net<0?'m':''}">${net>=0?'+':''}${fmtM(net)}</b> / 최대 ${fmtM(RW.DAY_GAIN)} · 내 몰랑 ${fmtM(GS.money)}`+(GS.rwPend&&GS.rwPend.r!==st.r?' · ⏳ 지난 판 정산 중':'');}
+ const net=D.net;$('rwFoot').innerHTML=`오늘 룰렛으로 얻은 몰랑 <b class="${net>0?'p':net<0?'m':''}">${net>=0?'+':''}${fmtM(net)}</b> · 내 몰랑 ${fmtM(GS.money)}`+(GS.rwPend&&GS.rwPend.r!==st.r?' · ⏳ 지난 판 정산 중':'');}
 /* ---------- v64: 📅 출석 달력 · 🐬 돌고래 도장 · 연속 출석 보상 · 🦀 꽃게 모자 · 🐧 펭귄 가방 · 🦦 아기 해달 ---------- */
 const ATT_CYCLE=30;
 const ATT_TIERS=[
@@ -4504,7 +4510,7 @@ function attGrant(T){const out={d:T.d,items:[]};
  if(T.pack){const had=(GS.packs||[]).includes(T.pack);if(!had){GS.packs=[...new Set([...(GS.packs||[]),T.pack])].sort((a,b)=>a-b);if(GS.bag.length<=bagCap(T.pack))equipPack(T.pack,true);}
   out.items.push(had?'🐧 아기 펭귄 가방 <small>(이미 가지고 있어요)</small>':`🐧 <b>아기 펭귄 가방</b> · 물고기 <b>${bagCap(T.pack)}마리</b> <small>(바로 메었어요!)</small>`);}
  if(T.pet){const had=(GS.pets||[]).includes(T.pet);if(!had){GS.pets=[...new Set([...(GS.pets||[]),T.pet])];GS.pet=T.pet;markPresence();}
-  out.items.push(had?'🦦 아기 해달 <small>(이미 함께하고 있어요)</small>':'🦦 <b>아기 해달 친구</b>가 생겼어요! 함께 다니면 <b>★7 무지개 전설 확률 1.5배</b> <small>(희귀종 확률은 그대로 · 👕 외형에서 데리고 다닐지 정해요)</small>');}
+  out.items.push(had?'🦦 아기 해달 <small>(이미 함께하고 있어요)</small>':'🦦 <b>아기 해달 친구</b>가 생겼어요! <b>가지고만 있어도 ★7 무지개 전설 확률 1.5배</b> <small>(데리고 다니지 않아도 돼요 · 희귀종 확률은 그대로 · 👕 외형에서 데리고 다닐지 정해요)</small>');}
  markSave();return out;}
 /* 하루 중 처음 들어오면(또는 자정을 넘기면) 자동으로 도장 */
 function attTick(dt){ATT.chk-=dt;if(ATT.chk>0)return;ATT.chk=1;
@@ -4527,7 +4533,7 @@ function attBuild(){const el=document.createElement('div');el.className='overlay
  <div class="agrid" id="attGrid"></div>
  <div class="agot hidden" id="attGot"></div>
  <div class="arew" id="attRew"></div>
- <div class="arule">📌 하루라도 빠지면 1일째부터 다시 세요 · 같은 달에는 같은 보상을 <b>한 번만</b> 받아요 · 한국 시간 자정 기준 · 30일을 채우면 다시 1일째부터 이어져요 · 🎫 무료 복권은 용왕님 상점 🎫 복권 칸에서 긁어요</div>
+ <div class="arule">📌 하루라도 빠지면 1일째부터 다시 세요 · 같은 달에는 같은 보상을 <b>한 번만</b> 받아요 · 한국 시간 자정 기준 · <b>20일을 다 채우면 다음 출석 보상 생성까지 기다려주세요!</b> · 🎫 무료 복권은 용왕님 상점 🎫 복권 칸에서 긁어요</div>
  <button class="primary" id="attOk">확인</button></div>`;
  document.body.appendChild(el);
  $('attX').addEventListener('click',closeAtt);$('attOk').addEventListener('click',closeAtt);
@@ -4540,7 +4546,7 @@ function attRender(stampDay){const A=attData(),td=attToday(),cur=td.slice(0,7),v
  const y=+vm.slice(0,4),m=+vm.slice(5,7);$('attMon').textContent=`${y}년 ${m}월`;
  const minM=attMonAdd(cur,-12);$('attPrev').disabled=vm<=minM;$('attNext').disabled=vm>=cur;
  const cd=attCd(A,td);let nx=null;for(const T of ATT_TIERS){const r=attTierRem(T,A,td);if(r>0&&(!nx||r<nx.r))nx={T,r};}
- $('attSt').innerHTML=(cd?`🐬 연속 <b>${A.st}일</b>째 출석 중!`:'🐬 오늘부터 연속 출석을 시작해요')+(nx?` · 다음 보상 <b class="n">${attTierIcon(nx.T)} ${nx.T.d}일차</b>까지 ${nx.r}일`:'');
+ $('attSt').innerHTML=(cd?`🐬 연속 <b>${A.st}일</b>째 출석 중!`:'🐬 오늘부터 연속 출석을 시작해요')+(nx?` · 다음 보상 <b class="n">${attTierIcon(nx.T)} ${nx.T.d}일차</b>까지 ${nx.r}일`:'<br>🎉 이번 달 보상을 모두 받았어요! 다음 출석 보상 생성까지 기다려주세요');
  const first=new Date(Date.UTC(y,m-1,1)).getUTCDay(),nd=new Date(Date.UTC(y,m,0)).getUTCDate();const days=A.days[vm]||[];
  /* 앞으로 받을 보상 날짜 (오늘 도장을 찍었다면 내일부터) */
  const gifts={};if(vm===cur)for(const T of ATT_TIERS){const r=attTierRem(T,A,td);if(r<=0)continue;const k=attShift(td,A.last===td?r:r-1);if(k.slice(0,7)===vm)gifts[+k.slice(8)]=T;}
@@ -4568,8 +4574,9 @@ function attHatChips(){const el=$('hatChips');el.innerHTML='';HAT_NAMES.forEach(
 function attPetChips(){const el=$('petChips');if(!el)return;el.innerHTML='';const has=(GS.pets||[]).includes(1);
  const mk=(txt,on,fn,lock)=>{const b=document.createElement('button');b.textContent=txt;if(on)b.classList.add('on');if(lock)b.classList.add('lock');b.addEventListener('click',fn);el.appendChild(b);};
  if(!has){mk('🔒 아기 해달',false,()=>toast('🦦 아기 해달은 📅 20일 연속 출석 보상이에요',2400),true);return;}
- mk('🦦 아기 해달과 함께 (★7 ×1.5)',petOn(),()=>{GS.pet=1;markSave();markPresence();attPetChips();sfx.pop();});
- mk('혼자 다니기',!petOn(),()=>{GS.pet=0;markSave();markPresence();attPetChips();sfx.pop();});}
+ mk('🦦 아기 해달 데리고 다니기',petOn(),()=>{GS.pet=1;markSave();markPresence();attPetChips();sfx.pop();});
+ mk('혼자 다니기',!petOn(),()=>{GS.pet=0;markSave();markPresence();attPetChips();sfx.pop();});
+ {const n=document.createElement('div');n.className='petnote';n.textContent='🌈 아기 해달은 가지고만 있어도 ★7 확률 1.5배예요 (데리고 다니지 않아도 돼요)';el.appendChild(n);}}
 /* ---- 🦀 꽃게 모자 ---- */
 function buildCrabHat(head,color){color='#f0583c';const shell=stdMat(color,0.55),dk=stdMat(mixHex(color,'#5a1a10',0.35),0.6),eye=stdMat('#1b1b24',0.2),wh=stdMat('#ffffff',0.2);
  const add=(p,k,mk,m,x,y,z)=>{const me=new THREE.Mesh(geo(k,mk),m);me.position.set(x,y,z);me.castShadow=true;p.add(me);return me;};
@@ -4607,7 +4614,9 @@ function penguinPack(g,fx,M,add,SPH,strap){
 /* ---- 🦦 아기 해달 친구 ---- */
 var PETS=new Map();
 function petOn(){return(GS.pet|0)===1&&(GS.pets||[]).includes(1);}
-function petLeg(){return petOn()?1.5:1;}
+function petOwn(){return(GS.pets||[]).includes(1);}
+/* 아기 해달은 가지고만 있어도(데리고 다니지 않아도) ★7 1.5배 */
+function petLeg(){return petOwn()?1.5:1;}
 function buildOtter(){const g=new THREE.Group(),rig=new THREE.Group();g.add(rig);
  const fur=stdMat('#8f6d55',0.85),furD=stdMat('#6f513f',0.85),cream=stdMat('#efe2cf',0.8),dark=stdMat('#2a2220',0.3),hi=stdMat('#ffffff',0.2),pink=stdMat('#ff9fb8',0.7,{transparent:true,opacity:0.75}),shellM=stdMat('#ffc2cf',0.45),shellD=stdMat('#f29bb0',0.5);
  const add=(p,k,mk,m,x,y,z,sx=1,sy=1,sz=1)=>{const me=new THREE.Mesh(geo(k,mk),m);me.position.set(x,y,z);me.scale.set(sx,sy,sz);me.castShadow=true;p.add(me);return me;};
@@ -4658,6 +4667,44 @@ function petTick(dt){
  crabTick();}
 
 attBuild();$('bAtt').addEventListener('click',()=>{if(entered)openAtt(null);});
+/* ---------- v65: 이름을 바꾸면 명예의 전당·도감왕·게시판·채팅 기록까지 새 이름으로 ---------- */
+var NMR={t:null,busy:false,oh:''};
+/* 다른 사람 이름이 바뀌면: 그 사람의 채팅 줄·룰렛 베팅 목록 이름도 바꿔요 */
+function nmSeen(pid,nw){let ch=false;for(const e of chatLog)if(e.pid===pid&&!e.sys&&e.name!==nw){e.name=nw;ch=true;}
+ try{const b=RWS.bets.get(String(pid));if(b){b.n=nw;rwRender();}}catch(e){}
+ if(ch&&chatOpen)renderChat();}
+/* 서버가 채팅 기록 이름을 고쳤다고 알려 주면 (지난 기록 포함) */
+function nmFix(m){if(!Array.isArray(m.ts)||!Array.isArray(m.n))return;const ck=checkNick(typeof m.nk==='string'?m.nk:'');const nw=nameOf({a:m.n[0]|0,b:m.n[1]|0,nk:ck.ok?ck.nick:''});
+ const S=new Set(m.ts.map(x=>+x));let ch=false;for(const e of chatLog)if(!e.sys&&e.pid!=='me'&&S.has(+e.ts)&&e.name!==nw){e.name=nw;ch=true;}if(ch&&chatOpen)renderChat();}
+/* 내 이름이 바뀌면 */
+function nmMine(){const nw=nameOf(NAME);let ch=false;for(const e of chatLog)if(e.pid==='me'&&e.name!==nw){e.name=nw;ch=true;}if(ch&&chatOpen)renderChat();
+ try{const b=RWS.bets.get(wsMyId||'me');if(b){b.n=nw;rwRender();}}catch(e){}
+ clearTimeout(NMR.t);NMR.t=setTimeout(()=>nmRename(true),1800);}
+function nmSig(){return(colKey()||'')+'|'+hofName();}
+/* 명예의 전당(내가 가진 기록) · 도감왕 · 게시판의 내 글 이름을 새 이름으로 */
+async function nmRename(force){if(NMR.busy)return;const sig=nmSig();let last='';try{last=localStorage.getItem('monggeul-hofname')||'';}catch(e){}
+ if(!force&&last===sig)return;NMR.busy=true;const name=hofName();
+ const claims=Object.entries(HOF_MINE||{}).filter(([id,s])=>SP_BY[id]&&+s>0).slice(0,400).map(([id,s])=>({id,s:Math.round(+s*10)/10}));
+ const mine=boardMine();
+ try{
+  if(netMode==='ws'){const key=colKey();if(!key)return;const dks=Object.values(mine).filter(v=>typeof v==='string'&&/^[0-9a-f]{24}$/.test(v)).slice(0,200);
+   const r=await fetch('/api/hof/rename',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key,token:acct&&acct.token||'',name,claims,dks})});const j=await r.json().catch(()=>({}));
+   if(!r.ok||!j.ok)return;}
+  else{if(!HOF.db)await hofLoad(true);if(!HOF.db)return;
+   for(const c of claims){try{const ref=HOF.db.collection('hof').doc(c.id);const sn=await ref.get();const o=sn&&sn.exists?sn.data():null;if(o&&Math.abs(+o.s-c.s)<0.05&&o.n!==name)await ref.set({s:+o.s,n:name,ts:+o.ts||Date.now()});}catch(e){}}
+   if(typeof boardDb!=='undefined'&&boardDb)for(const id of Object.keys(mine)){try{const ref=boardDb.collection('board').doc(String(id));const sn=await ref.get();const o=sn&&sn.exists?sn.data():null;if(o&&o.name!==name)await ref.set(Object.assign({},o,{name}));}catch(e){}}}
+  try{localStorage.setItem('monggeul-hofname',sig);}catch(e){}
+  for(const p of(typeof boardPosts!=='undefined'?boardPosts:[]))if(mine[p.id])p.name=name;
+  try{if(!$('boardM').classList.contains('hidden'))renderBoard(false);}catch(e){}
+  try{HOF.lastLoad=0;await hofLoad(true);}catch(e){}try{colSync(true);}catch(e){}
+ }catch(e){}finally{NMR.busy=false;}}
+/* 채팅 기록 주인 표시: 아이디를 그대로 보내지 않고 짧은 지문(해시)만 섬 서버에 알려 둬요 */
+async function nmSendOh(){try{const key=colKey();if(!key||!(crypto&&crypto.subtle))return;
+ if(!NMR.oh){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('amollang-chat|'+key));NMR.oh=[...new Uint8Array(buf)].slice(0,8).map(b=>b.toString(16).padStart(2,'0')).join('');}
+ if(netMode==='ws'&&ws&&ws.readyState===1)ws.send(JSON.stringify({t:'oh',h:NMR.oh}));}catch(e){}}
+/* 처음 들어왔을 때 한 번: 다른 기기에서 바꾼 이름이나 예전 기록도 새 이름으로 */
+var NMR_T0=0;function nmTick(dt){if(!entered||NMR_T0<0)return;NMR_T0+=dt;if(NMR_T0<12)return;if(typeof NET_DONE!=='undefined'&&!NET_DONE)return;NMR_T0=-1;nmRename(false);}
+
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
@@ -4809,7 +4856,7 @@ function startWS(n){wsIsland=n;roomState='connecting';updateHUD();
  sock.onopen=()=>{wsBackoff=1000;};
  sock.onmessage=ev=>{if(ev.data==='pong')return;let m;try{m=JSON.parse(ev.data);}catch(e){return;}
   if(m.t==='full'){sock.onclose=null;try{sock.close();}catch(e){}if(n<30)startWS(n+1);else{roomState='solo';updateHUD();toast('지금은 모든 섬이 꽉 찼어요. 잠시 후 다시 와 주세요');}return;}
-  if(m.t==='welcome'){wsMyId=String(m.id||'');try{rwWelcome(m.rw);}catch(e){}if(m.lg)setTimeout(()=>applyLegend(m.lg),900);onChatHistory(m.chat);wsPeers.clear();for(const q of(m.peers||[]))if(q&&q.id)wsPeers.set(String(q.id),q.p);roomState='online';roomSince=t;
+  if(m.t==='welcome'){wsMyId=String(m.id||'');setTimeout(nmSendOh,300);try{rwWelcome(m.rw);}catch(e){}if(m.lg)setTimeout(()=>applyLegend(m.lg),900);onChatHistory(m.chat);wsPeers.clear();for(const q of(m.peers||[]))if(q&&q.id)wsPeers.set(String(q.id),q.p);roomState='online';roomSince=t;
    room={presence:p=>{if(sock.readyState===1)sock.send(JSON.stringify({t:'p',d:p}));return Promise.resolve();}};presLast=-9;markPresence();pushWsPeers();updateHUD();if(n>1)toast(`1번 섬이 꽉 차서 ${n}번 섬으로 왔어요`);return;}
   if(m.t==='p'&&m.id){wsPeers.set(String(m.id),m.p);wsPeerT.set(String(m.id),performance.now());pushWsPeers();return;}
 if(onNetMsg(m))return;
@@ -4831,7 +4878,7 @@ function applyPeers(list){
   r.leaving=false;
   const lk=Array.isArray(pr.lk)?pr.lk:[0,0,0,0];r.look={hat:Math.abs(lk[0]|0)%8,hc:Math.abs(lk[1]|0)%COLORS.length,cloth:Math.abs(lk[2]|0)%5,cc:Math.abs(lk[3]|0)%COLORS.length};
   const key=[r.look.hat,r.look.hc,r.look.cloth,r.look.cc].join(',');if(key!==r.lookKey){if(r.char)scene.remove(r.char.root);r.char=makeCharacter(r.look);scene.add(r.char.root);r.lookKey=key;}
-  const n=Array.isArray(pr.n)?pr.n:[0,0];const nck=checkNick(typeof pr.nk==='string'?pr.nk:'');r.name=nameOf({a:n[0],b:n[1],nk:nck.ok?nck.nick:''});r.label.nm.textContent=r.name;
+  const n=Array.isArray(pr.n)?pr.n:[0,0];const nck=checkNick(typeof pr.nk==='string'?pr.nk:'');const _on=r.name;r.name=nameOf({a:n[0],b:n[1],nk:nck.ok?nck.nick:''});r.label.nm.textContent=r.name;if(_on&&_on!==r.name)nmSeen(r.peer,r.name);
   const pp=Array.isArray(pr.p)?pr.p:[0,0,0,0];r.tx=num(pp[0],0,-120,120);r.tz=num(pp[1],0,-120,120);r.tyaw=num(pp[2],0,-50,50);r.tjy=num(pp[3],0,0,3);
   if(!r.init){r.pos.set(r.tx,groundY(r.tx,r.tz),r.tz);r.yaw=r.tyaw;r.init=true;}
   r.m=pr.m===1?1:0;const prev=r.st;r.st=['idle','cast','wait','bite','fight'].includes(pr.st)?pr.st:'idle';
@@ -4893,9 +4940,9 @@ function checkNick(raw){let s=String(raw??'').replace(/[\u0000-\u001f\u007f\u200
  if(cleanChat(s)!==s)return{ok:false,nick:s,err:'쓸 수 없는 단어가 들어 있어요'};return{ok:true,nick:s,err:''};}
 function nickMsg(t,cls){const m=$('nickMsg');m.textContent=t;m.className='nickmsg'+(cls?' '+cls:'');}
 function saveNick(){const ck=checkNick($('nickIn').value);if(!ck.ok){nickMsg(ck.err||'닉네임을 입력해 주세요','bad');return;}
- NAME={a:NAME.a,b:NAME.b,nk:ck.nick};saveMe();$('myName').textContent=nameOf(NAME);P.label.nm.textContent=nameOf(NAME);markPresence();sfx.pop();$('nickIn').value='';$('nickIn').blur();nickMsg(`‘${ck.nick}’(으)로 정했어요! 머리 위와 채팅에 이 이름이 보여요`,'good');}
+ NAME={a:NAME.a,b:NAME.b,nk:ck.nick};saveMe();$('myName').textContent=nameOf(NAME);P.label.nm.textContent=nameOf(NAME);markPresence();nmMine();sfx.pop();$('nickIn').value='';$('nickIn').blur();nickMsg(`‘${ck.nick}’(으)로 정했어요! 머리 위와 채팅에 이 이름이 보여요`,'good');}
 $('nickSave').addEventListener('click',saveNick);$('nickIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveNick();}});
-$('reroll').addEventListener('click',()=>{nickMsg('랜덤 이름으로 바꿨어요. 직접 정하려면 위 칸에 입력해요','');NAME={a:Math.floor(Math.random()*ADJ.length),b:Math.floor(Math.random()*NOUN.length)};saveMe();$('myName').textContent=nameOf(NAME);P.label.nm.textContent=nameOf(NAME);markPresence();sfx.pop();});
+$('reroll').addEventListener('click',()=>{nickMsg('랜덤 이름으로 바꿨어요. 직접 정하려면 위 칸에 입력해요','');NAME={a:Math.floor(Math.random()*ADJ.length),b:Math.floor(Math.random()*NOUN.length)};saveMe();$('myName').textContent=nameOf(NAME);P.label.nm.textContent=nameOf(NAME);markPresence();nmMine();sfx.pop();});
 $('go').addEventListener('click',()=>{const first=!entered;entered=true;initAudio();applySound();$('tankBtn').classList.remove('hidden');$('bagBtn').classList.remove('hidden');$('chatBtn').classList.remove('hidden');closeCloset();if(first){sendEmote('👋',false);let seen=false;try{seen=localStorage.getItem('monggeul-guided')==='1';localStorage.setItem('monggeul-guided','1');}catch(e){}if(!seen)setTimeout(openHelp,700);else toast('어서 와요! ❓를 누르면 낚시하는 법이 나와요');}markPresence();});
 $('bCloset').addEventListener('click',()=>{if(!entered)return;if(BOAT.on){toast('⛵ 배 위에서는 옷을 갈아입을 수 없어요. 배 부두에 내린 뒤 갈아입어요',2800);return;}openCloset(false);});
 $('actBtn').addEventListener('click',()=>{initAudio();if(mode==='fish')exitFish();else if(canFish)enterFish();});

@@ -126,6 +126,8 @@ export class Island extends DurableObject {
     this.sql = ctx.storage.sql;
     this.sql.exec('CREATE TABLE IF NOT EXISTS chat2(id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER, a INTEGER, b INTEGER, nk TEXT, m TEXT)');
     this.sql.exec('DROP TABLE IF EXISTS chat'); // 예전 형식 채팅 표는 정리
+    // 채팅 줄 주인 지문(oh): 이름을 바꾸면 지난 채팅 기록 이름도 함께 바꿔요 (밖으로는 보내지 않아요)
+    if (!new Set(this.sql.exec('PRAGMA table_info(chat2)').toArray().map(r => r.name)).has('oh')) this.sql.exec('ALTER TABLE chat2 ADD COLUMN oh TEXT');
     this.sql.exec('CREATE TABLE IF NOT EXISTS rw(r INTEGER PRIMARY KEY, s INTEGER, ts INTEGER)');
   }
 
@@ -213,7 +215,14 @@ export class Island extends DurableObject {
             if (b && !b.full && !b.gone && b.p && b.p.sd === p.sd) { this.leave(w); try { w.close(4002, 'replaced'); } catch {} }
           }
         }
-        a.p = p; a.la = Date.now(); ws.serializeAttachment(a); this.broadcast({ t: 'p', id: a.id, p }, ws); this.prune(); return;
+        const op = a.p;
+        a.p = p; a.la = Date.now(); ws.serializeAttachment(a); this.broadcast({ t: 'p', id: a.id, p }, ws);
+        // 이름이 바뀌면 이 사람의 지난 채팅 기록 이름도 새 이름으로
+        if (op && a.oh && (op.n[0] !== p.n[0] || op.n[1] !== p.n[1] || (op.nk || '') !== (p.nk || ''))) {
+          const ts = this.sql.exec('SELECT ts FROM chat2 WHERE oh = ?', a.oh).toArray().map(r => r.ts);
+          if (ts.length) { this.sql.exec('UPDATE chat2 SET a = ?, b = ?, nk = ? WHERE oh = ?', p.n[0], p.n[1], p.nk || '', a.oh); this.broadcast({ t: 'rn', ts, n: p.n, nk: p.nk || '' }, null); }
+        }
+        this.prune(); return;
       }
     } else if (m.t === 'c') {
       const now = Date.now();
@@ -221,11 +230,14 @@ export class Island extends DurableObject {
       if (text && a.p && now - (a.lc || 0) >= CHAT_GAP) {
         a.lc = now; ws.serializeAttachment(a);
         const n = a.p.n, nk = a.p.nk || '';
-        this.sql.exec('INSERT INTO chat2(ts, a, b, nk, m) VALUES (?, ?, ?, ?, ?)', now, n[0], n[1], nk, text);
+        this.sql.exec('INSERT INTO chat2(ts, a, b, nk, m, oh) VALUES (?, ?, ?, ?, ?, ?)', now, n[0], n[1], nk, text, a.oh || null);
         this.sql.exec('DELETE FROM chat2 WHERE id NOT IN (SELECT id FROM chat2 ORDER BY id DESC LIMIT ?)', CHAT_KEEP);
         this.broadcast({ t: 'c', id: a.id, n, nk, m: text, ts: now }, null);
         return;
       }
+    } else if (m.t === 'oh') {
+      if (typeof m.h === 'string' && /^[0-9a-f]{16}$/.test(m.h)) { a.oh = m.h; ws.serializeAttachment(a); }
+      return;
     } else if (m.t === 'rb') {
       // 룰렛 베팅: 이번 판·베팅 시간·한도를 확인하고 모두에게 알려요
       const now = Date.now(), cur = Math.floor(now / RW_ROUND), r = Math.floor(+m.r);
@@ -450,6 +462,8 @@ export class Vault extends DurableObject {
     this.adminFail = new Map();
     this.regByIp = new Map();
     this.sql.exec('CREATE TABLE IF NOT EXISTS hof(id TEXT PRIMARY KEY, s REAL, n TEXT, ts INTEGER, ip TEXT)');
+    // 기록 주인(k: a_계정 또는 g_기기): 이름을 바꾸면 그 사람 기록의 이름도 함께 바꿔요
+    if (!new Set(this.sql.exec('PRAGMA table_info(hof)').toArray().map(r => r.name)).has('k')) this.sql.exec('ALTER TABLE hof ADD COLUMN k TEXT');
     this.hofByIp = new Map();
     this.lgByIp = new Map();
     this._lg = null;
@@ -476,6 +490,13 @@ export class Vault extends DurableObject {
     if (why !== 'before-restore' && gap < (force ? 60e3 : BAK_GAP)) return;
     this.sql.exec('INSERT OR REPLACE INTO baks(id, ts, why, data) VALUES (?, ?, ?, ?)', id, now, why, oldText);
     this.sql.exec('DELETE FROM baks WHERE id = ? AND ts NOT IN (SELECT ts FROM baks WHERE id = ? ORDER BY ts DESC LIMIT ?)', id, id, BAK_KEEP);
+  }
+  // 명예의 전당 주인 열쇠 확인: 계정(a_)은 로그인 토큰이 맞아야 해요
+  ownKey(k, token) {
+    k = String(k || '');
+    if (!/^(a_[a-z0-9가-힣_]{3,12}|g_[a-z0-9]{12,20})$/.test(k)) return null;
+    if (k.startsWith('a_') && this.who(token) !== k.slice(2)) return null;
+    return k;
   }
   legendNow(now) { const lg = this._lg; return lg && lg.until > now ? { n: lg.n, id: lg.id, s: lg.s, left: lg.until - now } : null; }
   colTop() { return this.sql.exec('SELECT n, MAX(c) AS c, MIN(ts) AS ts FROM collectors GROUP BY n ORDER BY c DESC, ts ASC LIMIT 5').toArray(); }
@@ -533,7 +554,7 @@ export class Vault extends DurableObject {
       const name = cleanNick(body.name) || '익명의 낚시꾼';
       const row = this.sql.exec('SELECT s, n, ts FROM hof WHERE id = ?', id).toArray()[0];
       if (row && row.s >= sz) return J({ ok: true, top: false, rec: { s: row.s, n: row.n, ts: row.ts } });
-      this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip) VALUES (?, ?, ?, ?, ?)', id, sz, name, now, ipKey);
+      this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip, k) VALUES (?, ?, ?, ?, ?, ?)', id, sz, name, now, ipKey, this.ownKey(body.key, body.token));
       this._hofC = null;
       return J({ ok: true, top: true, name, prev: row ? { s: row.s, n: row.n } : null });
     }
@@ -545,17 +566,44 @@ export class Vault extends DurableObject {
       if (lst.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
       lst.push(now); this.hofByIp.set(ipKey, lst);
       const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const ok = this.ownKey(body.key, body.token);
       const won = [], recs = [];
       for (const it of items) {
         const id = String(it && it.id || ''); const mx = SPECIES_MAX[id]; if (!mx) continue;
         const sz = Math.round(Number(it.s) * 10) / 10; if (!Number.isFinite(sz) || sz <= 0 || sz > mx + 0.05) continue;
         const row = this.sql.exec('SELECT s, n, ts FROM hof WHERE id = ?', id).toArray()[0];
         if (row && row.s >= sz) { recs.push({ id, s: row.s, n: row.n, ts: row.ts }); continue; }
-        this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip) VALUES (?, ?, ?, ?, ?)', id, sz, name, now, ipKey);
+        this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip, k) VALUES (?, ?, ?, ?, ?, ?)', id, sz, name, now, ipKey, ok);
         won.push({ id, s: sz, prev: row ? { s: row.s, n: row.n } : null });
       }
       if (won.length) this._hofC = null;
       return J({ ok: true, name, won, recs });
+    }
+    if (op === 'hof-rename') {
+      // 이름을 바꾸면: 내 명예의 전당 기록 · 도감왕 · 게시판의 내 글 이름을 새 이름으로
+      const k = this.ownKey(body.key, body.token);
+      if (!k) return J({ error: '다시 로그인해 주세요' }, 401);
+      const ipKey = ip.slice(0, 64);
+      const lst = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
+      if (lst.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
+      lst.push(now); this.hofByIp.set(ipKey, lst);
+      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      let hof = 0, board = 0;
+      // 예전 기록(주인 표시 없음): 내가 올린 기록 크기와 똑같으면 내 기록이에요 (같은 크기로는 기록을 갈아치울 수 없어서 겹치지 않아요)
+      const claims = Array.isArray(body.claims) ? body.claims.slice(0, SPECIES_LIST.length) : [];
+      for (const c of claims) {
+        const id = String(c && c.id || ''); if (!SPECIES_MAX[id]) continue;
+        const sz = Math.round(Number(c.s) * 10) / 10; if (!Number.isFinite(sz) || sz <= 0) continue;
+        const row = this.sql.exec('SELECT s, k FROM hof WHERE id = ?', id).toArray()[0];
+        if (row && Math.abs(row.s - sz) < 0.05 && (!row.k || row.k === k)) { this.sql.exec('UPDATE hof SET n = ?, k = ? WHERE id = ?', name, k, id); hof++; }
+      }
+      hof += this.sql.exec('SELECT COUNT(*) AS c FROM hof WHERE k = ? AND n != ?', k, name).toArray()[0].c;
+      this.sql.exec('UPDATE hof SET n = ? WHERE k = ?', name, k);
+      this.sql.exec('UPDATE collectors SET n = ? WHERE k = ?', name, k);
+      const dks = Array.isArray(body.dks) ? body.dks.filter(x => typeof x === 'string' && /^[0-9a-f]{24}$/.test(x)).slice(0, 200) : [];
+      for (const dk of dks) { const r = this.sql.exec('SELECT id FROM board WHERE dk = ? AND name != ?', dk, name).toArray()[0]; if (r) { this.sql.exec('UPDATE board SET name = ? WHERE dk = ?', name, dk); board++; } }
+      this._hofC = null; this._topC = null;
+      return J({ ok: true, name, hof, board });
     }
     if (op === 'hof-collect') {
       // 도감왕: 도감에 등록한 생물 종류 수. 계정(a_아이디)은 로그인 토큰이 맞아야만 기록
@@ -780,7 +828,7 @@ export default {
     if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
       const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
       const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-legend', 'hof-rare', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear', 'admin-gift', 'admin-gifts'].includes(op)) return J({ error: 'not found' }, 404);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-rename', 'hof-legend', 'hof-rare', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear', 'admin-gift', 'admin-gifts'].includes(op)) return J({ error: 'not found' }, 404);
       if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {
