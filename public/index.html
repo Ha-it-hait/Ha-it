@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-13zc">
+<meta name="amollang-build" content="2026-11-13zd">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -360,6 +360,12 @@ body.cine .boatbadge{opacity:0}
 .chips button.lock{opacity:.62;border-style:dashed}.petnote{flex-basis:100%;font-size:11.5px;color:#7a6a50;margin-top:2px;line-height:1.4}
 .irow .acts button.attlock{background:#eef3ff;color:#3a5aa8;border:2px dashed #a9bfee;cursor:default;opacity:1}
 @media (max-width:520px){.attc{padding:12px 10px 12px}.agrid{gap:3px}.ac{font-size:11px;padding:2px 3px;border-radius:8px}.ar{padding:5px 1px}.ar .ai{font-size:21px}.ar .al{font-size:10.5px}.ar .as{font-size:10px}.astreak{font-size:13.5px}}
+.chgrip{height:16px;display:flex;align-items:center;justify-content:center;cursor:ns-resize;touch-action:none;flex:none;margin-bottom:-6px}
+.chgrip i{display:block;width:46px;height:5px;border-radius:3px;background:rgba(255,255,255,.38);transition:background .15s,width .15s}
+.chgrip:hover i,.chatpanel.sizing .chgrip i{background:#ffd77a;width:62px}
+.chatpanel .ch{cursor:ns-resize;touch-action:none;flex:none}.chatpanel .ch button{cursor:pointer}
+.chatpanel.sizing{user-select:none;-webkit-user-select:none}.chatpanel.sizing .chatlist{pointer-events:none}
+.chatpanel .chatin{flex:none}
 .tkask{position:fixed;inset:0;z-index:9500;background:rgba(18,28,44,.55);display:none;align-items:center;justify-content:center;padding:18px}.tkask.on{display:flex}
 .tkcard{max-width:360px;width:100%;background:#fffaf0;border-radius:18px;padding:20px 18px 16px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3);color:#3a2f22}
 .tkcard .tkem{font-size:34px}.tkcard b{display:block;font-size:17px;margin:4px 0 8px}.tkcard p{font-size:13.5px;line-height:1.6;margin:0 0 12px}.tkcard p em{font-style:normal;color:#c0392b;font-weight:800}
@@ -2371,7 +2377,7 @@ function renderChat(){const box=$('chatList');const atBottom=box.scrollTop+box.c
  for(const e of vis){const d=document.createElement('div');d.className='cmsg'+(e.me?' me':'')+(e.sys?' sys':'');const tm=new Date(e.ts);const hh=tm.getHours(),mm=String(tm.getMinutes()).padStart(2,'0');
   const nm=document.createElement('b');nm.textContent=e.name;const tx=document.createElement('span');tx.textContent=e.text;const ti=document.createElement('i');ti.textContent=`${hh}:${mm}`;d.append(nm,tx,ti);box.appendChild(d);}
  if(atBottom||true)box.scrollTop=box.scrollHeight;}
-function openChat(){if(!entered)return;closeEmoPanel();chatOpen=true;chatUnread=0;updChatBtn(false);renderChat();$('chatPanel').classList.remove('hidden');{const b=$('chatList');b.scrollTop=b.scrollHeight;requestAnimationFrame(()=>{b.scrollTop=b.scrollHeight;});setTimeout(()=>{b.scrollTop=b.scrollHeight;},120);}$('chatHint').textContent=(netMode==='ws'?`${wsIsland}번 섬 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보관돼요`:`지금 이 섬에 있는 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보여요`)+(isTouch?'':' · 게임 화면을 누르면 다시 움직일 수 있어요');if(!isTouch)setTimeout(()=>$('chatIn').focus(),30);}
+function openChat(){if(!entered)return;closeEmoPanel();chatOpen=true;chatUnread=0;updChatBtn(false);renderChat();$('chatPanel').classList.remove('hidden');chatSizeApply(false);{const b=$('chatList');b.scrollTop=b.scrollHeight;requestAnimationFrame(()=>{b.scrollTop=b.scrollHeight;});setTimeout(()=>{b.scrollTop=b.scrollHeight;},120);}$('chatHint').textContent=(netMode==='ws'?`${wsIsland}번 섬 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보관돼요`:`지금 이 섬에 있는 사람들과 이야기해요 · 최근 ${CHAT_KEEP}개만 보여요`)+(isTouch?'':' · 게임 화면을 누르면 다시 움직일 수 있어요');if(!isTouch)setTimeout(()=>$('chatIn').focus(),30);}
 function closeChat(){if(!chatOpen)return false;chatOpen=false;$('chatPanel').classList.add('hidden');$('chatIn').blur();return true;}
 function sendChat(){const inp=$('chatIn');const raw=inp.value;const text=cleanChat(raw);if(!text)return;const now=Date.now();if(now-lastChatSend<1500){toast('조금 천천히 보내 주세요 🙂');return;}lastChatSend=now;inp.value='';
  showBubble(P.label,text,false,10);P.hopT=t;sfx.pop();
@@ -2751,6 +2757,7 @@ const NEWS=[
  {d:'11월 13일',t:'🐚 룰렛 하루 제한 해제 · ✏️ 이름 바꾸면 기록도 함께',n:true,i:[
   '✏️ 닉네임을 바꾸면 <b>🏆 명예의 전당</b> 기록, <b>👑 도감왕</b>, <b>📋 게시판</b>에 남긴 내 글, 섬 <b>💬 채팅 기록</b>의 이름도 새 이름으로 바뀌어요. 예전에 세운 기록도 다음 접속 때 새 이름으로 바뀌어요.',
   '🐚 소라 룰렛의 <b>하루 최대 수익 제한(100,000몰랑)을 없앴어요</b>. 이제 한 판 한도 안에서 언제든 한 칸에 전부 걸 수 있어요 (예: ★5 낚싯대로 🐋 고래에 5,000 올인).',
+  '💬 채팅창 맨 윗부분(손잡이 ▬)을 누른 채 위아래로 끌면 <b>채팅창 크기</b>를 바꿀 수 있어요. 최근 3줄만 보이게 작게 줄일 수도 있고, 바꾼 크기는 기억해 둬요. (PC에서 손잡이를 두 번 누르면 원래 크기로)',
   '🔍 도감에서 아직 못 잡은 희귀종은 기본형을 잡기 전까지 <b>???의 희귀종</b>으로 보여요.']},
  {d:'11월 13일',t:'📅 출석 달력이 생겼어요',i:[
   '📅 오른쪽 위 <b>📅 출석</b> 버튼에서 출석 달력을 볼 수 있어요. 하루 중 처음 섬에 들어오면 오늘 칸에 <b>🐬 돌고래 도장</b>이 쾅! 찍혀요.',
@@ -3474,7 +3481,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-13zc';
+const BUILD='2026-11-13zd';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -4706,6 +4713,28 @@ async function nmSendOh(){try{const key=colKey();if(!key||!(crypto&&crypto.subtl
 /* 처음 들어왔을 때 한 번: 다른 기기에서 바꾼 이름이나 예전 기록도 새 이름으로 */
 var NMR_T0=0;function nmTick(dt){if(!entered||NMR_T0<0)return;NMR_T0+=dt;if(NMR_T0<12)return;if(typeof NET_DONE!=='undefined'&&!NET_DONE)return;NMR_T0=-1;nmRename(false);}
 
+/* ---------- v66: 💬 채팅창 크기 조절 (맨 윗부분을 누른 채 위아래로 끌기) ---------- */
+var CHZ={h:0,drag:null};
+try{CHZ.h=+localStorage.getItem('monggeul-chat-h')||0;}catch(e){}
+function chatMinH(){const pn=$('chatPanel');if(!pn)return 160;const hd=pn.querySelector('.chgrip').offsetHeight+pn.querySelector('.ch').offsetHeight,fm=$('chatForm').offsetHeight;
+ const m=pn.querySelector('.cmsg');const lh=m&&m.offsetHeight>8?Math.min(m.offsetHeight,40):27;return Math.round(hd+fm+lh*3+10);}
+function chatMaxH(){const pn=$('chatPanel');const vh=(window.visualViewport?visualViewport.height:innerHeight);const b=pn?parseFloat(getComputedStyle(pn).bottom)||70:70;return Math.max(chatMinH()+20,Math.round(vh-b-64));}
+function chatSizeApply(save){const pn=$('chatPanel');if(!pn||pn.classList.contains('hidden'))return;if(!CHZ.h){pn.style.height='';return;}
+ const h=clamp(CHZ.h,chatMinH(),chatMaxH());pn.style.height=h+'px';if(save){try{localStorage.setItem('monggeul-chat-h',String(Math.round(CHZ.h)));}catch(e){}}}
+function chatSizeInit(){const pn=$('chatPanel');if(!pn||pn.querySelector('.chgrip'))return;
+ const g=document.createElement('div');g.className='chgrip';g.title='위아래로 끌어서 채팅창 크기 바꾸기';g.innerHTML='<i></i>';pn.insertBefore(g,pn.firstChild);
+ const hd=pn.querySelector('.ch');
+ const down=e=>{if(e.target.closest('button'))return;if(e.button!=null&&e.button!==0)return;e.preventDefault();e.stopPropagation();
+  CHZ.drag={id:e.pointerId,y:e.clientY,h:pn.getBoundingClientRect().height,el:e.currentTarget};try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}pn.classList.add('sizing');};
+ const move=e=>{const D=CHZ.drag;if(!D||D.id!==e.pointerId)return;e.preventDefault();const b=$('chatList');const atB=b.scrollTop+b.clientHeight>=b.scrollHeight-30;
+  CHZ.h=clamp(D.h+(D.y-e.clientY),chatMinH(),chatMaxH());pn.style.height=CHZ.h+'px';if(atB)b.scrollTop=b.scrollHeight;};
+ const up=e=>{const D=CHZ.drag;if(!D||D.id!==e.pointerId)return;CHZ.drag=null;pn.classList.remove('sizing');try{D.el.releasePointerCapture(e.pointerId);}catch(_){}chatSizeApply(true);const b=$('chatList');b.scrollTop=b.scrollHeight;};
+ for(const el of[g,hd]){el.addEventListener('pointerdown',down);el.addEventListener('pointermove',move);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);}
+ /* 두 번 누르면 기본 크기로 */
+ g.addEventListener('dblclick',()=>{CHZ.h=0;try{localStorage.removeItem('monggeul-chat-h');}catch(e){}pn.style.height='';});
+ addEventListener('resize',()=>chatSizeApply(false));if(window.visualViewport)visualViewport.addEventListener('resize',()=>chatSizeApply(false));}
+
+chatSizeInit();
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
