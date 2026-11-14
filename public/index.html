@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-14x">
+<meta name="amollang-build" content="2026-11-14y">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -648,7 +648,7 @@ button,input,textarea,select{font-family:inherit}
     <div class="btitle">🐾 동물 친구들</div>
     <ul class="tips">
       <li>섬 곳곳에 토끼·강아지(말티즈·퍼그 등)·고양이·아기 코끼리·판다·레서판다·사슴·너구리·다람쥐가, 북쪽 산과 언덕에는 아기 여우·아기 산양·고슴도치·아기 반달가슴곰·알파카·카피바라가 살아요(모두 24마리). 모두에게 같은 자리에 보여요.</li>
-      <li>🦆 저수지와 강에는 <b>흰 오리 가족 · 청둥오리 · 기러기 · 왜가리 · 백로</b>가 살아요. 오리는 헤엄치다 물구나무서서 먹이를 찾고, 왜가리·백로는 얕은 물가에서 물고기를 노려요. 가끔 하늘 위로 기러기 떼가 V자로 날아가요. (구경만 할 수 있어요)</li>
+      <li>🦆 저수지와 강에는 <b>흰 오리 가족 · 청둥오리 · 기러기 · 왜가리 · 백로</b>가 살아요. 오리는 헤엄치다 물구나무서서 먹이를 찾고, 왜가리·백로는 얕은 물가에서 물고기를 노려요. 가끔 하늘 위로 기러기 떼가 V자로 날아가요. 바다에는 <b>갈매기</b>가 날고, 물 위에 동동 떠 있거나 모래밭·부두 기둥에서 쉬어요. 가까이 가면 깜짝 놀라 날아올라요. (구경만 할 수 있어요)</li>
       <li>동물을 <b>직접 누르면</b> <em>🤚 쓰다듬기</em>, <em>🤗 껴안기</em> 버튼이 떠요. (몇 초 동안 아무것도 안 하면 버튼이 사라져요) 하트가 나오고, 같은 섬 친구들에게도 보여요.</li>
       <li>교감할 때마다 친밀도 💕+1. <b>친밀도 10 이상</b>이 되면 그 동물이 나를 졸졸 따라다녀요! 같은 동물을 더 아끼는 사람이 있으면 그 사람을 따라가고, 한 사람에게는 가장 친한 동물 1마리만 따라와요. 🎒 가방 → 🐾 동물에서 확인해요. 따라오는 동물은 <b>직접 눌러야</b> 쓰다듬기·껴안기 버튼이 떠요. 그때 <b>🏠 그만 따라오기</b>를 누르면 집으로 돌아가요.</li>
     </ul>
@@ -2239,6 +2239,66 @@ function updBirds(dt){const px=P.pos.x,pz=P.pos.z;
    if(k>=1){W.st='stand';W.lift=0;W.body.rotation.x=0;for(const w of W.wings)w.visible=false;W.tEnd=t+5+Math.random()*8;ripple(W.x,W.z,0.35);}}
   W.g.position.set(W.x,wadeY(W.x,W.z)+(W.lift||0)+breathe,W.z);W.g.rotation.y=W.yaw;}}
 
+/* ---------- v84: 갈매기 — 바다 위를 나는 갈매기 · 물 위에 떠 있는 갈매기 · 모래밭과 부두 기둥의 갈매기 ---------- */
+const SGULL={sky:[],sea:[],land:[],callT:0};
+function makeSeagull(){const root=new THREE.Group();scene.add(root);const body=new THREE.Group();root.add(body);const pb=[];
+ const W='#ffffff',G='#a9b5c1',K='#1f2026';
+ ap(pb,A_SPH,W,0,0.26,0,0.105,0.1,0.22);ap(pb,A_SPH,G,0,0.31,-0.04,0.098,0.055,0.19);
+ ap(pb,A_SPH,W,0,0.275,-0.22,0.075,0.03,0.085,-0.15,0,0);
+ for(const s of[-1,1]){ap(pb,A_SPH,G,s*0.085,0.29,-0.06,0.035,0.065,0.17,0,0,s*0.2);ap(pb,A_SPH,K,s*0.05,0.295,-0.27,0.03,0.02,0.09,0,s*0.12,0);ap(pb,A_SPH,W,s*0.055,0.302,-0.3,0.012,0.008,0.014);}
+ ap(pb,A_SPH,W,0,0.33,0.13,0.07,0.075,0.07);   /* 목 */
+ bake(pb,body,true);
+ const head=new THREE.Group();head.position.set(0,0.39,0.17);body.add(head);const hp=[];
+ ap(hp,A_SPH,W,0,0,0,0.066,0.064,0.074);
+ ap(hp,A_SPH,'#f3c22c',0,-0.012,0.09,0.017,0.016,0.052);ap(hp,A_SPH,'#f3c22c',0,-0.02,0.135,0.012,0.012,0.012);ap(hp,A_SPH,'#e2442f',0,-0.026,0.122,0.0075,0.006,0.008);
+ for(const s of[-1,1]){ap(hp,A_SPH,'#f4d63c',s*0.05,0.016,0.028,0.012,0.012,0.007);ap(hp,A_SPH,'#141418',s*0.054,0.016,0.03,0.0065,0.0065,0.004);ap(hp,A_SPH,'#ffffff',s*0.056,0.02,0.033,0.0025,0.0025,0.002);}
+ bake(hp,head,true);
+ const wings=[];for(const s of[-1,1]){const w=new THREE.Group();w.position.set(s*0.075,0.32,0.02);w.scale.x=s;body.add(w);const wp=[];
+  ap(wp,A_SPH,G,0.2,0,0,0.21,0.022,0.11);ap(wp,A_SPH,W,0.18,-0.004,-0.085,0.2,0.012,0.03);bake(wp,w,true);
+  const o=new THREE.Group();o.position.set(0.39,0,0);w.add(o);const op=[];ap(op,A_SPH,G,0.16,0,-0.025,0.17,0.016,0.085);ap(op,A_SPH,K,0.3,0,-0.045,0.085,0.014,0.06);ap(op,A_SPH,W,0.33,0.012,-0.04,0.018,0.004,0.014);ap(op,A_SPH,W,0.25,0.012,-0.06,0.014,0.004,0.012);bake(op,o,true);w.userData.o=o;wings.push(w);}
+ const legs=[];for(const s of[-1,1]){const l=new THREE.Group();l.position.set(s*0.04,0.18,0.02);body.add(l);const lp=[];ap(lp,aCap(0.012,0.12),'#f0a8a2',0,-0.08,0);ap(lp,A_SPH,'#eb9a94',0,-0.165,0.03,0.035,0.009,0.045);bake(lp,l,true);legs.push(l);}
+ return{g:root,body,head,wings,legs};}
+function gullPose(S,mode,k){/* mode: 'fold' 앉음 · 'flap' 날갯짓(k=위상) · 'glide' 활공 */
+ S.wings.forEach((w,i)=>{const s=i?1:-1,o=w.userData.o;
+  if(mode==='fold'){w.scale.set(s*0.5,1,0.78);w.rotation.set(0.05,s*(Math.PI/2-0.06),-0.14*s);o.rotation.set(0,0,0);o.visible=false;}
+  else{o.visible=true;w.scale.set(s,1,1);w.rotation.set(0,0,0);const f=mode==='flap'?Math.sin(k):0;w.rotation.z=mode==='flap'?f*0.75:0.14;o.rotation.z=mode==='flap'?-f*0.55+0.1:-0.22;}});
+ const air=mode!=='fold';for(const l of S.legs)l.rotation.x=air?1.35:0;S.body.position.y=air?-0.12:0;}
+function gullCall(x,z){if(Math.hypot(x-P.pos.x,z-P.pos.z)>26||t<SGULL.callT)return;SGULL.callT=t+7+Math.random()*10;try{tone(1350,0,0.16,0.022,'triangle',900);tone(1250,0.2,0.14,0.02,'triangle',850);tone(1150,0.38,0.2,0.018,'triangle',780);}catch(e){}}
+function seaAt(o){const a=Math.random()*Math.PI*2;const R=islandR(a)+o;return[Math.cos(a)*R,Math.sin(a)*R];}
+function buildSeagulls(){
+ /* 하늘: 해안 바깥 바다 위를 빙빙 돌며 날아요 */
+ for(let i=0;i<7;i++){const S=makeSeagull();S.g.scale.setScalar(1.25);const c=seaAt(10+Math.random()*25);Object.assign(S,{cx:c[0],cz:c[1],r:8+Math.random()*14,h:8+Math.random()*9,sp:(0.22+Math.random()*0.14)*(i%2?1:-1),ph:Math.random()*6.28,fl:Math.random()*6});SGULL.sky.push(S);}
+ /* 바다: 물 위에 동동 */
+ for(let i=0;i<5;i++){const S=makeSeagull();gullPose(S,'fold');const c=seaAt(4+Math.random()*14);if(terrainH(c[0],c[1])>-0.8||inDockZone(c[0],c[1],3)){i--;continue;}S.x=c[0];S.z=c[1];S.yaw=Math.random()*6.28;S.ph=Math.random()*6;SGULL.sea.push(S);}
+ /* 모래밭 · 부두 기둥: 가까이 가면 날아올라요 */
+ const spots=beachSpots(24,8421,4).map(b=>({x:b[0],z:b[1],y:null}));
+ for(const D of DOCKS){if(D.boat)continue;const s=D.s1-0.4;for(const sd of[-1,1]){const xl=sd*(D.hw-0.05);spots.push({x:xl*D.uz+s*D.ux,z:-xl*D.ux+s*D.uz,y:D.y+0.75,post:true});}}
+ SGULL.spots=spots;
+ const take=new Set();const pick=(post)=>{const c=spots.map((p,i)=>i).filter(i=>!take.has(i)&&!!spots[i].post===post);if(!c.length)return null;const i=c[Math.floor(Math.random()*c.length)];take.add(i);return i;};
+ for(let i=0;i<8;i++){const si=pick(i<3);if(si==null)continue;const S=makeSeagull();gullPose(S,'fold');const p=spots[si];Object.assign(S,{si,x:p.x,z:p.z,yaw:Math.random()*6.28,st:'stand',tNext:t+2+Math.random()*5,walk:0});SGULL.land.push(S);}}
+function gullY(p){return p.y!=null?p.y:Math.max(terrainH(p.x,p.z),0.03);}
+function updSeagulls(dt){const px=P.pos.x,pz=P.pos.z;
+ for(const S of SGULL.sky){const a=t*S.sp+S.ph;const x=S.cx+Math.cos(a)*S.r,z=S.cz+Math.sin(a)*S.r;const far=Math.hypot(x-px,z-pz)>140;S.g.visible=!far;if(far)continue;
+  const flap=((t+S.fl)%7)<2.2;gullPose(S,flap?'flap':'glide',t*9+S.ph);
+  S.g.position.set(x,S.h+Math.sin(t*0.5+S.ph)*1.2,z);const yaw=Math.atan2(-Math.sin(a)*S.sp,Math.cos(a)*S.sp);S.g.rotation.set(0,yaw,(S.sp>0?-1:1)*0.32);if(!flap)S.head.rotation.y=Math.sin(t*0.7+S.ph)*0.4;
+  if(Math.random()<dt*0.02)gullCall(x,z);}
+ for(const S of SGULL.sea){const far=Math.hypot(S.x-px,S.z-pz)>90;S.g.visible=!far;if(far)continue;
+  S.yaw+=Math.sin(t*0.13+S.ph)*dt*0.15;S.g.position.set(S.x,waveH(S.x,S.z,t)-0.17,S.z);S.g.rotation.set(Math.sin(t*1.3+S.ph)*0.06,S.yaw,Math.sin(t*1.1+S.ph)*0.07);
+  const c=(t+S.ph*3)%9;S.head.rotation.y=c<1.5?Math.sin(c/1.5*Math.PI)*0.9:0;S.head.rotation.x=c>5&&c<5.8?0.6:0;}
+ for(const S of SGULL.land){const far=Math.hypot(S.x-px,S.z-pz)>90;S.g.visible=!far;if(far)continue;const p=SGULL.spots[S.si];const near=Math.hypot(S.x-px,S.z-pz)<(p.post?2.6:3.6);
+  if(S.st==='stand'||S.st==='walk'){
+   if(near){/* 놀라서 날아올라요 → 사람이 없는 다른 자리로 */const c=SGULL.spots.map((q,i)=>i).filter(i=>i!==S.si&&Math.hypot(SGULL.spots[i].x-px,SGULL.spots[i].z-pz)>14&&!SGULL.land.some(o=>o!==S&&o.si===i));const ni=c.length?c.reduce((b,i)=>Math.hypot(SGULL.spots[i].x-S.x,SGULL.spots[i].z-S.z)<Math.hypot(SGULL.spots[b].x-S.x,SGULL.spots[b].z-S.z)?i:b,c[0]):S.si;
+    const q=SGULL.spots[ni];S.fl={x0:S.x,z0:S.z,y0:S.g.position.y,ni,x1:q.x,z1:q.z,y1:gullY(q),t0:t,d:Math.hypot(q.x-S.x,q.z-S.z)};S.fl.dur=Math.max(4,S.fl.d/5.5);S.st='fly';gullCall(S.x,S.z);S.yaw=Math.atan2(q.x-S.x,q.z-S.z);continue;}
+   if(S.st==='stand'){gullPose(S,'fold');for(const l of S.legs)l.rotation.x*=0.8;const c=(t+S.x)%6;S.head.rotation.y=c<1.2?Math.sin(c/1.2*Math.PI)*0.8:0;S.head.rotation.x=0;
+    if(t>S.tNext){if(!p.post&&Math.random()<0.6){const a=Math.random()*6.28;const tx=p.x+Math.cos(a)*1.5,tz=p.z+Math.sin(a)*1.5;if(terrainH(tx,tz)>0.08&&!inDockZone(tx,tz,1)){S.tx=tx;S.tz=tz;S.st='walk';}}else S.peck=t;S.tNext=t+3+Math.random()*6;}
+    if(S.peck&&t-S.peck<0.9)S.head.rotation.x=Math.sin((t-S.peck)/0.9*Math.PI*3)>0?0.9:0.2;}
+   else{const dx=S.tx-S.x,dz=S.tz-S.z,dd=Math.hypot(dx,dz);turnTo(S,Math.atan2(dx,dz),3,dt);S.x+=Math.sin(S.yaw)*0.45*dt;S.z+=Math.cos(S.yaw)*0.45*dt;S.walk+=dt*11;S.legs[0].rotation.x=Math.sin(S.walk)*0.5;S.legs[1].rotation.x=-Math.sin(S.walk)*0.5;S.body.rotation.z=Math.sin(S.walk)*0.06;
+    if(dd<0.12){S.st='stand';S.body.rotation.z=0;}}
+   S.g.position.set(S.x,p.post&&Math.hypot(S.x-p.x,S.z-p.z)<0.2?p.y:Math.max(terrainH(S.x,S.z),0.03),S.z);S.g.rotation.set(0,S.yaw,0);}
+  else{const F=S.fl,k=Math.min(1,(t-F.t0)/F.dur);const e=smooth(0,1,k);S.x=lerp(F.x0,F.x1,e);S.z=lerp(F.z0,F.z1,e);const y=lerp(F.y0,F.y1,e)+Math.sin(k*Math.PI)*Math.min(9,2+F.d*0.25);
+   gullPose(S,k<0.25||k>0.8?'flap':'glide',t*10);S.g.position.set(S.x,y,S.z);S.g.rotation.set(-0.1,S.yaw,0);
+   if(k>=1){S.si=F.ni;S.st='stand';S.tNext=t+3+Math.random()*5;}}}}
+
 function buildWorld(){
  buildTerrain();
  // houses
@@ -2258,7 +2318,7 @@ function buildWorld(){
  addMesh(new THREE.BoxGeometry(2.6,1.45,0.1),stdMat('#b9875a'),0,1.5,0,bd);
  const note=canvasTex(512,256,(x,w,h)=>{x.fillStyle='#fffdf3';x.fillRect(0,0,w,h);x.textAlign='center';x.textBaseline='middle';const fit=(txt,px,y)=>{let p=px;do{x.font=`900 ${p}px "AmoEmoji","Noto Sans KR",sans-serif`;p-=2;}while(x.measureText(txt).width>w-48&&p>16);x.fillText(txt,w/2,y);};x.fillStyle='#5a4a33';fit('아몰랑아일랜드 게시판',52,64);x.fillStyle='#c0392b';fit('게임 업데이트 요청사항',42,148);fit('적어주세요 ✍️',42,206);});
  addMesh(new THREE.PlaneGeometry(2.36,1.18),new THREE.MeshStandardMaterial({map:note,roughness:0.9,emissive:'#ffffff',emissiveMap:note,emissiveIntensity:0.12}),0,1.5,0.06,bd);BOARD_G=bd;bd.traverse(o=>{o.userData.pick='board';});OBST.push({x:PLAZA.x+6.2,z:PLAZA.z-3.5,r:1.0});
- buildLighthouse();buildWaterfall();buildSeats();buildBeachCritters();buildPondDeco();buildBirds();
+ buildLighthouse();buildWaterfall();buildSeats();buildBeachCritters();buildPondDeco();buildBirds();buildSeagulls();
  // dock
  const plankM=stdMat('#c08a58',0.85),plank2=stdMat('#b07a4a',0.85);
  for(const D of DOCKS){const dk=new THREE.Group();dk.rotation.y=Math.atan2(D.ux,D.uz);scene.add(dk);const W2=D.hw*2+0.1;
@@ -2308,7 +2368,6 @@ function buildWorld(){
  // far islands & boats
  [[-210,-300,40,14],[240,-230,30,10],[60,-360,55,18],[-300,140,35,9]].forEach(([x,z,r,h])=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,20,10,0,Math.PI*2,0,Math.PI/2),stdMat('#5f9c72',1));m.position.set(x,-2,z);m.scale.y=h/r;scene.add(m);const tr=new THREE.Mesh(new THREE.SphereGeometry(r*0.7,16,8,0,Math.PI*2,0,Math.PI/2),stdMat('#4f8c63',1));tr.position.set(x+r*0.2,-2,z);tr.scale.y=h*1.25/r;scene.add(tr);});
  BOATS.push(makeBoat(150,-200,'#e8524a'),makeBoat(-190,150,'#4f86c6'));
- for(let i=0;i<5;i++)GULLS.push(makeGull(i));
  buildFireflies();
 }
 const BOATS=[],GULLS=[];
@@ -3366,7 +3425,7 @@ async function logout(){if(!acct)return;await doSave(false);try{await authCall('
 
 /* ---------- 매 프레임 ---------- */
 let v2HudAcc=0;
-function updV2(dt){updHappy(dt);updFoam(dt);updReels(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);rwTick(dt);opTick(dt);nmTick(dt);updSeat(dt);updBeach(dt);updBaitFx(dt);updPondDeco(dt);updBirds(dt);updFall(dt,skyMat?skyMat.uniforms.uSunVis.value:1);petTick(dt);attTick(dt);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
+function updV2(dt){updHappy(dt);updFoam(dt);updReels(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);rwTick(dt);opTick(dt);nmTick(dt);updSeat(dt);updBeach(dt);updBaitFx(dt);updPondDeco(dt);updBirds(dt);updSeagulls(dt);updFall(dt,skyMat?skyMat.uniforms.uSunVis.value:1);petTick(dt);attTick(dt);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
  for(const r of remote.values()){if(r.cookT){const k=animTable(r.cookT,r.ckSt,dt);if(r.char)r.char.ckP=k;}}
  v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();const bs=buffShort();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}${reelHud()}${floatHud()}${baitHud()}`+(bs?` · ${bs}`:'');$('hudG').classList.toggle('buff',!!bs);
   if(GS._buffWas&&bl<=0)toast('🍳 요리 효과가 끝났어요',2400);GS._buffWas=bl>0;saveTick();}}
@@ -4352,7 +4411,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-14x';
+const BUILD='2026-11-14y';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
