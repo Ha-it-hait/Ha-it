@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-14a">
+<meta name="amollang-build" content="2026-11-14b">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -236,7 +236,7 @@ body.cine .petbox,body.cine .ctxbtn,body.cine .hint,body.cine .emotes,body.cine 
 .hoftabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}.hoftabs button{border:1.5px solid #e8cf8a;background:#fff;border-radius:999px;padding:5px 12px;font-weight:800;font-size:13px;color:#8a6a20;cursor:pointer}.hoftabs button.on{background:#f2c14e;color:#3a2a00;border-color:#d9a520}
 #hofList{max-height:56vh;overflow:auto;touch-action:pan-y;overscroll-behavior:contain}
 .hofh{display:flex;align-items:baseline;gap:8px;margin:12px 2px 6px;padding-bottom:4px;border-bottom:2px solid #f0dca0}.hofh b{color:#e0a21b;letter-spacing:1px;font-size:15px}.hofh span{font-weight:900;color:#5a4318}.hofh small{margin-left:auto;color:#a08a5a;font-weight:700}
-.hofh.s6 b,.hofh.s6 span{color:#c2410c}.hofh.s7 b{background:linear-gradient(90deg,#ff4d4d,#ff9a2e,#ffe14a,#4fd66a,#3f9bff,#4b5bd6,#a65cff);-webkit-background-clip:text;background-clip:text;color:transparent}.hofh.s7 span{color:#7a3fd0}.hofh.s5 span{color:#a16207}
+.hofh.s6 b,.hofh.s6 span{color:#c2410c}.hofh.sr{border-bottom-color:#f2cf6b}.hofh.sr b{color:#d4a017}.hofh.sr span{color:#9a6a00}.hofh.s7 b{background:linear-gradient(90deg,#ff4d4d,#ff9a2e,#ffe14a,#4fd66a,#3f9bff,#4b5bd6,#a65cff);-webkit-background-clip:text;background-clip:text;color:transparent}.hofh.s7 span{color:#7a3fd0}.hofh.s5 span{color:#a16207}
 .hofr{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px;background:#fffdf6;margin:4px 0;box-shadow:0 1px 0 rgba(160,120,40,.12)}.hofr canvas{width:72px;height:36px;flex:none}.hofr.none{opacity:.72;background:#f7f3ea}.hofr.mine{background:#fff3c4;box-shadow:inset 0 0 0 2px #f2c14e}
 .hofr .hn{flex:1;min-width:0;display:flex;flex-direction:column}.hofr .hn b{font-size:14px;color:#3a3326}.hofr .hn small{font-size:11px;color:#9a8a6a}
 .hofr .hrec{display:flex;flex-direction:column;align-items:flex-end;text-align:right}.hofr .hrec b{color:#b07800;font-size:14px}.hofr .hrec span{font-size:12.5px;font-weight:800;color:#5a4318;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hofr .hrec small{font-size:10.5px;color:#a08a6a}.hofr .nobody{font-size:12px;color:#a09070;font-weight:700}.ctxbtn.boat.arm{background:#e0a21b;animation:armp .6s infinite alternate}@keyframes armp{to{transform:scale(1.06)}}
@@ -1119,7 +1119,7 @@ function showCatch(f,rec){if(acSkip)acSkip=false;else if(autoCatch(f,rec))return
  $('catch').classList.remove('hidden');
 }
 function openBook(){renderLegCard();const root=$('grid');root.innerHTML='';let found=0;$('bookGuide').innerHTML=bookGuideHTML();const E=effStar();
- [['🐟 바다 물고기','sea'],['🦀 바다 친구들','critter'],['🦈 상어','shark'],['🐠 열대어','tropical'],['🏞️ 강·연못','fresh'],['✨ 신화의 친구들 (★6)','myth'],['🌈 무지개 전설 (★7)','rainbow']].forEach(([title,grp])=>{const list=spOrder(SPECIES.filter(s=>s.grp===grp));const tt=document.createElement('div');tt.className='btitle';tt.textContent=`${title}  ${list.filter(s=>book[s.id]).length}/${list.length}`;const grid=document.createElement('div');grid.className='grid';
+ [['🐟 바다 물고기','sea'],['🦀 바다 친구들','critter'],['🦈 상어','shark'],['🐠 열대어','tropical'],['🏞️ 강·연못','fresh'],['✨ 신화의 친구들 (★6)','myth'],['🌈 무지개 전설 (★7)','rainbow'],['🍡 희귀종 (색깔 친구들)','__rare']].forEach(([title,grp])=>{const list=grp==='__rare'?spOrder(SPECIES.filter(s=>s.rare)):spOrder(SPECIES.filter(s=>s.grp===grp&&!s.rare));const tt=document.createElement('div');tt.className='btitle';tt.textContent=`${title}  ${list.filter(s=>book[s.id]).length}/${list.length}`;const grid=document.createElement('div');grid.className='grid';
   list.forEach(sp=>{const rec=book[sp.id];if(rec)found++;const cell=document.createElement('div');cell.className='cell'+(rec?'':' locked')+(sp.rare?' rare':'');
    const c=document.createElement('canvas');c.width=240;c.height=112;cell.appendChild(c);
    const n=document.createElement('div');n.className='n';n.textContent=rec?sp.name:'???';
@@ -3125,11 +3125,11 @@ async function openHof(){if(!entered)return;closeEmoPanel();closeChat();$('hofM'
 function closeHof(){$('hofM').classList.add('hidden');}
 function renderHof(){$('hofKing').innerHTML=colHTML();const box=$('hofList');const tabs=$('hofTabs');const me=hofName();
  const n=hofCount();$('hofSum').innerHTML=HOF.ok?`기록된 생물 <b>${n}</b> / ${SPECIES.length}종 · 아직 주인을 기다리는 생물 <b>${SPECIES.length-n}</b>종`:(HOF.loading?'불러오는 중…':'⚠️ 이 화면에서는 모두의 기록을 불러올 수 없어요. 공개 서버 버전에서 함께 기록을 겨뤄요! (아래는 생물 목록과 내 최고 기록)');
- if(!tabs.dataset.built){tabs.dataset.built=1;for(const k of['all',7,6,5,4,3,2,1]){const b=document.createElement('button');b.dataset.t=k;b.textContent=k==='all'?'전체':'★'+k;b.onclick=()=>{HOF.tab=String(k);renderHof();box.scrollTop=0;};tabs.appendChild(b);}}
+ if(!tabs.dataset.built){tabs.dataset.built=1;for(const k of['all',7,'r',6,5,4,3,2,1]){const b=document.createElement('button');b.dataset.t=k;b.textContent=k==='all'?'전체':k==='r'?'✨ 희귀종':'★'+k;b.onclick=()=>{HOF.tab=String(k);renderHof();box.scrollTop=0;};tabs.appendChild(b);}}
  for(const b of tabs.children)b.classList.toggle('on',b.dataset.t===String(HOF.tab));
- box.innerHTML='';const stars=HOF.tab==='all'?[7,6,5,4,3,2,1]:[+HOF.tab];
- for(const st of stars){const list=SPECIES.filter(sp=>starOf(sp)===st);const got=list.filter(sp=>HOF.map[sp.id]).length;
-  const h=document.createElement('div');h.className='hofh s'+st;h.innerHTML=`<b>${'★'.repeat(st)}</b><span>${st===7?'무지개 전설':st===6?'신화':st===5?'전설':st===4?'희귀':st===3?'고급':st===2?'보통':'흔함'} · ${list.length}종</span><small>${got}종 기록됨</small>`;box.appendChild(h);
+ box.innerHTML='';const stars=HOF.tab==='all'?[7,'r',6,5,4,3,2,1]:[HOF.tab==='r'?'r':+HOF.tab];
+ for(const st of stars){const list=st==='r'?spOrder(SPECIES.filter(sp=>sp.rare)):SPECIES.filter(sp=>starOf(sp)===st&&!sp.rare);const got=list.filter(sp=>HOF.map[sp.id]).length;
+  const h=document.createElement('div');h.className='hofh s'+st;h.innerHTML=st==='r'?`<b>✨</b><span>희귀종 (색깔 친구들) · ${list.length}종</span><small>${got}종 기록됨</small>`:`<b>${'★'.repeat(st)}</b><span>${st===7?'무지개 전설':st===6?'신화':st===5?'전설':st===4?'희귀':st===3?'고급':st===2?'보통':'흔함'} · ${list.length}종</span><small>${got}종 기록됨</small>`;box.appendChild(h);
   for(const sp of hofSort(list)){const rec=HOF.map[sp.id];const row=document.createElement('div');row.className='hofr'+(sp.rare?' rare':'')+(rec?'':' none')+(hofIsMine(sp.id,rec)?' mine':'');
    const cv=document.createElement('canvas');cv.width=120;cv.height=60;drawFish(cv.getContext('2d'),sp,60+(sp.shape==='beak'?6:0),30,fishL(sp,96,24),!rec);
    const nm=document.createElement('div');nm.className='hn';nm.innerHTML=`<b></b><small></small>`;nm.firstChild.textContent=sp.name;const mb=book[sp.id];nm.lastChild.textContent=`최대 ${fmtSize(sp.max)}`+(mb?` · 내 최고 ${fmtSize(mb.best)}`:'');
@@ -3487,7 +3487,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-14a';
+const BUILD='2026-11-14b';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -4276,7 +4276,7 @@ function rareOverlay(c,sp,x,y,L){const cv=document.createElement('canvas');cv.wi
  /* 반짝이 */c.save();c.setTransform(m);c.translate(x,y);const st=(sx,sy,r,col)=>{c.fillStyle=col;c.beginPath();c.moveTo(sx,sy-r);c.quadraticCurveTo(sx,sy,sx+r,sy);c.quadraticCurveTo(sx,sy,sx,sy+r);c.quadraticCurveTo(sx,sy,sx-r,sy);c.quadraticCurveTo(sx,sy,sx,sy-r);c.fill();};
  st(-L*0.36,-L*0.2,L*0.045,'#fff6c8');st(L*0.34,-L*0.16,L*0.032,'#ffffff');st(L*0.12,L*0.22,L*0.026,'#ffe27a');c.restore();}
 function spOrder(list){const ix=new Map(SPECIES.map((s,i)=>[s.id,i]));const key=s=>s.rare?ix.get(s.rare)*2+1:ix.get(s.id)*2;return list.slice().sort((a,b)=>key(a)-key(b));}
-function hofSort(list){const base=s=>s.rare?(SP_BY[s.rare]||s):s;const has=s=>{const b=base(s),r=RARE_OF[b.id];return !!(HOF.map[b.id]||(r&&HOF.map[r.id]));};
+function hofSort(list){if(list.length&&list.every(s=>s.rare)){const ix=new Map(SPECIES.map((s,i)=>[s.id,i]));return list.slice().sort((a,b)=>(HOF.map[b.id]?1:0)-(HOF.map[a.id]?1:0)||ix.get(a.rare)-ix.get(b.rare));}const base=s=>s.rare?(SP_BY[s.rare]||s):s;const has=s=>{const b=base(s),r=RARE_OF[b.id];return !!(HOF.map[b.id]||(r&&HOF.map[r.id]));};
  return list.slice().sort((a,b)=>(has(b)?1:0)-(has(a)?1:0)||base(a).name.localeCompare(base(b).name,'ko')||(a.rare?1:0)-(b.rare?1:0));}
 /* 채팅창 알림 줄 */
 function sysChat(text,ts){chatAdd({ts:ts||Date.now(),pid:'sys',name:'📢 알림',text,sys:true});}
