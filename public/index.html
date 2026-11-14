@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-14c">
+<meta name="amollang-build" content="2026-11-14d">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -585,7 +585,7 @@ button,input,textarea,select{font-family:inherit}
     <div class="btitle">💡 물고기 찾기 팁</div>
     <ul class="tips">
       <li>바다·강·연못마다 사는 생물이 달라요. 바다 44종(물고기·게·새우·문어·상어·열대어), 강·연못 21종으로 모두 65종이에요.</li>
-      <li>섬의 하루는 10분이에요. 낮 5분, 밤 5분이 번갈아 와요.</li>
+      <li>섬의 하루는 20분이에요. 낮 10분, 밤 10분이 번갈아 와요.</li>
       <li>게·새우·주꾸미는 발밑 가까이, 상어·참치·개복치는 끝까지 멀리 던져야 잘 나와요.</li>
       <li>시간대마다 나오는 물고기도 달라요. 볼락·메기는 밤, 감성돔·잉어는 새벽과 해질녘이에요.</li>
       <li>금붕어는 연못에서만, 아주 가끔 나와요.</li>
@@ -602,7 +602,7 @@ button,input,textarea,select{font-family:inherit}
     <ul class="tips"><li>모닥불 옆 <b>금빛 비석</b>이 명예의 전당이에요. 생물마다 <b>가장 큰 크기를 잡은 사람</b>의 이름이 새겨지고, 더 큰 걸 잡으면 내 이름으로 바뀌어요. 아직 아무도 못 잡은 생물도 모두 볼 수 있어요.</li></ul>
     <div class="btitle">⛵ 선상낚시</div>
     <ul class="tips">
-      <li>섬 가장자리의 <b>🚤 배 타는 부두</b> 끝에 배가 묶여 있어요. 가까이 가면 <em>⛵ 선상낚시 하기</em> 버튼이 떠요. <b>★5 낚싯대를 가진 사람</b>부터 탈 수 있고, 탈 때마다 <b>배삯 1,000몰랑</b>을 내요. 한 사람당 배 1척이에요.</li>
+      <li>섬 가장자리의 <b>🚤 배 타는 부두</b> 끝에 배가 묶여 있어요. 가까이 가면 <em>⛵ 선상낚시 하기</em> 버튼이 떠요. <b>★5 낚싯대를 가진 사람</b>부터 탈 수 있고, 탈 때마다 <b>배삯 3,000몰랑</b>을 내요. 한 사람당 배 1척이에요.</li>
       <li>배를 탄 채 움직여 섬 주변 바다를 다니고, 🎣 낚시하기로 어디서든 낚시해요. <b>빨간 부표 바깥은 먼 바다</b>라 ★4 이상 물고기가 2배 더 잘 나와요. 주황 부표 밖으로는 나갈 수 없어요.</li>
       <li>배 타는 부두에 다시 배를 대면 <em>🛬 배 내리기</em> 버튼이 떠요. 배를 타고 있을 때는 지도의 '옆으로 가기'를 쓸 수 없고, 배 위의 사람에게도 갈 수 없어요.</li>
     </ul>
@@ -680,7 +680,7 @@ function mixHex(a,b,k){return rgb(mixRGB(hex2rgb(a),hex2rgb(b),k));}
 const PHASES={dawn:{ko:'새벽',em:'🌅',h:6.4},day:{ko:'낮',em:'☀️',h:12},dusk:{ko:'해질녘',em:'🌇',h:17.6},night:{ko:'밤',em:'🌙',h:22.5}};
 const MODES=['real','dawn','day','dusk','night'];
 let timeMode='real';
-const DAY_LEN=600;function cyclePos(){return(Date.now()/1000)%DAY_LEN;}
+const DAY_LEN=1200;function cyclePos(){return(Date.now()/1000)%DAY_LEN;}
 function hourNow(){if(timeMode!=='real')return PHASES[timeMode].h;const s=cyclePos(),H2=DAY_LEN/2;let h=s<H2?5.5+s/H2*13.5:19+(s-H2)/H2*10.5;return h>=24?h-24:h;}
 function cycleLeft(){const s=cyclePos(),H2=DAY_LEN/2;const left=s<H2?H2-s:DAY_LEN-s;return{isDay:s<H2,txt:`${Math.floor(left/60)}:${String(Math.floor(left%60)).padStart(2,'0')}`};}
 function phaseOf(h){if(h<5.5||h>=19)return'night';if(h<7.5)return'dawn';if(h<16.5)return'day';return'dusk';}
@@ -1705,7 +1705,7 @@ function buildWorld(){
  for(const k in lists)if(lists[k].length)instanced(TG[k],lists[k]);
  // bushes, rocks, flowers, grass
  const bush=mergeGeometries([part(new THREE.IcosahedronGeometry(0.6,1),'#b5652e',0,0.45,0,0,0,0,1,0.85,1,0.12),part(new THREE.IcosahedronGeometry(0.45,1),'#d98a2b',0.5,0.35,0.1,0,0,0,1,0.85,1,0.12),part(new THREE.IcosahedronGeometry(0.45,1),'#8f9a3a',-0.45,0.33,-0.1,0,0,0,1,0.85,1,0.12)]);
- const bl=[];for(let i=0;i<800&&bl.length<34;i++){const x=sr(-55,55),z=sr(-55,55);if(!freeSpot(x,z,{maxD:0.82,gap:1.6,path:1.8}))continue;bl.push({x,y:terrainH(x,z)-0.05,z,s:sr(0.8,1.3),ry:sr(0,6.28)});OBST.push({x,z,r:0.7});}
+ const bl=[];for(let i=0;i<800&&bl.length<34;i++){const x=sr(-55,55),z=sr(-55,55);if(!freeSpot(x,z,{maxD:0.82,gap:1.6,path:1.8}))continue;bl.push({x,y:terrainH(x,z)-0.05,z,s:sr(0.8,1.3),ry:sr(0,6.28)});OBST.push({x,z,r:0.7,pass:true});}
  instanced(bush,bl);
  const rock=part(new THREE.DodecahedronGeometry(0.6,0),'#a7a39b',0,0.2,0,0,0,0,1,0.6,1,0.1);const rl=[];
  for(let i=0;i<900&&rl.length<26;i++){const x=sr(-60,60),z=sr(-60,60);const d=islandD(x,z);if(d>0.95||terrainH(x,z)<0.25)continue;if(!(d>0.86||Math.hypot(x-HILL.x,z-HILL.z)<14))continue;if(!freeSpot(x,z,{beach:d>0.86,maxD:0.9,gap:2,path:1.6,water:1.2}))continue;rl.push({x,y:terrainH(x,z)-0.1,z,s:sr(0.6,1.5),ry:sr(0,6.28)});OBST.push({x,z,r:0.55});}
@@ -2182,7 +2182,7 @@ function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
    const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');if(GS.rod===lv){b.textContent='장착 중';b.disabled=true;}else{b.textContent='장착하기';b.onclick=()=>{equipRod(lv);renderBag();};}acts.appendChild(b);
    row.append(c,tx,acts);list.appendChild(row);});box.appendChild(list);
   if(GS.rods.length<6){const n=document.createElement('div');n.className='bsub';n.textContent='더 좋은 낚싯대는 마을 모닥불 옆 🐉 용왕님 상점에서 살 수 있어요.';box.appendChild(n);}
-  renderReelGear(box);renderFloatGear(box);renderGiftGear(box);
+  renderPackGear(box);renderReelGear(box);renderFloatGear(box);renderGiftGear(box);
   const t2=document.createElement('div');t2.className='btitle';t2.textContent='👕 옷차림';box.appendChild(t2);
   const o=document.createElement('div');o.className='outfit';const sw=(i)=>`<i style="background:${COLORS[i]}"></i>`;
   o.innerHTML=`<div><span>모자</span><b>${HAT_NAMES[LOOK.hat]}</b>${LOOK.hat===6||LOOK.hat===7?'':sw(LOOK.hc)}</div><div><span>옷</span><b>${CLOTH_NAMES[LOOK.cloth]}</b>${sw(LOOK.cc)}</div><div><span>이름</span><b>${nameOf(NAME)}</b></div>`;
@@ -2192,7 +2192,7 @@ function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
   if(acct){const lo=document.createElement('button');lo.className='primary small ghost';lo.textContent='로그아웃';lo.onclick=logout;box.appendChild(lo);}}
  if(bagTab==='pets'){const head=document.createElement('div');head.className='bsub';head.textContent=`동물과 교감(쓰다듬기·껴안기)할 때마다 친밀도 💕+1. 친밀도 ${FOLLOW_MIN} 이상이면 따라다녀요. 같은 동물을 더 아끼는 사람이 있으면 그 사람을 따라가고, 한 사람에게는 가장 친한 동물 1마리만 따라와요.`;box.appendChild(head);const w=document.createElement('div');w.innerHTML=loveListHTML();box.appendChild(w);}
  if(bagTab==='food'){
-  const head=document.createElement('div');head.className='bsub';head.textContent=`음식 ${GS.food.length} / ${FOOD_MAX}개 · 먹으면 낚시 능력 ★+1 + 낚시 난이도가 쉬워져요 (재료 ★가 높을수록 더 쉽게, 오래 걸린 요리일수록 더 오래)`;box.appendChild(head);
+  const head=document.createElement('div');head.className='bsub';head.textContent=`음식 ${GS.food.length} / ${FOOD_MAX}개 · 먹으면 재료 ★ 이하 물고기의 낚시 난이도가 쉬워지고(탕 -20% · 구이 -30% · 회 -40%), 재료와 같은 ★ 물고기가 2배 잘 잡혀요 (구이 5분 · 탕 10분 · 회 20분)`;box.appendChild(head);
   if(!GS.food.length){const e=document.createElement('div');e.className='empty';e.innerHTML='담아 둔 음식이 없어요.<br>모닥불에서 <b>🍳 요리하기</b>를 해 보세요.';box.appendChild(e);}
   const list=document.createElement('div');list.className='ilist';
   GS.food.forEach(f=>{const info=foodInfo(f);const row=document.createElement('div');row.className='irow';const ic=document.createElement('div');ic.className='fic';ic.textContent=info.em;
@@ -2891,8 +2891,13 @@ const HARD_D=0.16;
 function starRangeTxt(){const R=GS.rod;if(R>=7)return`★7 물고기까지 모두`;const hi=Math.min(7,effStar()+1),lo=R+1;return`★${R} 물고기까지 편하게 · ★${lo===hi?lo:lo+'~★'+hi}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),R=GS.rod;return`🔥 ★${st} 물고기가 걸렸어요! 내 낚싯대(★${R})보다 ${st-R>1?'두':'한'} 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.rod>1?'두':'한'} 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-14c';
+const NEWS_VER='2026-11-14d';
 const NEWS=[
+ {d:'11월 14일',t:'🌙 낮·밤이 10분씩 · 🎒 장비에서 가방 바꾸기',n:true,i:[
+  '🌙 이제 <b>낮 10분 · 밤 10분</b>씩 바뀌어요 (섬의 하루 20분). 🌕 보름달은 그대로 게임 속 2일에 한 번(실제로 40분마다 한 번, 10분 동안) 떠요.',
+  '🎒 <b>가방 › 🎣 장비·옷</b>에서 가진 가방을 바로 바꿀 수 있어요. 가방에 든 물고기가 작은 가방의 칸보다 많으면 그 가방으로는 바꿀 수 없어요.',
+  '🌿 걷다가 <b>덤불(풀)</b>에 걸리지 않고 그냥 지나갈 수 있어요. 나무·바위는 그대로 피해서 다녀야 해요.',
+  '⛵ 선상낚시 배삯이 <b>3,000몰랑</b>으로 올랐어요.']},
  {d:'11월 14일',t:'🍳 요리가 새로워졌어요 · 담백 소금구이 · 얼큰 매운탕 · 싱싱 활어회',n:true,i:[
   '🍳 요리는 이제 <b>🐟 담백 소금구이 · 🍲 얼큰 매운탕 · 🍣 싱싱 활어회</b> 3가지예요. 게·새우·무지개 물고기도 모두 이 3가지로 요리해요 (보호종은 그대로 요리할 수 없어요).',
   '⏱ 요리 시간은 재료 ★와 요리마다 달라요: ★1 3초·5초·10초 · ★2 5초·10초·20초 · ★3 7초·14초·28초 · ★4 10초·20초·30초 · ★5 15초·30초·1분 · ★6 20초·40초·1분 20초 · ★7 30초·1분·2분 (구이·탕·회 순서).',
@@ -2903,7 +2908,7 @@ const NEWS=[
   '🍽️ 새 요리를 먹으면 먼저 먹은 요리 효과는 새 요리 효과로 바뀌어요. 예전에 만들어 둔 버터 구이·통찜·상상의 요리는 비슷한 새 요리로 바뀌었어요.']},
  {d:'11월 14일',t:'✨ 희귀종이 더 잘 나와요 · 🌕 보름달',i:[
   '✨ 희귀종이 이제 <b>★7 전설보다 2배</b> 잘 나와요. ★7처럼 <b>멀리 던졌을 때</b>(바다는 해안에서 먼 곳, 민물은 힘 게이지 끝) 따로 기회가 와요.',
-  '🌕 <b>보름달</b>은 게임 속 <b>2일에 한 번</b> 떠요(실제로 20분마다 번갈아). 보름달이 뜬 밤에는 <b>희귀종 확률이 2배</b>! 다른 날 밤엔 초승달이 떠요.',
+  '🌕 <b>보름달</b>은 게임 속 <b>2일에 한 번</b> 떠요(실제로 40분마다 한 번, 10분 동안). 보름달이 뜬 밤에는 <b>희귀종 확률이 2배</b>! 다른 날 밤엔 초승달이 떠요.',
   '🎯 찌·무지개 이벤트·아기 해달·전설의 기운은 희귀종 확률에 영향을 주지 않아요. ★7 미만 낚싯대는 ★7과 똑같이 0.4배예요.',
   '📊 위쪽 시계 옆과 낚시할 때 ‘전설의 기운’ 카드에서 오늘 밤 보름달인지, 지금 희귀종 확률이 얼마인지 볼 수 있어요.']},
  {d:'11월 13일',t:'🐚 룰렛 하루 제한 해제 · ✏️ 이름 바꾸면 기록도 함께',i:[
@@ -3106,7 +3111,7 @@ function openNews(){closeEmoPanel();closeChat();$('newsList').innerHTML=newsHTML
 function closeNews(){$('newsM').classList.add('hidden');}
 
 /* ---------- v7: 선상낚시 · 거리별 물고기 ---------- */
-const BOAT_R=114,FAR_R=90,BOAT_MIN_ROD=5,BOAT_FARE=1000,BOAT_SEAT_Z=-0.35,BOAT_CHAR_DY=-0.2;
+const BOAT_R=114,FAR_R=90,BOAT_MIN_ROD=5,BOAT_FARE=3000,BOAT_SEAT_Z=-0.35,BOAT_CHAR_DY=-0.2;
 const BOAT={on:false,vx:0,vz:0,far:false,mesh:null,warnT:0,wakeT:0,cd:0,farT:0,armT:0};
 // 이 화면(페이지) 고유 번호: 다시 연결돼도 같아서, 예전 연결이 남긴 '내 유령'을 알아볼 수 있어요
 const MY_SID=(()=>{let s='';const a='abcdefghijklmnopqrstuvwxyz0123456789';for(let i=0;i<10;i++)s+=a[Math.floor(Math.random()*36)];return s;})();
@@ -3185,7 +3190,7 @@ function remoteBoat(r,s){const c=r.char;if(c)c.sit=r.bt===1;
 function buildBoatDock(){const D=BOAT_DOCK;if(!D)return;
  const[mx,mz]=dockPt(D,D.s1-4.6,D.hw+1.35);MOOR={x:mx,z:mz,yaw:Math.atan2(D.ux,D.uz),m:makeRowBoat("#4aa3df")};scene.add(MOOR.m);MOOR.m.userData.pick='moor';MOOR.m.traverse(o=>{o.userData.pick='moor';});
  const cv=document.createElement('canvas');cv.width=512;cv.height=300;const c=cv.getContext('2d');c.fillStyle='#fff6e0';c.fillRect(0,0,512,300);c.strokeStyle='#7a5236';c.lineWidth=18;c.strokeRect(9,9,494,282);
- c.fillStyle='#2b6cb0';c.font='900 70px "AmoEmoji",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('⛵ 선상낚시',256,92);c.fillStyle='#4a3a26';c.font='800 38px "AmoEmoji",sans-serif';c.fillText('★5 낚싯대부터 탈 수 있어요',256,172);c.font='800 36px "AmoEmoji",sans-serif';c.fillStyle='#c0392b';c.fillText('배삯 1,000몰랑',256,236);
+ c.fillStyle='#2b6cb0';c.font='900 70px "AmoEmoji",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('⛵ 선상낚시',256,92);c.fillStyle='#4a3a26';c.font='800 38px "AmoEmoji",sans-serif';c.fillText('★5 낚싯대부터 탈 수 있어요',256,172);c.font='800 36px "AmoEmoji",sans-serif';c.fillStyle='#c0392b';c.fillText('배삯 3,000몰랑',256,236);
  const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;const g=new THREE.Group();const[sx,sz]=dockPt(D,D.s1-9,-(D.hw-0.55));g.position.set(sx,D.y,sz);g.rotation.y=Math.atan2(-D.ux,-D.uz);scene.add(g);
  for(const s of[-0.62,0.62])addMesh(new THREE.CylinderGeometry(0.06,0.06,1.8,8),stdMat('#7a5236'),s,0.9,0,g);
  addMesh(new THREE.PlaneGeometry(1.5,0.88),new THREE.MeshStandardMaterial({map:tex,roughness:0.7,emissive:'#ffffff',emissiveMap:tex,emissiveIntensity:0.2,side:THREE.DoubleSide}),0,1.5,0.07,g);
@@ -3441,6 +3446,18 @@ function renderPackShop(box){
   acts.appendChild(b);row.append(c,tx,acts);list.appendChild(row);}
  box.appendChild(list);
  const n=document.createElement('div');n.className='bsub';n.textContent='산 가방은 바로 등에 메어지고, 다른 사람들에게도 보여요. 가방에 든 물고기가 더 작은 가방의 칸보다 많으면 작은 가방으로는 바꿀 수 없어요.';box.appendChild(n);}
+/* v72: 가방 › 🎣 장비·옷에서 가진 가방 바꾸기 */
+function renderPackGear(box){const t=document.createElement('div');t.className='btitle';t.textContent='🎒 가방';box.appendChild(t);
+ const list=document.createElement('div');list.className='ilist packs';
+ for(const B of PACKS){const lv=B.lv;if(lv&&!(GS.packs||[]).includes(lv))continue;const on=(GS.pack|0)===lv;
+  const row=document.createElement('div');row.className='irow pack p'+lv+(on?' on':'');
+  const c=document.createElement('canvas');c.width=120;c.height=88;drawPackIcon(c.getContext('2d'),120,88,lv);
+  const tx=document.createElement('div');tx.className='itx';tx.innerHTML=`<b>${B.em} ${B.name}</b><small class="cap">물고기 <b>${bagCap(lv)}마리</b>${B.add?` (기본 +${B.add})`:''}</small>`;
+  const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');
+  if(on){b.textContent='장착 중';b.disabled=true;}else{b.textContent='장착하기';b.onclick=()=>{if(equipPack(lv))renderBag();};}
+  acts.appendChild(b);row.append(c,tx,acts);list.appendChild(row);}
+ box.appendChild(list);
+ const n=document.createElement('div');n.className='bsub';n.textContent=`지금 물고기 ${GS.bag.length}마리 · 가방에 든 물고기가 작은 가방의 칸보다 많으면 그 가방으로는 바꿀 수 없어요.${(GS.packs||[]).length<2?' 다른 가방은 🐉 용왕님 상점의 🎒 가방 칸에서 살 수 있어요.':''}`;box.appendChild(n);}
 /* 상점 그림 */
 function drawPackIcon(c,w,h,lv){c.clearRect(0,0,w,h);c.save();c.translate(w/2,h/2+4);c.lineJoin='round';c.lineCap='round';
  const ell=(x,y,rx,ry,fill,st,lw)=>{c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);if(fill){c.fillStyle=fill;c.fill();}if(st){c.strokeStyle=st;c.lineWidth=lw||2;c.stroke();}};
@@ -3628,7 +3645,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-14c';
+const BUILD='2026-11-14d';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -4906,7 +4923,7 @@ function opTick(dt){OPR.t-=dt;if(OPR.t>0)return;OPR.t=2;
 
 /* ---------- v69: ✨ 희귀종 = 평소 ★7 확률의 2배 · 🌕 보름달(게임 속 2일에 한 번) 밤엔 희귀종 2배 ---------- */
 const RARE_K=2;
-/* 게임 속 하루 = DAY_LEN초(10분). 하루 번호가 짝수인 날 밤에 보름달이 떠요 → 2일에 한 번 */
+/* 게임 속 하루 = DAY_LEN초(20분). 하루 번호가 짝수인 날 밤에 보름달이 떠요 → 2일에 한 번 */
 function moonDay(){return Math.floor(Date.now()/1000/DAY_LEN);}
 function fullMoonNight(){return timeMode==='real'&&moonDay()%2===0;}
 function fullMoonNow(){return fullMoonNight()&&phaseOf(hourNow())==='night';}
