@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-14b">
+<meta name="amollang-build" content="2026-11-14c">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -893,6 +893,7 @@ function pickFish(p,hab,noF){const _F=noF?null:floatOn();FBLK=_F?_F.block:0;
  const ws=SPECIES.map(sp=>{if((sp.hab==='fresh')!==fresh)return 0;if(sp.pondOnly&&hab!=='pond')return 0;if(sp.riverOnly&&hab!=='river')return 0;
   let w=sp.w;if(sp.riverPref&&hab==='pond')w*=0.3;if(sp.near)w*=1.6-1.2*p;if(!sp.time.includes('any'))w*=sp.time.includes(ph)?2.4:0.3;if(p<sp.minP)w*=0.1;if(sp.rare||starOf(sp)>=7)return 0;if(starOf(sp)<=FBLK)return 0;w*=starW(starOf(sp),p);if(BOAT.on&&BOAT.far&&!fresh&&starOf(sp)>=4)w*=2;if(starOf(sp)>effStar())w*=0.4;tot+=w;return w;});
  if(!tot&&FBLK)return pickFish(p,hab,true);
+ tot=foodShare(ws,tot);
  let r=Math.random()*tot,i=0;while(i<ws.length-1&&(ws[i]===0||r>ws[i])){r-=ws[i];i++;}
  let sp=SPECIES[i];const frac=Math.pow(Math.random(),2.2-1.4*p);
  const size=Math.round((sp.min+(sp.max-sp.min)*frac)*10)/10;
@@ -2012,14 +2013,14 @@ const RODS=[null,
  {lv:6,name:'떡상기원 불빠따 낚싯대',price:30000,c1:'#ff5a1f',c2:'#ffd23f',desc:'🔥 신화급! 전국 개미들의 “제발 떡상 가즈아” 기원이 모이고 모여 활활 불타오르는 방망이 낚싯대. 한 번 휘두르면 차트도 물고기도 수직 상승 📈 끝에 달린 빨간 양봉이 위로만 솟아요. ★6 신화의 바다 친구들까지 낚아요. (※ 실제 주가와는 아무 상관 없어요)'},
  {lv:7,name:'럭키비키 일곱 빛깔 무지개 낚싯대',price:177777,c1:'#ff4d4d',c2:'#a65cff',desc:'🌈 비 갠 하늘에 걸린 무지개다리를 한 가닥 떼어 만든 낚싯대. 일곱 빛깔이 모두 모여야 비로소 ★7 무지개 전설에 닿을 수 있대요. 들고 다니면 무지개 꼬리가 따라오고, 던지면 찌를 따라 무지개다리가 놓여요.'},
 ];
-var GS={money:0,rods:[1],rod:1,packs:[],pack:0,floats:[],float:0,tankUp:0,reels:[],reel:0,bag:[],food:[],buffUntil:0,ease:0,easeUntil:0,stats:{sold:0,cooked:0,earned:0}};
+var GS={money:0,rods:[1],rod:1,packs:[],pack:0,floats:[],float:0,tankUp:0,reels:[],reel:0,bag:[],food:[],fb:null,stats:{sold:0,cooked:0,earned:0}};
 const BAG_MAX=30,FOOD_MAX=20,BAG_KEEP_MAX=120;
 var saveDirty=false;
 function markSave(){saveDirty=true;}
-function buffLeft(){return Math.max(0,(GS.buffUntil||0)-Date.now());}
-function effStar(){return GS.rod+(buffLeft()>0?1:0);}
+function buffLeft(){const b=fbOn();return b?Math.max(0,b.u-Date.now()):0;}
+function effStar(){return Math.min(7,GS.rod+(buffLeft()>0?1:0));}
 function fmtLeft(ms){const s=Math.ceil(ms/1000);return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
-function fightD(sp,frac){const st=starOf(sp);const base=[0,0.08,0.2,0.32,0.42,0.52,0.58,0.64][st]+0.12*frac+0.05*((sp.str||0.3)-0.5);const E=effStar();if(st>E)return clamp(base+HARD_D,0.3,0.86);return clamp(base-0.12*Math.max(0,E-st),0.04,0.75);}
+function fightD(sp,frac){const st=starOf(sp);const base=[0,0.08,0.2,0.32,0.42,0.52,0.58,0.64][st]+0.12*frac+0.05*((sp.str||0.3)-0.5);const E=effStar();if(st>GS.rod)return clamp(base+HARD_D,0.3,0.86);return clamp(base-0.12*Math.max(0,E-st),0.04,0.75);}
 
 /* ---------- 낚싯대 3D ---------- */
 function rodMesh(parent,g,mat,x,y,z,rx=0,ry=0,rz=0){const m=new THREE.Mesh(g,mat);m.position.set(x,y,z);m.rotation.set(rx,ry,rz);m.castShadow=true;parent.add(m);return m;}
@@ -2163,7 +2164,7 @@ function openBag(tab){if(!entered)return;closeEmoPanel();closeChat();if(tab)bagT
 function closeBag(){$('bag').classList.add('hidden');}
 function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
  document.querySelectorAll('#bag .tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===bagTab));const box=$('bagBody');box.innerHTML='';
- const bl=buffLeft();$('bagBuff').textContent=(bl>0||easeNow()>0)?`${buffShort()} 남음 → ${starRangeTxt(effStar())}`:`🎣 ${starRangeTxt(effStar())}`;
+ const bl=buffLeft();$('bagBuff').textContent=bl>0?`${buffShort()} 남음 → ${starRangeTxt()}`:`🎣 ${starRangeTxt(effStar())}`;
  if(bagTab==='fish'){
   const head=document.createElement('div');head.className='bsub';head.textContent=`${PACKS[GS.pack|0].em} ${PACKS[GS.pack|0].name} · 물고기 ${GS.bag.length} / ${bagCap()}마리 · 용왕님 상점에서 팔거나 모닥불에서 요리할 수 있어요`;box.appendChild(head);
   if(!GS.bag.length){const e=document.createElement('div');e.className='empty';e.innerHTML='가방이 비어 있어요.<br>물고기를 잡은 뒤 <b>‘🎒 가방에 넣기’</b>를 눌러 보세요.';box.appendChild(e);}
@@ -2195,8 +2196,8 @@ function renderBag(){$('bagMoney').textContent=`${fmtM(GS.money)} 몰랑`;
   if(!GS.food.length){const e=document.createElement('div');e.className='empty';e.innerHTML='담아 둔 음식이 없어요.<br>모닥불에서 <b>🍳 요리하기</b>를 해 보세요.';box.appendChild(e);}
   const list=document.createElement('div');list.className='ilist';
   GS.food.forEach(f=>{const info=foodInfo(f);const row=document.createElement('div');row.className='irow';const ic=document.createElement('div');ic.className='fic';ic.textContent=info.em;
-   const tx=document.createElement('div');tx.className='itx';tx.innerHTML=`<b>${info.name}</b><small>${SP_BY[f.s]?`★${info.st} ${SP_BY[f.s].name} 요리 · `:''}먹으면 ${effTxt(info)}</small>`;
-   const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');b.textContent='😋 먹기';b.onclick=()=>{GS.food=GS.food.filter(x=>x!==f);eatFood(info);renderBag();};acts.appendChild(b);
+   const tx=document.createElement('div');tx.className='itx';tx.innerHTML=`<b>${info.name}</b><small>${SP_BY[f.s]?`${info.rare?'✨':'★'+info.st} ${SP_BY[f.s].name} 요리 · `:''}먹으면 ${effTxt(info)}</small>`;
+   const acts=document.createElement('div');acts.className='acts';const b=document.createElement('button');b.textContent='😋 먹기';b.onclick=()=>{if(!eatOk())return;GS.food=GS.food.filter(x=>x!==f);eatFood(info);renderBag();};acts.appendChild(b);
    row.append(ic,tx,acts);list.appendChild(row);});box.appendChild(list);}}
 function itemRow(sp,size,sub){const row=document.createElement('div');row.className='irow';const c=document.createElement('canvas');c.width=120;c.height=72;
  drawFish(c.getContext('2d'),sp,60+(sp.shape==='beak'?6:0),36,fishL(sp,100,30),false);
@@ -2252,98 +2253,236 @@ function sellItems(items){let sum=0,n=0;const set=new Set(items);for(const it of
 /* ---------- 도감 안내 ---------- */
 function bookGuideHTML(){const E=effStar(),bl=buffLeft();
  return`<div class="guide"><b>🎣 낚싯대와 물고기의 ★</b><p>물고기의 ★(희귀도)는 잡기 어려운 정도예요. <em>내 낚싯대 ★와 같거나 낮은</em> 물고기는 편하게, <em>★1 높은 물고기</em>는 힘들지만 노력하면 잡을 수 있어요. ★2 이상 높으면 줄을 끊고 달아나요.</p>
- <p>지금: <em>${RODS[GS.rod].name} (★${GS.rod})</em>${bl>0?` + 요리 효과 ★1 (${fmtLeft(bl)} 남음)`:''} → <em>${starRangeTxt(E)}</em></p>
- <p>낚싯대 ★가 물고기 ★보다 높을수록 훨씬 쉽게 끌려와요. ★가 같으면 <em>줄이 빨개질 때 잠깐 손을 떼는</em> 요령이 필요해요. 몰랑은 🐉 용왕님 상점에서 물고기를 팔아 모으고, 요리를 먹으면 ★+1 효과와 함께 낚시 난이도가 쉬워져요(재료 ★가 높을수록 더 쉽게, 오래 걸린 요리일수록 더 오래).</p>
+ <p>지금: <em>${RODS[GS.rod].name} (★${GS.rod})</em>${bl>0&&GS.rod<7?` + 요리 효과 (${fmtLeft(bl)} 남음)`:''} → <em>${starRangeTxt()}</em></p>
+ <p>낚싯대 ★가 물고기 ★보다 높을수록 훨씬 쉽게 끌려와요. ★가 같으면 <em>줄이 빨개질 때 잠깐 손을 떼는</em> 요령이 필요해요. 몰랑은 🐉 용왕님 상점에서 물고기를 팔아 모으고, 요리를 먹으면 재료 ★ 이하 물고기의 낚시 난이도가 쉬워지고(탕 -20% · 구이 -30% · 회 -40%), 재료와 같은 ★ 물고기가 2배 잘 잡혀요. 낚싯대보다 높은 ★ 물고기도 더 잘 걸리지만 그 물고기의 난이도는 그대로예요.</p>
  <p>🌈 <em>★7 무지개 전설</em>: 배 타고 먼 바다(또는 강·연못 끝까지 멀리)에서만 아주 드물게 나와요. 30분마다 3분 동안 <b>무지개가 뜨면 4배</b>! 오래 못 만나면 <b>전설의 기운</b>이 쌓여 최대 3배까지 올라가요(무지개가 뜬 동안에는 기운 대신 딱 4배). 🎯 찌를 끼우면 상어 지느러미찌 1.2배 · 꼬마 등대찌 1.5배${floatOn()?' <em>· 지금 '+FLOATS[GS.float].name+' 효과 중</em>':''}. 지금 전설의 기운 <em>${legGauge()}%</em> (×${legPity().toFixed(1)}) · ${rainbowOn()?`🌈 무지개 이벤트 중 (${mmss(rainbowLeftMs())} 남음)`:`다음 무지개까지 ${mmss(rainbowLeftMs())}`}</p>
  <p>📐 <em>물고기 크기</em>: 생물마다 <b>최소~최대 크기</b>가 정해져 있고(각 칸의 📏), 그 사이에서 무작위로 잡혀요. <em>멀리 던질수록 큰 개체</em>가 나올 확률이 높아요. 같은 생물이라도 클수록 상점 가격이 올라가요. 최대 크기는 최소 크기보다 값을 약 1.75배 받아요. 잡은 생물은 📏 아래 막대로 내 최고 기록이 최대 크기의 어디쯤인지 보여줘요. 명예의 전당은 생물별 가장 큰 기록을 겨뤄요.</p>
  <p>📏 <em>거리 힌트</em> (바다는 해안선에서 찌까지 거리): 가까운 물가 0~10m · 조금 멀리 10m~ · 멀리 15~25m~ · 아주 멀리 약 30m(해안에서 끝까지 던지기) · 끝까지 멀리 35m~(부두 끝이나 배). 강·연못은 던지는 힘 기준이에요.</p></div>`;}
 
 /* ========== v2-B: 요리 · 채팅 · 수조 구경 · 지도 · 저장 ========== */
 /* ---------- 요리 ---------- */
+/* ---------- v71: 🍳 요리 3가지 (🐟 담백 소금구이 · 🍲 얼큰 매운탕 · 🍣 싱싱 활어회) ---------- */
 const DISH={
- sashimi:{name:'모둠회 & 초간장',em:'🍣',sec:10,min:2,desc:'얇게 뜬 회에 새콤달콤한 초간장을 곁들였어요.'},
- grill:{name:'소금구이',em:'🐟',sec:15,min:3,desc:'모닥불에 노릇노릇, 겉은 바삭 속은 촉촉하게 구웠어요.'},
- stew:{name:'얼큰 매운탕',em:'🍲',sec:20,min:4,desc:'칼칼하고 시원한 국물이 일품이에요.'},
- cgrill:{name:'버터 구이',em:'🦐',sec:15,min:3,desc:'버터를 올려 고소하게 구웠어요.'},
- steam:{name:'통찜',em:'🦀',sec:20,min:4,desc:'김이 모락모락, 살이 꽉 찼어요.'},
- fantasy:{name:'상상의 요리',em:'✨',sec:0,min:0,desc:'요리하기 애매한 친구는 상상 속 음식이 돼요! 어떤 요리가 나올지는 완성될 때까지 비밀이에요. (10초·20초·30초 중 하나)'},
+ grill:{name:'담백 소금구이',em:'🐟',ease:0.3,dmin:5,desc:'비늘을 긁어내고 굵은소금을 솔솔 뿌린 다음, 숯불 석쇠 위에서 앞뒤로 뒤집어 가며 노릇노릇 구워요.'},
+ stew:{name:'얼큰 매운탕',em:'🍲',ease:0.2,dmin:10,desc:'생선을 토막 내 냄비에 넣고 무·대파·고추와 함께 끓이다가 고춧가루를 풀어 칼칼하게 끓여요.'},
+ sashimi:{name:'싱싱 활어회',em:'🍣',ease:0.4,dmin:20,desc:'비늘을 벗기고 포를 뜬 다음, 칼을 길게 당겨 얇게 썰어 무채·깻잎과 함께 접시에 가지런히 담아요.'},
 };
-const FANTASY=[
- {name:'무지개 젤리 푸딩',sec:10,min:2,cols:['#ff8fb1','#ffd36e','#8fe3a8','#7fc8ff']},
- {name:'별빛 솜사탕 수프',sec:20,min:4,cols:['#c9b6ff','#ffe6ff','#fff6b0']},
- {name:'반짝 버블 라테',sec:10,min:2,cols:['#c89b6d','#fff1dc','#3b2a20']},
- {name:'용궁 구름 떡꼬치',sec:20,min:4,cols:['#ffffff','#ffd1e1','#bff0ff']},
- {name:'달빛 마카롱 타워',sec:30,min:6,cols:['#ffd36e','#ff9ec7','#9be7d8','#c5b3ff']},
- {name:'파도 소다 빙수',sec:20,min:4,cols:['#7fd6ff','#e8fbff','#4aa3ff']},
- {name:'은하수 오므라이스',sec:30,min:6,cols:['#ffe36e','#2b2f6b','#ff6b6b']},
- {name:'꿈나라 파르페',sec:30,min:6,cols:['#ffb3d1','#fff3e0','#8fd3ff','#ffe36e']},
-];
-const DISH_CODES=['sashimi','grill','stew','cgrill','steam',...FANTASY.map((_,i)=>'f'+i)];
+const DISH_ORDER=['grill','stew','sashimi'];
+/* 요리 시간(초): 재료 ★1~★7 */
+const COOK_SEC={grill:[0,3,5,7,10,15,20,30],stew:[0,5,10,14,20,30,40,60],sashimi:[0,10,20,28,30,60,80,120]};
+const FOOD_X=2;   // 재료와 같은 ★ 물고기가 잡힐 확률 배수 (다른 배수와 그대로 곱해요: 무지개 ×4 · ★7 요리 ×2 → ×8)
+/* 네트워크 요리 번호 = 요리(0 회 · 1 구이 · 2 탕) + 3×(★-1) → 0~20 */
+const DISH_KEYS=['sashimi','grill','stew'];
+function cookCode(k,st){return Math.max(0,DISH_KEYS.indexOf(k))+3*(clamp(st|0,1,7)-1);}
+function codeKey(c){return DISH_KEYS[(((c|0)%3)+3)%3];}
+function codeSt(c){return clamp(Math.floor((c|0)/3)+1,1,7);}
+function cookSecOf(k,st){return(COOK_SEC[k]||COOK_SEC.grill)[clamp(st|0,1,7)];}
+/* 예전 요리(버터 구이·통찜·상상의 요리)는 비슷한 새 요리로 바꿔요 */
+const OLD_F=['grill','stew','grill','stew','sashimi','stew','sashimi','sashimi'];
+function foodKey(k){if(typeof k!=='string')return null;if(DISH[k])return k;if(k==='cgrill'||k==='fantasy')return'grill';if(k==='steam')return'stew';const m=/^f(\d)$/.exec(k);return m?(OLD_F[+m[1]]||'grill'):null;}
 const CRUST=new Set(['hermitcrab','shorecrab','hairycrab','lobster','kingcrab','bluecrab','snowcrab','prawn','spinylobster','crayfish','freshshrimp']);
-const FANCY_FOOD=new Set(['rainbowwhale','auroraray','rainbowflyer','prismjelly','rainbowseahorse','chaeunryong','chilbokoi','rainbowtrout','rainbowveil','rainbowsturgeon','yellowtang','moorishidol','triggerfish','leopardshark','dumbo','vampiresquid','tigershark','greatwhite','thresher','footballfish','napoleon','chimaera','giantmoray','goldkoi','jellyfish','urchin','starfish','seahorse','clownfish','bluetang','emperorangel','butterfly','mandarinfish','lionfish','boxfish','guppy','betta','goldfish','koi','arowana','parrotfish','catshark','blueshark','hammerhead','sunfish']);
 const PROTECTED=new Set(['humpback','bluewhale','spermwhale','beluga','narwhal','sealion','walrus','dugong','manatee','leatherback','greenturtle','giantsquid','oarfish','coelacanth','mantaray','leafyseadragon','goldmandarin','eoreumchi','arapaima','mihojonggae','mutae','lenok','turtle','whaleshark','seal','dolphin','orca','seaotter','otter']);
-function dishesFor(id){if(PROTECTED.has(id))return[];if(CRUST.has(id))return['cgrill','steam'];if(FANCY_FOOD.has(id))return['fantasy'];return['sashimi','grill','stew'];}
-function foodInfo(f){return foodEff(foodInfo0(f),f.s);}
-function foodInfo0(f){if(f.k&&f.k[0]==='f'){const F=FANTASY[+f.k.slice(1)]||FANTASY[0];return{name:F.name,em:'✨',sec:F.sec,min:F.min,code:f.k};}const D=DISH[f.k]||DISH.grill;return{name:D.name,em:D.em,sec:D.sec,min:D.min,code:f.k};}
-function eatFood(info){if(info.dmin==null)foodEff(info,info.s);const dur=info.dmin*60000;const until=Date.now()+dur;GS.buffUntil=Math.max(GS.buffUntil||0,until);
- const ce=easeNow();if(info.ease>ce){GS.ease=info.ease;GS.easeUntil=until;}else if(info.ease===ce)GS.easeUntil=Math.max(GS.easeUntil||0,until);markSave();updateHUD();
+function dishesFor(id){if(PROTECTED.has(id))return[];return DISH_ORDER.slice();}
+function foodInfo(f){const k=foodKey(f.k)||'grill',D=DISH[k],sp=SP_BY[f.s],st=sp?starOf(sp):1,rare=!!(sp&&sp.rare);
+ return{k,name:D.name,em:D.em,s:f.s,st,rare,sec:cookSecOf(k,st),dmin:D.dmin,ease:D.ease,code:cookCode(k,st)};}
+function fmtSec(s){s=Math.max(0,Math.round(s));if(s<60)return s+'초';const m=Math.floor(s/60),r=s%60;return r?`${m}분 ${r}초`:`${m}분`;}
+/* 먹은 요리 효과 GS.fb = {k 요리, st 재료★, r 희귀종 재료, e 난이도 감소, u 끝나는 시각, t 먹은 시각, s 재료} */
+function fbOk(v){if(!v||typeof v!=='object')return null;const u=+v.u;if(!Number.isFinite(u)||u<=Date.now())return null;
+ const k=DISH[v.k]?v.k:'';return{k,st:k?clamp(v.st|0,1,7):0,r:k&&v.r?1:0,e:k?DISH[k].ease:0,u:Math.min(u,Date.now()+21*60000),t:+v.t||0,s:typeof v.s==='string'?v.s.slice(0,40):''};}
+function fbOn(){const b=GS.fb;return b&&(+b.u||0)>Date.now()?b:null;}
+/* 낚시 난이도 감소: 재료 ★ 이하 + 내 낚싯대 ★ 이하 물고기만 (낚싯대보다 높은 물고기는 그대로) */
+function easeFor(sp){const b=fbOn();if(!b||!b.e||!b.st)return 0;const st=starOf(sp);return(st<=b.st&&st<=GS.rod)?b.e:0;}
+/* 재료와 같은 ★ 물고기 2배 · 희귀종은 희귀종 요리일 때만 */
+function foodX(sp){const b=fbOn();if(!b||!b.st)return 1;if(sp.rare)return b.r?FOOD_X:1;return starOf(sp)===b.st?FOOD_X:1;}
+function food7(){const b=fbOn();return b&&b.st===7?FOOD_X:1;}
+function foodRare(){const b=fbOn();return b&&b.r?FOOD_X:1;}
+function fbTag(b){return b.r?'✨희귀종':'★'+b.st;}
+let eatWarnT=-99;
+function eatOk(){const b=fbOn();if(!b||!b.st)return true;if(t-eatWarnT<6){eatWarnT=-99;return true;}eatWarnT=t;
+ toast(`🍳 지금 ${DISH[b.k].name}(${fbTag(b)}) 효과가 ${fmtLeft(b.u-Date.now())} 남아 있어요. 새로 먹으면 지금 효과는 사라지고 새 요리 효과로 바뀌어요 · 한 번 더 누르면 먹어요`,4600);return false;}
+/* 요리 단계: [끝나는 진행률, 동작, 안내] */
+const CK_PH={
+ grill:[[0.15,'scale','🔪 비늘 긁는 중'],[0.27,'salt','🧂 굵은소금 뿌리는 중'],[0.68,'grill','🔥 숯불에 굽는 중'],[0.76,'salt2','🧂 소금 한 번 더'],[1,'grill','🔥 노릇노릇 굽는 중']],
+ stew:[[0.2,'chop','🔪 생선 토막 내는 중'],[0.38,'add','🥕 냄비에 재료 넣는 중'],[0.55,'stir','🍲 보글보글 끓이는 중'],[0.64,'spice','🌶️ 고춧가루 푸는 중'],[1,'stir','🍲 얼큰하게 끓이는 중']],
+ sashimi:[[0.18,'scale','🔪 비늘 벗기는 중'],[0.52,'fillet','🔪 포 뜨는 중'],[1,'slice','🍣 얇게 썰어 담는 중']],
+};
+function ckPhase(key,k){const L=CK_PH[key]||CK_PH.grill;let a=0;for(const p of L){if(k<p[0])return{id:p[1],txt:p[2],a,b:p[0],f:(k-a)/Math.max(1e-6,p[0]-a)};a=p[0];}const p=L[L.length-1];return{id:p[1],txt:p[2],a:0,b:1,f:1};}
+/* ★1~★6 요리: 그 ★ 물고기가 걸릴 확률을 정확히 FOOD_X배로 (다른 ★는 그만큼 줄어요 · 최대 100%) */
+function foodShare(ws,tot){const b=fbOn();if(!b||!(b.st>=1&&b.st<=6))return tot;let W=0;for(let j=0;j<ws.length;j++)if(ws[j]&&!SPECIES[j].rare&&starOf(SPECIES[j])===b.st)W+=ws[j];
+ if(!(W>0&&W<tot))return tot;const s1=W/tot,s2=Math.min(1,FOOD_X*s1),a=s2/s1,c=(1-s2)/(1-s1);for(let j=0;j<ws.length;j++)if(ws[j])ws[j]*=starOf(SPECIES[j])===b.st?a:c;return W*a+(tot-W)*c;}
+function eatFood(info){const had=fbOn();
+ GS.fb={k:info.k,st:info.st,r:info.rare?1:0,e:info.ease,u:Date.now()+info.dmin*60000,t:Date.now(),s:info.s||''};markSave();updateHUD();
  showBubble(P.label,'😋',true,2.5);P.hopT=t;burstHearts(P.pos.x,P.pos.y+2,P.pos.z,5);tone(784,0,0.12,0.05,'triangle');tone(1046.5,0.12,0.2,0.05,'triangle');
- const sp=SP_BY[info.s];toast(`😋 ${info.name} 냠냠! ${sp?`(★${info.st} ${sp.name}) `:''}${fmtMin(info.dmin)} 동안 낚시 능력 ★+1 · 낚시 난이도 -${Math.round(info.ease*100)}%${info.ease<easeNow()?` (지금 먹은 효과보다 센 -${Math.round(easeNow()*100)}%가 남은 시간 동안 유지돼요)`:''} → ${starRangeTxt(effStar())}`,4600);}
+ const sp=SP_BY[info.s];
+ toast(`😋 ${info.name} 냠냠! ${sp?`(${info.rare?'✨희귀종':'★'+info.st} ${sp.name}) `:''}${fmtMin(info.dmin)} 동안 ★${Math.min(info.st,GS.rod)} 이하 물고기 낚시 난이도 -${Math.round(info.ease*100)}% · ${info.rare?'✨희귀종·★6':'★'+info.st} 물고기 ${FOOD_X}배 잘 잡혀요${had&&had.st?' (먼저 먹은 요리 효과는 새 요리로 바뀌었어요)':''} → ${starRangeTxt()}`,5600);}
 
+/* ---------- v71: 요리 테이블 · 요리마다 실제 과정대로 움직여요 ---------- */
+const CK_Y=0.775,CK_Z=0.1;
+const CKG={box:()=>geo('ckBox',()=>new THREE.BoxGeometry(1,1,1)),cyl:()=>geo('ckCyl',()=>new THREE.CylinderGeometry(1,1,1,20)),cylO:()=>geo('ckCylO',()=>new THREE.CylinderGeometry(1,1,1,22,1,true)),sph:()=>geo('ckSph',()=>new THREE.SphereGeometry(1,12,9)),tor:()=>geo('ckTor',()=>new THREE.TorusGeometry(1,0.06,6,22))};
+function ckM(g,geom,mat,x,y,z,sx=1,sy=1,sz=1){const m=new THREE.Mesh(geom,mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;g.add(m);return m;}
+function ckFish(mat){const f=new THREE.Group();const b=ckM(f,geo('cookfish',()=>new THREE.SphereGeometry(0.17,16,10)),mat,0,0,0,1.6,0.45,0.7);
+ const tl=new THREE.Mesh(geo('ckTail',()=>new THREE.ConeGeometry(0.1,0.14,4)),mat);tl.rotation.z=Math.PI/2;tl.position.x=0.32;tl.scale.set(1,1,0.3);f.add(tl);
+ const em=stdMat('#1b1b24',0.3),eg=geo('cfe',()=>new THREE.SphereGeometry(0.022,8,6));const e1=ckM(f,eg,em,-0.19,0.03,0.1),e2=ckM(f,eg,em,-0.19,0.03,-0.1);
+ f.userData={b,tl,eyes:[e1,e2]};return f;}
+function ckSprites(g,n,col,size,blend){const a=[];for(let i=0;i<n;i++){const s=glowSprite(col,size);if(!blend)s.material.blending=THREE.NormalBlending;s.visible=false;g.add(s);a.push(s);}return a;}
+const C_RAW=new THREE.Color('#aeb9c6'),C_GOLD=new THREE.Color('#e0a84e'),C_BROWN=new THREE.Color('#99561f'),C_FILLET=new THREE.Color('#f6b4a0'),C_WATER=new THREE.Color('#cfe3ea'),C_RED=new THREE.Color('#d8452b');
+/* 떨어지는 가루(소금·고춧가루)·튀는 비늘 */
+function ckFall(arr,on,x0,y0,z0,y1,spd){arr.forEach((s,i)=>{if(!on){s.visible=false;return;}const k=((t*spd+i/arr.length)%1);s.visible=true;s.position.set(x0+Math.sin(i*2.3)*0.05,lerp(y0,y1,k),z0+Math.cos(i*1.7)*0.05);s.material.opacity=0.9*(1-k*0.5);});}
+function ckFlick(arr,on,x0,y0,z0){arr.forEach((s,i)=>{if(!on){s.visible=false;return;}const k=((t*2.2+i/arr.length)%1);s.visible=true;const a=i*2.4;s.position.set(x0+Math.cos(a)*k*0.22,y0+Math.sin(k*Math.PI)*0.12,z0+Math.sin(a)*k*0.18);s.material.opacity=0.9*(1-k);});}
+/* 🐟 담백 소금구이: 비늘 긁기 → 소금 → 숯불 석쇠에 굽기 (몇 번 뒤집기) → 소금 한 번 더 */
+function ckGrill(u){const g=new THREE.Group(),Z=CK_Z;
+ ckM(g,CKG.box(),stdMat('#e9d2a6',0.8),-0.24,CK_Y+0.018,Z,0.4,0.035,0.3);
+ const bx=0.27;ckM(g,CKG.cyl(),stdMat('#3b3b42',0.7),bx,CK_Y+0.065,Z,0.17,0.13,0.17);ckM(g,CKG.cyl(),stdMat('#7a4a2a',0.85),bx,CK_Y+0.012,Z,0.19,0.024,0.19);
+ const coal=new THREE.MeshStandardMaterial({color:'#2a1208',emissive:'#ff5a1a',emissiveIntensity:0.8,roughness:0.9});
+ for(let i=0;i<10;i++){const a=i*2.1,r=0.03+0.1*((i*37)%10)/10;ckM(g,CKG.sph(),coal,bx+Math.cos(a)*r,CK_Y+0.132,Z+Math.sin(a)*r,0.035,0.022,0.03);}
+ const glow=glowSprite('#ff7a2a',0.5);glow.position.set(bx,CK_Y+0.17,Z);g.add(glow);
+ const wire=stdMat('#2b2b2f',0.5,{metalness:0.6});const ring=ckM(g,CKG.tor(),wire,bx,CK_Y+0.15,Z,0.17,0.17,0.17);ring.rotation.x=Math.PI/2;
+ for(let i=-3;i<=3;i++)ckM(g,CKG.box(),wire,bx,CK_Y+0.15,Z+i*0.045,0.33-Math.abs(i)*0.03,0.006,0.006);
+ const fm=new THREE.MeshStandardMaterial({color:'#aeb9c6',roughness:0.45,metalness:0.2});const fish=ckFish(fm);fish.scale.setScalar(0.5);g.add(fish);
+ const mk=stdMat('#3a1c08',0.9);const marks=[];for(let i=0;i<3;i++){const m=ckM(fish,CKG.box(),mk,-0.1+i*0.1,0.075,0,0.025,0.012,0.2);m.rotation.y=0.5;m.visible=false;marks.push(m);}
+ const salt=ckSprites(g,10,'#ffffff',0.05),flake=ckSprites(g,8,'#dff0ff',0.05,true);
+ return{g,anim(k){const ph=ckPhase('grill',k).id;coal.emissiveIntensity=0.65+0.25*Math.sin(t*7)+0.1*Math.sin(t*17);glow.material.opacity=k>0.27?0.55+0.15*Math.sin(t*9):0.25;
+  const c=clamp((k-0.27)/0.73,0,1);
+  if(k<0.27){fish.position.set(-0.24,CK_Y+0.065,Z);fish.rotation.set(0,0,0);fm.color.copy(C_RAW);}
+  else{const nF=clamp(Math.round(u.dur/5),1,6);const fk=c*(nF+0.6);const cur=Math.floor(fk),lf=fk-cur;let ang=Math.PI*Math.min(cur,nF),hop=0;
+   if(cur<nF&&lf>0.8){const q=(lf-0.8)/0.2;ang+=Math.PI*q;hop=Math.sin(q*Math.PI)*0.1;}
+   fish.position.set(bx,CK_Y+0.18+hop,Z);fish.rotation.set(ang,0,0);
+   if(c<0.5)fm.color.copy(C_RAW).lerp(C_GOLD,c/0.5);else fm.color.copy(C_GOLD).lerp(C_BROWN,(c-0.5)/0.5*0.8);}
+  marks.forEach(m=>m.visible=c>0.35);
+  ckFlick(flake,ph==='scale',-0.24,CK_Y+0.1,Z);
+  ckFall(salt,ph==='salt'||ph==='salt2',ph==='salt'?-0.24:bx,CK_Y+0.42,Z,CK_Y+0.09,1.6);
+  u.smokeA=k>0.27?0.55:0;u.smokeX=bx;u.smokeY=CK_Y+0.25;u.smokeC='#cfcfcf';}};}
+/* 🍲 얼큰 매운탕: 토막 내기 → 냄비에 넣기 → 끓이며 젓기 → 고춧가루 → 보글보글 */
+function ckStew(u){const g=new THREE.Group(),Z=CK_Z;
+ ckM(g,CKG.box(),stdMat('#e9d2a6',0.8),-0.26,CK_Y+0.018,Z,0.4,0.035,0.3);
+ const px=0.25;ckM(g,CKG.box(),stdMat('#c8ccd3',0.45,{metalness:0.4}),px,CK_Y+0.028,Z,0.32,0.055,0.3);ckM(g,CKG.cyl(),stdMat('#1b1b20',0.6),px-0.11,CK_Y+0.03,Z+0.155,0.025,0.03,0.012).rotation.x=Math.PI/2;
+ const flame=new THREE.MeshStandardMaterial({color:'#2a5cff',emissive:'#3d7bff',emissiveIntensity:1.2,transparent:true,opacity:0.85});const fl=ckM(g,CKG.tor(),flame,px,CK_Y+0.062,Z,0.09,0.09,0.25);fl.rotation.x=Math.PI/2;
+ const pm=stdMat('#aab3bd',0.35,{metalness:0.55,side:'double'});const PY=CK_Y+0.06;ckM(g,CKG.cylO(),pm,px,PY+0.06,Z,0.15,0.12,0.15);ckM(g,CKG.cyl(),pm,px,PY+0.003,Z,0.15,0.006,0.15);
+ const rim=ckM(g,CKG.tor(),pm,px,PY+0.12,Z,0.15,0.15,0.15);rim.rotation.x=Math.PI/2;for(const s of[-1,1])ckM(g,CKG.box(),stdMat('#2b2b30',0.6),px+s*0.19,PY+0.1,Z,0.08,0.025,0.035);
+ const bm=new THREE.MeshStandardMaterial({color:'#cfe3ea',roughness:0.25,transparent:true,opacity:0.92});const broth=ckM(g,CKG.cyl(),bm,px,PY+0.095,Z,0.142,0.006,0.142);
+ const fmat=new THREE.MeshStandardMaterial({color:'#aeb9c6',roughness:0.45,metalness:0.2});const fish=ckFish(fmat);fish.scale.setScalar(0.48);fish.position.set(-0.28,CK_Y+0.065,Z);g.add(fish);
+ const chunkM=stdMat('#f0d6cc',0.6),skinM=stdMat('#9fb0c0',0.5);const chunks=[];
+ for(let i=0;i<5;i++){const c=new THREE.Group();ckM(c,CKG.box(),chunkM,0,0,0,0.06,0.045,0.07);ckM(c,CKG.box(),skinM,0,0.024,0,0.062,0.006,0.072);c.visible=false;g.add(c);chunks.push(c);}
+ const veg=[[stdMat('#f4f0e0',0.7),0.05,0.035,0.05],[stdMat('#f4f0e0',0.7),0.05,0.035,0.05],[stdMat('#5fb34a',0.6),0.07,0.02,0.02],[stdMat('#5fb34a',0.6),0.07,0.02,0.02],[stdMat('#e0312b',0.5),0.05,0.015,0.02]].map(([m,a,b,c])=>{const v=ckM(g,CKG.box(),m,0,0,0,a,b,c);v.visible=false;return v;});
+ const bub=[];const bmat=new THREE.MeshStandardMaterial({color:'#ffffff',transparent:true,opacity:0.6,roughness:0.1});for(let i=0;i<7;i++){const b=ckM(g,CKG.sph(),bmat,px,PY+0.1,Z,0.012,0.012,0.012);b.visible=false;bub.push(b);}
+ const chili=ckSprites(g,12,'#c81e1e',0.045);
+ const potAt=i=>[px+Math.cos(i*1.9)*0.07,PY+0.1+Math.sin(t*3+i)*0.006,Z+Math.sin(i*1.9)*0.07];
+ return{g,anim(k){const ph=ckPhase('stew',k);const on=k>=0.2;fl.visible=on;flame.emissiveIntensity=1+0.3*Math.sin(t*20);
+  // 손질: 생선을 토막 내요
+  if(k<0.2){fish.visible=true;const n=Math.floor(ph.f*5.5);fish.scale.set(0.48*(1-0.14*n),0.48,0.48);chunks.forEach((c,i)=>{c.visible=i<n;c.position.set(-0.08-i*0.0+0.02*i,CK_Y+0.06,Z-0.08+i*0.04);c.rotation.set(0,i,0);});}
+  else{fish.visible=false;
+   chunks.forEach((c,i)=>{c.visible=true;const s0=0.2+i*0.025,s1=s0+0.03;if(k<s0){c.position.set(-0.08+0.02*i,CK_Y+0.06,Z-0.08+i*0.04);}else if(k<s1){const q=(k-s0)/(s1-s0);const[ex,ey,ez]=potAt(i);c.position.set(lerp(-0.08,ex,q),lerp(CK_Y+0.06,ey,q)+Math.sin(q*Math.PI)*0.18,lerp(Z-0.08+i*0.04,ez,q));c.rotation.y+=0.2;}else{const[ex,ey,ez]=potAt(i);c.position.set(ex,ey,ez);}});}
+  veg.forEach((v,i)=>{const s0=0.33+i*0.01;if(k<s0){v.visible=false;return;}v.visible=true;const q=clamp((k-s0)/0.02,0,1);const[ex,ey,ez]=potAt(i+5);v.position.set(ex,lerp(PY+0.4,ey,q),ez);v.rotation.set(0,t*0.3+i,0.2*i);});
+  // 국물: 맑은 물 → 고춧가루를 풀면 빨갛게
+  const red=clamp((k-0.55)/0.09,0,1);bm.color.copy(C_WATER).lerp(C_RED,red);
+  const boil=clamp((k-0.3)/0.15,0,1);broth.position.y=PY+0.095+Math.sin(t*9)*0.002*boil;
+  bub.forEach((b,i)=>{if(boil<=0){b.visible=false;return;}const q=((t*1.4+i/7)%1);b.visible=true;const a=i*2.7;b.position.set(px+Math.cos(a)*0.09*((i%3)/3+0.2),PY+0.1+q*0.012,Z+Math.sin(a)*0.09*((i%3)/3+0.2));b.scale.setScalar(0.006+q*0.02*boil);});
+  ckFall(chili,ph.id==='spice',px,PY+0.4,Z,PY+0.1,1.5);
+  u.smokeA=0.2+0.8*boil;u.smokeX=px;u.smokeY=PY+0.16;u.smokeC='#ffffff';}};}
+/* 🍣 싱싱 활어회: 비늘 벗기기 → 포 뜨기 → 얇게 썰어 접시에 담기 */
+function ckSashimi(u){const g=new THREE.Group(),Z=CK_Z;
+ ckM(g,CKG.box(),stdMat('#e9d2a6',0.8),-0.14,CK_Y+0.018,Z,0.56,0.035,0.34);
+ const fm=new THREE.MeshStandardMaterial({color:'#aeb9c6',roughness:0.45,metalness:0.2});const fish=ckFish(fm);fish.scale.setScalar(0.6);fish.position.set(-0.17,CK_Y+0.075,Z);g.add(fish);
+ const bone=new THREE.Group();const bm=stdMat('#efe6d6',0.6);ckM(bone,CKG.box(),bm,0,0,0,0.3,0.012,0.015);for(let i=0;i<7;i++)ckM(bone,CKG.box(),bm,-0.12+i*0.04,0,0,0.008,0.008,0.08);ckM(bone,CKG.sph(),stdMat('#aeb9c6',0.5),-0.17,0.01,0,0.05,0.035,0.04);bone.position.set(-0.24,CK_Y+0.04,Z-0.12);bone.visible=false;g.add(bone);
+ const plX=0.33,plY=CK_Y+0.01;ckM(g,CKG.cyl(),stdMat('#ffffff',0.3),plX,plY,Z,0.17,0.02,0.17);ckM(g,CKG.cyl(),stdMat('#e3eef5',0.3),plX,plY+0.011,Z,0.13,0.003,0.13);
+ ckM(g,CKG.sph(),stdMat('#f7f7f2',0.8),plX+0.07,plY+0.03,Z-0.06,0.06,0.03,0.045);const leaf=ckM(g,CKG.sph(),stdMat('#3f9a3a',0.7),plX+0.02,plY+0.035,Z-0.04,0.07,0.008,0.045);leaf.rotation.y=0.6;ckM(g,CKG.sph(),stdMat('#8fc96a',0.6),plX+0.11,plY+0.03,Z+0.06,0.018,0.014,0.018);
+ const sl=[];for(let i=0;i<10;i++){const m=ckM(g,CKG.box(),stdMat(i%2?'#ff9f8a':'#fff1ea',0.4),0,0,0,0.075,0.012,0.045);const a=-1.4+i*0.25;m.position.set(plX+Math.cos(a)*0.085-0.02,plY+0.03+i*0.002,Z+Math.sin(a)*0.085+0.02);m.rotation.set(0.25,-a,0);m.visible=false;sl.push(m);}
+ const flake=ckSprites(g,9,'#dff0ff',0.05,true);
+ return{g,anim(k){const ph=ckPhase('sashimi',k);const f=fish.userData;
+  if(k<0.18){fm.color.copy(C_RAW);fish.scale.set(0.6,0.6,0.6);f.tl.visible=true;f.eyes.forEach(e=>e.visible=true);bone.visible=false;}
+  else if(k<0.52){const q=ph.f;fm.color.copy(C_RAW).lerp(C_FILLET,clamp(q*1.4,0,1));fish.scale.set(0.6,0.6*(1-0.45*q),0.6*(1-0.2*q));const cut=q>0.5;f.tl.visible=!cut;f.eyes.forEach(e=>e.visible=!cut);bone.visible=q>0.6;}
+  else{const q=ph.f;fm.color.copy(C_FILLET);f.tl.visible=false;f.eyes.forEach(e=>e.visible=false);bone.visible=true;fish.scale.set(0.6*(1-0.75*q),0.33,0.48);fish.position.x=-0.17-0.1*q;}
+  const n=k<0.52?0:Math.ceil(ph.f*10);sl.forEach((m,i)=>m.visible=i<n);
+  ckFlick(flake,ph.id==='scale',-0.17,CK_Y+0.12,Z);u.smokeA=0;}};}
+const CK_BUILD={grill:ckGrill,stew:ckStew,sashimi:ckSashimi};
 function buildTable(){const g=new THREE.Group();const pb=[];const P_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>pb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
  const box=new THREE.BoxGeometry(1,1,1);P_(box,'#b07a4a',0,0.74,0,0,0,0,1.15,0.07,0.68);for(const sx of[-1,1])for(const sz of[-1,1])P_(box,'#8a5a32',sx*0.5,0.37,sz*0.27,0,0,0,0.07,0.74,0.07);
- P_(box,'#e9d2a6',-0.12,0.795,0,0,0,0,0.62,0.035,0.4);P_(box,'#cfd5dc',0.32,0.79,0.12,0,0.4,0,0.26,0.012,0.05);P_(box,'#5a3a22',0.18,0.79,0.06,0,0.4,0,0.1,0.02,0.035);
  const m=new THREE.Mesh(mergeGeometries(pb),VCMAT);m.castShadow=true;m.receiveShadow=true;g.add(m);
- const fishG=new THREE.Group();fishG.position.set(-0.12,0.86,0);g.add(fishG);const fm=stdMat('#aeb9c6',0.35,{metalness:0.3});
- const b=new THREE.Mesh(geo('cookfish',()=>new THREE.SphereGeometry(0.17,16,10)),fm);b.scale.set(1.6,0.45,0.7);fishG.add(b);
- const tl=new THREE.Mesh(new THREE.ConeGeometry(0.1,0.14,4),fm);tl.rotation.z=Math.PI/2;tl.position.x=0.32;tl.scale.set(1,1,0.3);fishG.add(tl);
- const e=new THREE.Mesh(geo('cfe',()=>new THREE.SphereGeometry(0.022,8,6)),stdMat('#1b1b24',0.3));e.position.set(-0.19,0.03,0.1);fishG.add(e);
- const dishG=new THREE.Group();dishG.position.set(-0.05,0.78,0);g.add(dishG);
- const steam=[];for(let i=0;i<4;i++){const s=glowSprite('#ffffff',0.35);s.material.blending=THREE.NormalBlending;s.position.set(0,1,0);g.add(s);steam.push(s);}
- g.userData={fishG,dishG,steam,code:-1};return g;}
-function buildDish(code){const g=new THREE.Group();const key=DISH_CODES[code]||'grill';const pb=[];const P_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>pb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
+ const dishG=new THREE.Group();dishG.position.set(0,0.78,0.05);g.add(dishG);
+ const steam=[];for(let i=0;i<6;i++){const s=glowSprite('#ffffff',0.35);s.material.blending=THREE.NormalBlending;s.position.set(0,1,0);g.add(s);steam.push(s);}
+ g.userData={dishG,steam,code:-1,dcode:-1,stage:0,props:null,key:'grill',st:1,dur:3,t0:0,smokeA:0,smokeX:0,smokeY:1,smokeC:'#ffffff'};return g;}
+function buildDish(code){const g=new THREE.Group();const key=codeKey(code);const pb=[];const P_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>pb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
  const cyl=new THREE.CylinderGeometry(1,1,1,20),sph=new THREE.SphereGeometry(1,14,10),box=new THREE.BoxGeometry(1,1,1);
- if(key==='stew'){P_(cyl,'#2b2b30',0,0.1,0,0,0,0,0.26,0.2,0.26);P_(cyl,'#d8452b',0,0.2,0,0,0,0,0.235,0.01,0.235);for(let i=0;i<7;i++)P_(box,i%2?'#5fb34a':'#f4f0e0',Math.cos(i)*0.13,0.21,Math.sin(i*1.7)*0.12,0,i,0,0.05,0.015,0.03);P_(box,'#2b2b30',0.3,0.15,0,0,0,0,0.12,0.03,0.04);P_(box,'#2b2b30',-0.3,0.15,0,0,0,0,0.12,0.03,0.04);}
+ if(key==='stew'){P_(cyl,'#2b2b30',0,0.1,0,0,0,0,0.26,0.2,0.26);P_(cyl,'#d8452b',0,0.2,0,0,0,0,0.235,0.01,0.235);for(let i=0;i<9;i++)P_(box,i%3===0?'#5fb34a':i%3===1?'#f4f0e0':'#f0d6cc',Math.cos(i*1.3)*0.13,0.21,Math.sin(i*1.7)*0.12,0,i,0,0.05,0.015,0.035);P_(box,'#2b2b30',0.3,0.15,0,0,0,0,0.12,0.03,0.04);P_(box,'#2b2b30',-0.3,0.15,0,0,0,0,0.12,0.03,0.04);}
  else{P_(cyl,'#ffffff',0,0.015,0,0,0,0,0.3,0.03,0.3);P_(cyl,'#e3eef5',0,0.033,0,0,0,0,0.24,0.006,0.24);}
- if(key==='sashimi'){for(let i=0;i<7;i++){const a=-1.1+i*0.35;P_(box,i%2?'#ff9f8a':'#fff1ea',Math.cos(a)*0.12,0.05,Math.sin(a)*0.12-0.02,0.15,-a,0,0.12,0.02,0.07);}P_(sph,'#4caf50',-0.13,0.06,0.1,0,0,0,0.08,0.02,0.05);P_(cyl,'#ffffff',0.2,0.04,0.17,0,0,0,0.07,0.03,0.07);P_(cyl,'#7a2f1e',0.2,0.055,0.17,0,0,0,0.055,0.005,0.055);}
- if(key==='grill'){P_(sph,'#b5652a',0,0.08,0,0,0,0,0.22,0.06,0.09);P_(new THREE.ConeGeometry(1,1,4),'#8a4a1f',0.24,0.08,0,0,0,Math.PI/2,0.06,0.08,0.02);for(let i=0;i<4;i++)P_(box,'#4a2a12',-0.1+i*0.07,0.135,0,0,0,0.4,0.015,0.005,0.12);P_(sph,'#ffe24d',-0.18,0.06,0.13,0,0,0,0.05,0.03,0.04);}
- if(key==='cgrill'){for(let i=0;i<3;i++){P_(new THREE.TorusGeometry(0.07,0.035,8,14,Math.PI*1.4),'#ff7a45',-0.12+i*0.12,0.07,0,Math.PI/2,0,0,1,1,1);}P_(box,'#ffe9a8',0.02,0.11,0,0,0,0,0.05,0.025,0.05);}
- if(key==='steam'){P_(sph,'#e8492b',0,0.09,0,0,0,0,0.16,0.07,0.13);for(const s of[-1,1]){P_(sph,'#e8492b',s*0.2,0.08,0.12,0,0,0,0.07,0.04,0.05);P_(box,'#e8492b',s*0.12,0.06,0.07,0,s*0.5,0,0.14,0.02,0.025);for(let k=0;k<3;k++)P_(box,'#e8492b',s*0.13,0.05,-0.06+k*0.05,0,0,s*0.5,0.18,0.015,0.015);}P_(sph,'#1b1b24',-0.04,0.15,0.11,0,0,0,0.015,0.015,0.015);P_(sph,'#1b1b24',0.04,0.15,0.11,0,0,0,0.015,0.015,0.015);}
- if(key[0]==='f'){const F=FANTASY[+key.slice(1)]||FANTASY[0];const n=F.cols.length;for(let i=0;i<n;i++){const r=0.17-i*0.025;P_(cyl,F.cols[i],0,0.07+i*0.07,0,0,0,0,r,0.065,r);}P_(sph,'#ff4d6d',0,0.07+n*0.07+0.03,0,0,0,0,0.035,0.035,0.035);}
- const m=new THREE.Mesh(mergeGeometries(pb),VCMAT);m.castShadow=true;g.add(m);
- if(key[0]==='f'){const gl=glowSprite('#fff2b0',0.8);gl.position.y=0.35;gl.material.opacity=0.7;g.add(gl);g.userData.glow=gl;}
- return g;}
-function setTableStage(tb,stage,code){const u=tb.userData;u.fishG.visible=stage===1;if(stage===2&&u.code!==code){u.dishG.clear();u.dishG.add(buildDish(code));u.code=code;}u.dishG.visible=stage===2;}
-function animTable(tb,stage,dt){const u=tb.userData;u.steam.forEach((s,i)=>{const k=((t*0.6+i/4)%1);s.position.set(-0.08+Math.sin(t*2+i)*0.05,0.9+k*0.7,Math.cos(t*1.7+i)*0.05);s.material.opacity=(stage===1?0.3:stage===2?0.22:0)*(1-k)*(k*4>1?1:k*4);s.scale.setScalar(0.2+k*0.35);});
- if(stage===1){u.fishG.rotation.y=Math.sin(t*3)*0.06;u.fishG.position.y=0.86+Math.abs(Math.sin(t*14))*0.01;}
- const d=u.dishG.children[0];if(d&&d.userData.glow)d.userData.glow.material.opacity=0.5+0.3*Math.sin(t*4);}
+ if(key==='sashimi'){P_(sph,'#f7f7f2',0.06,0.06,-0.08,0,0,0,0.1,0.05,0.07);P_(sph,'#3f9a3a',-0.02,0.07,-0.06,0,0.6,0,0.11,0.01,0.07);for(let i=0;i<9;i++){const a=-1.4+i*0.33;P_(box,i%2?'#ff9f8a':'#fff1ea',Math.cos(a)*0.13,0.06+i*0.003,Math.sin(a)*0.13+0.02,0.2,-a,0,0.12,0.02,0.07);}P_(sph,'#8fc96a',0.17,0.05,0.12,0,0,0,0.03,0.022,0.03);P_(cyl,'#ffffff',-0.2,0.04,0.17,0,0,0,0.06,0.03,0.06);P_(cyl,'#c8302b',-0.2,0.055,0.17,0,0,0,0.048,0.005,0.048);}
+ if(key==='grill'){P_(sph,'#b5652a',0,0.08,0,0,0,0,0.22,0.06,0.09);P_(new THREE.ConeGeometry(1,1,4),'#8a4a1f',0.24,0.08,0,0,0,Math.PI/2,0.06,0.08,0.02);for(let i=0;i<4;i++)P_(box,'#4a2a12',-0.1+i*0.07,0.135,0,0,0,0.4,0.015,0.005,0.12);for(let i=0;i<6;i++)P_(sph,'#ffffff',-0.12+i*0.045,0.142,(i%2?0.03:-0.03),0,0,0,0.008,0.006,0.008);P_(sph,'#ffe24d',-0.18,0.06,0.13,0,0,0,0.05,0.03,0.04);}
+ const m=new THREE.Mesh(mergeGeometries(pb),VCMAT);m.castShadow=true;g.add(m);return g;}
+function setTableStage(tb,stage,code){const u=tb.userData;
+ if(stage===1&&(u.stage!==1||u.code!==code)){if(u.props)tb.remove(u.props.g);u.key=codeKey(code);u.st=codeSt(code);u.dur=cookSecOf(u.key,u.st);u.t0=t;u.props=CK_BUILD[u.key](u);tb.add(u.props.g);}
+ if(stage===2&&u.dcode!==code){u.dishG.clear();u.dishG.add(buildDish(code));u.dcode=code;}
+ if(u.props)u.props.g.visible=stage===1;u.dishG.visible=stage===2;u.stage=stage;u.code=code;}
+/* 진행률(0~1)을 돌려줘요 */
+function animTable(tb,stage,dt){const u=tb.userData;let k=1;
+ if(stage===1&&u.props){k=clamp((t-u.t0)/Math.max(0.5,u.dur),0,1);u.props.anim(k);}else u.smokeA=stage===2?0.25:0;
+ const sx=stage===2?0:u.smokeX,sy=stage===2?0.95:u.smokeY;
+ u.steam.forEach((s,i)=>{const q=((t*0.6+i/6)%1);s.material.color.set(stage===2?'#ffffff':u.smokeC);s.position.set(sx+Math.sin(t*2+i)*0.05,sy+q*0.7,CK_Z*(stage===2?0.5:1)+Math.cos(t*1.7+i)*0.05);s.material.opacity=u.smokeA*0.5*(1-q)*(q*4>1?1:q*4);s.scale.setScalar(0.18+q*0.35);});
+ return k;}
+/* 손에 드는 요리 도구 (칼 · 집게 · 국자 · 소금통 · 고춧가루통) */
+function ckTools(c){if(c.ckTools)return c.ckTools;const mk=arm=>{const g=new THREE.Group();g.position.set(0,-0.33,0);arm.add(g);return g;};
+ const R=mk(c.arms[0]),L=mk(c.arms[1]);const it={};
+ {const k=new THREE.Group();ckM(k,CKG.box(),stdMat('#5a3a22',0.7),0,-0.03,0,0.035,0.09,0.04);ckM(k,CKG.box(),stdMat('#e3e8ec',0.25,{metalness:0.7}),0,-0.17,0.012,0.008,0.2,0.055);R.add(k);it.knife=k;}
+ {const k=new THREE.Group();const m=stdMat('#b9bec5',0.3,{metalness:0.6});ckM(k,CKG.box(),m,-0.012,-0.12,0,0.008,0.24,0.014).rotation.z=0.06;ckM(k,CKG.box(),m,0.012,-0.12,0,0.008,0.24,0.014).rotation.z=-0.06;R.add(k);it.tongs=k;}
+ {const k=new THREE.Group();const m=stdMat('#c9ced4',0.3,{metalness:0.6});ckM(k,CKG.cyl(),m,0,-0.13,0,0.011,0.26,0.011);ckM(k,CKG.sph(),m,0,-0.27,0.02,0.05,0.03,0.05);R.add(k);it.ladle=k;}
+ {const k=new THREE.Group();ckM(k,CKG.cyl(),stdMat('#ffffff',0.4),0,-0.03,0,0.03,0.08,0.03);ckM(k,CKG.cyl(),stdMat('#3a7bd5',0.4),0,-0.075,0,0.032,0.015,0.032);L.add(k);it.shaker=k;}
+ {const k=new THREE.Group();ckM(k,CKG.cyl(),stdMat('#c81e1e',0.5),0,-0.03,0,0.03,0.08,0.03);ckM(k,CKG.cyl(),stdMat('#f2c14e',0.4),0,-0.075,0,0.032,0.015,0.032);L.add(k);it.spice=k;}
+ for(const k of Object.values(it))k.visible=false;c.ckTools={R,L,it};return c.ckTools;}
+function cookPose(c){const T=c.ckTools;if(!c.cooking){if(T)for(const k of Object.values(T.it))k.visible=false;return;}
+ const key=c.ckKey||'grill',k=c.ckP||0,ph=ckPhase(key,k).id,To=ckTools(c),A=c.arms[0],B=c.arms[1];let use=[];
+ A.rotation.set(-1.45,0,0.3);B.rotation.set(-1.35,0,-0.3);
+ if(ph==='scale'){use=['knife'];const w=Math.sin(t*18);A.rotation.x=-1.42+w*0.08;A.rotation.z=0.42+w*0.14;B.rotation.x=-1.3;B.rotation.z=-0.42;}             // 칼등으로 꼬리→머리 쪽 비늘 긁기
+ else if(ph==='salt'||ph==='salt2'){use=['shaker'];if(ph==='salt2')use.push('tongs');B.rotation.x=-2.05+Math.sin(t*24)*0.1;B.rotation.z=key==='grill'&&ph==='salt2'?0.05:-0.45;A.rotation.x=ph==='salt2'?-1.5:-0.8;}
+ else if(ph==='grill'){use=['tongs'];const u=c.ckU||0;A.rotation.x=-1.55+Math.sin(t*2)*0.05-u*0.35;A.rotation.z=0.25+u*0.25;B.rotation.x=-0.5;B.rotation.z=-0.25;}
+ else if(ph==='chop'){use=['knife'];const a=Math.abs(Math.sin(t*7));A.rotation.x=-1.25-a*0.6;A.rotation.z=0.62;B.rotation.x=-1.3;B.rotation.z=-0.5;}               // 위에서 아래로 탁탁 토막
+ else if(ph==='add'){B.rotation.x=-1.55+Math.sin(t*7)*0.3;B.rotation.z=-0.1+Math.sin(t*7)*0.25;A.rotation.x=-1.0;}                                       // 손으로 집어 냄비에 퐁당
+ else if(ph==='stir'||ph==='spice'){use=['ladle'];if(ph==='spice')use.push('spice');A.rotation.x=-1.7+Math.sin(t*3.2)*0.12;A.rotation.z=0.12+Math.cos(t*3.2)*0.16;if(ph==='spice'){B.rotation.x=-2.05+Math.sin(t*22)*0.1;B.rotation.z=0.15;}else{B.rotation.x=-0.45;B.rotation.z=-0.2;}}
+ else if(ph==='fillet'){use=['knife'];const w=Math.sin(t*2.6);A.rotation.x=-1.42+w*0.06;A.rotation.z=0.45-w*0.22;B.rotation.x=-1.38;B.rotation.z=-0.42;}     // 뼈를 따라 칼을 길게 밀었다 당기기
+ else if(ph==='slice'){use=['knife'];const s=(t*1.3)%1;const p=s<0.7?s/0.7:1-(s-0.7)/0.3;A.rotation.x=-1.35-p*0.18;A.rotation.z=0.5+(s<0.7?0.12:0);B.rotation.x=-1.4+(s>0.8?-0.25:0);B.rotation.z=-0.35+(s>0.8?0.35:0);}  // 칼을 길게 당겨 한 점씩
+ for(const[n,o]of Object.entries(To.it))o.visible=use.includes(n);
+ To.it.ladle.rotation.x=-A.rotation.x-0.55;To.it.tongs.rotation.x=-0.25;To.it.knife.rotation.x=ph==='chop'?0.35:0;
+ c.body.rotation.x=0.14;c.head.rotation.x=0.32;}
+function ckSfx(id,dt){const r=Math.random();
+ if(id==='chop'){if(r<dt*4)tone(260+Math.random()*60,0,0.04,0.03,'square');}
+ else if(id==='scale'){if(r<dt*12)tone(2400+Math.random()*900,0,0.015,0.008,'square');}
+ else if(id==='fillet'||id==='slice'){if(r<dt*2.5)tone(1500+Math.random()*400,0,0.09,0.008,'sawtooth');}
+ else if(id==='grill'||id==='salt2'){if(r<dt*18)tone(3200+Math.random()*2400,0,0.012,0.005,'sawtooth');}
+ else if(id==='stir'||id==='spice'){if(r<dt*5)tone(320+Math.random()*260,0,0.06,0.016,'sine');}
+ else if(id==='salt'){if(r<dt*14)tone(5200+Math.random()*1500,0,0.01,0.004,'square');}
+ else if(id==='add'){if(r<dt*2)tone(500,0,0.06,0.02,'sine');}}
 var cookSt=null; // {stage,code,item,t0,dur,x,z,yaw,table,shownAt,info}
 let cookSel=null,cookDish=null;
 function nearCampfire(){return Math.hypot(P.pos.x-PLAZA.x,P.pos.z-PLAZA.z)<3.6;}
 function openCook(){if(!entered)return;if(cookSt&&cookSt.stage===1)return;closeEmoPanel();closeChat();cookSel=null;cookDish=null;renderCook();$('cook').classList.remove('hidden');}
 function closeCook(){$('cook').classList.add('hidden');}
 function renderCook(){const box=$('cookBody');box.innerHTML='';
- const p=document.createElement('div');p.className='bsub';p.innerHTML='가방 속 물고기로 요리해요. 다 만든 요리를 먹으면 낚시 능력 <b>★+1</b>, 그리고 <b>낚시 난이도가 쉬워져요</b>. <b>재료 ★가 높을수록 더 쉬워지고</b>, <b>오래 걸리는 요리일수록 효과가 오래</b> 가요.';box.appendChild(p);
+ const p=document.createElement('div');p.className='bsub';p.innerHTML=`가방 속 물고기로 요리해요. 요리는 <b>🐟 담백 소금구이 · 🍲 얼큰 매운탕 · 🍣 싱싱 활어회</b> 3가지예요. 먹으면 <b>재료 ★ 이하 물고기의 낚시 난이도가 쉬워지고</b>(탕 -20% · 구이 -30% · 회 -40%), <b>재료와 같은 ★ 물고기가 ${FOOD_X}배</b> 잘 잡혀요. 오래 걸리는 요리일수록 효과가 오래 가요(구이 5분 · 탕 10분 · 회 20분).${GS.rod<7?` 먹는 동안 <b>★${GS.rod+1} 물고기</b>까지 더 잘 걸려요.`:''}`;box.appendChild(p);
  const usable=GS.bag.filter(it=>SP_BY[it.id]);if(!usable.length){const e=document.createElement('div');e.className='empty';e.innerHTML='가방에 물고기가 없어요.<br>물고기를 잡아서 <b>‘🎒 가방에 넣기’</b> 해 주세요.';box.appendChild(e);return;}
  const t1=document.createElement('div');t1.className='btitle';t1.textContent='① 재료 고르기';box.appendChild(t1);
  const list=document.createElement('div');list.className='chips fishpick';
- [...usable].sort((a,b)=>starOf(SP_BY[b.id])-starOf(SP_BY[a.id])).forEach(it=>{const sp=SP_BY[it.id];const b=document.createElement('button');b.textContent=`${sp.name} ★${starOf(sp)} · ${fmtSize(it.s)}`;if(cookSel===it)b.classList.add('on');
-  b.onclick=()=>{cookSel=it;const ds=dishesFor(it.id);cookDish=ds[0]||null;renderCook();};list.appendChild(b);});box.appendChild(list);
- if(!cookSel)return;const sp=SP_BY[cookSel.id];const ds=dishesFor(cookSel.id);
+ [...usable].sort((a,b)=>starOf(SP_BY[b.id])-starOf(SP_BY[a.id])).forEach(it=>{const sp=SP_BY[it.id];const b=document.createElement('button');b.textContent=`${sp.name} ${sp.rare?'✨':''}★${starOf(sp)} · ${fmtSize(it.s)}`;if(cookSel===it)b.classList.add('on');
+  b.onclick=()=>{cookSel=it;const ds=dishesFor(it.id);cookDish=ds.includes(cookDish)?cookDish:(ds[0]||null);renderCook();};list.appendChild(b);});box.appendChild(list);
+ if(!cookSel)return;const sp=SP_BY[cookSel.id];const st=starOf(sp),rare=!!sp.rare;const ds=dishesFor(cookSel.id);
  const t2=document.createElement('div');t2.className='btitle';t2.textContent='② 요리 고르기';box.appendChild(t2);
  if(!ds.length){const e=document.createElement('div');e.className='empty';e.innerHTML=`<b>${sp.name}</b>은(는) 소중한 보호종이라 요리할 수 없어요.<br>놓아주거나 🐠 수조에서 키워 주세요.`;box.appendChild(e);return;}
  const dl=document.createElement('div');dl.className='dishes';ds.forEach(k=>{const D=DISH[k];const b=document.createElement('button');b.className='dish'+(cookDish===k?' on':'');
-  b.innerHTML=`<span class="de">${D.em}</span><b>${D.name}</b><small>${k==='fantasy'?'⏱ 10~30초':`⏱ ${D.sec}초`} · ${cookEffHTML(sp,k)}</small>`;b.onclick=()=>{cookDish=k;renderCook();};dl.appendChild(b);});box.appendChild(dl);
- if(cookDish){const D=DISH[cookDish];const info=document.createElement('div');info.className='dinfo';
-  info.innerHTML=`<b>${D.em} ${sp.name} ${cookDish==='fantasy'?'→ 상상의 요리':D.name}</b><p>${D.desc}</p><ul><li>요리 시간: ${cookDish==='fantasy'?'10초 / 20초 / 30초 중 랜덤':D.sec+'초'}</li><li>먹으면: <em>${cookEffHTML(sp,cookDish)}</em></li><li>재료 <b>★${starOf(sp)} ${sp.name}</b> → 낚시 난이도 <b>-${Math.round((FOOD_EASE[starOf(sp)]||0.05)*100)}%</b> (★1 -5% · ★2 -8% · ★3 -12% · ★4 -16% · ★5 -20% · ★6 -25% · ★7 -30%)</li><li>요리 시간이 길수록 효과가 오래 가요: 10초 → 5분 · 15초 → 10분 · 20초 → 15분 · 30초 → 25분</li><li>지금 ★${GS.rod} 낚싯대 → 먹으면 <em>★${GS.rod+1} 물고기</em>까지</li><li>요리 중에는 움직일 수 없어요. 완성된 요리는 테이블에 올라가 다른 사람들도 볼 수 있어요.</li></ul>`;box.appendChild(info);
+  b.innerHTML=`<span class="de">${D.em}</span><b>${D.name}</b><small>⏱ ${fmtSec(cookSecOf(k,st))} · ${cookEffHTML(sp,k)}</small>`;b.onclick=()=>{cookDish=k;renderCook();};dl.appendChild(b);});box.appendChild(dl);
+ if(cookDish){const D=DISH[cookDish];const tag=rare?'✨희귀종':'★'+st;const info=document.createElement('div');info.className='dinfo';
+  info.innerHTML=`<b>${D.em} ${sp.name} ${D.name}</b><p>${D.desc}</p><ul>
+<li>요리 시간: <b>${fmtSec(cookSecOf(cookDish,st))}</b> (재료 ${tag} 기준 · 구이 ${fmtSec(cookSecOf('grill',st))} · 탕 ${fmtSec(cookSecOf('stew',st))} · 회 ${fmtSec(cookSecOf('sashimi',st))})</li>
+<li>효과 시간: <b>${D.dmin}분</b> (구이 5분 · 탕 10분 · 회 20분)</li>
+<li>낚시 난이도: <b>★${st} 이하</b> 물고기의 줄 팽팽함 <b>-${Math.round(D.ease*100)}%</b> (탕 -20% · 구이 -30% · 회 -40%)${GS.rod<7?` · 내 낚싯대(★${GS.rod})보다 높은 ★ 물고기는 쉬워지지 않아요`:''}</li>
+<li>잡힐 확률: ${rare?`<b>✨ 희귀종 ${FOOD_X}배</b> · ★6 물고기 ${FOOD_X}배`:`<b>★${st} 물고기 ${FOOD_X}배</b>`}${rare?' (🌕 보름달 2배와 곱해져요)':st===7?' (🌈 무지개 · 💫 전설의 기운 · 🎯 찌 · 🦦 해달 효과와 곱해져요)':''}${!rare&&st>=5?' · ✨ 희귀종 확률은 그대로예요 (희귀종으로 만든 요리를 먹어야 올라가요)':''}</li>
+${GS.rod<7?`<li>먹는 동안 ★${GS.rod} 낚싯대로 <b>★${GS.rod+1} 물고기</b>가 더 자주 걸리고, ★${Math.min(7,GS.rod+2)}까지 도전할 수 있어요 (높은 ★ 물고기의 난이도는 그대로)</li>`:''}
+<li>새 요리를 먹으면 먼저 먹은 요리 효과는 새 요리 효과로 바뀌어요 (겹치지 않아요)</li>
+<li>요리 중에는 움직일 수 없어요. 요리하는 모습과 완성된 요리는 다른 사람들도 볼 수 있어요.</li></ul>`;box.appendChild(info);
   const go=document.createElement('button');go.className='primary';go.textContent='🍳 요리 시작';go.onclick=startCook;box.appendChild(go);}}
-function startCook(){if(!cookSel||!cookDish||!GS.bag.includes(cookSel))return;const it=cookSel;let code,info;
- if(cookDish==='fantasy'){const i=Math.floor(Math.random()*FANTASY.length);code=DISH_CODES.indexOf('f'+i);info={k:'f'+i,...FANTASY[i]};}else{code=DISH_CODES.indexOf(cookDish);info={k:cookDish,...DISH[cookDish]};}
+function startCook(){if(!cookSel||!cookDish||!GS.bag.includes(cookSel)||!DISH[cookDish])return;const it=cookSel;const sp=SP_BY[it.id];const st=starOf(sp);const k=cookDish;
+ const code=cookCode(k,st);const info={k,sec:cookSecOf(k,st)};
  GS.bag=GS.bag.filter(x=>x!==it);markSave();closeCook();clearCookTable();
- const yaw=Math.atan2(P.pos.x-PLAZA.x,P.pos.z-PLAZA.z);P.yaw=yaw;const x=P.pos.x+Math.sin(yaw)*0.85,z=P.pos.z+Math.cos(yaw)*0.85;
+ const yaw=Math.atan2(P.pos.x-PLAZA.x,P.pos.z-PLAZA.z);P.yaw=yaw;const x=P.pos.x+Math.sin(yaw)*0.72,z=P.pos.z+Math.cos(yaw)*0.72;
  const tb=buildTable();tb.position.set(x,groundY(x,z),z);tb.rotation.y=yaw+Math.PI;scene.add(tb);setTableStage(tb,1,code);
- cookSt={stage:1,code,item:it,t0:t,dur:info.sec,x,z,yaw:yaw+Math.PI,table:tb,info};mode='cook';P.char.cooking=true;
- $('cookBar').classList.remove('hidden');$('cookName').textContent=`🍳 ${SP_BY[it.id].name} 손질 중…`;ME.ck=[1,code,r2(x),r2(z),r2(yaw+Math.PI)];markPresence();sfx.pop();refreshAct();}
+ cookSt={stage:1,code,item:it,t0:t,dur:info.sec,x,z,yaw:yaw+Math.PI,table:tb,info,nm:sp.name,phT:''};mode='cook';P.char.cooking=true;P.char.ckKey=k;P.char.ckP=0;
+ $('cookBar').classList.remove('hidden');$('cookName').textContent=`${ckPhase(k,0).txt}… (${sp.name})`;ME.ck=[1,code,r2(x),r2(z),r2(yaw+Math.PI)];markPresence();sfx.pop();refreshAct();}
 function cancelCook(){if(!cookSt||cookSt.stage!==1)return;GS.bag.push(cookSt.item);markSave();clearCookTable();toast('요리를 그만뒀어요. 재료는 가방에 돌려놨어요');}
 function clearCookTable(){if(cookSt&&cookSt.table)scene.remove(cookSt.table);if(cookSt&&cookSt.stage===1){mode='walk';}cookSt=null;P.char.cooking=false;$('cookBar').classList.add('hidden');$('dishCard').classList.add('hidden');ME.ck=[0,0,0,0,0];markPresence();}
 function finishCook(){const c=cookSt;c.stage=2;c.shownAt=t;setTableStage(c.table,2,c.code);mode='walk';P.char.cooking=false;$('cookBar').classList.add('hidden');
@@ -2351,15 +2490,15 @@ function finishCook(){const c=cookSt;c.stage=2;c.shownAt=t;setTableStage(c.table
  const fi=foodInfo({k:c.info.k,s:c.item.id});c.food={k:c.info.k,s:c.item.id};
  $('dishName').textContent=`${fi.em} ${fi.name} 완성!`;$('dishSub').textContent=`먹으면 ${effTxt(fi)} · 가방에 담아 두었다가 나중에 먹어도 돼요`;$('dishCard').classList.remove('hidden');
  [784,988,1175,1568].forEach((f,i)=>tone(f,i*0.09,0.18,0.05,'triangle'));burstHearts(c.x,groundY(c.x,c.z)+1.1,c.z,6);showBubble(P.label,fi.em,true,2.5);}
-function dishChoice(eat){const c=cookSt;if(!c||c.stage!==2||!c.food)return;const f=c.food;c.food=null;$('dishCard').classList.add('hidden');
+function dishChoice(eat){const c=cookSt;if(!c||c.stage!==2||!c.food)return;if(eat&&!eatOk())return;const f=c.food;c.food=null;$('dishCard').classList.add('hidden');
  if(eat)eatFood(foodInfo(f));else{if(GS.food.length>=FOOD_MAX){toast(`음식 가방이 꽉 찼어요 (${FOOD_MAX}개). 하나 먹고 담아 주세요`);c.food=f;$('dishCard').classList.remove('hidden');return;}GS.food.push(f);markSave();toast(`🎒 ${foodInfo(f).name}을(를) 가방에 담았어요`);}
  c.shownAt=Math.min(c.shownAt,t-35);}
 function updCook(dt){const c=cookSt;if(!c)return;animTable(c.table,c.stage,dt);
- if(c.stage===1){const k=clamp((t-c.t0)/c.dur,0,1);$('cookFill').style.width=(k*100).toFixed(1)+'%';$('cookLeft').textContent=`${Math.ceil(c.dur*(1-k))}초`;
-  if(Math.random()<dt*6)tone(900+Math.random()*200,0,0.03,0.02,'square');if(k>=1)finishCook();}
+ if(c.stage===1){const k=clamp((t-c.t0)/c.dur,0,1);P.char.ckKey=c.info.k;P.char.ckP=k;const ph=ckPhase(c.info.k,k);$('cookFill').style.width=(k*100).toFixed(1)+'%';$('cookLeft').textContent=fmtSec(Math.ceil(c.dur*(1-k)));if(ph.txt!==c.phT){c.phT=ph.txt;$('cookName').textContent=`${ph.txt}… (${c.nm||''})`;}
+  ckSfx(ph.id,dt);if(k>=1)finishCook();}
  else if(c.stage===2){const far=Math.hypot(P.pos.x-c.x,P.pos.z-c.z)>8;if((t-c.shownAt>50||far)&&!c.food){scene.remove(c.table);cookSt=null;ME.ck=[0,0,0,0,0];markPresence();}
   else if(far&&c.food){/* 먹지도 담지도 않고 떠나면 자동으로 가방에 */if(GS.food.length<FOOD_MAX){GS.food.push(c.food);markSave();toast(`🎒 ${foodInfo(c.food).name}은(는) 가방에 담아 뒀어요`);}c.food=null;$('dishCard').classList.add('hidden');}}}
-function cookPose(c){if(!c.cooking)return;const k=Math.sin(t*16);c.arms[0].rotation.x=-1.0+k*0.35;c.arms[0].rotation.z=0.25;c.arms[1].rotation.x=-0.75;c.arms[1].rotation.z=-0.3;c.body.rotation.x=0.12;c.head.rotation.x=0.25;}
+
 
 /* ---------- 채팅 ---------- */
 const CHAT_KEEP=100,CHAT_LEN=60;
@@ -2392,11 +2531,11 @@ function onChatHistory(list){if(!Array.isArray(list))return;for(const m of list)
 /* ---------- 다른 사람: 낚싯대·요리·채팅·프로필 (공통) ---------- */
 function v2Peer(r,pr,isNew){
  const rd=clamp(pr.rd|0,1,7);r.rd=rd;if(r.char&&r.char.rodLv!==rd)setCharRod(r.char,rd);r.pk=clamp(pr.pk|0,0,PACKS.length-1);r.pt=pr.pt===1?1:0;r.fl=clamp(pr.fl|0,0,FLOATS.length-1);r.rl=clamp(pr.rl|0,0,REELS.length-1);if(r.char&&(r.char.reelLv|0)!==r.rl)setCharReel(r.char,r.rl);if(r.char)setCharPack(r.char,r.pk);if(r.char)r.char.root.userData.peer=r.peer;
- const ck=Array.isArray(pr.ck)&&pr.ck.length===5?pr.ck:[0,0,0,0,0];const st=clamp(ck[0]|0,0,2),code=clamp(ck[1]|0,0,DISH_CODES.length-1);
+ const ck=Array.isArray(pr.ck)&&pr.ck.length===5?pr.ck:[0,0,0,0,0];const st=clamp(ck[0]|0,0,2),code=clamp(ck[1]|0,0,20);
  if(st===0){if(r.cookT){scene.remove(r.cookT);r.cookT=null;}}
  else{const x=num(ck[2],0,-120,120),z=num(ck[3],0,-120,120),yaw=num(ck[4],0,-50,50);if(!r.cookT){r.cookT=buildTable();scene.add(r.cookT);}r.cookT.position.set(x,groundY(x,z),z);r.cookT.rotation.y=yaw;setTableStage(r.cookT,st,code);
   if(st===2&&r.ckSt===1&&!isNew){showBubble(r.label,'🍽️',true,2.5);r.hopT=t;}}
- r.ckSt=st;if(r.char)r.char.cooking=st===1;
+ r.ckSt=st;if(r.char){r.char.cooking=st===1;r.char.ckKey=codeKey(code);}
  r.bt=pr.bt===1?1:0;r.j=+pr.j||0;r.lv=Array.isArray(pr.lv)?pr.lv.slice(0,5).filter(e=>Array.isArray(e)&&e.length===2).map(e=>[clamp(e[0]|0,0,63),clamp(+e[1]||0,0,1e6)]):[];
  if(pr.pf&&typeof pr.pf==='object')r.pf=pr.pf;
  if(netMode!=='ws'){const cm=Array.isArray(pr.cm)?pr.cm:null;const seq=cm?cm[0]|0:0;
@@ -2506,7 +2645,7 @@ function doCtx(){if(ctxKind==='boat'){boardBoat();return;}if(ctxKind==='unboat')
 const SAVE_KEY='monggeul-save-v2',ACCT_KEY='monggeul-acct',GUEST_BAK='monggeul-guest-backup';
 var acct=null,cloud=null,saveBusy=false,lastSaveAt=0,lastSaveOk=0,saveErr='';
 function loveAll(){const o={};for(const d of ANIM_DEFS){try{const n=+localStorage.getItem('monggeul-love-'+d.id)||0;if(n)o[d.id]=n;}catch(e){}}return o;}
-function collectSave0(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,floats:GS.floats||[],float:GS.float|0,tankUp:GS.tankUp|0,reels:GS.reels||[],reel:GS.reel|0,lotPend:GS.lotPend||null,att:GS.att||null,hats:GS.hats||[],pets:GS.pets||[],pet:GS.pet|0,rwPend:GS.rwPend||null,rwDay:GS.rwDay||null,freeLot:GS.freeLot|0,bag:GS.bag,food:GS.food,buffUntil:GS.buffUntil,ease:GS.ease||0,easeUntil:GS.easeUntil||0,stats:GS.stats}};}
+function collectSave0(){return{v:2,at:Date.now(),look:LOOK,name:NAME,book,tank,love:loveAll(),emoji:recentEmoji,gs:{money:GS.money,rods:GS.rods,rod:GS.rod,packs:GS.packs,pack:GS.pack|0,floats:GS.floats||[],float:GS.float|0,tankUp:GS.tankUp|0,reels:GS.reels||[],reel:GS.reel|0,lotPend:GS.lotPend||null,att:GS.att||null,hats:GS.hats||[],pets:GS.pets||[],pet:GS.pet|0,rwPend:GS.rwPend||null,rwDay:GS.rwDay||null,freeLot:GS.freeLot|0,bag:GS.bag,food:GS.food,fb:fbOn()||null,stats:GS.stats}};}
 function applySave0(d){if(!d||typeof d!=='object')return false;
  const L=d.look;if(L&&[L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK={hat:clamp(L.hat,0,7),hc:clamp(L.hc,0,COLORS.length-1),cloth:clamp(L.cloth,0,4),cc:clamp(L.cc,0,COLORS.length-1)};
  if(d.name&&Number.isInteger(d.name.a)&&Number.isInteger(d.name.b)){const ck=checkNick(d.name.nk||'',true);NAME={a:d.name.a,b:d.name.b,nk:ck.ok?ck.nick:''};}
@@ -2517,8 +2656,8 @@ function applySave0(d){if(!d||typeof d!=='object')return false;
  const g=d.gs||{};GS.money=clamp(Math.floor(+g.money||0),0,1e9);GS.rods=[...new Set([1,...(Array.isArray(g.rods)?g.rods:[]).map(x=>x|0).filter(x=>x>=1&&x<=7)])].sort();GS.rod=GS.rods.includes(g.rod|0)?g.rod|0:Math.max(...GS.rods);
  GS.packs=[...new Set((Array.isArray(g.packs)?g.packs:[]).map(x=>x|0).filter(x=>x>=1&&x<PACKS.length))].sort();GS.pack=GS.packs.includes(g.pack|0)?g.pack|0:0;GS.floats=[...new Set((Array.isArray(g.floats)?g.floats:[]).map(x=>x|0).filter(x=>x>=1&&x<FLOATS.length))].sort((a,b)=>a-b);GS.float=GS.floats.includes(g.float|0)?g.float|0:0;GS.tankUp=clamp(g.tankUp|0,0,TANK_LV_MAX);tankCr=[];GS.reels=[...new Set((Array.isArray(g.reels)?g.reels:[]).map(x=>x|0).filter(x=>x>=1&&x<REELS.length))].sort((a,b)=>a-b);GS.reel=GS.reels.includes(g.reel|0)?g.reel|0:0;GS.freeLot=clamp(g.freeLot|0,0,1000);GS.att=attOk(g.att);GS.hats=[...new Set((Array.isArray(g.hats)?g.hats:[]).map(x=>x|0).filter(x=>x===7))];GS.pets=[...new Set((Array.isArray(g.pets)?g.pets:[]).map(x=>x|0).filter(x=>x===1))];GS.pet=GS.pets.includes(g.pet|0)?g.pet|0:0;if(LOOK.hat===7&&!GS.hats.includes(7))LOOK.hat=6;GS.rwPend=rwPendOk(g.rwPend);GS.rwDay=rwDayOk(g.rwDay);GS.lotPend=(g.lotPend&&Array.isArray(g.lotPend.c)&&g.lotPend.c.length===6&&[0,1200,3000,6000,12000,30000,2000,5000,10000,20000,50000].includes(g.lotPend.p|0))?{p:g.lotPend.p|0,c:g.lotPend.c.map(String),n:String(g.lotPend.n||''),...(g.lotPend.f?{f:1}:{})}:null;if(P.char)setCharReel(P.char,GS.reel);if(P.char)setCharPack(P.char,GS.pack);
  GS.bag=(Array.isArray(g.bag)?g.bag:[]).filter(o=>o&&SP_BY[o.id]&&Number.isFinite(+o.s)).slice(0,1000).map(o=>({id:o.id,s:+o.s,t:+o.t||Date.now(),...(o.x===3?{x:3}:{})}));
- GS.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&(DISH[f.k]||/^f\d$/.test(f.k))).slice(0,300).map(f=>({k:f.k,s:SP_BY[f.s]?f.s:''}));
- GS.buffUntil=Number.isFinite(+g.buffUntil)?+g.buffUntil:0;GS.ease=clamp(+g.ease||0,0,0.2);GS.easeUntil=Number.isFinite(+g.easeUntil)?+g.easeUntil:0;GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});LEG.n=Math.max(LEG.n,(+GS.stats.leg||0)|0);if(Array.isArray(GS.stats.nofol)){NOFOL.clear();for(const id of GS.stats.nofol)NOFOL.add(String(id));try{localStorage.setItem('monggeul-nofollow',JSON.stringify([...NOFOL]));}catch(e){}}
+ GS.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&foodKey(f.k)).slice(0,300).map(f=>({k:foodKey(f.k),s:SP_BY[f.s]?f.s:''}));
+ GS.fb=fbOk(g.fb)||((+g.buffUntil||0)>Date.now()?{k:'',st:0,r:0,e:0,u:Math.min(+g.buffUntil,Date.now()+21*60000),t:0,s:''}:null);GS.stats=Object.assign({sold:0,cooked:0,earned:0},g.stats&&typeof g.stats==='object'?g.stats:{});LEG.n=Math.max(LEG.n,(+GS.stats.leg||0)|0);if(Array.isArray(GS.stats.nofol)){NOFOL.clear();for(const id of GS.stats.nofol)NOFOL.add(String(id));try{localStorage.setItem('monggeul-nofollow',JSON.stringify([...NOFOL]));}catch(e){}}
  try{localStorage.setItem('monggeul-me',JSON.stringify({look:LOOK,name:NAME}));localStorage.setItem(KEY,JSON.stringify(book));localStorage.setItem(TANK_KEY,JSON.stringify(tank));}catch(e){}
  if(P.char&&!window.__applyQuiet){rebuildMe();}buildEmoteBar();updateHUD();return true;}
 function loadLocalGS(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s&&s.gs){const keep={look:LOOK,name:NAME,book,tank};applySave(Object.assign({},s,keep,{gs:s.gs}));}}catch(e){}}
@@ -2563,7 +2702,7 @@ async function logout(){if(!acct)return;await doSave(false);try{await authCall('
 /* ---------- 매 프레임 ---------- */
 let v2HudAcc=0;
 function updV2(dt){updHappy(dt);updFoam(dt);updReels(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);rwTick(dt);opTick(dt);nmTick(dt);petTick(dt);attTick(dt);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
- for(const r of remote.values()){if(r.cookT)animTable(r.cookT,r.ckSt,dt);}
+ for(const r of remote.values()){if(r.cookT){const k=animTable(r.cookT,r.ckSt,dt);if(r.char)r.char.ckP=k;}}
  v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();const bs=buffShort();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}${reelHud()}${floatHud()}`+(bs?` · ${bs}`:'');$('hudG').classList.toggle('buff',!!bs);
   if(GS._buffWas&&bl<=0)toast('🍳 요리 효과가 끝났어요',2400);GS._buffWas=bl>0;saveTick();}}
 
@@ -2749,12 +2888,20 @@ function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 
 /* ---------- v6: 업데이트 공지 · 한 단계 위 물고기 ---------- */
 const HARD_D=0.16;
-function starRangeTxt(E){return E>=7?`★7 물고기까지 모두`:`★${E} 물고기까지 편하게 · ★${E+1}는 어렵지만 도전 가능`;}
-function hardTxt(sp){const st=starOf(sp),E=effStar();return`🔥 ★${st} 물고기가 걸렸어요! 내 낚시 능력(★${E})보다 한 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
-function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · 한 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-14a';
+function starRangeTxt(){const R=GS.rod;if(R>=7)return`★7 물고기까지 모두`;const hi=Math.min(7,effStar()+1),lo=R+1;return`★${R} 물고기까지 편하게 · ★${lo===hi?lo:lo+'~★'+hi}는 어렵지만 도전 가능`;}
+function hardTxt(sp){const st=starOf(sp),R=GS.rod;return`🔥 ★${st} 물고기가 걸렸어요! 내 낚싯대(★${R})보다 ${st-R>1?'두':'한'} 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
+function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.rod>1?'두':'한'} 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
+const NEWS_VER='2026-11-14c';
 const NEWS=[
- {d:'11월 14일',t:'✨ 희귀종이 더 잘 나와요 · 🌕 보름달',n:true,i:[
+ {d:'11월 14일',t:'🍳 요리가 새로워졌어요 · 담백 소금구이 · 얼큰 매운탕 · 싱싱 활어회',n:true,i:[
+  '🍳 요리는 이제 <b>🐟 담백 소금구이 · 🍲 얼큰 매운탕 · 🍣 싱싱 활어회</b> 3가지예요. 게·새우·무지개 물고기도 모두 이 3가지로 요리해요 (보호종은 그대로 요리할 수 없어요).',
+  '⏱ 요리 시간은 재료 ★와 요리마다 달라요: ★1 3초·5초·10초 · ★2 5초·10초·20초 · ★3 7초·14초·28초 · ★4 10초·20초·30초 · ★5 15초·30초·1분 · ★6 20초·40초·1분 20초 · ★7 30초·1분·2분 (구이·탕·회 순서).',
+  '🎣 먹으면 <b>재료 ★ 이하 물고기</b>의 줄 팽팽함이 <b>탕 -20% · 구이 -30% · 회 -40%</b> 쉬워져요. 효과는 <b>구이 5분 · 탕 10분 · 회 20분</b>. 낚싯대보다 높은 ★ 물고기는 쉬워지지 않아요.',
+  '🎯 <b>재료와 같은 ★ 물고기가 잡힐 확률이 2배</b>가 돼요. 다른 효과와는 그대로 곱해져요: ★7 요리 + 🌈 무지개(×4) = <b>×8</b> (기본 0.1%라면 0.8%). 🌕 보름달 · 💫 전설의 기운 · 🎯 찌 · 🦦 해달도 마찬가지예요.',
+  '✨ 희귀종 확률은 <b>희귀종으로 만든 요리</b>를 먹었을 때만 2배로 올라가요. ★5·★6 요리를 먹어도 희귀종 확률은 그대로예요.',
+  '👩‍🍳 비늘 긁기 · 소금 뿌리기 · 석쇠에 뒤집기, 토막 내기 · 냄비에 넣기 · 국자로 젓기 · 고춧가루, 비늘 벗기기 · 포 뜨기 · 얇게 썰어 담기까지 요리마다 실제 과정대로 움직여요.',
+  '🍽️ 새 요리를 먹으면 먼저 먹은 요리 효과는 새 요리 효과로 바뀌어요. 예전에 만들어 둔 버터 구이·통찜·상상의 요리는 비슷한 새 요리로 바뀌었어요.']},
+ {d:'11월 14일',t:'✨ 희귀종이 더 잘 나와요 · 🌕 보름달',i:[
   '✨ 희귀종이 이제 <b>★7 전설보다 2배</b> 잘 나와요. ★7처럼 <b>멀리 던졌을 때</b>(바다는 해안에서 먼 곳, 민물은 힘 게이지 끝) 따로 기회가 와요.',
   '🌕 <b>보름달</b>은 게임 속 <b>2일에 한 번</b> 떠요(실제로 20분마다 번갈아). 보름달이 뜬 밤에는 <b>희귀종 확률이 2배</b>! 다른 날 밤엔 초승달이 떠요.',
   '🎯 찌·무지개 이벤트·아기 해달·전설의 기운은 희귀종 확률에 영향을 주지 않아요. ★7 미만 낚싯대는 ★7과 똑같이 0.4배예요.',
@@ -3167,7 +3314,7 @@ function legMult(){return rainbowOn()?4:legPity();}
 function legGauge(){return Math.min(100,Math.round(LEG.n/(LEG_PITY*2)*100));}
 function legBase(p,hab){if(hab==='sea'){if(p<0.8)return 0;return LEG_BASE*(BOAT.on&&BOAT.far?1:0.5);}if(p<0.85)return 0;return LEG_BASE*0.5;}
 function pickFish7(p,hab){if(window.__pick)return null;const b=legBase(p,hab);if(!b)return null;const E=effStar();const rf=E>=7?1:0.4;if(E>=6){LEG.n++;saveLeg();}
- if(Math.random()>=b*legMult()*rf*(floatOn()?floatOn().leg:1)*petLeg())return null;
+ if(Math.random()>=b*legMult()*rf*(floatOn()?floatOn().leg:1)*petLeg()*food7())return null;
  const ph=phaseOf(hourNow()),fresh=hab!=='sea',cand=[];let tot=0;
  for(const sp of SPECIES){if(starOf(sp)!==7)continue;if((sp.hab==='fresh')!==fresh)continue;if(sp.pondOnly&&hab!=='pond')continue;if(sp.riverOnly&&hab!=='river')continue;if(sp.eventOnly&&!rainbowOn())continue;
   let w=sp.w;if(!sp.time.includes('any'))w*=sp.time.includes(ph)?2.4:0.3;cand.push([sp,w]);tot+=w;}
@@ -3393,17 +3540,11 @@ function animPack(c,dt,speed){const g=c.packG;if(!g)return;const fx=g.userData.f
   const sp=fx.spark;if(sp){const k=(ph*0.7)%1;const side=Math.floor(ph*0.7)%2?1:-1;sp.position.set(side*(0.25+k*0.2),0.15+k*0.18,-0.12);sp.material.opacity=Math.sin(k*Math.PI)*(0.55+0.35*(S?S.night:0));sp.material.rotation=ph;}}}
 
 /* ---------- v22: 재료 ★ = 효과 세기(낚시 난이도 감소) · 요리 시간 = 지속시간 ---------- */
-const FOOD_EASE=[0,0.05,0.08,0.12,0.16,0.2,0.25,0.3];      // 재료 ★1~★7 → 낚시 난이도 감소율
-const FOOD_MIN={10:5,15:10,20:15,30:25};                    // 요리 시간(초) → 효과 지속(분)
-function foodEff(info,sid){const sp=SP_BY[sid];const st=sp?starOf(sp):1;
- return Object.assign(info,{s:sid,st,dmin:FOOD_MIN[info.sec]||Math.max(5,info.min*2),ease:FOOD_EASE[st]||0.05});}
 function fmtMin(m){const mm=Math.floor(m),ss=Math.round((m-mm)*60);return ss?`${mm}분 ${ss}초`:`${mm}분`;}
-function easeLeft(){return Math.max(0,(GS.easeUntil||0)-Date.now());}
-function easeNow(){return easeLeft()>0?(+GS.ease||0):0;}
-function effTxt(i){return`${fmtMin(i.dmin)} 동안 ★+1 · 낚시 난이도 -${Math.round(i.ease*100)}%`;}
-function buffShort(){const bl=buffLeft(),e=easeNow();return(bl>0?`🍳 +1★ ${fmtLeft(bl)}`:'')+(e>0?`${bl>0?' · ':'🍳 '}난이도 -${Math.round(e*100)}%${Math.abs(easeLeft()-bl)>1500?' '+fmtLeft(easeLeft()):''}`:'');}
-function cookEffHTML(sp,k){const e=Math.round((FOOD_EASE[starOf(sp)]||0.05)*100);
- if(k==='fantasy')return`5~25분 · ★+1 · 난이도 -${e}%`;const D=DISH[k];return`${FOOD_MIN[D.sec]||5}분 · ★+1 · 난이도 -${e}%`;}
+function effTxt(i){return`${fmtMin(i.dmin)} 동안 ★${Math.min(i.st,GS.rod)} 이하 난이도 -${Math.round(i.ease*100)}% · ${i.rare?'✨희귀종·★6':'★'+i.st} ${FOOD_X}배${GS.rod<7?` · ★${GS.rod+1}까지`:''}`;}
+function buffShort(){const b=fbOn();if(!b)return'';const L=fmtLeft(b.u-Date.now());if(!b.st)return`🍳 +1★ ${L}`;
+ return`🍳 ${DISH[b.k].em}${GS.rod<7?' +1★':''} -${Math.round(b.e*100)}% · ${b.r?'✨':'★'+b.st}×${FOOD_X} ${L}`;}
+function cookEffHTML(sp,k){const D=DISH[k];return`${D.dmin}분 · ★${Math.min(starOf(sp),GS.rod)} 이하 -${Math.round(D.ease*100)}% · ${sp.rare?'✨희귀종':'★'+starOf(sp)} ${FOOD_X}배`;}
 
 /* ---------- v23: 휴대폰 주소창이 내려오거나 올라갈 때 버튼도 따라 움직이기 ---------- */
 let VV_T=-1,VV_B=-1;
@@ -3487,7 +3628,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-14b';
+const BUILD='2026-11-14c';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -3507,7 +3648,7 @@ function mergeItems(B,L,S){const b=B?sNormItems(B):null,l=sNormItems(L),s=sNormI
  for(const o of s){const k=sIkey(o);if(seen.has(k))continue;if(bk&&bk.has(k)&&!lk.has(k))continue;/* 이 화면에서 팔기·놓아주기·옮기기 한 것 */seen.add(k);out.push(o);}
  for(const o of l){const k=sIkey(o);if(seen.has(k))continue;if(bk&&bk.has(k))continue;/* 다른 기기에서 이미 뺀 것 */seen.add(k);out.push(o);}
  return out;}
-function mergeFood(B,L,S){const c=a=>{const m=new Map();for(const f of(Array.isArray(a)?a:[]))if(f&&typeof f.k==='string'){const k=f.k+'|'+(f.s||'');m.set(k,(m.get(k)||0)+1);}return m;};
+function mergeFood(B,L,S){const c=a=>{const m=new Map();for(const f of(Array.isArray(a)?a:[]))if(f&&foodKey(f.k)){const k=foodKey(f.k)+'|'+(f.s||'');m.set(k,(m.get(k)||0)+1);}return m;};
  const mb=B?c(B):null,ml=c(L),ms=c(S);const out=[];
  for(const k of new Set([...ms.keys(),...ml.keys()])){const sn=ms.get(k)||0,ln=ml.get(k)||0;let n=mb?sn+(ln-(mb.get(k)||0)):Math.max(sn,ln);n=Math.max(0,n);const j=k.indexOf('|');for(let i=0;i<n;i++)out.push({k:k.slice(0,j),s:k.slice(j+1)});}
  return out;}
@@ -3530,7 +3671,7 @@ function merge3(B,L,S){B=B&&typeof B==='object'?B:null;L=L||{};S=S||{};
  g.rod=pk(bg&&bg.rod,lg.rod,sg.rod);g.pack=pk(bg&&bg.pack,lg.pack,sg.pack);
  g.bag=mergeItems(bg&&bg.bag,lg.bag,sg.bag);g.food=mergeFood(bg&&bg.food,lg.food,sg.food);
  g.buffUntil=Math.max(+sg.buffUntil||0,+lg.buffUntil||0);
- if((+lg.easeUntil||0)>(+sg.easeUntil||0)){g.ease=lg.ease;g.easeUntil=lg.easeUntil;}
+ {const a=fbOk(lg.fb),b=fbOk(sg.fb);g.fb=a&&b?((a.t||0)>=(b.t||0)?a:b):(a||b||null);}
  const bs=(bg&&bg.stats)||{},ls=lg.stats||{},ss=sg.stats||{};const st=Object.assign({},ss);
  for(const k of new Set([...Object.keys(ss),...Object.keys(ls)])){
   if(k==='leg'||k==='lotBest')st[k]=Math.max(+ss[k]||0,+ls[k]||0);
@@ -3561,7 +3702,7 @@ function applySave(d){if(!d||typeof d!=='object')return false;
  if(d.book&&typeof d.book==='object')for(const[k,v]of Object.entries(d.book))if(!SP_BY[k]&&v&&typeof v==='object')UNK.book[k]=v;
  UNK.tank=tk.filter(o=>!SP_BY[o.id]);
  const bg=sNormItems(g.bag);UNK.bag=bg.filter(o=>!SP_BY[o.id]);
- UNK.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&!(DISH[f.k]||/^f\d$/.test(f.k)));
+ UNK.food=(Array.isArray(g.food)?g.food:[]).filter(f=>f&&typeof f.k==='string'&&!foodKey(f.k));
  if(d.hm&&typeof d.hm==='object')for(const[k,v]of Object.entries(d.hm))if(+v>(+HOF_MINE[k]||0))HOF_MINE[k]=+v;
  try{localStorage.setItem(HOFMINE_KEY,JSON.stringify(HOF_MINE));}catch(e){}
  const d2=Object.assign({},d,{tank:tk,gs:Object.assign({},g,{bag:bg})});
@@ -3887,15 +4028,15 @@ function updFloat(f,x,z,sink,dip){updFloat0(f,x,z,sink,dip);
   for(const sp of U.sparks){const q=sp.userData;const a=q.a+t*0.35;sp.position.set(Math.cos(a)*q.r,q.y+0.02*Math.sin(t*1.3+q.ph),Math.sin(a)*q.r);
    const tw=Math.max(0,Math.sin(t*q.sp*2.2+q.ph));const k=tw*tw*tw;sp.material.opacity=k*(0.55+0.35*night)*(bite?1.3:1);const z=q.sz*(0.6+0.6*k);sp.scale.set(z,z,1);}}}
 /* ---------- v37: 도감 맨 위 '전설의 기운' 카드 ---------- */
-function legCardHTML(){const g=legGauge(),pm=legPity(),E=effStar(),F=floatOn(),rb=rainbowOn(),fm=(F?F.leg:1)*petLeg(),rf=E>=7?1:0.4;
+function legCardHTML(){const g=legGauge(),pm=legPity(),E=effStar(),F=floatOn(),rb=rainbowOn(),fm=(F?F.leg:1)*petLeg()*food7(),rf=E>=7?1:0.4,rfR=(GS.rod>=7?1:0.4)*foodRare();
  const mult=rb?4:pm;const pc=x=>{const v=x*100;return v>=1?v.toFixed(1)+'%':v.toFixed(2)+'%';};
  const boat=LEG_BASE*mult*rf*fm,shore=LEG_BASE*0.5*mult*rf*fm;const casts=LEG.n|0,full=LEG_PITY*2;
  const st=rb?`<b class="lgon">🌈 무지개 이벤트 중!</b> 지금은 기운 대신 <b>★7 4배</b> · ${mmss(rainbowLeftMs())} 남음`:`🌦️ 다음 무지개까지 <b>${mmss(rainbowLeftMs())}</b> (뜨면 기운 대신 4배)`;
- return`<div class="lgc"><div class="lgh"><span>💫 전설의 기운</span><b>${g}%</b><em>기운 효과 ★7 ×${pm.toFixed(1)}${rb?' (무지개 끝나면)':''}${F?` · 🎯찌 ×${F.leg}`:''}${petLeg()>1?' · 🦦해달 ×1.5':''}</em></div>
+ return`<div class="lgc"><div class="lgh"><span>💫 전설의 기운</span><b>${g}%</b><em>기운 효과 ★7 ×${pm.toFixed(1)}${rb?' (무지개 끝나면)':''}${F?` · 🎯찌 ×${F.leg}`:''}${petLeg()>1?' · 🦦해달 ×1.5':''}${food7()>1?` · 🍳★7 요리 ×${FOOD_X}`:''}</em></div>
  <div class="lgbar"><i style="width:${Math.max(2,g)}%"></i><s style="left:50%"></s><u style="left:50%">×2</u><u style="left:100%">×3</u></div>
  <div class="lgs">${st}</div>
  <div class="lgs">🎣 지금 ★7 확률(물고기가 걸릴 때마다): 배 타고 먼 바다 <b>${pc(boat)}</b> · 해안 먼 바다·강·연못 끝 <b>${pc(shore)}</b></div>
- <div class="lgs">✨ 희귀종 확률: 배 타고 먼 바다 <b>${pc(RARE_K*LEG_BASE*rf*(fullMoonNow()?2:1))}</b> · 해안 먼 바다·강·연못 끝 <b>${pc(RARE_K*LEG_BASE*0.5*rf*(fullMoonNow()?2:1))}</b> ${fullMoonNow()?'<b class="lgon">🌕 보름달 밤 · 2배!</b>':`· 🌕 다음 보름달 밤까지 ${mmss(fullMoonLeft()*1000)} (뜨면 2배)`}</div>
+ <div class="lgs">✨ 희귀종 확률${foodRare()>1?` (🍳 희귀종 요리 ×${FOOD_X})`:''}: 배 타고 먼 바다 <b>${pc(RARE_K*LEG_BASE*rfR*(fullMoonNow()?2:1))}</b> · 해안 먼 바다·강·연못 끝 <b>${pc(RARE_K*LEG_BASE*0.5*rfR*(fullMoonNow()?2:1))}</b> ${fullMoonNow()?'<b class="lgon">🌕 보름달 밤 · 2배!</b>':`· 🌕 다음 보름달 밤까지 ${mmss(fullMoonLeft()*1000)} (뜨면 2배)`}</div>
  <div class="lgs dim">★6 이상 낚싯대로 <b>멀리 던져 물고기가 걸릴 때마다</b> 쌓여요 (${fmtM(Math.min(casts,full))} / ${fmtM(full)}번 · 최대 ×3). ★7을 낚으면 0으로 돌아가요.${E<6?'<br><span class="lgw">⚠ 지금 낚싯대로는 기운이 쌓이지 않아요 (★6 이상 필요)</span>':''}${E<7?' ★6 낚싯대는 ★7 확률이 0.4배예요.':''}</div></div>`;}
 function renderLegCard(){const el=$('legCard');if(el)el.innerHTML=legCardHTML();}
 setInterval(()=>{if(!$('book').classList.contains('hidden'))renderLegCard();},1000);
@@ -4772,7 +4913,7 @@ function fullMoonNow(){return fullMoonNight()&&phaseOf(hourNow())==='night';}
 /* 다음 보름달 밤까지 남은 시간(초) */
 function fullMoonLeft(){const now=Date.now()/1000,d=moonDay();const nightStart=k=>k*DAY_LEN+DAY_LEN/2;let k=d%2===0?d:d+1;let s=nightStart(k);if(s+DAY_LEN/2<=now){k+=2;s=nightStart(k);}return Math.max(0,s-now);}
 /* 희귀종 확률: ★7과 같은 조건(멀리 던졌을 때) · 찌·무지개·해달·기운은 영향 없음 */
-function rareChance(p,hab){const b=legBase(p,hab);if(!b)return 0;const rf=effStar()>=7?1:0.4;return RARE_K*b*rf*(fullMoonNow()?2:1);}
+function rareChance(p,hab){const b=legBase(p,hab);if(!b)return 0;const rf=GS.rod>=7?1:0.4;return RARE_K*b*rf*(fullMoonNow()?2:1)*foodRare();}
 function pickRare(p,hab){if(window.__pick)return null;const c=rareChance(p,hab);if(!c||Math.random()>=c)return null;
  const ph=phaseOf(hourNow()),fresh=hab!=='sea',cand=[];let tot=0;
  for(const r of Object.values(RARE_OF)){const b=SPECIES.find(s=>s.id===r.rare);if(!b)continue;if((b.hab==='fresh')!==fresh)continue;if(b.pondOnly&&hab!=='pond')continue;if(b.riverOnly&&hab!=='river')continue;
@@ -4855,7 +4996,7 @@ function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=fa
  rodTipWorld(P.char,castFrom);castDur=0.5+0.45*p;castT0=t;rbCastStart();sfx.whoosh(p);setF('casting');}
 function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(habitat==='sea')toast(farZoneTxt(fishFar())+(BOAT.on&&BOAT.far?' · 🌊 선상 보너스 ★4↑ 2배':''),2000);biteAt=t+rand(3.2,9.5)*floatSlow();nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
 function startBite(){setF('bite');biteT0=t;sfx.bell();try{navigator.vibrate&&navigator.vibrate([60,40,60]);}catch(e){}ripple(castTgt.x,castTgt.z,1.3);}
-function hook(){fish=pickFish7(fishFar(),habitat)||pickRare(fishFar(),habitat)||pickFish(fishFar(),habitat);fish.D=fightD(fish.sp,fish.frac);fish.ease=easeNow();if(fish.ease>0)fish.D=Math.max(0.04,fish.D*(1-fish.ease));fish.over=starOf(fish.sp)>effStar()+1;fish.hard=!fish.over&&starOf(fish.sp)>effStar();$('tHard').textContent=fish.hard?hardTag(fish.sp):'';$('tHard').classList.toggle('hidden',!fish.hard);fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);if(fish.hard){toast(hardTxt(fish.sp)+'. 줄이 빨개지면 잠깐 손을 떼요!',4200);sfx.splash(0.25);}else toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
+function hook(){fish=pickFish7(fishFar(),habitat)||pickRare(fishFar(),habitat)||pickFish(fishFar(),habitat);fish.D=fightD(fish.sp,fish.frac);fish.ease=easeFor(fish.sp);if(fish.ease>0)fish.D=Math.max(0.04,fish.D*(1-fish.ease));fish.over=starOf(fish.sp)>effStar()+1;fish.hard=!fish.over&&starOf(fish.sp)>GS.rod;$('tHard').textContent=fish.hard?hardTag(fish.sp):'';$('tHard').classList.toggle('hidden',!fish.hard);fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);if(fish.hard){toast(hardTxt(fish.sp)+'. 줄이 빨개지면 잠깐 손을 떼요!',4200);sfx.splash(0.25);}else toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
 function startRetrieve(from){retrieveFrom.copy(from);rT0=t;setF('retrieve');}
 function fishPos(out){fwdOf(P.yaw,_f);const ex=P.pos.x+_f.x*1.6,ez=P.pos.z+_f.z*1.6;const surge=t<surgeUntil;const wob=(Math.sin(t*1.6)*0.9*fish.s+Math.sin(t*0.7)*0.6+(surge?Math.sin(t*13)*0.4:0))*(0.3+d)*(castDist/14);
  return out.set(lerp(ex,castTgt.x,d)+(-_f.z)*wob,0,lerp(ez,castTgt.z,d)+_f.x*wob);}
