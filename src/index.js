@@ -12,7 +12,7 @@ const MAX_MSG = 8192;    // 메시지 최대 크기(바이트) — 큰 수조(�
 const MAX_RATE = 20;     // 접속자 1명당 초당 최대 메시지 수
 const CHAT_KEEP = 100;   // 섬마다 보관하는 최근 채팅 수 (넘으면 오래된 것부터 삭제)
 const CHAT_LEN = 60;     // 채팅 한 줄 최대 글자 수
-const CHAT_GAP = 1500;   // 같은 사람이 채팅을 보낼 수 있는 최소 간격(ms)
+const CHAT_GAP = 1000;   // 같은 사람이 채팅을 보낼 수 있는 최소 간격(ms) · 화면은 1.5초 간격이라 전송 지연이 있어도 버려지지 않아요
 
 const EMOJI = new Set(["👋", "🙇", "🙏", "🤝", "✌️", "🫡", "🙌", "👀", "😊", "😆", "🥹", "😌", "😴", "🤔", "😮", "😭", "😤", "🥶", "🫠", "😎", "🤣", "😇", "🥳", "😑", "👍", "👏", "🔥", "💪", "🎉", "✨", "❤️", "💯", "🎣", "🐟", "🐠", "🐡", "🦑", "🦀", "🐙", "🦈", "🐳", "🌊", "⚓", "🪝", "☕", "🍜", "🍙", "🍎", "🍊", "🍑", "🌸", "🌳", "🏕️", "🔥", "🌙", "⭐", "🌧️", "🍀", "🦋", "🐚", "😋", "🤗", "🥺", "😅", "🐬"]); // 뒤 4개: 오래된 PC에서 네모로 보이던 🫡🥹🫠🪝 대신 쓰는 이모지 (예전 것도 계속 받아요)
 const SPECIES_LIST = ["goby", "halfbeak", "jack", "mackerel", "rockfish", "greenling", "schlegeli", "porgy", "bass", "flounder", "starfish", "chub", "crucian", "loach", "carp", "catfish", "mandarin", "goldfish", "filefish", "puffer", "redbream", "oplegnathus", "hairtail", "mullet", "dodari", "stingray", "moray", "tuna", "sunfish", "octopus", "squid", "webfoot", "seahorse", "bluecrab", "snowcrab", "prawn", "spinylobster", "jellyfish", "urchin", "catshark", "blueshark", "hammerhead", "whaleshark", "clownfish", "bluetang", "emperorangel", "butterfly", "mandarinfish", "lionfish", "parrotfish", "boxfish", "medaka", "minnow", "kkeokji", "sweetfish", "masu", "snakehead", "eel", "crayfish", "freshshrimp", "turtle", "koi", "guppy", "betta", "arowana", "seal", "dolphin", "orca", "seaotter", "otter", "anchovy", "bekasquid", "hermitcrab", "seacucumber", "sandlance", "shorecrab", "bitterling", "topmouth", "gizzardshad", "yellowcroaker", "saury", "herring", "flatfish", "wrasse", "sillago", "damsel", "darkchub", "sandgudgeon", "monkfish", "scorpionfish", "spanishmack", "croaker", "cuttlefish", "conger", "gurnard", "yellowtang", "bagrid", "skygager", "amberjack", "yellowtail", "kobudai", "bigfinsquid", "hairycrab", "sevenband", "lobster", "moorishidol", "triggerfish", "leopardshark", "lenok", "stickleback", "giantgrouper", "marlin", "swordfish", "sailfish", "kingcrab", "giantoctopus", "dumbo", "vampiresquid", "opah", "tigershark", "greatwhite", "thresher", "footballfish", "napoleon", "chimaera", "giantmoray", "sturgeon", "giantcatfish", "mutae", "goldkoi", "humpback", "bluewhale", "spermwhale", "beluga", "narwhal", "sealion", "walrus", "dugong", "manatee", "leatherback", "greenturtle", "giantsquid", "oarfish", "coelacanth", "mantaray", "leafyseadragon", "goldmandarin", "eoreumchi", "arapaima", "mihojonggae", "rainbowwhale", "auroraray", "rainbowflyer", "prismjelly", "rainbowseahorse", "chaeunryong", "chilbokoi", "rainbowtrout", "rainbowveil", "rainbowsturgeon", "seal_r", "dolphin_r", "orca_r", "seaotter_r", "otter_r", "marlin_r", "humpback_r", "bluewhale_r", "spermwhale_r", "beluga_r", "narwhal_r", "sealion_r", "walrus_r", "dugong_r", "manatee_r", "leatherback_r", "greenturtle_r", "giantsquid_r", "oarfish_r", "coelacanth_r", "mantaray_r", "leafyseadragon_r", "goldmandarin_r", "eoreumchi_r", "arapaima_r", "mihojonggae_r"];
@@ -21,6 +21,17 @@ const SPECIES_MAX = {"goby": 24.0, "halfbeak": 35.0, "jack": 30.0, "mackerel": 3
 const SPECIES = new Set(SPECIES_LIST);
 // 희귀종(★6 색깔 다른 친구들): 잡으면 모든 섬에 알림만 (무지개 이벤트 없음)
 const RARE_IDS = new Set(SPECIES_LIST.filter(x => x.endsWith('_r')));
+// ★6 (신화) 생물: 명예의 전당 최장 기록을 세우면 모든 섬 채팅창에 알려요
+const MYTH_IDS = new Set(['seal', 'dolphin', 'orca', 'seaotter', 'otter', 'marlin', 'humpback', 'bluewhale', 'spermwhale', 'beluga', 'narwhal', 'sealion', 'walrus', 'dugong', 'manatee', 'leatherback', 'greenturtle', 'giantsquid', 'oarfish', 'coelacanth', 'mantaray', 'leafyseadragon', 'goldmandarin', 'eoreumchi', 'arapaima', 'mihojonggae']);
+// 채팅창 알림 줄(★7·희귀종·최장 기록): 섬 채팅 기록에 같이 남겨서 새로 들어온 사람도 볼 수 있어요
+function sysNote(o) {
+  if (!o || typeof o !== 'object') return null;
+  const k = ['lg', 'rr', 'rec'].includes(o.k) ? o.k : null; const id = String(o.id || '');
+  if (!k || !SPECIES_MAX[id]) return null;
+  const s = Math.round(Number(o.s) * 10) / 10; const ts = Number(o.ts);
+  if (!Number.isFinite(s) || s <= 0 || !Number.isFinite(ts) || ts <= 0) return null;
+  return { k, id, s, n: String(o.n || '익명의 낚시꾼').slice(0, 20), ts: Math.floor(ts), rec: o.rec ? 1 : 0 };
+}
 const N_ADJ = 40, N_NOUN = 40;
 // 화면과 같은 랜덤 이름 낱말 (예전 이름을 찾을 때 써요)
 const NAME_ADJ = ['졸린','느긋한','수줍은','배고픈','행복한','조용한','용감한','꼼꼼한','엉뚱한','다정한','새벽의','반짝이는','동글동글한','씩씩한','몽글몽글한','하품하는','기다리는','낭만적인','차분한','깜찍한','부지런한','느릿느릿한','콧노래하는','멍때리는','설레는','포근한','잔잔한','노을빛','별빛','따끈한','말랑한','성실한','수상한','신난','꿈꾸는','해맑은','소심한','당당한','폭신한','산책하는'];
@@ -163,7 +174,16 @@ export class Island extends DurableObject {
     this.sql.exec('DROP TABLE IF EXISTS chat'); // 예전 형식 채팅 표는 정리
     // 채팅 줄 주인 지문(oh): 이름을 바꾸면 지난 채팅 기록 이름도 함께 바꿔요 (밖으로는 보내지 않아요)
     if (!new Set(this.sql.exec('PRAGMA table_info(chat2)').toArray().map(r => r.name)).has('oh')) this.sql.exec('ALTER TABLE chat2 ADD COLUMN oh TEXT');
+    if (!new Set(this.sql.exec('PRAGMA table_info(chat2)').toArray().map(r => r.name)).has('sj')) this.sql.exec('ALTER TABLE chat2 ADD COLUMN sj TEXT');
     this.sql.exec('CREATE TABLE IF NOT EXISTS rw(r INTEGER PRIMARY KEY, s INTEGER, ts INTEGER)');
+  }
+  // 알림 줄을 채팅 기록에 넣어요 (최근 CHAT_KEEP개 안에서 일반 채팅과 함께 밀려나요)
+  addSys(o) {
+    const sj = JSON.stringify(o);
+    if (this.sql.exec('SELECT id FROM chat2 WHERE sj = ?', sj).toArray()[0]) return false;
+    this.sql.exec('INSERT INTO chat2(ts, a, b, nk, m, oh, sj) VALUES (?, 0, 0, ?, ?, NULL, ?)', o.ts, '', '', sj);
+    this.sql.exec('DELETE FROM chat2 WHERE id NOT IN (SELECT id FROM chat2 ORDER BY id DESC LIMIT ?)', CHAT_KEEP);
+    return true;
   }
 
   // 룰렛 결과: 있으면 그대로, 없으면(마감 뒤에만) 새로 뽑아 저장 · 최근 600판(약 5시간)만 보관
@@ -186,8 +206,9 @@ export class Island extends DurableObject {
   }
 
   recentChat() {
-    return this.sql.exec('SELECT ts, a, b, nk, m FROM chat2 ORDER BY id DESC LIMIT ?', CHAT_KEEP).toArray().reverse()
-      .map(r => ({ ts: r.ts, n: [r.a, r.b], nk: r.nk || '', op: hasOpWord(r.nk) ? 1 : 0, m: r.m }));
+    return this.sql.exec('SELECT ts, a, b, nk, m, sj FROM chat2 ORDER BY id DESC LIMIT ?', CHAT_KEEP).toArray().reverse()
+      .map(r => { if (r.sj) { let o = null; try { o = sysNote(JSON.parse(r.sj)); } catch {} return o ? { ts: r.ts, sy: o } : null; } return { ts: r.ts, n: [r.a, r.b], nk: r.nk || '', op: hasOpWord(r.nk) ? 1 : 0, m: r.m }; })
+      .filter(Boolean);
   }
 
   async fetch(request) {
@@ -197,13 +218,24 @@ export class Island extends DurableObject {
         let lg = null; try { lg = await request.json(); } catch {}
         if (lg && LEGEND_IDS.has(lg.id) && lg.until > Date.now()) {
           await this.ctx.storage.put('legend', lg);
-          this.broadcast({ t: 'lg', n: lg.n, id: lg.id, s: lg.s, left: lg.until - Date.now() }, null);
+          const o = sysNote({ k: 'lg', id: lg.id, s: lg.s, n: lg.n, ts: lg.ts, rec: lg.rec });
+          if (o) this.addSys(o);
+          this.broadcast({ t: 'lg', n: lg.n, id: lg.id, s: lg.s, left: lg.until - Date.now(), ts: lg.ts || 0, rec: lg.rec ? 1 : 0 }, null);
         }
         return new Response('ok');
       }
       if (request.method === 'POST' && new URL(request.url).pathname === '/rare') {
         let o = null; try { o = await request.json(); } catch {}
-        if (o && RARE_IDS.has(o.id)) this.broadcast({ t: 'rr', n: String(o.n || '').slice(0, 20), id: o.id, s: o.s, ts: o.ts }, null);
+        if (o && RARE_IDS.has(o.id)) {
+          const so = sysNote({ k: 'rr', id: o.id, s: o.s, n: o.n, ts: o.ts, rec: o.rec });
+          if (so) this.addSys(so);
+          this.broadcast({ t: 'rr', n: String(o.n || '').slice(0, 20), id: o.id, s: o.s, ts: o.ts, rec: o.rec ? 1 : 0 }, null);
+        }
+        return new Response('ok');
+      }
+      if (request.method === 'POST' && new URL(request.url).pathname === '/note') {
+        let o = null; try { o = sysNote(await request.json()); } catch {}
+        if (o && o.k === 'rec') { this.addSys(o); this.broadcast({ t: 'note', o }, null); }
         return new Response('ok');
       }
       return new Response('Expected WebSocket', { status: 426 });
@@ -225,7 +257,7 @@ export class Island extends DurableObject {
     const peers = [];
     for (const w of live) { const a = w.deserializeAttachment(); if (a && a.p) peers.push({ id: a.id, p: a.p }); }
     const lgLeft = lgNow && lgNow.until > Date.now() ? lgNow.until - Date.now() : 0;
-    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat(), lg: lgLeft ? { n: lgNow.n, id: lgNow.id, s: lgNow.s, left: lgLeft } : null, rw: this.rwState(live) }));
+    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat(), lg: lgLeft ? { n: lgNow.n, id: lgNow.id, s: lgNow.s, left: lgLeft, ts: lgNow.ts || 0, rec: lgNow.rec ? 1 : 0 } : null, rw: this.rwState(live) }));
     return new Response(null, { status: 101, webSocket: client });
   }
 
@@ -235,7 +267,7 @@ export class Island extends DurableObject {
     if (!a || a.full) return;
     const sec = Math.floor(Date.now() / 1000);
     if (a.sec !== sec) { a.sec = sec; a.cnt = 0; }
-    if (++a.cnt > MAX_RATE) { ws.serializeAttachment(a); return; }
+    if (++a.cnt > MAX_RATE) { ws.serializeAttachment(a); if (msg.startsWith('{"t":"c"')) { try { ws.send('{"t":"cx","r":"rate"}'); } catch {} } return; }
     let m; try { m = JSON.parse(msg); } catch { ws.serializeAttachment(a); return; }
     if (!m || typeof m !== 'object') { ws.serializeAttachment(a); return; }
     if (m.t === 'p') {
@@ -270,6 +302,9 @@ export class Island extends DurableObject {
         this.broadcast({ t: 'c', id: a.id, n, nk, op: a.p.op ? 1 : 0, m: text, ts: now }, null);
         return;
       }
+      // 못 받은 채팅은 보낸 사람에게 알려서 다시 보내게 해요 (예전엔 말없이 버려져 채팅이 사라진 것처럼 보였어요)
+      try { ws.send(JSON.stringify({ t: 'cx', r: !text ? 'bad' : !a.p ? 'np' : 'gap' })); } catch {}
+      ws.serializeAttachment(a); return;
     } else if (m.t === 'opt') {
       // 운영자 출입증 확인 → 이 연결은 운영자 닉네임을 쓸 수 있어요
       opVerify(this.env, m.k).then(ok => { const b = ws.deserializeAttachment(); if (!b) return; b.op = ok ? 1 : 0; ws.serializeAttachment(b); try { ws.send(JSON.stringify({ t: 'opok', ok: !!ok })); } catch {} }).catch(() => {});
@@ -359,7 +394,7 @@ const DSID_KEEP = 80;              // 화면(창)마다 '마지막으로 반영�
 const LEGACY_NEW_MS = 5 * 60e3;
 // 이 빌드보다 오래된 화면은 저장을 받지 않아요(새로고침 안내). 저장 항목이 바뀌는 업데이트를 할 때마다 올려요.
 // 막힌 화면의 기록은 그 기기에 보관됐다가, 새로고침해서 다시 로그인하면 합쳐져요.
-const MIN_CV = '2026-11-14d';
+const MIN_CV = '2026-11-14i';
 const OWNED_LISTS = ['rods', 'packs', 'floats', 'reels', 'hats', 'pets'];  // hats·pets: 출석 보상(꽃게 모자·아기 해달)    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
 
 // ---------- 저장 데이터 안전 합치기 (서버) ----------
@@ -570,7 +605,12 @@ export class Vault extends DurableObject {
     if (k.startsWith('a_') && this.who(token) !== k.slice(2)) return null;
     return k;
   }
-  legendNow(now) { const lg = this._lg; return lg && lg.until > now ? { n: lg.n, id: lg.id, s: lg.s, left: lg.until - now } : null; }
+  legendNow(now) { const lg = this._lg; return lg && lg.until > now ? { n: lg.n, id: lg.id, s: lg.s, left: lg.until - now, ts: lg.ts || 0, rec: lg.rec ? 1 : 0 } : null; }
+  // 이번에 잡은 크기가 명예의 전당 최장 기록인가요? (기록이 먼저 올라갔어도 3분 안의 같은 사람·같은 크기면 기록으로 봐요)
+  isRecord(id, sz, name, now) {
+    const row = this.sql.exec('SELECT s, n, ts FROM hof WHERE id = ?', id).toArray()[0];
+    return !row || row.s < sz || (row.s === sz && row.n === name && now - (row.ts || 0) < 3 * 60 * 1000);
+  }
   colTop() { return this.sql.exec('SELECT n, MAX(c) AS c, MIN(ts) AS ts FROM collectors GROUP BY n ORDER BY c DESC, ts ASC LIMIT 5').toArray(); }
   // 명예의 전당·도감왕 결과를 15초 동안 기억해서 DB를 덜 읽어요 (기록이 바뀌면 바로 새로 계산)
   topCached(now) { if (!this._topC || now - this._topC.at > HOF_CACHE_MS) this._topC = { at: now, v: this.colTop() }; return this._topC.v; }
@@ -592,12 +632,13 @@ export class Vault extends DurableObject {
       const sz = Math.round(Number(body.s) * 10) / 10;
       if (!Number.isFinite(sz) || sz <= 0 || sz > SPECIES_MAX[id] + 0.05) return J({ error: '크기가 이상해요' }, 400);
       const ipKey = ip.slice(0, 64);
-      // 같은 곳(IP)에서 5분 안에 다시 보고하면 무시 (서버가 잠들었다 깨어나도 기억하도록 저장소에 기록)
+      const nm = this.nameOf(body) || '익명의 낚시꾼', rec = this.isRecord(id, sz, nm, now) ? 1 : 0;
+      // 같은 곳(IP)에서 5분 안에 다시 보고하면 무시 (서버가 잠들었다 깨어나도 기억하도록 저장소에 기록) · 최장 기록이면 기록 알림만
       const ipK = 'lgip:' + ipKey;
       const last = this.lgByIp.get(ipKey) || (await this.ctx.storage.get(ipK)) || 0;
-      if (now - last < 5 * 60 * 1000) return J({ ok: true, lg: this.legendNow(now), skipped: true });
+      if (now - last < 5 * 60 * 1000) return J({ ok: true, lg: this.legendNow(now), skipped: true, note: rec ? { k: 'rec', id, s: sz, n: nm, ts: now, rec: 1 } : null });
       this.lgByIp.set(ipKey, now); await this.ctx.storage.put(ipK, now);
-      const lg = { n: this.nameOf(body) || '익명의 낚시꾼', id, s: sz, ts: now, until: now + LEGEND_MS };
+      const lg = { n: nm, id, s: sz, ts: now, until: now + LEGEND_MS, rec };
       this._lg = lg; await this.ctx.storage.put('legend', lg);
       return J({ ok: true, lg: this.legendNow(now), fan: lg });
     }
@@ -607,10 +648,11 @@ export class Vault extends DurableObject {
       const sz = Math.round(Number(body.s) * 10) / 10;
       if (!Number.isFinite(sz) || sz <= 0 || sz > SPECIES_MAX[id] + 0.05) return J({ error: '크기가 이상해요' }, 400);
       const ipKey = ip.slice(0, 64), k = 'rrip:' + ipKey;
+      const nm = this.nameOf(body) || '익명의 낚시꾼', rec = this.isRecord(id, sz, nm, now) ? 1 : 0;
       const last = this.lgByIp.get(k) || 0;
-      if (now - last < 20 * 1000) return J({ ok: true, skipped: true });
+      if (now - last < 20 * 1000) return J({ ok: true, skipped: true, note: rec ? { k: 'rec', id, s: sz, n: nm, ts: now, rec: 1 } : null });
       this.lgByIp.set(k, now);
-      const fan = { n: this.nameOf(body) || '익명의 낚시꾼', id, s: sz, ts: now };
+      const fan = { n: nm, id, s: sz, ts: now, rec };
       return J({ ok: true, fan });
     }
     if (op === 'hof-submit') {
@@ -628,7 +670,9 @@ export class Vault extends DurableObject {
       if (row && row.s >= sz) return J({ ok: true, top: false, rec: { s: row.s, n: row.n, ts: row.ts } });
       this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip, k) VALUES (?, ?, ?, ?, ?, ?)', id, sz, name, now, ipKey, this.ownKey(body.key, body.token));
       this._hofC = null;
-      return J({ ok: true, top: true, name, prev: row ? { s: row.s, n: row.n } : null });
+      // ★6 최장 기록은 채팅창에 조용히 알려요 (★7·희귀종은 잡았다는 알림에 '최장 기록 갱신'을 붙여요)
+      const note = MYTH_IDS.has(id) ? { k: 'rec', id, s: sz, n: name, ts: now, rec: 1 } : null;
+      return J({ ok: true, top: true, name, prev: row ? { s: row.s, n: row.n } : null, note });
     }
     if (op === 'hof-sync') {
       // 도감의 '내 최고 기록'이 명예의 전당보다 크면 다시 올려요 (전송 실패로 빠진 기록 자동 복구)
@@ -955,15 +999,15 @@ export default {
         const stub = env.VAULT.get(env.VAULT.idFromName('vault'));
         const headers = new Headers({ 'content-type': 'application/json', 'x-ip': request.headers.get('cf-connecting-ip') || '' });
         const res = await stub.fetch(new Request('https://vault/' + op, { method: 'POST', headers, body: request.method === 'POST' ? await request.text() : '{}' }));
-        if (op !== 'hof-legend' && op !== 'hof-rare') return res;
-        // ★7 축하: 모든 섬에 바로 알려요 (응답은 기다리지 않아요)
+        if (op !== 'hof-legend' && op !== 'hof-rare' && op !== 'hof-submit') return res;
+        // ★7·희귀종 축하 · 최장 기록: 모든 섬에 바로 알려요 (응답은 기다리지 않아요)
         const j = await res.json().catch(() => ({}));
-        if (j && j.fan) {
-          const body = JSON.stringify(j.fan);
-          const all = [];
-          for (let n = 1; n <= MAX_ISLANDS; n++) all.push(env.ISLAND.get(env.ISLAND.idFromName('island-' + n)).fetch('https://island/' + (op === 'hof-rare' ? 'rare' : 'legend'), { method: 'POST', body }).catch(() => {}));
-          if (cctx && cctx.waitUntil) cctx.waitUntil(Promise.all(all)); else await Promise.all(all);
-        }
+        const all = [];
+        const fanOut = (path, o) => { const body = JSON.stringify(o); for (let n = 1; n <= MAX_ISLANDS; n++) all.push(env.ISLAND.get(env.ISLAND.idFromName('island-' + n)).fetch('https://island/' + path, { method: 'POST', body }).catch(() => {})); };
+        if (j && j.fan && op !== 'hof-submit') fanOut(op === 'hof-rare' ? 'rare' : 'legend', j.fan);
+        if (j && j.note) fanOut('note', j.note);
+        if (all.length) { if (cctx && cctx.waitUntil) cctx.waitUntil(Promise.all(all)); else await Promise.all(all); }
+        if (op === 'hof-submit') { if (j) delete j.note; return J(j || { error: '서버 오류' }, res.status); }
         return J({ ok: !!(j && j.ok), lg: j && j.lg || null, fan: op === 'hof-rare' ? (j && j.fan || null) : undefined, error: j && j.error }, res.status);
       } catch (e) {
         return J({ error: '계정 서버 오류: ' + String(e && e.message || e).slice(0, 120) }, 500);
