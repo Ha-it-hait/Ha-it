@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-14u">
+<meta name="amollang-build" content="2026-11-14v">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -461,6 +461,7 @@ button,input,textarea,select{font-family:inherit}
 .baitc .bi span{font-size:30px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18))}.baitc .bi.prism{background:conic-gradient(from 0deg,#ffb3b3,#ffd9a6,#fff3a6,#b8f0c4,#b3d6ff,#c3c3ff,#e4c2ff,#ffb3b3)}.baitc .bi.dango{background:radial-gradient(circle at 35% 30%,#fff,#ffd6e2 55%,#c9eab8)}
 .baitc .bt{flex:1;min-width:180px;display:flex;flex-direction:column;gap:2px}.baitc .bt b{font-size:15px}.baitc .bt small{font-size:12px;color:#7a6f5e;line-height:1.45}.baitc .bt small.bm{color:#4a3a26}.baitc .bt em{color:#c0392b;font-style:normal}
 .baitc .bb{display:flex;gap:6px;flex-wrap:wrap;width:100%}.baitc .bb button{flex:1;width:auto;min-width:0;margin:0;padding:8px 6px}.baitc .bb button small{display:block;font-size:11px;opacity:.9}
+#hint:empty{display:none!important}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/utils/BufferGeometryUtils.js":"./vendor/BufferGeometryUtils.js"}}</script>
 </head>
@@ -611,7 +612,7 @@ button,input,textarea,select{font-family:inherit}
       <li>시간대마다 나오는 물고기도 달라요. 볼락·메기는 밤, 감성돔·잉어는 새벽과 해질녘이에요.</li>
       <li>금붕어는 저수지에서만, 아주 가끔 나와요.</li>
       <li>🪷 서쪽 큰 <b>저수지</b> 물가 낚시는 무료예요. 저수지 동쪽 물가의 <b>🪑 좌대 낚시터</b>(좌대 8개)에 앉으면 이용료 <b>3,000몰랑</b>을 내고 일어날 때까지 쓸 수 있어요. 좌대에서는 <b>★4 이상 물고기가 2배</b>로 잘 나와요. 좌대 하나에 한 명씩만 앉을 수 있어요.</li>
-      <li>⛰️ 북쪽 <b>아몰랑 산</b> 꼭대기에 큰 <b>🗼 등대</b>가 있어요. 등대를 빙 둘러 감은 계단으로 올라가면 꼭대기 전망대에서 섬 전체가 내려다보여요. 산의 💦 폭포에서 시작한 강은 동쪽 바다까지 흘러가요.</li>
+      <li>⛰️ 북쪽 <b>산</b> 꼭대기에 큰 <b>🗼 등대</b>가 있어요. 등대를 빙 둘러 감은 계단으로 올라가면 꼭대기 전망대에서 섬 전체가 내려다보여요. 산의 💦 폭포에서 시작한 강은 동쪽 바다까지 흘러가요.</li>
     </ul>
     <div class="btitle">🎣 낚싯대 ★ · 물고기 ★</div>
     <ul class="tips">
@@ -1993,6 +1994,75 @@ function updBaitFx(dt){if(!BFX.g){if(typeof myFloat==='undefined'||!myFloat)retu
  BFX.glow.visible=on7;if(on7){BFX.glow.material.opacity=0.22+0.08*Math.sin(t*2.2);BFX.glow.position.set(0,0.05,0);}
  for(const s of BFX.dango){s.visible=onR;if(!onR)continue;const u=s.userData;const k=(t*0.35+u.ph)%1;s.position.set(u.dx*(1+k*0.6),0.1+k*1.3,u.dz*(1+k*0.6));s.material.opacity=Math.sin(k*Math.PI)*(u.h?0.95:0.75);s.scale.setScalar(u.h?0.22+0.06*k:0.13+0.1*k);}}
 
+/* ---------- v82: 저수지 꾸밈 — 연잎·연꽃·부들·개구리·잠자리 (눌러도 반응 없는 장식) ---------- */
+const PDECO={pads:[],perch:[],frogs:[],flies:[],g:null};
+function pondWater(x,z,deep){return terrainH(x,z)<(deep??-0.35)&&resEdge(x,z)<-1&&SEATS.every(S=>Math.hypot(x-S.px,z-S.pz)>7.5);}
+function buildPondDeco(){const rng=mulberry32(8282);const R=()=>rng();const st=[];
+ const padGeo=new THREE.CircleGeometry(1,20,0.32,Math.PI*2-0.32).rotateX(-Math.PI/2);
+ const PADC=['#4f9a4a','#5fae55','#47914a','#62b35a'];
+ /* 연잎 군락 */
+ for(let c=0,tr=0;c<15&&tr<800;tr++){const a=R()*Math.PI*2,rr=0.45+R()*0.45;const cx=RES.x+Math.cos(a)*RES.rx*rr,cz=RES.z+Math.sin(a)*RES.rz*rr;if(!pondWater(cx,cz))continue;c++;
+  const n=3+Math.floor(R()*5);for(let k=0,t2=0;k<n&&t2<60;t2++){const x=cx+(R()-0.5)*3.6,z=cz+(R()-0.5)*3.6,r=0.32+R()*0.38;if(!pondWater(x,z))continue;if(PDECO.pads.some(p=>Math.hypot(p.x-x,p.z-z)<(p.r+r)*0.92))continue;
+   const yaw=R()*6.28;PDECO.pads.push({x,z,r,yaw});st.push(part(padGeo,PADC[Math.floor(R()*PADC.length)],x,0.04,z,0,yaw,0,r,1,r));
+   st.push(part(A_SPH,'#8fcf72',x,0.042,z,0,0,0,r*0.08,0.004,r*0.08));k++;
+   if(R()<0.38){/* 연꽃 */const fx=x+Math.cos(yaw+1.5)*r*0.25,fz=z+Math.sin(yaw+1.5)*r*0.25,s=1.5+R()*0.7;const y=0.06;
+    for(let i=0;i<9;i++){const pa=i/9*Math.PI*2;st.push(part(A_SPH,i%2?'#ff6fae':'#ff8cc0',fx+Math.cos(pa)*0.06*s,y+0.05*s,fz+Math.sin(pa)*0.06*s,0.9,-pa+Math.PI/2,0,0.035*s,0.085*s,0.018*s));}
+    for(let i=0;i<6;i++){const pa=i/6*Math.PI*2+0.3;st.push(part(A_SPH,'#ffb3d6',fx+Math.cos(pa)*0.03*s,y+0.08*s,fz+Math.sin(pa)*0.03*s,0.45,-pa+Math.PI/2,0,0.026*s,0.07*s,0.014*s));}
+    st.push(part(A_SPH,'#ffd23f',fx,y+0.075*s,fz,0,0,0,0.028*s,0.018*s,0.028*s));PDECO.perch.push([fx,y+0.12*s,fz]);}
+   else if(R()<0.25){/* 꽃봉오리 */const bx=x+(R()-0.5)*r,bz=z+(R()-0.5)*r,h=0.25+R()*0.2;st.push(part(aCap(0.008,h),'#5a9a42',bx,h/2,bz));st.push(part(A_SPH,'#ff6fae',bx,h+0.05,bz,0,0,0,0.045,0.08,0.045));}
+   else PDECO.perch.push([x+Math.cos(yaw)*r*0.6,0.05,z+Math.sin(yaw)*r*0.6]);}}
+ /* 물가 부들 (잠자리가 앉아요) */
+ for(let c=0,tr=0;c<9&&tr<600;tr++){const a=R()*Math.PI*2;const x0=RES.x+Math.cos(a)*RES.rx,z0=RES.z+Math.sin(a)*RES.rz;const x=x0+(R()-0.5)*2,z=z0+(R()-0.5)*2;const e=resEdge(x,z);if(e>0.6||e<-1.6||terrainH(x,z)>0.5)continue;if(SEATS.some(S=>Math.hypot(x-S.px,z-S.pz)<7))continue;if(distPaths(x,z)<2)continue;c++;
+  const n=5+Math.floor(R()*5);for(let k=0;k<n;k++){const bx=x+(R()-0.5)*1.1,bz=z+(R()-0.5)*1.1,h=0.8+R()*0.6,lean=(R()-0.5)*0.18;const gy=Math.max(-0.3,terrainH(bx,bz));
+   st.push(part(aCap(0.012,h),'#6aa84f',bx,gy+h/2,bz,lean,0,lean*0.6));if(R()<0.6){st.push(part(aCap(0.032,0.16),'#7a4a2a',bx+Math.sin(lean*0.6)*-h*0.5,gy+h+0.06,bz+Math.sin(lean)*h*0.5,lean,0,lean*0.6));PDECO.perch.push([bx+Math.sin(lean*0.6)*-h*0.5,gy+h+0.2,bz+Math.sin(lean)*h*0.5]);}
+   for(let l=0;l<2;l++){const ll=h*(0.5+R()*0.3),la=R()*6.28;st.push(part(A_SPH,'#7dbb5a',bx+Math.cos(la)*0.04,gy+ll/2,bz+Math.sin(la)*0.04,0.15*Math.cos(la),la,0.15*Math.sin(la),0.012,ll/2,0.03));}}}
+ if(st.length){const m=new THREE.Mesh(mergeGeometries(st),AMAT);m.receiveShadow=true;scene.add(m);}
+ /* 개구리 5마리 */
+ const homes=PDECO.pads.filter(p=>p.r>0.4);for(let i=0;i<5&&homes.length;i++){const p=homes[Math.floor(R()*homes.length)];const F=makeFrog(i);F.pad=p;F.x=p.x;F.z=p.z;F.y=0.05;F.st='sit';F.tEnd=t+3+R()*6;F.yaw=R()*6.28;PDECO.frogs.push(F);}
+ /* 잠자리 4마리 */
+ const DC=[['#2f7fd8','#8fd3ff'],['#e8483b','#ffb0a0'],['#2bb58f','#a8f0d8'],['#e6a02a','#ffe2a0']];
+ for(let i=0;i<4&&PDECO.perch.length;i++){const D=makeFly(DC[i]);const pp=PDECO.perch[Math.floor(R()*PDECO.perch.length)];D.p=pp.slice();D.st='perch';D.tEnd=t+2+R()*5;D.yaw=R()*6.28;PDECO.flies.push(D);}}
+function makeFrog(i){const g=new THREE.Group();scene.add(g);const pb=[];const C=['#6cc24a','#7ccf55','#5db446','#8bd35a','#6fbf3c'][i%5],D='#4f9a33';
+ ap(pb,A_SPH,C,0,0.06,0,0.085,0.06,0.1);ap(pb,A_SPH,'#eef7cf',0,0.045,0.015,0.07,0.045,0.08);
+ for(const s of[-1,1]){ap(pb,A_SPH,C,s*0.045,0.105,0.05,0.035,0.032,0.035);ap(pb,A_SPH,'#ffffff',s*0.048,0.112,0.07,0.024,0.024,0.018);ap(pb,A_SPH,'#1a1a1a',s*0.05,0.114,0.083,0.013,0.015,0.008);ap(pb,A_SPH,'#ffffff',s*0.046,0.12,0.088,0.005,0.005,0.003);
+  ap(pb,A_SPH,'#ff9db4',s*0.06,0.07,0.075,0.016,0.009,0.006);
+  ap(pb,A_SPH,D,s*0.085,0.035,-0.04,0.045,0.03,0.07,0,s*0.3,0);ap(pb,A_SPH,C,s*0.1,0.012,0.01,0.03,0.01,0.04);
+  ap(pb,aCap(0.012,0.03),C,s*0.055,0.025,0.075,1,1,1,0.3,0,s*0.2);ap(pb,A_SPH,C,s*0.06,0.008,0.09,0.02,0.007,0.02);}
+ ap(pb,A_SPH,'#3f7f2a',0,0.08,0.098,0.03,0.004,0.004);
+ const body=new THREE.Group();g.add(body);bake(pb,body,true);
+ const tp=[];ap(tp,A_SPH,'#f3f7d2',0,0,0,0.04,0.03,0.035);const throat=new THREE.Group();throat.position.set(0,0.04,0.075);body.add(throat);bake(tp,throat,false);throat.scale.setScalar(0.3);
+ g.scale.setScalar(1.25);return{g,body,throat};}
+function makeFly(col){const g=new THREE.Group();scene.add(g);const pb=[];
+ ap(pb,aCap(0.009,0.13),col[0],0,0,-0.05,1,1,1,Math.PI/2,0,0);ap(pb,A_SPH,col[0],0,0,0.035,0.016,0.015,0.022);
+ for(const s of[-1,1]){ap(pb,A_SPH,col[1],s*0.013,0.006,0.05,0.012,0.012,0.012);}
+ for(let k=0;k<4;k++)ap(pb,A_SPH,'#1d1d1d',0,0.0,-0.02-k*0.03,0.0095,0.0095,0.004);
+ bake(pb,g,false);
+ const wm=new THREE.MeshStandardMaterial({color:'#cfeaff',emissive:'#3a6a8a',emissiveIntensity:0.25,transparent:true,opacity:0.65,roughness:0.2,side:THREE.DoubleSide,depthWrite:false});
+ const wg=new THREE.PlaneGeometry(0.12,0.026).rotateX(-Math.PI/2).translate(0.06,0,0);const wings=[];
+ for(const[s,z]of[[1,0.022],[-1,0.022],[1,0.002],[-1,0.002]]){const pv=new THREE.Group();pv.position.set(0,0.012,z);pv.scale.x=s;g.add(pv);const w=new THREE.Mesh(wg,wm);w.rotation.y=(z>0.01?-0.15:0.12);pv.add(w);wings.push(pv);}
+ g.scale.setScalar(1.3);return{g,wings};}
+function pondPadFor(x,z,maxD){const c=PDECO.pads.filter(p=>{const d=Math.hypot(p.x-x,p.z-z);return d<maxD&&d>0.6;});return c.length?c[Math.floor(Math.random()*c.length)]:null;}
+function updPondDeco(dt){if(!PDECO.pads.length)return;const near=Math.hypot(P.pos.x-RES.x,P.pos.z-RES.z)<RES.rz+45;
+ for(const F of PDECO.frogs){F.g.visible=near&&F.st!=='under';if(!near)continue;
+  if(F.st==='sit'){F.g.position.set(F.x,F.y+Math.sin(t*1.7+F.x)*0.004,F.z);F.g.rotation.y=F.yaw;F.body.scale.set(1,1+Math.sin(t*3+F.z)*0.03,1);
+   const c=(t*0.9+F.x)%5;F.throat.scale.setScalar(c<0.8?0.3+0.9*Math.sin(c/0.8*Math.PI):0.3);
+   if(t>F.tEnd){/* 다음: 물로 퐁당 또는 옆 연잎으로 */const toPad=Math.random()<0.4?pondPadFor(F.x,F.z,4):null;let tx,tz;
+    if(toPad){tx=toPad.x;tz=toPad.z;F.next=toPad;}else{let ok=false;for(let k=0;k<12&&!ok;k++){const a=Math.random()*6.28,d=1.2+Math.random()*1.4;tx=F.x+Math.cos(a)*d;tz=F.z+Math.sin(a)*d;ok=pondWater(tx,tz,-0.3)&&!PDECO.pads.some(p=>Math.hypot(p.x-tx,p.z-tz)<p.r);}if(!ok){F.tEnd=t+2;continue;}F.next=null;}
+    F.j={x0:F.x,z0:F.z,y0:F.y,x1:tx,z1:tz,y1:F.next?0.05:-0.05,t0:t,dur:0.55};F.yaw=Math.atan2(tx-F.x,tz-F.z);F.st='jump';}}
+  else if(F.st==='jump'){const J=F.j,k=clamp((t-J.t0)/J.dur,0,1);const x=lerp(J.x0,J.x1,k),z=lerp(J.z0,J.z1,k),y=lerp(J.y0,J.y1,k)+Math.sin(k*Math.PI)*0.45;F.g.position.set(x,y,z);F.g.rotation.y=F.yaw;F.body.scale.set(1,1,1+0.25*Math.sin(k*Math.PI));
+   if(k>=1){F.x=J.x1;F.z=J.z1;if(F.next){F.y=0.05;F.st='sit';F.tEnd=t+4+Math.random()*7;ripple(F.x,F.z,0.35);}else{splash(F.x,F.z,0.3);F.st='under';F.tEnd=t+2+Math.random()*3;}}}
+  else if(F.st==='under'){if(t>F.tEnd){const p=pondPadFor(F.x,F.z,7)||F.pad;const a=Math.random()*6.28;let sx=p.x+Math.cos(a)*(p.r+0.9),sz=p.z+Math.sin(a)*(p.r+0.9);if(!pondWater(sx,sz,-0.25)){sx=p.x+(F.x-p.x)*0.5;sz=p.z+(F.z-p.z)*0.5;}
+    ripple(sx,sz,0.4);F.next=p;F.j={x0:sx,z0:sz,y0:-0.05,x1:p.x,z1:p.z,y1:0.05,t0:t,dur:0.5};F.yaw=Math.atan2(p.x-sx,p.z-sz);F.st='jump';F.g.visible=near;}}}
+ for(const D of PDECO.flies){D.g.visible=near;if(!near)continue;
+  if(D.st==='perch'){D.g.position.set(D.p[0],D.p[1],D.p[2]);D.g.rotation.set(0,D.yaw,0);for(let i=0;i<4;i++){D.wings[i].rotation.z=Math.sin(t*3+i)*0.04;}
+   if(t>D.tEnd){const to=PDECO.perch[Math.floor(Math.random()*PDECO.perch.length)];const way=[];let px=D.p[0],pz=D.p[2];const n=2+Math.floor(Math.random()*3);for(let k=0;k<n;k++){const a=Math.random()*6.28,d=2+Math.random()*4;let wx=px+Math.cos(a)*d,wz=pz+Math.sin(a)*d;if(resD(wx,wz)>1.05){wx=RES.x+(wx-RES.x)*0.7;wz=RES.z+(wz-RES.z)*0.7;}way.push([wx,0.6+Math.random()*1.1,wz]);px=wx;pz=wz;}way.push(to.slice());
+    D.path=[D.p.slice(),[D.p[0],D.p[1]+0.5,D.p[2]],...way];D.seg=0;D.k=0;D.st='fly';}}
+  else{const A=D.path[D.seg],B=D.path[D.seg+1];const L=Math.max(0.2,Math.hypot(B[0]-A[0],B[1]-A[1],B[2]-A[2]));D.k+=dt*(D.seg===D.path.length-2?1.4:2.4)/L;
+   /* 가끔 공중에서 멈칫(호버링) */const k=smooth(0,1,Math.min(1,D.k));const x=lerp(A[0],B[0],k),y=lerp(A[1],B[1],k)+Math.sin(t*5+D.seg)*0.04,z=lerp(A[2],B[2],k);
+   D.g.position.set(x,y,z);const yw=Math.atan2(B[0]-A[0],B[2]-A[2]);let dy=yw-D.yaw;dy=Math.atan2(Math.sin(dy),Math.cos(dy));D.yaw+=dy*Math.min(1,dt*8);D.g.rotation.set(-0.15,D.yaw,Math.sin(t*3)*0.1);
+   for(let i=0;i<4;i++)D.wings[i].rotation.z=Math.sin(t*55+i*1.3)*0.7;
+   if(D.k>=1){D.seg++;D.k=0;if(D.seg>=D.path.length-1){D.p=B.slice();D.st='perch';D.tEnd=t+3+Math.random()*6;}}}}}
+
 function buildWorld(){
  buildTerrain();
  // houses
@@ -2012,7 +2082,7 @@ function buildWorld(){
  addMesh(new THREE.BoxGeometry(2.6,1.45,0.1),stdMat('#b9875a'),0,1.5,0,bd);
  const note=canvasTex(512,256,(x,w,h)=>{x.fillStyle='#fffdf3';x.fillRect(0,0,w,h);x.textAlign='center';x.textBaseline='middle';const fit=(txt,px,y)=>{let p=px;do{x.font=`900 ${p}px "AmoEmoji","Noto Sans KR",sans-serif`;p-=2;}while(x.measureText(txt).width>w-48&&p>16);x.fillText(txt,w/2,y);};x.fillStyle='#5a4a33';fit('아몰랑아일랜드 게시판',52,64);x.fillStyle='#c0392b';fit('게임 업데이트 요청사항',42,148);fit('적어주세요 ✍️',42,206);});
  addMesh(new THREE.PlaneGeometry(2.36,1.18),new THREE.MeshStandardMaterial({map:note,roughness:0.9,emissive:'#ffffff',emissiveMap:note,emissiveIntensity:0.12}),0,1.5,0.06,bd);BOARD_G=bd;bd.traverse(o=>{o.userData.pick='board';});OBST.push({x:PLAZA.x+6.2,z:PLAZA.z-3.5,r:1.0});
- buildLighthouse();buildWaterfall();buildSeats();buildBeachCritters();
+ buildLighthouse();buildWaterfall();buildSeats();buildBeachCritters();buildPondDeco();
  // dock
  const plankM=stdMat('#c08a58',0.85),plank2=stdMat('#b07a4a',0.85);
  for(const D of DOCKS){const dk=new THREE.Group();dk.rotation.y=Math.atan2(D.ux,D.uz);scene.add(dk);const W2=D.hw*2+0.1;
@@ -2993,7 +3063,7 @@ function mapItems(){const L=[];const add=(x,z,em,label,sz,pri)=>L.push({x,z,em,l
  add(PLAZA.x,PLAZA.z,'🔥','모닥불 · 요리',1,1);add(SHOP.x,SHOP.z,'🐉','용왕님 상점',1,1);if(BOARD_G)add(BOARD_G.position.x,BOARD_G.position.z,'📋','게시판',0.85,2);
  add(RW_POS.x,RW_POS.z,'🎰','아몰랑 룰렛',0.95,2);add(LH.x,LH.z,'🗼','등대 전망대',1.15,1);add(WFALL.x,WFALL.z+2,'💦','폭포',0.95,2);
  add(RES.x,RES.z-6,'🪷','저수지',1.05,1);add(SEATS[3].x+(SEATS[4].x-SEATS[3].x)/2,SEATS[3].z+4,'🪑','좌대 낚시터',0.85,2);
- const rv=RIVER[7];add(rv[0]+5,rv[1]+2,'🏞️','강',0.9,3);add(-12,-86,'⛰️','아몰랑 산',1,3);
+ const rv=RIVER[7];add(rv[0]+5,rv[1]+2,'🏞️','강',0.9,3);add(-12,-86,'⛰️','',1,3);
  add(0,DOCK.z1-2,'⚓','부두',0.8,3);for(const d of DOCKS)if(!d.main)add(d.ux*(d.s1-2),d.uz*(d.s1-2),d.boat?'🚤':'⚓',d.boat?'배 타는 부두':'부두',d.boat?1:0.8,2);
  for(const h of[[-15,-3],[16,-8],[-9,-19]])add(h[0],h[1],'🏠','',0.7,9);
  return L;}
@@ -3120,7 +3190,7 @@ async function logout(){if(!acct)return;await doSave(false);try{await authCall('
 
 /* ---------- 매 프레임 ---------- */
 let v2HudAcc=0;
-function updV2(dt){updHappy(dt);updFoam(dt);updReels(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);rwTick(dt);opTick(dt);nmTick(dt);updSeat(dt);updBeach(dt);updBaitFx(dt);updFall(dt,skyMat?skyMat.uniforms.uSunVis.value:1);petTick(dt);attTick(dt);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
+function updV2(dt){updHappy(dt);updFoam(dt);updReels(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);rwTick(dt);opTick(dt);nmTick(dt);updSeat(dt);updBeach(dt);updBaitFx(dt);updPondDeco(dt);updFall(dt,skyMat?skyMat.uniforms.uSunVis.value:1);petTick(dt);attTick(dt);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
  for(const r of remote.values()){if(r.cookT){const k=animTable(r.cookT,r.ckSt,dt);if(r.char)r.char.ckP=k;}}
  v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();const bs=buffShort();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}${reelHud()}${floatHud()}${baitHud()}`+(bs?` · ${bs}`:'');$('hudG').classList.toggle('buff',!!bs);
   if(GS._buffWas&&bl<=0)toast('🍳 요리 효과가 끝났어요',2400);GS._buffWas=bl>0;saveTick();}}
@@ -3322,9 +3392,9 @@ const NEWS=[
   '🦊 북쪽 산과 언덕에 <b>아기 여우 노을 · 아기 산양 바위 · 고슴도치 밤송이 · 아기 반달가슴곰 꿀떡 · 알파카 몽실 · 카피바라 유자</b>가 이사 왔어요. 쓰다듬고 껴안아 주면 다른 친구들처럼 따라와요.',
   '🦀 바닷가 모래밭에 종종걸음 꼬마 게, 느릿느릿 소라게, 알록달록 불가사리와 조개가 생겼어요. 가까이 가면 게는 후다닥 피하고 소라게는 껍데기 속에 쏙 숨어요.',
   '🗼 등대 불빛이 번쩍이지 않고 은은하게 켜져요.']},
- {d:'11월 15일',t:'🗺️ 섬이 훨씬 넓어졌어요 · ⛰️ 아몰랑 산과 🗼 큰 등대 · 🪷 저수지 좌대',n:true,i:[
+ {d:'11월 15일',t:'🗺️ 섬이 훨씬 넓어졌어요 · ⛰️ 높은 산과 🗼 큰 등대 · 🪷 저수지 좌대',n:true,i:[
   '🗺️ 섬이 <b>훨씬 넓어졌어요</b>. 🗺️ 지도에서 새 모습을 확인해 보세요.',
-  '⛰️ 북쪽에 높은 <b>아몰랑 산</b>이 생겼어요. 꼭대기의 <b>🗼 큰 등대</b>는 둘레를 빙 감은 계단으로 올라갈 수 있고, 꼭대기 전망대에서 섬 전체가 내려다보여요.',
+  '⛰️ 북쪽에 <b>높은 산</b>이 생겼어요. 꼭대기의 <b>🗼 큰 등대</b>는 둘레를 빙 감은 계단으로 올라갈 수 있고, 꼭대기 전망대에서 섬 전체가 내려다보여요.',
   '💦 산의 <b>큰 폭포</b>에서 시작한 강이 더 넓고 길어져서 동쪽 바다까지 흘러가요. 강 위에는 🌉 나무다리 2개가 놓였어요.',
   '🪷 연못이 서쪽의 큰 <b>저수지</b>로 바뀌었어요. 저수지 물가 낚시는 무료이고, 동쪽 물가의 <b>🪑 좌대 낚시터</b>(좌대 8개)는 좌대 하나에 한 명씩 앉아요. 이용료 <b>3,000몰랑</b>으로 일어날 때까지 쓸 수 있고, 좌대에서는 <b>★4 이상 물고기가 2배</b>로 잘 나와요.',
   '⚓ 서쪽(9시 방향)에 부두가, 북서쪽(10시 방향)에 <b>🚤 배 타는 부두</b>가 새로 생겼어요. 원래 있던 남동쪽(4시 방향) 배 타는 부두도 그대로 있어서, 두 곳 어디서든 배를 탈 수 있어요.',
@@ -4111,7 +4181,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-14u';
+const BUILD='2026-11-14v';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -5474,7 +5544,7 @@ function refreshHint(){const h=$('hint');let txt='';
  if(!entered||mode==='closet')txt='';else if(mode==='fish')txt=HINTS[fstate]||'';else if(mode==='cook')txt='🍳 요리하는 중이에요… 잠깐만 기다려요';
  else if(nearAnimal)txt=isTouch?`🐾 ${nearAnimal.d.name}${josa(nearAnimal.d.name,'이랑','랑')} 놀아줘요`:`🐾 ${nearAnimal.d.name} · 🤚 쓰다듬기 · 🤗 껴안기 버튼을 눌러요`+(canFish?' · R 낚시':'');
  else if(canFish&&SEAT.on)txt=isTouch?'🪑 좌대예요! 🎣 버튼을 눌러 낚시해요':'🪑 좌대예요! F 키 또는 🎣 버튼으로 낚시 · R 일어나기';else if(canFish)txt=isTouch?'물가예요! 🎣 버튼을 눌러 낚시해요':'물가예요! R 키 또는 🎣 버튼으로 낚시';
- else txt=isTouch?'물가로 가면 낚시할 수 있어요 · ❓ 낚시하는 법':'물가로 가면 낚시할 수 있어요 · WASD 이동 · Q/E 시점 돌리기 · ❓ 낚시하는 법';
+ else txt=isTouch?'':'물가로 가면 낚시할 수 있어요 · WASD 이동 · Q/E 시점 돌리기 · ❓ 낚시하는 법';
  if(h.textContent!==txt)h.textContent=txt;h.classList.toggle('urgent',mode==='fish'&&fstate==='bite');}
 function refreshAct(){const b=$('actBtn');let want='';if(entered&&mode==='fish')want='stand';else if(entered&&mode==='walk'&&canFish)want='fish';
  const key=isTouch||!want?'':(want==='fish'&&ctxKind?'F':'R');const sig=want+'|'+key;
