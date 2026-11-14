@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-14t">
+<meta name="amollang-build" content="2026-11-14u">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -1550,7 +1550,9 @@ function terrainH(x,z){
  return h;
 }
 LH.base=terrainRaw(LH.x,LH.z)+0.4;
-function habitatAt(x,z){if(resEdge(x,z)<1.4)return'pond';if(distPoly(x,z,RIVER)<RIVER_W+1.2&&islandD(x,z)<0.98)return'river';return'sea';}
+function inFallsPool(x,z){const F=WFALL;return Math.hypot((x-F.x)*0.85,z-(F.z+6.5))<10.5||(Math.abs(x-F.x)<F.w*1.3&&z>F.src-2&&z<F.z+9);}
+/* 폭포 물줄기·소(沼)부터 강 하구(섬 해안선)까지는 모두 강이에요 */
+function habitatAt(x,z){if(resEdge(x,z)<1.4)return'pond';if(inFallsPool(x,z))return'river';if(distPoly(x,z,RIVER)<RIVER_W+3.6&&islandD(x,z)<1.0)return'river';return'sea';}
 
 /* dock & bridge */
 let shoreZ=50;for(let z=30;z<90;z+=0.25){if(terrainH(0,z)<0){shoreZ=z;break;}}
@@ -1837,8 +1839,8 @@ function buildSeats(){const plank=stdMat('#c08a58',0.85),plank2=stdMat('#b07a4a'
   for(const sx of[-H2+0.1,H2-0.1])for(const sz of[-H2+0.1,H2*0.1])addMesh(new THREE.CylinderGeometry(0.1,0.12,3.2,8),post,sx,SEAT_Y-1.6,sz,g);
   /* 물 쪽 낮은 난간 */
   for(const sx of[-H2+0.1,H2-0.1])addMesh(new THREE.CylinderGeometry(0.05,0.05,0.6,6),post,sx,SEAT_Y+0.3,-H2+0.1,g);
-  /* 파라솔: 옆쪽에 */
-  addMesh(new THREE.CylinderGeometry(0.06,0.06,2.6,8),post,1.35,SEAT_Y+1.3,0.7,g);addMesh(new THREE.ConeGeometry(1.2,0.5,8),roofM,1.35,SEAT_Y+2.65,0.7,g);
+  /* 파라솔: 앉은 사람 왼쪽 */
+  addMesh(new THREE.CylinderGeometry(0.06,0.06,2.6,8),post,-1.5,SEAT_Y+1.3,-0.55,g);addMesh(new THREE.ConeGeometry(1.05,0.45,8),roofM,-1.5,SEAT_Y+2.7,-0.55,g);   /* 앉은 사람 왼쪽 옆 (뒤에서 보는 화면·낚싯줄을 가리지 않게) */
   /* 의자 (물 쪽을 바라봐요) */
   const ch=new THREE.Group();ch.position.set(0,SEAT_Y,-0.9);g.add(ch);addMesh(new THREE.BoxGeometry(0.6,0.12,0.6),chairM,0,0.42,0,ch);addMesh(new THREE.BoxGeometry(0.6,0.55,0.1),chairM,0,0.7,0.3,ch);
   for(const a of[-0.25,0.25])for(const b of[-0.25,0.25])addMesh(new THREE.CylinderGeometry(0.03,0.03,0.42,5),post,a,0.21,b,ch);
@@ -1983,9 +1985,11 @@ function buildBaitFx(){const g=new THREE.Group();g.visible=false;scene.add(g);BF
  for(let i=0;i<9;i++){const h=i%3===0;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:h?ht:bt,transparent:true,depthWrite:false,opacity:0,fog:false}));s.userData={ph:i/9,h,dx:Math.cos(i*2.4)*0.35,dz:Math.sin(i*2.4)*0.35};g.add(s);BFX.dango.push(s);}}
 function updBaitFx(dt){if(!BFX.g){if(typeof myFloat==='undefined'||!myFloat)return;buildBaitFx();}
  const on7=baitOn(BAITS.b7),onR=baitOn(BAITS.br);
- const act=mode==='fish'&&(fstate==='waiting'||fstate==='bite')&&myFloat&&myFloat.visible&&(on7||onR)&&legBase(fishFar(),habitat)>0;
- BFX.g.visible=!!act;if(!act)return;const p=myFloat.position;BFX.g.position.set(p.x,p.y,p.z);
- for(let i=0;i<7;i++){const s=BFX.prism[i];s.visible=on7;if(!on7)continue;const a=t*0.9+i/7*Math.PI*2;const r=0.62+Math.sin(t*2+i)*0.05;s.position.set(Math.cos(a)*r,0.12+Math.sin(t*3+i)*0.04,Math.sin(a)*r);s.material.opacity=0.95;s.scale.setScalar(0.5+0.1*Math.sin(t*4+i));}
+ const act=mode==='fish'&&(fstate==='waiting'||fstate==='bite')&&(on7||onR)&&legBase(fishFar(),habitat)>0;
+ BFX.g.visible=!!act;if(!act)return;const p=castTgt;BFX.g.position.set(p.x,waveH(p.x,p.z,t),p.z);   /* 찌가 떠 있는 자리 */
+ /* 찌가 클수록(예: 🏰 용궁 산호성 찌) 효과도 크게: 찌의 가로 크기에 맞춰요 */
+ const flv=floatOn()?GS.float|0:0;BFX.g.scale.setScalar([1,1.15,1.5,2.6][flv]||1);   /* 찌가 크면 효과도 크게: 🏰 산호성 찌는 성 둘레를 감싸도록 ×2.6 */
+ for(let i=0;i<7;i++){const s=BFX.prism[i];s.visible=on7;if(!on7)continue;const a=t*0.9+i/7*Math.PI*2;const r=0.62+Math.sin(t*2+i)*0.05;s.position.set(Math.cos(a)*r,0.2+Math.sin(t*3+i)*0.05,Math.sin(a)*r);s.material.opacity=0.95;s.scale.setScalar(0.5+0.1*Math.sin(t*4+i));}
  BFX.glow.visible=on7;if(on7){BFX.glow.material.opacity=0.22+0.08*Math.sin(t*2.2);BFX.glow.position.set(0,0.05,0);}
  for(const s of BFX.dango){s.visible=onR;if(!onR)continue;const u=s.userData;const k=(t*0.35+u.ph)%1;s.position.set(u.dx*(1+k*0.6),0.1+k*1.3,u.dz*(1+k*0.6));s.material.opacity=Math.sin(k*Math.PI)*(u.h?0.95:0.75);s.scale.setScalar(u.h?0.22+0.06*k:0.13+0.1*k);}}
 
@@ -4107,7 +4111,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-14t';
+const BUILD='2026-11-14u';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -4480,7 +4484,7 @@ function buildCastleFloat(){const g=new THREE.Group();
   const fin=m(geo('mrFin',()=>{const sh=new THREE.Shape();sh.moveTo(0,0);sh.quadraticCurveTo(-0.01,0.02,-0.022,0.022);sh.quadraticCurveTo(-0.012,0,-0.022,-0.022);sh.quadraticCurveTo(-0.01,-0.02,0,0);return new THREE.ShapeGeometry(sh);}),new THREE.MeshStandardMaterial({color:'#7af0e0',side:THREE.DoubleSide,roughness:0.3,emissive:'#1a8a80',emissiveIntensity:0.4}),-0.045,0,0);
   const tr=[];for(let i=0;i<9;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:lhSparkTex(),color:i%2?'#bff8ff':'#ffd6ec',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0,fog:false}));g.add(sp);tr.push(sp);}
   mer.scale.setScalar(1.7);mer.userData={fin,tr,next:1+Math.random()*1.5,k:-1,dir:1};}
- g.scale.setScalar(2.35);g.userData={winM,gold,glow,pool,bubbles,sparks,gate,mer};return g;}
+ g.scale.setScalar(1.95);g.userData={winM,gold,glow,pool,bubbles,sparks,gate,mer};return g;}
 function setFloatStyle(f,lv){if(f.userData.lv===lv)return;f.userData.lv=lv;
  if(f.userData.deco){f.remove(f.userData.deco);f.userData.deco=null;}
  for(let i=0;i<4;i++)if(f.children[i])f.children[i].visible=!lv;
