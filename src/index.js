@@ -130,10 +130,10 @@ function sanitize(d, op) {
     nk: op ? cleanNickOp(d.nk) : cleanNick(d.nk),
     op: op ? 1 : 0,
     lk: [idx(lk[0], 8), idx(lk[1], 12), idx(lk[2], 5), idx(lk[3], 12)],
-    p: [r2(num(p[0], -120, 120, 0)), r2(num(p[1], -120, 120, 0)), r2(num(p[2], -50, 50, 0)), r2(num(p[3], 0, 3, 0))],
+    p: [r2(num(p[0], -220, 220, 0)), r2(num(p[1], -220, 220, 0)), r2(num(p[2], -50, 50, 0)), r2(num(p[3], 0, 3, 0))],
     m: d.m === 1 ? 1 : 0,
     st: STATES.has(d.st) ? d.st : 'idle',
-    f: [r2(num(f[0], -200, 200, 0)), r2(num(f[1], -200, 200, 0))],
+    f: [r2(num(f[0], -280, 280, 0)), r2(num(f[1], -280, 280, 0))],
     fd: r2(num(d.fd, 0, 1, 1)), ft: r2(num(d.ft, 0, 1, 0)), cd: r2(num(d.cd, 1, 40, 10)),
     eid: idx(d.eid, 1e9), e: EMOJI.has(d.e) ? d.e : '',
     cid: idx(d.cid, 1e9), cs: SPECIES.has(d.cs) ? d.cs : '', cz: r2(num(d.cz, 0, 1000, 0)),
@@ -146,8 +146,9 @@ function sanitize(d, op) {
     fl: idx(d.fl, 4),
     rl: idx(d.rl, 3),
     bt: d.bt === 1 ? 1 : 0,
+    zs: idx(d.zs, 16),
     sd: typeof d.sd === 'string' && /^[a-z0-9]{6,16}$/.test(d.sd) ? d.sd : '',
-    ck: ck ? [idx(ck[0], 3), idx(ck[1], 40), r2(num(ck[2], -120, 120, 0)), r2(num(ck[3], -120, 120, 0)), r2(num(ck[4], -50, 50, 0))] : [0, 0, 0, 0, 0],
+    ck: ck ? [idx(ck[0], 3), idx(ck[1], 40), r2(num(ck[2], -220, 220, 0)), r2(num(ck[3], -220, 220, 0)), r2(num(ck[4], -50, 50, 0))] : [0, 0, 0, 0, 0],
   };
 }
 // 수조 자랑용 프로필
@@ -394,7 +395,7 @@ const DSID_KEEP = 80;              // 화면(창)마다 '마지막으로 반영�
 const LEGACY_NEW_MS = 5 * 60e3;
 // 이 빌드보다 오래된 화면은 저장을 받지 않아요(새로고침 안내). 저장 항목이 바뀌는 업데이트를 할 때마다 올려요.
 // 막힌 화면의 기록은 그 기기에 보관됐다가, 새로고침해서 다시 로그인하면 합쳐져요.
-const MIN_CV = '2026-11-14i';
+const MIN_CV = '2026-11-14m';
 const OWNED_LISTS = ['rods', 'packs', 'floats', 'reels', 'hats', 'pets'];  // hats·pets: 출석 보상(꽃게 모자·아기 해달)    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
 
 // ---------- 저장 데이터 안전 합치기 (서버) ----------
