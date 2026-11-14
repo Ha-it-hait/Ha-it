@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-14o">
+<meta name="amollang-build" content="2026-11-14p">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -638,7 +638,7 @@ button,input,textarea,select{font-family:inherit}
     </ul>
     <div class="btitle">🐾 동물 친구들</div>
     <ul class="tips">
-      <li>섬 곳곳에 토끼·강아지(말티즈·퍼그 등)·고양이·아기 코끼리·판다·레서판다·사슴·너구리·다람쥐 18마리가 살아요. 모두에게 같은 자리에 보여요.</li>
+      <li>섬 곳곳에 토끼·강아지(말티즈·퍼그 등)·고양이·아기 코끼리·판다·레서판다·사슴·너구리·다람쥐가, 북쪽 산과 언덕에는 아기 여우·아기 산양·고슴도치·아기 반달가슴곰·알파카·카피바라가 살아요(모두 24마리). 모두에게 같은 자리에 보여요.</li>
       <li>동물을 <b>직접 누르면</b> <em>🤚 쓰다듬기</em>, <em>🤗 껴안기</em> 버튼이 떠요. (몇 초 동안 아무것도 안 하면 버튼이 사라져요) 하트가 나오고, 같은 섬 친구들에게도 보여요.</li>
       <li>교감할 때마다 친밀도 💕+1. <b>친밀도 10 이상</b>이 되면 그 동물이 나를 졸졸 따라다녀요! 같은 동물을 더 아끼는 사람이 있으면 그 사람을 따라가고, 한 사람에게는 가장 친한 동물 1마리만 따라와요. 🎒 가방 → 🐾 동물에서 확인해요. 따라오는 동물은 <b>직접 눌러야</b> 쓰다듬기·껴안기 버튼이 떠요. 그때 <b>🏠 그만 따라오기</b>를 누르면 집으로 돌아가요.</li>
     </ul>
@@ -1761,7 +1761,7 @@ function buildLighthouse(){const g=new THREE.Group();g.position.set(LH.x,LH.base
   for(let k=0;k<=4;k++){const a=hA+(hB-hA)*k/4;addMesh(new THREE.CylinderGeometry(0.04,0.04,1.0,6),railM,Math.cos(a)*(R-0.05),H+0.5,Math.sin(a)*(R-0.05),g);}
   for(const yy of[0.5,1.0]){const b=addMesh(new THREE.BoxGeometry(LH.SW+0.05,yy>0.9?0.1:0.06,yy>0.9?0.1:0.06),railM,Math.cos(hA)*(R+LH.SW/2-0.06),H+yy,Math.sin(hA)*(R+LH.SW/2-0.06),g);b.rotation.y=-hA;}}
  /* 등불 탑: 전망대 위로 높이 솟은 윗몸통 + 맨 꼭대기 등불 방 (불빛은 전망대에서 한참 위) */
- const lampM=new THREE.MeshStandardMaterial({color:'#fff6d0',emissive:'#ffe08a',emissiveIntensity:0.3,roughness:0.2});NIGHT_EMISSIVE.push([lampM,3.4]);
+ const lampM=new THREE.MeshStandardMaterial({color:'#fff6d0',emissive:'#ffe08a',emissiveIntensity:0.3,roughness:0.2});NIGHT_EMISSIVE.push([lampM,1.6]);
  const darkM=stdMat('#3d4250',0.6);const UH=7.2,TR=LH.TR,TR2=1.12;
  for(let i=0;i<3;i++){const h=UH/3;const r0=lerp(TR,TR2,i/3),r1=lerp(TR,TR2,(i+1)/3);addMesh(new THREE.CylinderGeometry(r1,r0,h,24),stdMat(i%2?'#e8524a':'#ffffff',0.6),0,H+h*i+h/2,0,g);}
  for(let k=0;k<2;k++){const a=LH.a0+k*2.6,y=H+2.2+k*2.6,rr0=lerp(TR,TR2,(2.2+k*2.6)/UH);const w=addMesh(new THREE.BoxGeometry(0.4,0.6,0.08),winM,Math.cos(a)*rr0,y,Math.sin(a)*rr0,g);w.rotation.y=-a+Math.PI/2;}
@@ -1775,7 +1775,7 @@ function buildLighthouse(){const g=new THREE.Group();g.position.set(LH.x,LH.base
  addMesh(new THREE.SphereGeometry(0.45,16,12),lampM,0,LY+1.0,0,g);
  addMesh(new THREE.CylinderGeometry(0.95,0.95,0.14,16),darkM,0,LY+1.85,0,g);
  addMesh(new THREE.ConeGeometry(1.05,1.1,16),stdMat('#e8524a',0.6),0,LY+2.45,0,g);addMesh(new THREE.SphereGeometry(0.17,10,8),stdMat('#ffd166',0.3),0,LY+3.1,0,g);
- const bc=glowSprite('#fff0b0',22);bc.position.set(0,LY+1.0,0);g.add(bc);beacon=bc;
+ const bc=glowSprite('#ffe9b8',10);bc.position.set(0,LY+1.0,0);g.add(bc);beacon=bc;
  /* 한 바퀴(층계참까지) 감아 오르는 바깥 계단 */
  const N=72,stepM=stdMat('#c08a58',0.85),stepM2=stdMat('#b07a4a',0.85);const rr=R+LH.SW/2;
  for(let k=0;k<N;k++){const u=(k+0.5)/N;const a=LH.a0+u*TW;const y=0.25+u*(H-0.25);const st=addMesh(new THREE.BoxGeometry(LH.SW,0.14,0.42),k%2?stepM:stepM2,Math.cos(a)*rr,y-0.07,Math.sin(a)*rr,g);st.rotation.y=-a;}
@@ -1872,6 +1872,64 @@ function walkP(x,z){if(!walkable(x,z))return false;
  return true;}
 function camGY(x,z){if(P.pos.y>LH.base+1.2&&lhR(P.pos.x,P.pos.z)<LH.R+LH.SW+0.5)return groundY(x,z);return Math.max(terrainH(x,z),0.05);}
 
+/* ---------- v80: 해변 꼬마 친구들 (게 · 소라게 · 불가사리 · 조개) — 눌러도 반응 없는 장식 ---------- */
+const BEACH={crabs:[],hermits:[],acc:0};
+function beachSpots(n,seed,minGap){const rng=mulberry32(seed),out=[];let tries=0;
+ while(out.length<n&&tries<n*400){tries++;const a=rng()*Math.PI*2;const R=islandR(a);const r=R*(0.9+rng()*0.14);const x=Math.cos(a)*r,z=Math.sin(a)*r;const h=terrainH(x,z);
+  if(h<0.08||h>0.42)continue;if(islandD(x,z)<0.9)continue;if(inDockZone(x,z,2.5))continue;if(resEdge(x,z)<5)continue;if(distPoly(x,z,RIVER)<RIVER_W+4)continue;if(distPaths(x,z)<1.2)continue;
+  if(out.some(o=>Math.hypot(o[0]-x,o[1]-z)<minGap))continue;
+  /* 물가 방향(바깥쪽): 섬 중심에서 바깥 */const nx=Math.cos(a),nz=Math.sin(a);out.push([x,z,nx,nz,rng()]);}
+ return out;}
+/* 꼬마 게: 납작한 몸 · 큰 집게 · 눈자루 · 다리 6개 */
+function crabParts(pb,col,col2){
+ ap(pb,A_SPH,col,0,0.05,0,0.085,0.045,0.065);ap(pb,A_SPH,col2,0,0.03,0.01,0.07,0.025,0.05);
+ for(const s of[-1,1]){
+  ap(pb,aCap(0.008,0.035),col,s*0.025,0.1,0.04,1,1,1,0,0,0);ap(pb,A_SPH,'#ffffff',s*0.025,0.13,0.042,0.014,0.014,0.014);ap(pb,A_SPH,'#1a1a1a',s*0.025,0.132,0.052,0.007,0.007,0.006);
+  ap(pb,aCap(0.012,0.05),col,s*0.08,0.05,0.06,1,1,1,0,0,s*1.1);ap(pb,A_SPH,col,s*0.11,0.06,0.1,0.032,0.024,0.035,0,s*0.3,0);ap(pb,A_SPH,col2,s*0.12,0.055,0.125,0.015,0.012,0.02);
+  for(let k=0;k<3;k++)ap(pb,aCap(0.007,0.06),col,s*0.1,0.03,-0.03+k*0.03,1,1,1,0,0,s*(1.25+k*0.05));}
+ ap(pb,A_SPH,'#ff9aa8',-0.04,0.075,0.055,0.012,0.007,0.004);ap(pb,A_SPH,'#ff9aa8',0.04,0.075,0.055,0.012,0.007,0.004);}
+/* 소라게: 알록달록 소라 껍데기 + 빼꼼 나온 몸 */
+function hermitParts(pb,shell,band){
+ ap(pb,A_SPH,shell,0,0.08,-0.02,0.07,0.065,0.08);
+ for(let k=0;k<4;k++){const s=0.06-k*0.013;ap(pb,A_SPH,k%2?band:shell,0,0.11+k*0.025,-0.05-k*0.012,s,s*0.85,s);}
+ ap(pb,A_CONE,band,0,0.215,-0.1,0.012,0.04,0.012,-0.5,0,0);
+ ap(pb,A_SPH,'#ff8a50',0,0.05,0.06,0.04,0.03,0.035);
+ for(const s of[-1,1]){ap(pb,aCap(0.006,0.03),'#ff8a50',s*0.018,0.085,0.085,1,1,1,0.3,0,0);ap(pb,A_SPH,'#ffffff',s*0.018,0.11,0.093,0.011,0.011,0.011);ap(pb,A_SPH,'#1a1a1a',s*0.018,0.112,0.101,0.006,0.006,0.005);
+  ap(pb,A_SPH,'#e8603a',s*0.045,0.04,0.085,0.022,0.018,0.024);for(let k=0;k<2;k++)ap(pb,aCap(0.006,0.05),'#ff8a50',s*0.05,0.025,0.03+k*0.025,1,1,1,0,0,s*1.2);}}
+function starGeo(){const sh=new THREE.Shape();for(let i=0;i<10;i++){const a=i/10*Math.PI*2+Math.PI/2,r=i%2?0.045:0.12;const x=Math.cos(a)*r,y=Math.sin(a)*r;if(i)sh.lineTo(x,y);else sh.moveTo(x,y);}sh.closePath();
+ const g=new THREE.ExtrudeGeometry(sh,{depth:0.018,bevelEnabled:true,bevelThickness:0.012,bevelSize:0.012,bevelSegments:2});g.rotateX(-Math.PI/2);return g;}
+function buildBeachCritters(){
+ /* 불가사리 · 조개: 움직이지 않으니 한 덩어리로 */
+ const sg=starGeo();const stat=[];const SC=['#ff7a59','#ff9f43','#f368a5','#a76de0','#ffb84d','#ff6b6b'];
+ for(const[x,z,nx,nz,r]of beachSpots(26,7101,3.5)){const y=terrainH(x,z)+0.005;const c=SC[Math.floor(r*SC.length)];const s=0.8+r*0.6;stat.push(part(sg,c,x,y,z,0,r*6.28,0,s,s,s));
+  /* 점무늬 */for(let k=0;k<5;k++){const a=k/5*Math.PI*2+r*6.28+Math.PI/2;stat.push(part(A_SPH,'#fff3e0',x+Math.cos(-a)*0.06*s,y+0.032*s,z+Math.sin(-a)*0.06*s,0,0,0,0.01*s,0.006*s,0.01*s));}}
+ const shellC=['#fff1e6','#ffd6c9','#f7e7c6','#e6d3f0'];
+ for(const[x,z,nx,nz,r]of beachSpots(18,7303,3)){const y=terrainH(x,z)+0.01;const c=shellC[Math.floor(r*shellC.length)];const s=0.7+r*0.5;
+  stat.push(part(A_SPH,c,x,y+0.012*s,z,0,r*6.28,0,0.06*s,0.022*s,0.05*s));for(let k=-2;k<=2;k++)stat.push(part(A_SPH,'#e8b9a8',x+Math.cos(r*6.28)*k*0.018*s,y+0.03*s,z-Math.sin(r*6.28)*k*0.018*s,0,r*6.28,0,0.004*s,0.006*s,0.045*s));}
+ if(stat.length){const m=new THREE.Mesh(mergeGeometries(stat),AMAT);m.receiveShadow=true;scene.add(m);}
+ /* 게 */
+ const CC=[['#ff5a4a','#ffb3a0'],['#ff7b3a','#ffc89a'],['#e84a6a','#ffb8c6']];
+ for(const[x,z,nx,nz,r]of beachSpots(20,7507,4)){const pb=[];const cc=CC[Math.floor(r*CC.length)];crabParts(pb,cc[0],cc[1]);const g=new THREE.Group();bake(pb,g,false);const s=1.0+r*0.5;g.scale.setScalar(s);scene.add(g);
+  BEACH.crabs.push({g,x,z,tx:-nz,tz:nx,ph:r*20,sp:0.8+r*0.6,amp:0.8+r*1.2});}
+ /* 소라게 */
+ const HC=[['#f6c2a6','#c8735a'],['#c9b6e8','#7d5fb2'],['#a8e0d8','#3f9c8f'],['#ffe08a','#d99a2b'],['#f5b5c8','#c25b7f']];
+ for(const[x,z,nx,nz,r]of beachSpots(14,7909,4)){const pb=[];const hc=HC[Math.floor(r*HC.length)];hermitParts(pb,hc[0],hc[1]);const g=new THREE.Group();bake(pb,g,false);const s=1.0+r*0.4;g.scale.setScalar(s);scene.add(g);
+  BEACH.hermits.push({g,cx:x,cz:z,a:r*6.28,rad:0.5+r*0.8,dir:r<0.5?1:-1,ph:r*30,x,z});}
+ updBeach(0,true);}
+function beachY(x,z){return Math.max(terrainH(x,z),0.03);}
+function updBeach(dt,force){BEACH.acc+=dt;const px=P.pos.x,pz=P.pos.z;
+ for(const C of BEACH.crabs){const d=Math.hypot(C.x-px,C.z-pz);const vis=d<55;C.g.visible=vis;if(!vis&&!force)continue;
+  /* 옆으로 종종: 빨리 갔다가 멈추고 다시 돌아와요 · 가까이 가면 놀라서 더 빨리 */
+  const T=(t*C.sp+C.ph)%8;let o;if(T<1.2)o=smooth(0,1.2,T);else if(T<4)o=1;else if(T<5.2)o=1-smooth(4,5.2,T);else o=0;
+  const scared=d<2.2?1:0;C.sc=lerp(C.sc||0,scared,0.08);const off=(o-0.5)*C.amp+C.sc*1.2;
+  const x=C.x+C.tx*off,z=C.z+C.tz*off;const moving=(T<1.2||(T>4&&T<5.2));
+  C.g.position.set(x,beachY(x,z)+(moving?Math.abs(Math.sin(t*28+C.ph))*0.012:0),z);C.g.rotation.y=Math.atan2(-C.tz,C.tx)+(moving?Math.sin(t*30+C.ph)*0.06:Math.sin(t*1.3+C.ph)*0.15);}
+ for(const H of BEACH.hermits){const d=Math.hypot(H.x-px,H.z-pz);const vis=d<45;H.g.visible=vis;if(!vis&&!force)continue;
+  /* 느릿느릿 동그라미를 그리며 걷다가 쉬어요 · 가까이 가면 껍데기 속에 쏙 */
+  const near=d<1.8;const go=(Math.sin(t*0.35+H.ph)>-0.2&&!near)?1:0;H.a+=dt*0.12*go*H.dir/H.rad;
+  const x=H.cx+Math.cos(H.a)*H.rad,z=H.cz+Math.sin(H.a)*H.rad;H.x=x;H.z=z;
+  H.hide=lerp(H.hide||0,near?1:0,0.12);H.g.position.set(x,beachY(x,z)-H.hide*0.04,z);H.g.rotation.y=Math.atan2(-Math.sin(H.a)*H.dir,Math.cos(H.a)*H.dir)+(go?Math.sin(t*6+H.ph)*0.05:0);H.g.rotation.z=go?Math.sin(t*8+H.ph)*0.04:0;}}
+
 function buildWorld(){
  buildTerrain();
  // houses
@@ -1891,7 +1949,7 @@ function buildWorld(){
  addMesh(new THREE.BoxGeometry(2.6,1.45,0.1),stdMat('#b9875a'),0,1.5,0,bd);
  const note=canvasTex(512,256,(x,w,h)=>{x.fillStyle='#fffdf3';x.fillRect(0,0,w,h);x.textAlign='center';x.textBaseline='middle';const fit=(txt,px,y)=>{let p=px;do{x.font=`900 ${p}px "AmoEmoji","Noto Sans KR",sans-serif`;p-=2;}while(x.measureText(txt).width>w-48&&p>16);x.fillText(txt,w/2,y);};x.fillStyle='#5a4a33';fit('아몰랑아일랜드 게시판',52,64);x.fillStyle='#c0392b';fit('게임 업데이트 요청사항',42,148);fit('적어주세요 ✍️',42,206);});
  addMesh(new THREE.PlaneGeometry(2.36,1.18),new THREE.MeshStandardMaterial({map:note,roughness:0.9,emissive:'#ffffff',emissiveMap:note,emissiveIntensity:0.12}),0,1.5,0.06,bd);BOARD_G=bd;bd.traverse(o=>{o.userData.pick='board';});OBST.push({x:PLAZA.x+6.2,z:PLAZA.z-3.5,r:1.0});
- buildLighthouse();buildWaterfall();buildSeats();
+ buildLighthouse();buildWaterfall();buildSeats();buildBeachCritters();
  // dock
  const plankM=stdMat('#c08a58',0.85),plank2=stdMat('#b07a4a',0.85);
  for(const D of DOCKS){const dk=new THREE.Group();dk.rotation.y=Math.atan2(D.ux,D.uz);scene.add(dk);const W2=D.hw*2+0.1;
@@ -2079,7 +2137,8 @@ function aTail(pb,c){const R=c.R,col=c.tailC||c.body;switch(c.tail){
  case'ringed':for(let i=0;i<6;i++)ap(pb,A_SPH,i%2?c.ring2:col,0,R*(0.15+i*0.13),-R*(0.4+i*0.33),R*0.45,R*0.45,R*0.3);break;
  case'squirrel':for(let i=0;i<8;i++){const a=i/7,s=R*(0.7+a*0.5);ap(pb,A_SPH,i%2?col:(c.tailC2||col),0,R*(0.2+a*3.4),-R*(0.6+Math.sin(a*Math.PI)*1.5),s,s,s);}break;
  case'thin':ap(pb,aCap(R*0.06,R*0.8),col,0,-R*0.15,-R*0.25,1,1,1,0.4,0,0);ap(pb,A_SPH,'#3a3a40',0,-R*0.55,-R*0.4,R*0.1,R*0.14,R*0.1);break;
- case'deer':ap(pb,A_SPH,'#ffffff',0,R*0.2,-R*0.05,R*0.17,R*0.27,R*0.12);break;}}
+ case'deer':ap(pb,A_SPH,'#ffffff',0,R*0.2,-R*0.05,R*0.17,R*0.27,R*0.12);break;
+ case'fox':for(let i=0;i<6;i++){const a=i/5,s=R*(0.42+Math.sin(a*Math.PI)*0.38);ap(pb,A_SPH,i>=4?(c.tailTip||col):col,0,R*(0.25+a*1.2),-R*(0.5+a*2.1),s,s,s*1.15,-0.5,0,0);}break;}}
 function buildQuad(c){const root=new THREE.Group(),body=grp(root,0,0,0);const C=k=>c[k]||c.body;
  const hip=c.leg+c.R*0.7,lx=c.R*0.58,lz=c.L*0.48;
  const pb=[];ap(pb,aCap(c.R,c.L),C('body'),0,hip,0,1,1,1,Math.PI/2,0,0);
@@ -2140,6 +2199,29 @@ const ANIM_DEFS=[
    bodyExtra:(p,o)=>{ap(p,A_SPH,'#e6c592',0,o.hip-o.R*0.15,0,o.R*1.05,o.R*0.9,o.L*0.62);},headExtra:(p,H)=>{ap(p,A_SPH,'#211b18',0,-H*0.2,H*0.8,H*0.44,H*0.33,H*0.22);for(const sx of[-1,1]){ap(p,A_SPH,'#2e2622',sx*H*0.39,H*0.14,H*0.74,H*0.21,H*0.21,H*0.1);ap(p,A_SPH,'#d9b27a',sx*H*0.36,-H*0.2,H*0.72,H*0.2,H*0.17,H*0.12);}
      for(let k=0;k<3;k++)ap(p,A_HTOR,'#7a5a3a',0,H*(0.46+k*0.11),H*(0.8-k*0.1),H*(0.24-k*0.03),H*0.13,H*0.24,-0.45-k*0.25,0,0);
      ap(p,A_SPH,'#e86a8a',0,-H*0.43,H*0.95,H*0.09,H*0.035,H*0.08);}}},
+ {id:'fox',kind:'fox',name:'노을',sp:'아기 여우',em:'🦊',home:[-35,-62],speed:1.3,scale:1.35,cfg:{R:.19,L:.46,leg:.22,legR:.045,H:.22,neck:.05,snout:{l:.62,r:.4},body:'#ee8538',belly:'#fff6ea',chest:'#fffaf2',legs:'#3b2a24',paws:'#2c2220',head:'#f08b3c',snoutC:'#fff7ec',nose:'#1a1414',ear:'pointy',earS:1.2,earW:1.1,earC:'#ec8236',earIn:'#fff1e2',tail:'fox',tailC:'#ee8538',tailTip:'#fffaf2',
+   bodyExtra:(p,o)=>{ap(p,A_SPH,'#f29a4e',0,o.hip+o.R*0.55,0,o.R*0.7,o.R*0.35,o.L*0.55);},
+   headExtra:(p,H)=>{for(const s of[-1,1]){ap(p,A_SPH,'#fffaf2',s*H*0.5,-H*0.25,H*0.42,H*0.34,H*0.24,H*0.26,0,0,-s*0.35);ap(p,A_SPH,'#3b2a24',s*H*0.52,H*1.32,-H*0.05,H*0.1,H*0.12,H*0.06,0,0,-s*0.35);}}}},
+ {id:'goat',kind:'goat',name:'바위',sp:'아기 산양',em:'🐐',home:[10,-71],speed:1.1,scale:1.35,cfg:{R:.23,L:.46,leg:.36,legR:.055,H:.2,neck:.12,snout:{l:.5,r:.45},body:'#f7f3ec',belly:'#efe8dc',legs:'#ece4d6',paws:'#5a4c44',head:'#fbf8f3',snoutC:'#f2ebe0',nose:'#4a3b3b',ear:'side',earIn:'#f4c9c9',tail:'stub',tailC:'#ffffff',
+   bodyExtra:(p,o)=>{for(let i=0;i<9;i++){const a=i/9*Math.PI*2;ap(p,A_SPH,'#ffffff',Math.cos(a)*o.R*0.6,o.hip+Math.sin(a)*o.R*0.55+o.R*0.15,(i%3-1)*o.lz*0.6,o.R*0.48,o.R*0.48,o.R*0.48);}ap(p,aCap(o.R*0.42,o.R*0.6),'#ffffff',0,o.hip+o.R*0.55,o.lz+o.R*0.5,1,1,1,0.5,0,0);},
+   headExtra:(p,H)=>{for(const s of[-1,1]){for(let k=0;k<5;k++){const q=k/4,ang=-0.5-q*2.4,rr=H*0.42;ap(p,A_SPH,k%2?'#9a8c7e':'#a99a8b',s*(H*0.3+q*H*0.08),H*0.82+Math.cos(-ang-0.5)*rr*0.9-rr*0.25,-H*0.05-Math.sin(-ang+0.2)*rr*0.9+rr*0.2,H*(0.13-q*0.05),H*(0.13-q*0.05),H*(0.13-q*0.05));}}
+    ap(p,A_SPH,'#ffffff',0,-H*0.62,H*0.62,H*0.13,H*0.28,H*0.13,0.3,0,0);for(let i=0;i<5;i++)ap(p,A_SPH,'#ffffff',(i-2)*H*0.12,H*0.82,H*0.25,H*0.16,H*0.14,H*0.16);}}},
+ {id:'hedgehog',kind:'hedgehog',name:'밤송이',sp:'고슴도치',em:'🦔',home:[-50,-46],speed:0.55,scale:1.7,cfg:{R:.16,L:.18,leg:.06,legR:.03,H:.13,neck:0,snout:{l:.75,r:.42},body:'#6e4f3c',belly:'#f2dcc0',legs:'#d8b48f',paws:'#c99d78',head:'#f2dcc0',snoutC:'#f5e3ca',nose:'#1d1515',ear:'round',earC:'#d8b48f',earIn:'#f5b8b8',tail:'stub',tailC:'#6e4f3c',
+   bodyExtra:(p,o)=>{const hl=o.L/2+o.R;for(let i=0;i<46;i++){const u=(i*0.618)%1,v=i/46;const th=u*Math.PI*2,ph=0.15+v*1.25;const nx=Math.sin(ph)*Math.cos(th)*0.9,ny=Math.cos(ph),nz0=Math.sin(ph)*Math.sin(th);const nz=nz0;
+     const x=nx*o.R*1.02,y=o.hip+ny*o.R*1.02,z=nz*hl*0.95;if(z>hl*0.75&&ny<0.6)continue;const len=0.07+((i*7)%5)*0.008;const rz=-Math.asin(Math.max(-1,Math.min(1,nx))),rx=Math.atan2(nz-0.35,ny);
+     ap(p,A_CONE,i%3?'#5a3f2e':'#e9dccb',x,y,z,0.022,len,0.022,rx,0,rz);}
+     ap(p,A_SPH,'#5a3f2e',0,o.hip+o.R*0.2,-o.lz*0.2,o.R*1.08,o.R*0.95,hl*0.95);}}},
+ {id:'bear',kind:'bear',name:'꿀떡',sp:'아기 반달가슴곰',em:'🐻',home:[40,-62],speed:0.8,scale:1.3,cfg:{R:.3,L:.4,leg:.2,legR:.1,H:.27,neck:.02,snout:{l:.38,r:.62},body:'#2b2930',belly:'#353239',head:'#302d35',snoutC:'#c9a27a',legs:'#242228',paws:'#3a363f',nose:'#151215',ear:'round',earC:'#2b2930',earIn:'#5a5560',tail:'stub',tailC:'#2b2930',
+   bodyExtra:(p,o)=>{ap(p,A_HTOR,'#f7f3ea',0,o.hip+o.R*0.35,o.lz+o.R*0.88,o.R*0.55,o.R*0.5,o.R*0.6,0,0,Math.PI);ap(p,A_SPH,'#2f2c33',0,o.hip+o.R*0.1,-o.lz*0.3,o.R*1.08,o.R*1.0,o.R*1.0);},
+   headExtra:(p,H)=>{ap(p,A_SPH,'#d6b18a',0,-H*0.1,H*0.9,H*0.2,H*0.1,H*0.08);for(const s of[-1,1])ap(p,A_SPH,'#ff9db0',s*H*0.55,-H*0.22,H*0.7,H*0.13,H*0.07,H*0.05);}}},
+ {id:'alpaca',kind:'alpaca',name:'몽실',sp:'알파카',em:'🦙',home:[-22,-51],speed:0.9,scale:1.25,cfg:{R:.27,L:.48,leg:.4,legR:.07,H:.2,neck:.42,snout:{l:.4,r:.6},body:'#f4e6cd',legs:'#efdfc3',paws:'#7a6656',head:'#f8eedc',snoutC:'#fdf6ea',nose:'#5a463c',ear:'pointy',earS:1.05,earW:0.7,earC:'#f4e6cd',earIn:'#e9c4ad',tail:'stub',tailC:'#f6ead6',
+   bodyExtra:(p,o)=>{ap(p,aCap(0.125,0.4),'#f7ebd6',0,o.hip+o.R*0.45+0.24,o.lz+o.R*0.62,1,1,1,0.18,0,0);for(let i=0;i<12;i++){const a=i/12*Math.PI*2;ap(p,A_SPH,'#fbf2e2',Math.cos(a)*o.R*0.72,o.hip+o.R*0.2+Math.sin(a)*o.R*0.5,((i%4)-1.5)*o.lz*0.45,o.R*0.46,o.R*0.46,o.R*0.46);}
+     ap(p,A_SPH,'#fbf2e2',0,o.hip+o.R*0.62,o.lz+o.R*0.62,0.16,0.14,0.15);ap(p,A_SPH,'#fbf2e2',0,o.hip+o.R*0.45+0.3,o.lz+o.R*0.7,0.14,0.16,0.14);},
+   headExtra:(p,H)=>{for(let i=0;i<8;i++){const a=i/8*Math.PI*2;ap(p,A_SPH,'#fffaf0',Math.cos(a)*H*0.35,H*0.95+Math.sin(a*2)*H*0.05,Math.sin(a)*H*0.3,H*0.3,H*0.28,H*0.3);}ap(p,A_SPH,'#fffaf0',0,H*1.15,0,H*0.32,H*0.3,H*0.32);
+    for(const s of[-1,1])ap(p,A_SPH,'#ffb3c0',s*H*0.48,-H*0.18,H*0.7,H*0.12,H*0.07,H*0.05);}}},
+ {id:'capybara',kind:'capybara',name:'유자',sp:'카피바라',em:'🍊',home:[-23,-66],speed:0.6,scale:1.3,cfg:{R:.3,L:.52,leg:.14,legR:.07,H:.27,neck:0,snout:{l:.7,r:.78},body:'#a9774e',head:'#b07f55',snoutC:'#9f6e47',legs:'#8d5f3f',paws:'#6b4630',nose:'#3a2618',ear:'round',earS:0.7,earC:'#8d5f3f',earIn:'#6b4630',tail:'stub',tailC:'#a9774e',
+   bodyExtra:(p,o)=>{ap(p,A_SPH,'#a2704a',0,o.hip+o.R*0.1,-o.lz*0.1,o.R*1.1,o.R*1.05,o.L*0.85);},
+   headExtra:(p,H)=>{ap(p,A_SPH,'#b07f55',0,H*0.05,H*0.35,H*0.9,H*0.82,H*0.75);ap(p,A_SPH,'#ffb627',0,H*1.05,-H*0.05,H*0.34,H*0.3,H*0.34);ap(p,A_SPH,'#ffd36b',-H*0.1,H*1.18,H*0.08,H*0.1,H*0.07,H*0.08);ap(p,A_SPH,'#4caf50',H*0.12,H*1.38,-H*0.05,H*0.16,H*0.05,H*0.09,0,0,0.5);}}},
 ];
 const HEART_TEX=canvasTex(64,64,(x)=>{x.fillStyle='#ff5b8a';x.beginPath();x.moveTo(32,54);x.bezierCurveTo(4,34,8,10,24,12);x.bezierCurveTo(30,12,32,18,32,20);x.bezierCurveTo(32,18,34,12,40,12);x.bezierCurveTo(56,10,60,34,32,54);x.fill();x.fillStyle='rgba(255,255,255,.75)';x.beginPath();x.ellipse(22,22,5,3,-0.6,0,7);x.fill();});
 const HEARTS=[];
@@ -2195,12 +2277,14 @@ let petShown=null;
 function refreshPet(){const box=$('petBox');const A=(nearAnimal&&!modalOpen())?nearAnimal:null;if(A===petShown)return;petShown=A;
  if(!A){box.classList.add('hidden');return;}const lvn=loveOf(A.d.id);const off=NOFOL.has(A.d.id),mine=!!(A.fol&&A.fol.me);$('petName').textContent=`${A.d.em} ${A.d.name} · ${A.d.sp} · 💕${lvn}`+(mine?' · 🐾 나를 따라오는 중':off?' · 🏠 따라오지 않게 함':lvn<FOLLOW_MIN?` · ${FOLLOW_MIN-lvn}번 더 교감하면 따라와요`:'');box.classList.remove('hidden');
  const fb=$('folBtn');fb.classList.toggle('hidden',!(mine||(off&&lvn>=FOLLOW_MIN)));fb.innerHTML=mine?'🏠 그만 따라오기':'🐾 다시 따라오게 하기';fb.classList.toggle('back',!mine);}
-const REACT={dog:'꼬리를 신나게 흔들어요 💕',cat:'골골송을 불러요 💕',rabbit:'코를 씰룩씰룩해요 💕',elephant:'코를 번쩍 들어 기뻐해요 💕',panda:'데굴데굴 좋아해요 💕',redpanda:'두 팔을 번쩍 들고 좋아해요 💕',deer:'귀를 쫑긋하며 좋아해요 💕',raccoon:'눈을 가늘게 뜨고 좋아해요 💕',squirrel:'볼을 부풀리며 좋아해요 💕'};
+const REACT={dog:'꼬리를 신나게 흔들어요 💕',cat:'골골송을 불러요 💕',rabbit:'코를 씰룩씰룩해요 💕',elephant:'코를 번쩍 들어 기뻐해요 💕',panda:'데굴데굴 좋아해요 💕',redpanda:'두 팔을 번쩍 들고 좋아해요 💕',deer:'귀를 쫑긋하며 좋아해요 💕',raccoon:'눈을 가늘게 뜨고 좋아해요 💕',squirrel:'볼을 부풀리며 좋아해요 💕',fox:'꼬리를 살랑살랑 흔들어요 💕',goat:'메에~ 하고 좋아해요 💕',hedgehog:'가시를 눕히고 몸을 비벼요 💕',bear:'두 손을 모으고 좋아해요 💕',alpaca:'폭신한 목을 기대며 좋아해요 💕',capybara:'눈을 지그시 감고 좋아해요 💕'};
 function josa(w,a,b){const c=w.charCodeAt(w.length-1)-0xac00;return(c>=0&&c<=11171&&c%28)?a:b;}
 function animalSound(k){if(!AC)return;
  if(k==='dog'){tone(520,0,0.12,0.09,'square',300);tone(560,0.16,0.1,0.07,'square',320);}
  else if(k==='cat'){tone(700,0,0.35,0.06,'sine',950);tone(950,0.18,0.3,0.05,'sine',650);}
  else if(k==='elephant'){tone(220,0,0.45,0.08,'sawtooth',330);}
+ else if(k==='goat'){tone(420,0,0.12,0.06,'sawtooth',400);tone(400,0.13,0.12,0.06,'sawtooth',380);tone(380,0.26,0.18,0.05,'sawtooth',360);}
+ else if(k==='bear'){tone(180,0,0.3,0.08,'triangle',150);}
  else if(k==='rabbit'||k==='squirrel'){tone(1400,0,0.08,0.05,'sine',1900);tone(1600,0.1,0.08,0.05,'sine',2100);}
  else tone(600,0,0.18,0.06,'triangle',820);
  [1046.5,1318.5].forEach((f,i)=>tone(f,0.25+i*0.08,0.3,0.03));}
@@ -2972,7 +3056,7 @@ async function logout(){if(!acct)return;await doSave(false);try{await authCall('
 
 /* ---------- 매 프레임 ---------- */
 let v2HudAcc=0;
-function updV2(dt){updHappy(dt);updFoam(dt);updReels(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);rwTick(dt);opTick(dt);nmTick(dt);updSeat(dt);updFall(dt,skyMat?skyMat.uniforms.uSunVis.value:1);petTick(dt);attTick(dt);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
+function updV2(dt){updHappy(dt);updFoam(dt);updReels(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);rwTick(dt);opTick(dt);nmTick(dt);updSeat(dt);updBeach(dt);updFall(dt,skyMat?skyMat.uniforms.uSunVis.value:1);petTick(dt);attTick(dt);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
  for(const r of remote.values()){if(r.cookT){const k=animTable(r.cookT,r.ckSt,dt);if(r.char)r.char.ckP=k;}}
  v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();const bs=buffShort();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}${reelHud()}${floatHud()}`+(bs?` · ${bs}`:'');$('hudG').classList.toggle('buff',!!bs);
   if(GS._buffWas&&bl<=0)toast('🍳 요리 효과가 끝났어요',2400);GS._buffWas=bl>0;saveTick();}}
@@ -3045,10 +3129,10 @@ function buildStars2(){if(stars){scene.remove(stars);}const N=2600,p=new Float32
 
 /* ---------- 보름달 + 방아 찧는 토끼 ---------- */
 let moonSpr=null,moonGlow=null,moonCv=null,moonCtx=null,moonTex=null,moonAcc=0,moonToast=false;
-function drawMoon(ph){const c=moonCtx,S=256;c.clearRect(0,0,S,S);const R=118;
+function drawMoon(ph,full){if(full===undefined)full=fullMoonNight();const c=moonCtx,S=256;c.clearRect(0,0,S,S);const R=118;
  const g=c.createRadialGradient(S/2-20,S/2-24,10,S/2,S/2,R);g.addColorStop(0,'#fffbe8');g.addColorStop(0.7,'#fff0bf');g.addColorStop(1,'#f3d98e');c.fillStyle=g;c.beginPath();c.arc(S/2,S/2,R,0,7);c.fill();
- c.save();c.beginPath();c.arc(S/2,S/2,R,0,7);c.clip();c.fillStyle='rgba(205,180,120,.28)';for(const[x,y,r]of[[70,80,14],[180,70,10],[200,160,16],[60,170,11],[120,200,9],[150,40,7]]){c.beginPath();c.arc(x,y,r,0,7);c.fill();}
- const ink='rgba(148,114,64,.78)';c.fillStyle=ink;c.strokeStyle=ink;c.lineCap='round';
+ c.save();c.beginPath();c.arc(S/2,S/2,R,0,7);c.clip();c.fillStyle='rgba(205,180,120,.28)';for(const[x,y,r]of(full?[[70,80,14],[180,70,10],[200,160,16],[60,170,11],[120,200,9],[150,40,7]]:[[62,92,12],[40,128,6],[150,40,7]])){c.beginPath();c.arc(x,y,r,0,7);c.fill();}
+ if(full){const ink='rgba(148,114,64,.78)';c.fillStyle=ink;c.strokeStyle=ink;c.lineCap='round';
  // 절구
  c.beginPath();c.moveTo(150,170);c.lineTo(196,170);c.lineTo(188,206);c.lineTo(158,206);c.closePath();c.fill();c.fillRect(162,206,22,8);
  // 토끼 (공이를 들었다 내렸다)
@@ -3062,7 +3146,7 @@ function drawMoon(ph){const c=moonCtx,S=256;c.clearRect(0,0,S,S);const R=118;
  // 팔 + 공이
  const hx=140,hy=150-bob-lift*0.6;c.lineWidth=8;c.beginPath();c.moveTo(118,150-bob);c.lineTo(hx,hy);c.stroke();
  const top=[hx+18,hy-34],bot=[hx+34,172-lift*1.4];c.lineWidth=7;c.beginPath();c.moveTo(top[0],top[1]);c.lineTo(bot[0],bot[1]);c.stroke();c.beginPath();c.ellipse(bot[0],bot[1],11,6,0,0,7);c.fill();
- if(ph%(Math.PI*2)>Math.PI*0.92&&ph%(Math.PI*2)<Math.PI*1.25){c.fillStyle='rgba(255,255,255,.75)';for(let i=0;i<5;i++){c.beginPath();c.arc(160+i*8,160-Math.random()*10,2.2,0,7);c.fill();}}
+ if(ph%(Math.PI*2)>Math.PI*0.92&&ph%(Math.PI*2)<Math.PI*1.25){c.fillStyle='rgba(255,255,255,.75)';for(let i=0;i<5;i++){c.beginPath();c.arc(160+i*8,160-Math.random()*10,2.2,0,7);c.fill();}}}
  c.restore();
  const e=c.createRadialGradient(S/2,S/2,R*0.85,S/2,S/2,R);e.addColorStop(0,'rgba(0,0,0,0)');e.addColorStop(1,'rgba(150,120,60,.18)');c.fillStyle=e;c.beginPath();c.arc(S/2,S/2,R,0,7);c.fill();
  moonTex.needsUpdate=true;}
@@ -3072,7 +3156,7 @@ function buildMoon(){moonCv=document.createElement('canvas');moonCv.width=moonCv
 function updMoon(dt,n){const h=hourNow();const md=skyMat.uniforms.uMoonDir.value;
  if(h>=18.5){const p=clamp((h-18.5)/11,0,1);const az=-0.95+p*1.9;const el=0.07+Math.sin(p*Math.PI)*0.2;md.set(Math.sin(az)*Math.cos(el),Math.sin(el),Math.cos(az)*Math.cos(el)).normalize();}
  const vis=smooth(0.25,0.75,n);moonSpr.material.opacity=vis;moonGlow.material.opacity=vis*0.38;moonSpr.visible=moonGlow.visible=vis>0.01;
- if(vis>0.01){moonSpr.position.copy(camera.position).addScaledVector(md,400);moonGlow.position.copy(moonSpr.position);moonAcc+=dt;if(moonAcc>1/12){moonAcc=0;drawMoon(t*4.2);moonShade();}moonGlow.material.opacity=vis*(fullMoonNight()?0.5:0.06);moonGlow.scale.setScalar(fullMoonNight()?150:70);moonSpr.scale.setScalar(fullMoonNight()?58:46);}
+ if(vis>0.01){moonSpr.position.copy(camera.position).addScaledVector(md,400);moonGlow.position.copy(moonSpr.position);moonAcc+=dt;if(moonAcc>1/12){moonAcc=0;const full=fullMoonNight();drawMoon(t*4.2,full);moonShade(full);}moonGlow.material.opacity=vis*(fullMoonNight()?0.5:0.06);moonGlow.scale.setScalar(fullMoonNight()?150:70);moonSpr.scale.setScalar(fullMoonNight()?58:46);}
  if(vis>0.6&&!moonToast&&entered){moonToast=true;if(fullMoonNight())toast('🌕 보름달이 떴어요! 오늘 밤은 ✨희귀종이 잡힐 확률이 2배예요 · 달 속 토끼도 방아를 찧고 있어요',4600);}
  if(n<0.2)moonToast=false;}
 
@@ -3162,8 +3246,12 @@ const HARD_D=0.16;
 function starRangeTxt(){const R=GS.rod;if(R>=7)return`★7 물고기까지 모두`;const hi=Math.min(7,effStar()+1),lo=R+1;return`★${R} 물고기까지 편하게 · ★${lo===hi?lo:lo+'~★'+hi}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),R=GS.rod;return`🔥 ★${st} 물고기가 걸렸어요! 내 낚싯대(★${R})보다 ${st-R>1?'두':'한'} 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.rod>1?'두':'한'} 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-15b';
+const NEWS_VER='2026-11-15c';
 const NEWS=[
+ {d:'11월 15일',t:'🦊 산과 언덕에 새 동물 친구 6마리 · 🦀 해변 꼬마 친구들',n:true,i:[
+  '🦊 북쪽 산과 언덕에 <b>아기 여우 노을 · 아기 산양 바위 · 고슴도치 밤송이 · 아기 반달가슴곰 꿀떡 · 알파카 몽실 · 카피바라 유자</b>가 이사 왔어요. 쓰다듬고 껴안아 주면 다른 친구들처럼 따라와요.',
+  '🦀 바닷가 모래밭에 종종걸음 꼬마 게, 느릿느릿 소라게, 알록달록 불가사리와 조개가 생겼어요. 가까이 가면 게는 후다닥 피하고 소라게는 껍데기 속에 쏙 숨어요.',
+  '🗼 등대 불빛이 번쩍이지 않고 은은하게 켜져요.']},
  {d:'11월 15일',t:'🗺️ 섬이 훨씬 넓어졌어요 · ⛰️ 아몰랑 산과 🗼 큰 등대 · 🪷 저수지 좌대',n:true,i:[
   '🗺️ 섬이 <b>훨씬 넓어졌어요</b>. 🗺️ 지도에서 새 모습을 확인해 보세요.',
   '⛰️ 북쪽에 높은 <b>아몰랑 산</b>이 생겼어요. 꼭대기의 <b>🗼 큰 등대</b>는 둘레를 빙 감은 계단으로 올라갈 수 있고, 꼭대기 전망대에서 섬 전체가 내려다보여요.',
@@ -3953,7 +4041,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-14o';
+const BUILD='2026-11-14p';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -5259,7 +5347,7 @@ function pickRare(p,hab){if(window.__pick)return null;const c=rareChance(p,hab);
  if(!tot||Math.random()>=Math.min(1,c*tot/tot0))return null;let x=Math.random()*tot,sp=cand[0][0];for(const[s,w]of cand){if(x<w){sp=s;break;}x-=w;}
  const frac=Math.pow(Math.random(),2.2-1.4*p);return{sp,size:Math.round((sp.min+(sp.max-sp.min)*frac)*10)/10,s:clamp(sp.str*(0.7+0.6*frac),0,1),frac};}
 /* 반달(보름달이 아닌 밤): 달 그림의 한쪽을 지워요 */
-function moonShade(){if(fullMoonNight())return;const c=moonCtx,S=256;c.save();c.globalCompositeOperation='destination-out';c.fillStyle='#000';c.beginPath();c.arc(S/2+70,S/2-18,112,0,7);c.fill();c.restore();moonTex.needsUpdate=true;}
+function moonShade(full){if(full===undefined)full=fullMoonNight();if(full)return;const c=moonCtx,S=256;c.save();c.globalCompositeOperation='destination-out';c.fillStyle='#000';c.beginPath();c.arc(S/2+70,S/2-18,112,0,7);c.fill();c.restore();moonTex.needsUpdate=true;}
 
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
@@ -5589,7 +5677,7 @@ function updateEnv(dt){
  for(const[m,k]of NIGHT_EMISSIVE)m.emissiveIntensity=k*smooth(0.15,0.6,n)+(k>3?0.2:0);
  for(const[g,k]of GLOWS)g.material.opacity=k*smooth(0.15,0.6,n);
  const fl=0.85+0.15*Math.sin(t*11)+0.08*Math.sin(t*23);const cu=campfire.userData;cu.f1.scale.set(fl,0.9+0.2*Math.sin(t*9),fl);cu.f2.scale.set(1,0.85+0.25*Math.sin(t*13+1),1);cu.cg.material.opacity=0.35+0.5*n;campLight.intensity=(4+18*n)*fl;
- beacon.material.opacity=(0.25+0.75*n)*((t%4)<0.7?1:0.15)*(1-LHV.k);
+ beacon.material.opacity=(0.08+0.4*n)*(0.85+0.15*Math.sin(t*1.3))*(1-0.45*LHV.k);
  const fb=fireflies.userData.base,fp=fireflies.geometry.attributes.position;for(let i=0;i<fb.length;i++){const b=fb[i];fp.setXYZ(i,b[0]+Math.sin(t*0.5+b[3])*1.2,b[1]+Math.sin(t*0.9+b[3]*2)*0.4,b[2]+Math.cos(t*0.4+b[3])*1.2);}fp.needsUpdate=true;fireflies.material.opacity=smooth(0.4,0.85,n)*(0.7+0.3*Math.sin(t*3));
  for(const g of GULLS){const u=g.userData;const a=t*u.sp+u.ph;g.position.set(u.cx+Math.cos(a)*u.r,u.h+Math.sin(t*0.7+u.ph)*1.5,u.cz+Math.sin(a)*u.r);g.rotation.y=-a+(u.sp>0?0:Math.PI);const fl2=Math.sin(t*7+u.ph)*0.5;u.wings[0].rotation.z=fl2;u.wings[1].rotation.z=-fl2;}
  for(const b of BOATS){b.position.y=waveH(b.position.x,b.position.z,t)-0.1;b.rotation.z=Math.sin(t*0.8+b.position.x)*0.04;}
