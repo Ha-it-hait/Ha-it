@@ -52,6 +52,12 @@
   <div id="gOut"></div>
  </div>
 <style>.frow{display:flex;gap:6px;align-items:center;margin:4px 0;flex-wrap:wrap}.frow select,.frow input{padding:8px;border-radius:10px;border:1px solid #c9d3e2;font:inherit}.frow .fsp{flex:1 1 240px;min-width:200px}.frow .fsz{width:110px}.frow .fto{width:96px}.frow .fhint{font-size:12px;color:#7a8597;min-width:90px}.frow .fdel{padding:6px 10px}</style>
+ <div class="card" id="opCard">
+  <b style="font-size:16px">👑 운영자 계정</b>
+  <p class="note" style="margin-top:4px">여기에 등록한 계정만 닉네임에 <b>운영자 · 운영진 · 관리자 · admin · gm</b>을 쓸 수 있어요. 그 계정으로 로그인하면 어느 기기에서든 바로 쓸 수 있어요(기기 등록 필요 없음). 다른 사람은 계속 막혀요.</p>
+  <div class="row"><div><label>운영자로 등록할 아이디</label><input id="opId" autocomplete="off" placeholder="게임 로그인 아이디"></div><div style="flex:0"><button id="opAdd" style="background:#7a4fd0">등록</button></div><div style="flex:0"><button class="ghost" id="opLs">목록 보기</button></div></div>
+  <div id="opOut" style="margin-top:8px"></div>
+ </div>
  <div class="card" id="hofCard">
   <b style="font-size:16px">🏆 명예의 전당 이름 정리</b>
   <p class="note" style="margin-top:4px">이름을 바꾼 유저의 예전 기록을 지금 이름으로 바꿔요. <b>자동 정리</b>는 모든 계정의 지금 기록과 예전 저장본(최대 40개)을 살펴, <b>크기가 똑같고 + 그때 쓰던 이름도 같은</b> 기록만 바꿔요(확실한 것만). 남은 기록은 아래 목록에서 직접 고칠 수 있어요. 위의 ‘유저 아이디’ 칸은 비워 둬도 돼요.</p>
@@ -143,7 +149,13 @@ async function hLoad(){const out=$('hOut');out.innerHTML='불러오는 중…';
   L.map(x=>`<tr data-id="${hEsc(x.id)}"><td>${hEsc((NM[x.id]||[x.id])[0])}</td><td class="n">${x.s}cm</td><td>${hEsc(x.n)}</td><td>${x.own?hEsc(x.own):'<span style="color:#c0392b">모름</span>'}</td><td><input class="hn" value="${hEsc(x.n)}" maxlength="10" style="width:130px;padding:6px"></td><td><input class="ho" placeholder="아이디" style="width:110px;padding:6px"></td><td><button class="hs" style="padding:6px 10px">저장</button></td></tr>`).join('')+'</table>';
   out.querySelectorAll('.hs').forEach(b=>b.onclick=async()=>{const tr=b.closest('tr');b.disabled=true;try{await call('admin-hofset',{sid:tr.dataset.id,name:tr.querySelector('.hn').value.trim(),own:tr.querySelector('.ho').value.trim()});b.textContent='✅';tr.children[2].textContent=tr.querySelector('.hn').value.trim();}catch(e){alert(e.message);b.disabled=false;}});}
  catch(e){out.innerHTML=`<p class="err">${hEsc(e.message)}</p>`;}}
-$('hList').onclick=hLoad;$('hNoOwn').onchange=()=>{if($('hOut').querySelector('table'))hLoad();};
+$('hList').onclick=hLoad;
+/* 👑 운영자 계정 */
+function opShow(list){const o=$('opOut');if(!list.length){o.innerHTML='<p class="note">등록된 운영자 계정이 없어요.</p>';return;}
+ o.innerHTML='<table><tr><th>아이디</th><th>등록한 때</th><th></th></tr>'+list.map(x=>`<tr><td><b>${hEsc(x.id)}</b></td><td>${new Date(x.ts).toLocaleString('ko-KR')}</td><td><button class="warn" data-op="${hEsc(x.id)}" style="padding:5px 10px">해제</button></td></tr>`).join('')+'</table>';
+ o.querySelectorAll('[data-op]').forEach(b=>b.onclick=async()=>{if(!confirm(b.dataset.op+' 계정의 운영자 등록을 해제할까요?'))return;try{const j=await call('admin-opdel',{opid:b.dataset.op});opShow(j.list);}catch(e){alert(e.message);}});}
+$('opAdd').onclick=async()=>{const id=$('opId').value.trim().toLowerCase();if(!id){alert('아이디를 적어 주세요');return;}try{const j=await call('admin-opadd',{opid:id});opShow(j.list);$('opId').value='';}catch(e){$('opOut').innerHTML=`<p class="err">${hEsc(e.message)}</p>`;}};
+$('opLs').onclick=async()=>{try{const j=await call('admin-opls',{});opShow(j.list);}catch(e){$('opOut').innerHTML=`<p class="err">${hEsc(e.message)}</p>`;}};$('hNoOwn').onchange=()=>{if($('hOut').querySelector('table'))hLoad();};
 </script>
 </body>
 </html>

@@ -71,6 +71,31 @@ function cleanBoard(s) {
 
 // 직접 정한 닉네임 검사 (2~10자, 한글·영문·숫자·띄어쓰기·_, 금지어 없음). 통과 못 하면 '' → 랜덤 이름으로 보인다
 const NICK_BAN = ['용왕', '운영자', '관리자', '운영진', 'admin', 'gm', 'system', '시스템', 'claude'];
+// 관리자 페이지에서 '운영자 계정'으로 등록한 계정만 이 낱말들을 닉네임에 쓸 수 있어요
+const OP_WORDS = ['운영자', '관리자', '운영진', 'admin', 'gm'];
+const hasOpWord = v => { const low = String(v || '').toLowerCase().replace(/[\s_]/g, ''); return OP_WORDS.some(w => low.includes(w)); };
+function cleanNickOp(v) {
+  if (typeof v !== 'string') return '';
+  const s = v.replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u2064]/g, '').replace(/\s+/g, ' ').trim();
+  const len = Array.from(s).length;
+  if (len < 2 || len > 10 || !/^[가-힣a-zA-Z0-9 _]+$/.test(s)) return '';
+  const low = s.toLowerCase().replace(/[\s_]/g, '');
+  if (NICK_BAN.some(w => !OP_WORDS.includes(w) && low.includes(w))) return '';
+  if (cleanChat(s) !== s) return '';
+  return s;
+}
+// 운영자 출입증: 계정 서버가 서명하고(ADMIN_KEY로), 섬 서버가 확인해요
+async function opSign(env, u, e) {
+  if (!env.ADMIN_KEY) return '';
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode('amollang-op|' + String(env.ADMIN_KEY)), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode('op|' + u + '|' + e));
+  return [...new Uint8Array(sig)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function opVerify(env, t) {
+  if (!t || typeof t !== 'object' || typeof t.u !== 'string' || typeof t.s !== 'string' || !Number.isFinite(+t.e) || +t.e < Date.now()) return false;
+  const want = await opSign(env, t.u, +t.e);
+  return !!want && want.length === t.s.length && sameStr(want, t.s);
+}
 function cleanNick(v) {
   if (typeof v !== 'string') return '';
   const s = v.replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u2064]/g, '').replace(/\s+/g, ' ').trim();
@@ -83,7 +108,7 @@ function cleanNick(v) {
 }
 
 // 받은 상태값을 알려진 필드·범위로만 다시 만든다 (악성 입력 차단)
-function sanitize(d) {
+function sanitize(d, op) {
   if (!d || typeof d !== 'object') return null;
   const p = arr(d.p, 4); if (!p) return null;
   const n = arr(d.n, 2) || [0, 0], lk = arr(d.lk, 4) || [0, 0, 0, 0], f = arr(d.f, 2) || [0, 0];
@@ -91,7 +116,8 @@ function sanitize(d) {
   return {
     v: 3,
     n: [idx(n[0], N_ADJ), idx(n[1], N_NOUN)],
-    nk: cleanNick(d.nk),
+    nk: op ? cleanNickOp(d.nk) : cleanNick(d.nk),
+    op: op ? 1 : 0,
     lk: [idx(lk[0], 8), idx(lk[1], 12), idx(lk[2], 5), idx(lk[3], 12)],
     p: [r2(num(p[0], -120, 120, 0)), r2(num(p[1], -120, 120, 0)), r2(num(p[2], -50, 50, 0)), r2(num(p[3], 0, 3, 0))],
     m: d.m === 1 ? 1 : 0,
@@ -154,14 +180,14 @@ export class Island extends DurableObject {
   }
   rwState(live) {
     const now = Date.now(), r = Math.floor(now / RW_ROUND), bets = [];
-    for (const w of live) { const a = w.deserializeAttachment(); if (a && a.rb && a.rb.r === r && a.p) bets.push({ id: a.id, n: a.p.n, nk: a.p.nk || '', b: a.rb.b }); }
+    for (const w of live) { const a = w.deserializeAttachment(); if (a && a.rb && a.rb.r === r && a.p) bets.push({ id: a.id, n: a.p.n, nk: a.p.nk || '', op: a.p.op ? 1 : 0, b: a.rb.b }); }
     const last = this.sql.exec('SELECT r, s FROM rw ORDER BY r DESC LIMIT 12').toArray().map(x => [x.r, x.s]);
     return { now, r, bets, last };
   }
 
   recentChat() {
     return this.sql.exec('SELECT ts, a, b, nk, m FROM chat2 ORDER BY id DESC LIMIT ?', CHAT_KEEP).toArray().reverse()
-      .map(r => ({ ts: r.ts, n: [r.a, r.b], nk: r.nk || '', m: r.m }));
+      .map(r => ({ ts: r.ts, n: [r.a, r.b], nk: r.nk || '', op: hasOpWord(r.nk) ? 1 : 0, m: r.m }));
   }
 
   async fetch(request) {
@@ -213,7 +239,7 @@ export class Island extends DurableObject {
     let m; try { m = JSON.parse(msg); } catch { ws.serializeAttachment(a); return; }
     if (!m || typeof m !== 'object') { ws.serializeAttachment(a); return; }
     if (m.t === 'p') {
-      const p = sanitize(m.d);
+      const p = sanitize(m.d, !!a.op);
       if (p) {
         // 같은 화면(sd)이 다시 연결됐다면, 남아 있던 예전 연결(유령)을 정리
         if (p.sd && a.sd !== p.sd) {
@@ -229,7 +255,7 @@ export class Island extends DurableObject {
         // 이름이 바뀌면 이 사람의 지난 채팅 기록 이름도 새 이름으로
         if (op && a.oh && (op.n[0] !== p.n[0] || op.n[1] !== p.n[1] || (op.nk || '') !== (p.nk || ''))) {
           const ts = this.sql.exec('SELECT ts FROM chat2 WHERE oh = ?', a.oh).toArray().map(r => r.ts);
-          if (ts.length) { this.sql.exec('UPDATE chat2 SET a = ?, b = ?, nk = ? WHERE oh = ?', p.n[0], p.n[1], p.nk || '', a.oh); this.broadcast({ t: 'rn', ts, n: p.n, nk: p.nk || '' }, null); }
+          if (ts.length) { this.sql.exec('UPDATE chat2 SET a = ?, b = ?, nk = ? WHERE oh = ?', p.n[0], p.n[1], p.nk || '', a.oh); this.broadcast({ t: 'rn', ts, n: p.n, nk: p.nk || '', op: p.op ? 1 : 0 }, null); }
         }
         this.prune(); return;
       }
@@ -241,9 +267,14 @@ export class Island extends DurableObject {
         const n = a.p.n, nk = a.p.nk || '';
         this.sql.exec('INSERT INTO chat2(ts, a, b, nk, m, oh) VALUES (?, ?, ?, ?, ?, ?)', now, n[0], n[1], nk, text, a.oh || null);
         this.sql.exec('DELETE FROM chat2 WHERE id NOT IN (SELECT id FROM chat2 ORDER BY id DESC LIMIT ?)', CHAT_KEEP);
-        this.broadcast({ t: 'c', id: a.id, n, nk, m: text, ts: now }, null);
+        this.broadcast({ t: 'c', id: a.id, n, nk, op: a.p.op ? 1 : 0, m: text, ts: now }, null);
         return;
       }
+    } else if (m.t === 'opt') {
+      // 운영자 출입증 확인 → 이 연결은 운영자 닉네임을 쓸 수 있어요
+      opVerify(this.env, m.k).then(ok => { const b = ws.deserializeAttachment(); if (!b) return; b.op = ok ? 1 : 0; ws.serializeAttachment(b); try { ws.send(JSON.stringify({ t: 'opok', ok: !!ok })); } catch {} }).catch(() => {});
+      ws.serializeAttachment(a);
+      return;
     } else if (m.t === 'oh') {
       if (typeof m.h === 'string' && /^[0-9a-f]{16}$/.test(m.h)) { a.oh = m.h; ws.serializeAttachment(a); }
       return;
@@ -254,7 +285,7 @@ export class Island extends DurableObject {
       const ok = b && r === cur && now - cur * RW_ROUND < RW_BET + RW_GRACE && b.every((x, k) => x >= 0 && x <= RW_CAP[k] && x % 100 === 0) && b.reduce((p, q) => p + q, 0) <= RW_MAX;
       if (ok) {
         a.rb = { r, b }; ws.serializeAttachment(a);
-        this.broadcast({ t: 'rbs', r, id: a.id, n: a.p ? a.p.n : [0, 0], nk: a.p ? a.p.nk || '' : '', b }, null);
+        this.broadcast({ t: 'rbs', r, id: a.id, n: a.p ? a.p.n : [0, 0], nk: a.p ? a.p.nk || '' : '', op: a.p && a.p.op ? 1 : 0, b }, null);
         return;
       }
     } else if (m.t === 'rq') {
@@ -467,6 +498,7 @@ export class Vault extends DurableObject {
     if (!cols.has('sids')) this.sql.exec('ALTER TABLE users ADD COLUMN sids TEXT');
     if (!cols.has('dsid')) this.sql.exec('ALTER TABLE users ADD COLUMN dsid TEXT');
     this.sql.exec('CREATE TABLE IF NOT EXISTS baks(id TEXT, ts INTEGER, why TEXT, data TEXT, PRIMARY KEY(id, ts))');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS ops(id TEXT PRIMARY KEY, ts INTEGER)');
     this.sql.exec('CREATE TABLE IF NOT EXISTS gifts(gid TEXT PRIMARY KEY, ts INTEGER, target TEXT, n INTEGER, items TEXT, msg TEXT)');
     this.adminFail = new Map();
     this.regByIp = new Map();
@@ -528,6 +560,9 @@ export class Vault extends DurableObject {
     }
     return out;
   }
+  // 운영자 계정이면 운영자 닉네임 허용
+  isOp(token) { const u = this.who(token); return !!u && !!this.sql.exec('SELECT id FROM ops WHERE id = ?', u).toArray()[0]; }
+  nameOf(body) { const n = cleanNick(body && body.name); if (n) return n; if (body && body.token && this.isOp(body.token)) return cleanNickOp(body.name) || ''; return ''; }
   // 명예의 전당 주인 열쇠 확인: 계정(a_)은 로그인 토큰이 맞아야 해요
   ownKey(k, token) {
     k = String(k || '');
@@ -562,7 +597,7 @@ export class Vault extends DurableObject {
       const last = this.lgByIp.get(ipKey) || (await this.ctx.storage.get(ipK)) || 0;
       if (now - last < 5 * 60 * 1000) return J({ ok: true, lg: this.legendNow(now), skipped: true });
       this.lgByIp.set(ipKey, now); await this.ctx.storage.put(ipK, now);
-      const lg = { n: cleanNick(body.name) || '익명의 낚시꾼', id, s: sz, ts: now, until: now + LEGEND_MS };
+      const lg = { n: this.nameOf(body) || '익명의 낚시꾼', id, s: sz, ts: now, until: now + LEGEND_MS };
       this._lg = lg; await this.ctx.storage.put('legend', lg);
       return J({ ok: true, lg: this.legendNow(now), fan: lg });
     }
@@ -575,7 +610,7 @@ export class Vault extends DurableObject {
       const last = this.lgByIp.get(k) || 0;
       if (now - last < 20 * 1000) return J({ ok: true, skipped: true });
       this.lgByIp.set(k, now);
-      const fan = { n: cleanNick(body.name) || '익명의 낚시꾼', id, s: sz, ts: now };
+      const fan = { n: this.nameOf(body) || '익명의 낚시꾼', id, s: sz, ts: now };
       return J({ ok: true, fan });
     }
     if (op === 'hof-submit') {
@@ -588,7 +623,7 @@ export class Vault extends DurableObject {
       const list = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
       if (list.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
       list.push(now); this.hofByIp.set(ipKey, list);
-      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const name = this.nameOf(body) || '익명의 낚시꾼';
       const row = this.sql.exec('SELECT s, n, ts FROM hof WHERE id = ?', id).toArray()[0];
       if (row && row.s >= sz) return J({ ok: true, top: false, rec: { s: row.s, n: row.n, ts: row.ts } });
       this.sql.exec('INSERT OR REPLACE INTO hof(id, s, n, ts, ip, k) VALUES (?, ?, ?, ?, ?, ?)', id, sz, name, now, ipKey, this.ownKey(body.key, body.token));
@@ -602,7 +637,7 @@ export class Vault extends DurableObject {
       const lst = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
       if (lst.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
       lst.push(now); this.hofByIp.set(ipKey, lst);
-      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const name = this.nameOf(body) || '익명의 낚시꾼';
       const ok = this.ownKey(body.key, body.token);
       const won = [], recs = [];
       for (const it of items) {
@@ -616,6 +651,14 @@ export class Vault extends DurableObject {
       if (won.length) this._hofC = null;
       return J({ ok: true, name, won, recs });
     }
+    if (op === 'opt') {
+      // 운영자 출입증 (12시간): 운영자 계정만 받아요
+      const u = this.who(body.token); if (!u) return J({ error: '다시 로그인해 주세요' }, 401);
+      if (!this.sql.exec('SELECT id FROM ops WHERE id = ?', u).toArray()[0]) return J({ ok: true, op: false });
+      const e = now + 12 * 3600e3, sg = await opSign(this.env, u, e);
+      if (!sg) return J({ ok: true, op: false });
+      return J({ ok: true, op: true, k: { u, e, s: sg } });
+    }
     if (op === 'hof-rename') {
       // 이름을 바꾸면: 내 명예의 전당 기록 · 도감왕 · 게시판의 내 글 이름을 새 이름으로
       const k = this.ownKey(body.key, body.token);
@@ -624,7 +667,7 @@ export class Vault extends DurableObject {
       const lst = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
       if (lst.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
       lst.push(now); this.hofByIp.set(ipKey, lst);
-      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const name = this.nameOf(body) || '익명의 낚시꾼';
       let hof = 0, board = 0;
       // 예전 기록(주인 표시 없음): 크기가 맞고, 예전에 쓰던 이름(계정 저장본에서 확인)이나 올린 곳(IP)이 같으면 내 기록이에요
       const toMap = a => { const m = new Map(); for (const c of (Array.isArray(a) ? a : []).slice(0, SPECIES_LIST.length)) { const id = String(c && c.id || ''); if (!SPECIES_MAX[id]) continue; const sz = Math.round(Number(c.s) * 10) / 10; if (!Number.isFinite(sz) || sz <= 0) continue; let st = m.get(id); if (!st) m.set(id, st = new Set()); st.add(sz); } return m; };
@@ -649,7 +692,7 @@ export class Vault extends DurableObject {
       const lst = (this.hofByIp.get(ipKey) || []).filter(x => now - x < 60e3);
       if (lst.length >= 120) return J({ error: '잠시 후 다시 시도해 주세요' }, 429);
       lst.push(now); this.hofByIp.set(ipKey, lst);
-      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const name = this.nameOf(body) || '익명의 낚시꾼';
       const row = this.sql.exec('SELECT c FROM collectors WHERE k = ?', k).toArray()[0];
       if (!row) this.sql.exec('INSERT INTO collectors(k, n, c, ts, ip) VALUES (?, ?, ?, ?, ?)', k, name, c, now, ipKey);
       else if (c > row.c) this.sql.exec('UPDATE collectors SET n = ?, c = ?, ts = ?, ip = ? WHERE k = ?', name, c, now, ipKey, k);
@@ -665,7 +708,7 @@ export class Vault extends DurableObject {
     if (op === 'board-post') {
       const text = cleanBoard(body.text);
       if (Array.from(text).length < 2) return J({ error: '두 글자 이상 적어 주세요' }, 400);
-      const name = cleanNick(body.name) || '익명의 낚시꾼';
+      const name = this.nameOf(body) || '익명의 낚시꾼';
       const ipKey = ip.slice(0, 64);
       const last = this.sql.exec('SELECT MAX(ts) AS t, COUNT(*) AS n FROM board WHERE ip = ? AND ts > ?', ipKey, now - 86400e3).toArray()[0];
       if (last && last.t && now - last.t < 20e3) return J({ error: '조금 천천히 남겨 주세요 (20초에 1개)' }, 429);
@@ -749,6 +792,17 @@ export class Vault extends DurableObject {
       if (fails.length >= 10) return J({ error: '관리자 키를 너무 많이 틀렸어요. 1시간 뒤에 다시 해 주세요' }, 429);
       const okKey = this.env.ADMIN_KEY && typeof body.admin === 'string' && sameStr(body.admin, String(this.env.ADMIN_KEY));
       if (!okKey) { fails.push(now); this.adminFail.set(ipKey, fails); return J({ error: this.env.ADMIN_KEY ? '관리자 키가 맞지 않아요' : '서버에 ADMIN_KEY가 설정되어 있지 않아요' }, 403); }
+      if (op === 'admin-opls') {
+        return J({ ok: true, list: this.sql.exec('SELECT id, ts FROM ops ORDER BY ts').toArray() });
+      }
+      if (op === 'admin-opadd' || op === 'admin-opdel') {
+        const oid = String(body.opid || '').trim().toLowerCase();
+        if (op === 'admin-opadd') {
+          if (!this.sql.exec('SELECT id FROM users WHERE id = ?', oid).toArray()[0]) return J({ error: '없는 아이디예요' }, 404);
+          this.sql.exec('INSERT OR REPLACE INTO ops(id, ts) VALUES (?, ?)', oid, now);
+        } else this.sql.exec('DELETE FROM ops WHERE id = ?', oid);
+        return J({ ok: true, list: this.sql.exec('SELECT id, ts FROM ops ORDER BY ts').toArray() });
+      }
       if (op === 'admin-hofls') {
         const list = this.sql.exec('SELECT id, s, n, ts, k FROM hof').toArray().map(r => ({ id: r.id, s: r.s, n: r.n, ts: r.ts, own: r.k ? (r.k.startsWith('a_') ? r.k.slice(2) : '기기(손님)') : '' }));
         return J({ ok: true, list });
@@ -894,7 +948,7 @@ export default {
     if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
       const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
       const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-rename', 'hof-legend', 'hof-rare', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear', 'admin-gift', 'admin-gifts', 'admin-hofls', 'admin-hofset', 'admin-hoffix'].includes(op)) return J({ error: 'not found' }, 404);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-rename', 'hof-legend', 'hof-rare', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear', 'admin-gift', 'admin-gifts', 'admin-hofls', 'admin-hofset', 'admin-hoffix', 'admin-opls', 'admin-opadd', 'admin-opdel', 'opt'].includes(op)) return J({ error: 'not found' }, 404);
       if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {
