@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-14v">
+<meta name="amollang-build" content="2026-11-14w">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -1946,7 +1946,7 @@ const BAITS={
  b7:{key:'b7',cnt:'bt7',bit:1,em:'🔮',name:'프리즘 구슬',short:'🔮구슬',price:500,minE:6,col:'#a99bff',fx:'prism',
   desc:'햇빛을 일곱 빛깔로 쪼개는 유리구슬이에요. 찌 둘레에 무지개 빛무리가 돌면, 무지개 전설들이 자기 빛깔을 찾아 다가와요.',eff:'🌈 ★7 무지개 전설이 걸릴 확률 <b>2배</b>'},
  br:{key:'br',cnt:'btR',bit:2,em:'🍡',name:'용궁 떡집 경단',short:'🍡경단',price:300,minE:5,col:'#ffb3c7',fx:'dango',
-  desc:'용궁 떡집에서 갓 빚은 쫀득한 삼색 경단이에요. 찌 주변에 단내가 보글보글 퍼지면, 인절미·백설기·곶감·호박엿을 좋아하는 희귀종 친구들이 몰려와요.',eff:'✨ 희귀종이 걸릴 확률 <b>2배</b>'}};
+  desc:'용궁 떡집에서 갓 빚은 쫀득한 삼색 경단이에요. 찌 주변에 달콤한 단내가 보글보글 퍼지면, 간식이라면 사족을 못 쓰는 희귀종 친구들이 너도나도 몰려와요.',eff:'✨ 희귀종이 걸릴 확률 <b>2배</b>'}};
 const BAIT_PACKS=[[10,1],[50,0.98],[100,0.96]];   /* 묶음: 개수 · 할인 */
 function baitCnt(B){return Math.max(0,GS[B.cnt]|0);}
 function baitWant(B){return!!((GS.bo|0)&B.bit);}
@@ -1997,31 +1997,41 @@ function updBaitFx(dt){if(!BFX.g){if(typeof myFloat==='undefined'||!myFloat)retu
 /* ---------- v82: 저수지 꾸밈 — 연잎·연꽃·부들·개구리·잠자리 (눌러도 반응 없는 장식) ---------- */
 const PDECO={pads:[],perch:[],frogs:[],flies:[],g:null};
 function pondWater(x,z,deep){return terrainH(x,z)<(deep??-0.35)&&resEdge(x,z)<-1&&SEATS.every(S=>Math.hypot(x-S.px,z-S.pz)>7.5);}
+function lotusGeo(){/* 활짝 핀 연꽃: 꽃잎 3겹(바깥은 넓게 눕고 안쪽은 서요) · 끝이 뾰족한 꽃잎 · 가운데 노란 연밥과 꽃술 */const st=[];
+ const layer=(n,tilt,len,wid,c,off)=>{for(let i=0;i<n;i++){const a=i/n*Math.PI*2+off;const dx=-Math.sin(tilt)*Math.cos(a),dy=Math.cos(tilt),dz=Math.sin(tilt)*Math.sin(a);
+  st.push(part(A_SPH,c,dx*len*0.45,0.025+dy*len*0.45,dz*len*0.45,0,a,tilt,wid,len*0.45,wid*0.3));
+  st.push(part(A_CONE,c,dx*len*0.95,0.025+dy*len*0.95,dz*len*0.95,0,a,tilt,wid*0.62,len*0.2,wid*0.18));}};
+ layer(10,1.3,0.16,0.055,'#ffd2e4',0);layer(8,0.95,0.15,0.05,'#ffb3d1',0.33);layer(6,0.55,0.13,0.045,'#ff94bf',0.12);layer(4,0.25,0.1,0.038,'#ff7aae',0.8);
+ st.push(part(new THREE.CylinderGeometry(1,0.75,1,14),'#e4e56a',0,0.075,0,0,0,0,0.03,0.028,0.03));
+ for(let i=0;i<7;i++){const a=i/7*Math.PI*2;st.push(part(A_SPH,'#a9bf3e',Math.cos(a)*0.016,0.09,Math.sin(a)*0.016,0,0,0,0.005,0.003,0.005));}
+ for(let i=0;i<16;i++){const a=i/16*Math.PI*2;st.push(part(aCap(0.003,0.028),'#ffcf3a',Math.cos(a)*0.038,0.078,Math.sin(a)*0.038,Math.sin(a)*0.5,0,-Math.cos(a)*0.5));}
+ return mergeGeometries(st);}
 function buildPondDeco(){const rng=mulberry32(8282);const R=()=>rng();const st=[];
- const padGeo=new THREE.CircleGeometry(1,20,0.32,Math.PI*2-0.32).rotateX(-Math.PI/2);
- const PADC=['#4f9a4a','#5fae55','#47914a','#62b35a'];
- /* 연잎 군락 */
+ const PADC=['#4f9a4a','#5fae55','#47914a','#62b35a'];const lot=[];
+ /* 연잎 군락 (물결 따라 출렁여요) */
  for(let c=0,tr=0;c<15&&tr<800;tr++){const a=R()*Math.PI*2,rr=0.45+R()*0.45;const cx=RES.x+Math.cos(a)*RES.rx*rr,cz=RES.z+Math.sin(a)*RES.rz*rr;if(!pondWater(cx,cz))continue;c++;
   const n=3+Math.floor(R()*5);for(let k=0,t2=0;k<n&&t2<60;t2++){const x=cx+(R()-0.5)*3.6,z=cz+(R()-0.5)*3.6,r=0.32+R()*0.38;if(!pondWater(x,z))continue;if(PDECO.pads.some(p=>Math.hypot(p.x-x,p.z-z)<(p.r+r)*0.92))continue;
-   const yaw=R()*6.28;PDECO.pads.push({x,z,r,yaw});st.push(part(padGeo,PADC[Math.floor(R()*PADC.length)],x,0.04,z,0,yaw,0,r,1,r));
-   st.push(part(A_SPH,'#8fcf72',x,0.042,z,0,0,0,r*0.08,0.004,r*0.08));k++;
-   if(R()<0.38){/* 연꽃 */const fx=x+Math.cos(yaw+1.5)*r*0.25,fz=z+Math.sin(yaw+1.5)*r*0.25,s=1.5+R()*0.7;const y=0.06;
-    for(let i=0;i<9;i++){const pa=i/9*Math.PI*2;st.push(part(A_SPH,i%2?'#ff6fae':'#ff8cc0',fx+Math.cos(pa)*0.06*s,y+0.05*s,fz+Math.sin(pa)*0.06*s,0.9,-pa+Math.PI/2,0,0.035*s,0.085*s,0.018*s));}
-    for(let i=0;i<6;i++){const pa=i/6*Math.PI*2+0.3;st.push(part(A_SPH,'#ffb3d6',fx+Math.cos(pa)*0.03*s,y+0.08*s,fz+Math.sin(pa)*0.03*s,0.45,-pa+Math.PI/2,0,0.026*s,0.07*s,0.014*s));}
-    st.push(part(A_SPH,'#ffd23f',fx,y+0.075*s,fz,0,0,0,0.028*s,0.018*s,0.028*s));PDECO.perch.push([fx,y+0.12*s,fz]);}
-   else if(R()<0.25){/* 꽃봉오리 */const bx=x+(R()-0.5)*r,bz=z+(R()-0.5)*r,h=0.25+R()*0.2;st.push(part(aCap(0.008,h),'#5a9a42',bx,h/2,bz));st.push(part(A_SPH,'#ff6fae',bx,h+0.05,bz,0,0,0,0.045,0.08,0.045));}
-   else PDECO.perch.push([x+Math.cos(yaw)*r*0.6,0.05,z+Math.sin(yaw)*r*0.6]);}}
+   const yaw=R()*6.28;const pad={x,z,r,yaw,c:PADC[Math.floor(R()*PADC.length)]};PDECO.pads.push(pad);k++;
+   if(R()<0.38){const fx=x+Math.cos(yaw+1.5)*r*0.25,fz=z+Math.sin(yaw+1.5)*r*0.25,sc=1.7+R()*0.6;lot.push({x:fx,z:fz,s:sc,yaw:R()*6.28});PDECO.perch.push({x:fx,z:fz,dy:0.11*sc,w:1});}
+   else if(R()<0.25){/* 꽃봉오리 (줄기는 물속에서 올라와요) */const bx=x+(R()-0.5)*r,bz=z+(R()-0.5)*r,h=0.3+R()*0.2;st.push(part(aCap(0.009,h+0.3),'#5a9a42',bx,(h-0.3)/2,bz));
+    st.push(part(A_SPH,'#ff9cc3',bx,h+0.04,bz,0,0,0,0.045,0.085,0.045));st.push(part(A_CONE,'#ff3d86',bx,h+0.11,bz,0,0,0,0.022,0.05,0.022));}
+   else PDECO.perch.push({x:x+Math.cos(yaw)*r*0.6,z:z+Math.sin(yaw)*r*0.6,dy:0.035,w:1});}}
+ const padGeo=new THREE.CircleGeometry(1,22,0.32,Math.PI*2-0.32).rotateX(-Math.PI/2);
+ const pm=new THREE.MeshStandardMaterial({roughness:0.65,side:THREE.DoubleSide});const pim=new THREE.InstancedMesh(padGeo,pm,PDECO.pads.length);pim.receiveShadow=true;const col=new THREE.Color();
+ PDECO.pads.forEach((p,i)=>pim.setColorAt(i,col.set(p.c)));scene.add(pim);PDECO.pim=pim;
+ if(lot.length){const lim=new THREE.InstancedMesh(lotusGeo(),new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.55,emissive:'#ff6aa6',emissiveIntensity:0.22}),lot.length);lim.castShadow=false;scene.add(lim);PDECO.lim=lim;PDECO.lot=lot;}
+ pondBob(true);
  /* 물가 부들 (잠자리가 앉아요) */
  for(let c=0,tr=0;c<9&&tr<600;tr++){const a=R()*Math.PI*2;const x0=RES.x+Math.cos(a)*RES.rx,z0=RES.z+Math.sin(a)*RES.rz;const x=x0+(R()-0.5)*2,z=z0+(R()-0.5)*2;const e=resEdge(x,z);if(e>0.6||e<-1.6||terrainH(x,z)>0.5)continue;if(SEATS.some(S=>Math.hypot(x-S.px,z-S.pz)<7))continue;if(distPaths(x,z)<2)continue;c++;
   const n=5+Math.floor(R()*5);for(let k=0;k<n;k++){const bx=x+(R()-0.5)*1.1,bz=z+(R()-0.5)*1.1,h=0.8+R()*0.6,lean=(R()-0.5)*0.18;const gy=Math.max(-0.3,terrainH(bx,bz));
-   st.push(part(aCap(0.012,h),'#6aa84f',bx,gy+h/2,bz,lean,0,lean*0.6));if(R()<0.6){st.push(part(aCap(0.032,0.16),'#7a4a2a',bx+Math.sin(lean*0.6)*-h*0.5,gy+h+0.06,bz+Math.sin(lean)*h*0.5,lean,0,lean*0.6));PDECO.perch.push([bx+Math.sin(lean*0.6)*-h*0.5,gy+h+0.2,bz+Math.sin(lean)*h*0.5]);}
+   st.push(part(aCap(0.012,h),'#6aa84f',bx,gy+h/2,bz,lean,0,lean*0.6));if(R()<0.6){st.push(part(aCap(0.032,0.16),'#7a4a2a',bx+Math.sin(lean*0.6)*-h*0.5,gy+h+0.06,bz+Math.sin(lean)*h*0.5,lean,0,lean*0.6));PDECO.perch.push({x:bx+Math.sin(lean*0.6)*-h*0.5,z:bz+Math.sin(lean)*h*0.5,y:gy+h+0.2});}
    for(let l=0;l<2;l++){const ll=h*(0.5+R()*0.3),la=R()*6.28;st.push(part(A_SPH,'#7dbb5a',bx+Math.cos(la)*0.04,gy+ll/2,bz+Math.sin(la)*0.04,0.15*Math.cos(la),la,0.15*Math.sin(la),0.012,ll/2,0.03));}}}
  if(st.length){const m=new THREE.Mesh(mergeGeometries(st),AMAT);m.receiveShadow=true;scene.add(m);}
  /* 개구리 5마리 */
- const homes=PDECO.pads.filter(p=>p.r>0.4);for(let i=0;i<5&&homes.length;i++){const p=homes[Math.floor(R()*homes.length)];const F=makeFrog(i);F.pad=p;F.x=p.x;F.z=p.z;F.y=0.05;F.st='sit';F.tEnd=t+3+R()*6;F.yaw=R()*6.28;PDECO.frogs.push(F);}
+ const homes=PDECO.pads.filter(p=>p.r>0.4);for(let i=0;i<5&&homes.length;i++){const p=homes[Math.floor(R()*homes.length)];const F=makeFrog(i);F.pad=p;F.x=p.x;F.z=p.z;F.y=0.05;F.onPad=p;F.st='sit';F.tEnd=t+3+R()*6;F.yaw=R()*6.28;PDECO.frogs.push(F);}
  /* 잠자리 4마리 */
  const DC=[['#2f7fd8','#8fd3ff'],['#e8483b','#ffb0a0'],['#2bb58f','#a8f0d8'],['#e6a02a','#ffe2a0']];
- for(let i=0;i<4&&PDECO.perch.length;i++){const D=makeFly(DC[i]);const pp=PDECO.perch[Math.floor(R()*PDECO.perch.length)];D.p=pp.slice();D.st='perch';D.tEnd=t+2+R()*5;D.yaw=R()*6.28;PDECO.flies.push(D);}}
+ for(let i=0;i<4&&PDECO.perch.length;i++){const D=makeFly(DC[i]);const pp=PDECO.perch[Math.floor(R()*PDECO.perch.length)];D.po=pp;D.p=perchPos(pp);D.st='perch';D.tEnd=t+2+R()*5;D.yaw=R()*6.28;PDECO.flies.push(D);}}
 function makeFrog(i){const g=new THREE.Group();scene.add(g);const pb=[];const C=['#6cc24a','#7ccf55','#5db446','#8bd35a','#6fbf3c'][i%5],D='#4f9a33';
  ap(pb,A_SPH,C,0,0.06,0,0.085,0.06,0.1);ap(pb,A_SPH,'#eef7cf',0,0.045,0.015,0.07,0.045,0.08);
  for(const s of[-1,1]){ap(pb,A_SPH,C,s*0.045,0.105,0.05,0.035,0.032,0.035);ap(pb,A_SPH,'#ffffff',s*0.048,0.112,0.07,0.024,0.024,0.018);ap(pb,A_SPH,'#1a1a1a',s*0.05,0.114,0.083,0.013,0.015,0.008);ap(pb,A_SPH,'#ffffff',s*0.046,0.12,0.088,0.005,0.005,0.003);
@@ -2041,21 +2051,27 @@ function makeFly(col){const g=new THREE.Group();scene.add(g);const pb=[];
  const wg=new THREE.PlaneGeometry(0.12,0.026).rotateX(-Math.PI/2).translate(0.06,0,0);const wings=[];
  for(const[s,z]of[[1,0.022],[-1,0.022],[1,0.002],[-1,0.002]]){const pv=new THREE.Group();pv.position.set(0,0.012,z);pv.scale.x=s;g.add(pv);const w=new THREE.Mesh(wg,wm);w.rotation.y=(z>0.01?-0.15:0.12);pv.add(w);wings.push(pv);}
  g.scale.setScalar(1.3);return{g,wings};}
+const _pm=new THREE.Matrix4(),_pq=new THREE.Quaternion(),_pe=new THREE.Euler(),_ps=new THREE.Vector3(),_pp=new THREE.Vector3();
+function padY(x,z){return waveH(x,z,t)+0.014;}
+function perchPos(o){return[o.x,o.w?padY(o.x,o.z)+o.dy:o.y,o.z];}
+function pondBob(force){if(!PDECO.pim)return;const W=(x,z)=>padY(x,z);
+ PDECO.pads.forEach((p,i)=>{const y=W(p.x,p.z);const tx=(W(p.x+0.3,p.z)-y)*1.5,tz=(W(p.x,p.z+0.3)-y)*1.5;_pe.set(-tz,p.yaw,tx);_pq.setFromEuler(_pe);_ps.set(p.r,1,p.r);_pp.set(p.x,y,p.z);_pm.compose(_pp,_pq,_ps);PDECO.pim.setMatrixAt(i,_pm);});PDECO.pim.instanceMatrix.needsUpdate=true;
+ if(PDECO.lim){PDECO.lot.forEach((l,i)=>{_pe.set(0,l.yaw+Math.sin(t*0.4+i)*0.05,0);_pq.setFromEuler(_pe);_ps.setScalar(l.s);_pp.set(l.x,W(l.x,l.z)+0.005,l.z);_pm.compose(_pp,_pq,_ps);PDECO.lim.setMatrixAt(i,_pm);});PDECO.lim.instanceMatrix.needsUpdate=true;}}
 function pondPadFor(x,z,maxD){const c=PDECO.pads.filter(p=>{const d=Math.hypot(p.x-x,p.z-z);return d<maxD&&d>0.6;});return c.length?c[Math.floor(Math.random()*c.length)]:null;}
-function updPondDeco(dt){if(!PDECO.pads.length)return;const near=Math.hypot(P.pos.x-RES.x,P.pos.z-RES.z)<RES.rz+45;
+function updPondDeco(dt){if(!PDECO.pads.length)return;const near=Math.hypot(P.pos.x-RES.x,P.pos.z-RES.z)<RES.rz+45;if(near)pondBob();
  for(const F of PDECO.frogs){F.g.visible=near&&F.st!=='under';if(!near)continue;
-  if(F.st==='sit'){F.g.position.set(F.x,F.y+Math.sin(t*1.7+F.x)*0.004,F.z);F.g.rotation.y=F.yaw;F.body.scale.set(1,1+Math.sin(t*3+F.z)*0.03,1);
+  if(F.st==='sit'){F.g.position.set(F.x,padY(F.x,F.z)+0.01,F.z);F.g.rotation.y=F.yaw;F.body.scale.set(1,1+Math.sin(t*3+F.z)*0.03,1);
    const c=(t*0.9+F.x)%5;F.throat.scale.setScalar(c<0.8?0.3+0.9*Math.sin(c/0.8*Math.PI):0.3);
    if(t>F.tEnd){/* 다음: 물로 퐁당 또는 옆 연잎으로 */const toPad=Math.random()<0.4?pondPadFor(F.x,F.z,4):null;let tx,tz;
     if(toPad){tx=toPad.x;tz=toPad.z;F.next=toPad;}else{let ok=false;for(let k=0;k<12&&!ok;k++){const a=Math.random()*6.28,d=1.2+Math.random()*1.4;tx=F.x+Math.cos(a)*d;tz=F.z+Math.sin(a)*d;ok=pondWater(tx,tz,-0.3)&&!PDECO.pads.some(p=>Math.hypot(p.x-tx,p.z-tz)<p.r);}if(!ok){F.tEnd=t+2;continue;}F.next=null;}
-    F.j={x0:F.x,z0:F.z,y0:F.y,x1:tx,z1:tz,y1:F.next?0.05:-0.05,t0:t,dur:0.55};F.yaw=Math.atan2(tx-F.x,tz-F.z);F.st='jump';}}
+    F.j={x0:F.x,z0:F.z,y0:padY(F.x,F.z)+0.01,x1:tx,z1:tz,y1:F.next?padY(tx,tz)+0.01:-0.05,t0:t,dur:0.55};F.yaw=Math.atan2(tx-F.x,tz-F.z);F.st='jump';}}
   else if(F.st==='jump'){const J=F.j,k=clamp((t-J.t0)/J.dur,0,1);const x=lerp(J.x0,J.x1,k),z=lerp(J.z0,J.z1,k),y=lerp(J.y0,J.y1,k)+Math.sin(k*Math.PI)*0.45;F.g.position.set(x,y,z);F.g.rotation.y=F.yaw;F.body.scale.set(1,1,1+0.25*Math.sin(k*Math.PI));
    if(k>=1){F.x=J.x1;F.z=J.z1;if(F.next){F.y=0.05;F.st='sit';F.tEnd=t+4+Math.random()*7;ripple(F.x,F.z,0.35);}else{splash(F.x,F.z,0.3);F.st='under';F.tEnd=t+2+Math.random()*3;}}}
   else if(F.st==='under'){if(t>F.tEnd){const p=pondPadFor(F.x,F.z,7)||F.pad;const a=Math.random()*6.28;let sx=p.x+Math.cos(a)*(p.r+0.9),sz=p.z+Math.sin(a)*(p.r+0.9);if(!pondWater(sx,sz,-0.25)){sx=p.x+(F.x-p.x)*0.5;sz=p.z+(F.z-p.z)*0.5;}
-    ripple(sx,sz,0.4);F.next=p;F.j={x0:sx,z0:sz,y0:-0.05,x1:p.x,z1:p.z,y1:0.05,t0:t,dur:0.5};F.yaw=Math.atan2(p.x-sx,p.z-sz);F.st='jump';F.g.visible=near;}}}
+    ripple(sx,sz,0.4);F.next=p;F.j={x0:sx,z0:sz,y0:-0.05,x1:p.x,z1:p.z,y1:padY(p.x,p.z)+0.01,t0:t,dur:0.5};F.yaw=Math.atan2(p.x-sx,p.z-sz);F.st='jump';F.g.visible=near;}}}
  for(const D of PDECO.flies){D.g.visible=near;if(!near)continue;
-  if(D.st==='perch'){D.g.position.set(D.p[0],D.p[1],D.p[2]);D.g.rotation.set(0,D.yaw,0);for(let i=0;i<4;i++){D.wings[i].rotation.z=Math.sin(t*3+i)*0.04;}
-   if(t>D.tEnd){const to=PDECO.perch[Math.floor(Math.random()*PDECO.perch.length)];const way=[];let px=D.p[0],pz=D.p[2];const n=2+Math.floor(Math.random()*3);for(let k=0;k<n;k++){const a=Math.random()*6.28,d=2+Math.random()*4;let wx=px+Math.cos(a)*d,wz=pz+Math.sin(a)*d;if(resD(wx,wz)>1.05){wx=RES.x+(wx-RES.x)*0.7;wz=RES.z+(wz-RES.z)*0.7;}way.push([wx,0.6+Math.random()*1.1,wz]);px=wx;pz=wz;}way.push(to.slice());
+  if(D.st==='perch'){D.p=perchPos(D.po);D.g.position.set(D.p[0],D.p[1],D.p[2]);D.g.rotation.set(0,D.yaw,0);for(let i=0;i<4;i++){D.wings[i].rotation.z=Math.sin(t*3+i)*0.04;}
+   if(t>D.tEnd){const toO=PDECO.perch[Math.floor(Math.random()*PDECO.perch.length)];const to=perchPos(toO);D.po=toO;const way=[];let px=D.p[0],pz=D.p[2];const n=2+Math.floor(Math.random()*3);for(let k=0;k<n;k++){const a=Math.random()*6.28,d=2+Math.random()*4;let wx=px+Math.cos(a)*d,wz=pz+Math.sin(a)*d;if(resD(wx,wz)>1.05){wx=RES.x+(wx-RES.x)*0.7;wz=RES.z+(wz-RES.z)*0.7;}way.push([wx,0.6+Math.random()*1.1,wz]);px=wx;pz=wz;}way.push(to);
     D.path=[D.p.slice(),[D.p[0],D.p[1]+0.5,D.p[2]],...way];D.seg=0;D.k=0;D.st='fly';}}
   else{const A=D.path[D.seg],B=D.path[D.seg+1];const L=Math.max(0.2,Math.hypot(B[0]-A[0],B[1]-A[1],B[2]-A[2]));D.k+=dt*(D.seg===D.path.length-2?1.4:2.4)/L;
    /* 가끔 공중에서 멈칫(호버링) */const k=smooth(0,1,Math.min(1,D.k));const x=lerp(A[0],B[0],k),y=lerp(A[1],B[1],k)+Math.sin(t*5+D.seg)*0.04,z=lerp(A[2],B[2],k);
@@ -4181,7 +4197,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-14v';
+const BUILD='2026-11-14w';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -5552,7 +5568,7 @@ function refreshAct(){const b=$('actBtn');let want='';if(entered&&mode==='fish')
  if(want==='fish'){b.className='actbtn';b.innerHTML=`<b>🎣</b><span>낚시하기${kb}</span>`;}else{b.className='actbtn stand';b.innerHTML=`<b>↩</b><span>일어나기${kb}</span>`;}}
 function chargePower(){const k=(t-chargeT0)/1.1;return 1-Math.abs((k%2)-1);}
 function enterFish(){if(!canFish)return;mode='fish';fwdOf(P.yaw,_f);const q=[P.pos.x+_f.x*1.7,P.pos.z+_f.z*1.7];habitat=habitatAt(q[0],q[1]);
- minD=habitat==='sea'?6:3;maxD=habitat==='sea'?30:12;P.char.rodPivot.visible=true;closeEmoPanel();setF('idle');refreshAct();
+ minD=habitat==='sea'?6:3;maxD=habitat==='sea'?30:habitat==='pond'?24:12;P.char.rodPivot.visible=true;closeEmoPanel();setF('idle');refreshAct();
  toast(habitat==='sea'?'🌊 바다 낚시':habitat==='river'?'🏞️ 강 낚시':'🪷 저수지 낚시',1600);}
 function exitFish(){mode='walk';P.char.rodPivot.visible=false;myFloat.visible=false;myLine.visible=false;holding=false;fish=null;fstate='idle';$('charge').classList.add('hidden');$('tension').classList.add('hidden');$('bang').classList.add('hidden');camYaw=P.yaw+Math.PI;markPresence();refreshHint();refreshAct();acOnce=null;acOpen=false;acBanner();}
 function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=false;
