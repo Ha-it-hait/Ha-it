@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-15n">
+<meta name="amollang-build" content="2026-11-15p">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -510,6 +510,8 @@ html body .emopanel{left:var(--epl,50%);transform:var(--ept,translateX(-50%));bo
   <button data-m="1"><b>🔉</b><span>배경음 끄기<small>효과음만 들려요</small></span><i>✓</i></button>
   <button data-m="3"><b>🎵</b><span>효과음 끄기<small>배경음만 들려요</small></span><i>✓</i></button>
   <button data-m="0"><b>🔊</b><span>모든 음악 켜기<small>배경음과 효과음을 모두 켜요</small></span><i>✓</i></button>
+  <div class="smt" id="vibT" style="margin-top:6px;border-top:1px solid #eadfc6;padding-top:8px">진동</div>
+  <button id="vibBtn"><b>📳</b><span id="vibL">입질 진동 켜짐<small>찌가 쑥 들어가면 폰이 부르르 떨려요</small></span><i>✓</i></button>
 </div>
 <div class="hint" id="hint"></div>
 <div class="emotes" id="emotes"></div><button id="emoBtn" class="emobtn hidden" title="이모티콘" aria-label="이모티콘">😊</button>
@@ -3784,8 +3786,13 @@ const HARD_D=0.16;
 function starRangeTxt(){const R=GS.rod;if(R>=7)return`★7 물고기까지 모두`;const hi=Math.min(7,effStar()+1),lo=R+1;return`★${R} 물고기까지 편하게 · ★${lo===hi?lo:lo+'~★'+hi}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),R=GS.rod;return`🔥 ★${st} 물고기가 걸렸어요! 내 낚싯대(★${R})보다 ${st-R>1?'두':'한'} 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.rod>1?'두':'한'} 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-15i';
+const NEWS_VER='2026-11-15j';
 const NEWS=[
+ {d:'11월 15일',t:'📳 입질 진동이 더 잘 느껴져요 · 진동 켜고 끄기',n:true,i:[
+  '📳 찌가 쑥 들어가는 <b>입질 순간의 진동</b>을 더 길고 강하게 바꿨어요. 진동이 약하게 느껴지던 폰에서도 잘 느껴질 거예요.',
+  '🔊 오른쪽 위 <b>소리 설정</b> 버튼을 누르면 맨 아래 <b>진동</b> 칸에서 <b>입질 진동 켜기/끄기</b>를 고를 수 있어요. 켤 때 한 번 부르르 떨려서 바로 확인할 수 있어요.',
+  '🤖 안드로이드는 <b>크롬</b>이나 <b>삼성 인터넷</b>으로 접속하면 진동이 잘 와요. 무음·방해 금지 모드이거나 폰의 진동 세기가 0이면 진동이 오지 않을 수 있어요.',
+  '🍎 아이폰은 브라우저에서 진동을 쓸 수 없게 막혀 있어서 진동이 오지 않을 수 있어요. 대신 입질 방울 소리와 ❗ 표시를 확인해 주세요.']},
  {d:'11월 15일',t:'🎯 정확하게 던지면 대물이 와요 · 연속 콤보 대물 찬스',n:true,i:[
   '🎯 낚싯대를 던질 때 게이지가 <b>90% 이상(맨 위 금색 구간)</b>일 때 손을 떼고, 그 물고기를 걸면 <b>콤보 +1</b>이에요. 게이지가 금색으로 빛날 때가 타이밍!',
   '👑 콤보가 쌓일수록 <b>대물 찬스</b>가 커져요: <b>3연속 8% · 5연속 16% · 7연속 24% · 10연속 이상 34%</b>',
@@ -4594,7 +4601,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-15n';
+const BUILD='2026-11-15p';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -5974,7 +5981,7 @@ function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=fa
  comboJudge(p);castTgt.set(P.pos.x+_f.x*dd,0,P.pos.z+_f.z*dd);habitat=habitatAt(castTgt.x,castTgt.z);castDist=dd;castMeters=Math.round(dd);power=clamp((dd-minD)/(maxD-minD),0,1);
  rodTipWorld(P.char,castFrom);castDur=0.5+0.45*p;castT0=t;rbCastStart();sfx.whoosh(p);setF('casting');}
 function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(habitat==='sea')toast(farZoneTxt(fishFar())+(BOAT.on&&BOAT.far?' · 🌊 선상 보너스 ★4↑ 2배':''),2000);biteAt=t+rand(3.2,9.5)*floatSlow();nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
-function startBite(){setF('bite');biteT0=t;sfx.bell();try{navigator.vibrate&&navigator.vibrate([60,40,60]);}catch(e){}ripple(castTgt.x,castTgt.z,1.3);}
+function startBite(){setF('bite');biteT0=t;sfx.bell();buzz([200,90,200]);ripple(castTgt.x,castTgt.z,1.3);}
 function hook(){fish=pickFish7(fishFar(),habitat)||pickRare(fishFar(),habitat)||pickFish(fishFar(),habitat);useBaits(fishFar(),habitat);comboHook(fish);fish.D=fightD(fish.sp,fish.frac);fish.ease=easeFor(fish.sp);if(fish.ease>0)fish.D=Math.max(0.04,fish.D*(1-fish.ease));fish.over=starOf(fish.sp)>effStar()+1;fish.hard=!fish.over&&starOf(fish.sp)>GS.rod;$('tHard').textContent=fish.hard?hardTag(fish.sp):'';$('tHard').classList.toggle('hidden',!fish.hard);fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);if(fish.hard){toast(hardTxt(fish.sp)+'. 줄이 빨개지면 잠깐 손을 떼요!',4200);sfx.splash(0.25);}else toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
 function startRetrieve(from){retrieveFrom.copy(from);rT0=t;setF('retrieve');}
 function fishPos(out){fwdOf(P.yaw,_f);const ex=P.pos.x+_f.x*1.6,ez=P.pos.z+_f.z*1.6;const surge=t<surgeUntil;const wob=(Math.sin(t*1.6)*0.9*fish.s+Math.sin(t*0.7)*0.6+(surge?Math.sin(t*13)*0.4:0))*(0.3+d)*(castDist/14);
@@ -6203,7 +6210,18 @@ document.querySelectorAll('#help [data-go]').forEach(b=>b.addEventListener('clic
 function sfxOn(){return soundMode===0||soundMode===1;}
 function setSoundMode(m){soundMode=m;try{localStorage.setItem('monggeul-sound',String(m));}catch(e){}soundIcon();initAudio();applySound();buildSoundMenu();
  toast({2:'🔇 모든 소리를 껐어요',1:'🔉 배경음을 끄고 효과음만 들려요',3:'🎵 효과음을 끄고 배경음만 들려요',0:'🔊 배경음과 효과음을 모두 켰어요'}[m]);}
-function buildSoundMenu(){document.querySelectorAll('#soundMenu [data-m]').forEach(b=>b.classList.toggle('on',+b.dataset.m===soundMode));}
+function buildSoundMenu(){vibUI();document.querySelectorAll('#soundMenu [data-m]').forEach(b=>b.classList.toggle('on',+b.dataset.m===soundMode));}
+
+/* v93: 진동 */
+let VIB_ON=true;try{VIB_ON=localStorage.getItem('monggeul-vib')!=='0';}catch(e){}
+const IS_IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let _hapL=null;function iosTap(){try{if(!_hapL){_hapL=document.createElement('label');_hapL.setAttribute('aria-hidden','true');_hapL.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;_hapL.appendChild(i);document.body.appendChild(_hapL);}_hapL.click();}catch(e){}}
+function buzz(pat,force){if(!VIB_ON&&!force)return;let ok=false;try{if(typeof navigator.vibrate==='function')ok=navigator.vibrate(pat);}catch(e){}
+ if(!ok&&IS_IOS){const n=Math.max(1,Math.ceil(pat.length/2));let acc=0;for(let k=0;k<n;k++){setTimeout(iosTap,acc);acc+=(pat[k*2]||0)+(pat[k*2+1]||60);}}}
+function vibUI(){const b=$('vibBtn');if(!b)return;b.classList.toggle('on',VIB_ON);$('vibL').innerHTML=VIB_ON?'입질 진동 켜짐<small>찌가 쑥 들어가면 폰이 부르르 떨려요 · 누르면 꺼요</small>':'입질 진동 꺼짐<small>누르면 다시 켜요</small>';
+ if(typeof navigator.vibrate!=='function')$('vibL').innerHTML+=`<small style="color:#c0782a">⚠️ ${IS_IOS?'아이폰은 브라우저 진동이 막혀 있어서 안 될 수 있어요':'이 브라우저는 진동을 지원하지 않아요 (크롬·삼성 인터넷 추천)'}</small>`;
+ const show=isTouch||IS_IOS;b.style.display=show?'':'none';$('vibT').style.display=show?'':'none';}
+$('vibBtn').addEventListener('click',e=>{e.stopPropagation();VIB_ON=!VIB_ON;try{localStorage.setItem('monggeul-vib',VIB_ON?'1':'0');}catch(_){}vibUI();if(VIB_ON){buzz([120,60,120],true);toast('📳 입질 진동을 켰어요');}else toast('📳 입질 진동을 껐어요');});
 function closeSoundMenu(){const m=$('soundMenu');if(m.classList.contains('hidden'))return false;m.classList.add('hidden');return true;}
 $('bSound').addEventListener('click',e=>{e.stopPropagation();const m=$('soundMenu');if(m.classList.contains('hidden')){closeEmoPanel();buildSoundMenu();m.classList.remove('hidden');}else m.classList.add('hidden');});
 document.querySelectorAll('#soundMenu [data-m]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();setSoundMode(+b.dataset.m);closeSoundMenu();}));
