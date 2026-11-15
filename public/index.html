@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-15p">
+<meta name="amollang-build" content="2026-11-15q">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -4601,7 +4601,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-15p';
+const BUILD='2026-11-15q';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -5978,7 +5978,7 @@ function exitFish(){mode='walk';P.char.rodPivot.visible=false;myFloat.visible=fa
 function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=false;
  for(;dd>=1.5;dd-=0.4){const x=P.pos.x+_f.x*dd,z=P.pos.z+_f.z*dd;if(isWater(x,z)){ok=true;break;}}
  if(!ok){toast('여기선 던질 수 없어요. 물 쪽을 바라봐요');setF('idle');return;}
- comboJudge(p);castTgt.set(P.pos.x+_f.x*dd,0,P.pos.z+_f.z*dd);habitat=habitatAt(castTgt.x,castTgt.z);castDist=dd;castMeters=Math.round(dd);power=clamp((dd-minD)/(maxD-minD),0,1);
+ const ddEdge=dd;if(dd<want-0.01){let k=0;while(k<6&&dd>2.2&&terrainH(P.pos.x+_f.x*dd,P.pos.z+_f.z*dd)>-0.5&&isWater(P.pos.x+_f.x*(dd-0.3),P.pos.z+_f.z*(dd-0.3))){dd-=0.3;k++;}}comboJudge(p);castTgt.set(P.pos.x+_f.x*dd,0,P.pos.z+_f.z*dd);habitat=habitatAt(castTgt.x,castTgt.z);castDist=dd;castMeters=Math.round(dd);power=clamp((dd-minD)/(maxD-minD),0,1);if(habitat!=='sea'){let B=ddEdge;while(B+0.4<=maxD&&isWater(P.pos.x+_f.x*(B+0.4),P.pos.z+_f.z*(B+0.4)))B+=0.4;if(B<maxD-0.01){const r=clamp((ddEdge-minD)/Math.max(2.5,Math.min(maxD,B+0.4)-minD),0,1);power=Math.max(power,Math.min(p,r));}}
  rodTipWorld(P.char,castFrom);castDur=0.5+0.45*p;castT0=t;rbCastStart();sfx.whoosh(p);setF('casting');}
 function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(habitat==='sea')toast(farZoneTxt(fishFar())+(BOAT.on&&BOAT.far?' · 🌊 선상 보너스 ★4↑ 2배':''),2000);biteAt=t+rand(3.2,9.5)*floatSlow();nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
 function startBite(){setF('bite');biteT0=t;sfx.bell();buzz([200,90,200]);ripple(castTgt.x,castTgt.z,1.3);}
