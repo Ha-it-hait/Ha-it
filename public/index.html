@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-15h">
+<meta name="amollang-build" content="2026-11-15j">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -480,6 +480,11 @@ html body .hint{bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom
 .emobtn.on{background:#e8913a}
 body.cine .emobtn{opacity:0;pointer-events:none}
 html body .emopanel{left:var(--epl,50%);transform:var(--ept,translateX(-50%));bottom:var(--epb,calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 56px))}
+.ctrlhelp .keys{display:grid;grid-template-columns:auto 1fr;gap:7px 10px;align-items:center;background:#fff;border:1px solid #eadfc6;border-radius:14px;padding:10px 12px;margin:4px 0 12px;font-size:13px;line-height:1.4}
+.ctrlhelp .keys>div{white-space:nowrap;font-weight:900;color:#5a4a2e}
+.ctrlhelp .keys>div kbd{font-size:12px;margin:0 2px 0 0;padding:1px 6px;background:#f3ece0;color:#3d2f18;box-shadow:0 2px 0 #d8ccb4}
+.ctrlhelp .keys small{font-size:10.5px;font-weight:700;color:#9a8a6c;margin:0 3px}
+.ctrlhelp .keys>span{color:#4b4030}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/utils/BufferGeometryUtils.js":"./vendor/BufferGeometryUtils.js"}}</script>
 </head>
@@ -614,6 +619,9 @@ html body .emopanel{left:var(--epl,50%);transform:var(--ept,translateX(-50%));bo
 <div class="overlay hidden" id="help">
   <div class="card book help">
     <div class="bhead"><b>🎣 낚시하는 법</b><button class="x" id="helpX">✕</button></div>
+    <div class="btitle" style="margin-top:2px">🎮 조작법</div>
+    <div class="ctrlhelp" id="ctrlHelp"></div>
+    <div class="btitle">🎣 낚시 순서</div>
     <ol class="steps">
       <li><b>물가로 가요</b><span>섬 가장자리 바다, 나무 부두, 강, 저수지 어디서든 할 수 있어요. 물을 바라보고 서면 <em>🎣 낚시하기</em> 버튼이 떠요. (PC는 <kbd>F</kbd>)</span></li>
       <li><b>던져요</b><span>화면을 <em>꾹 누르고</em> 있다가 게이지가 차면 <em>손을 떼요</em>. (PC는 <kbd>Space</kbd>) 바다는 <em>해안에서 멀수록</em> 크고 ★ 높은 물고기가 잘 나와요. 가까운 물가는 작고 흔한 물고기 위주예요. 육지에서는 <em>부두 끝에서 가장 멀리</em> 던지는 게 최고예요!</span></li>
@@ -673,7 +681,7 @@ html body .emopanel{left:var(--epl,50%);transform:var(--ept,translateX(-50%));bo
     </ul>
     <div class="btitle">🚶 바로 가기</div>
     <div class="chips go3"><button data-go="dock">⛵ 나무 부두</button><button data-go="river">🏞️ 강가</button><button data-go="pond">🪷 저수지</button></div>
-    <p class="bsub" style="margin-top:12px">움직이기: <span id="moveHelp"></span><br>이모티콘: 아래 버튼을 누르면 머리 위에 떠요. ＋를 누르면 더 많아요.<br>소리: 오른쪽 위 🔊 버튼을 누르면 ‘모든 음악 끄기 · 배경음 끄기 · 효과음 끄기 · 모든 음악 켜기’ 중에서 고를 수 있어요.</p>
+    <p class="bsub" style="margin-top:12px"><span id="moveHelp" hidden></span>소리: 오른쪽 위 🔊 버튼을 누르면 ‘모든 음악 끄기 · 배경음 끄기 · 효과음 끄기 · 모든 음악 켜기’ 중에서 고를 수 있어요.</p>
     <button class="primary" id="helpOk">알겠어요!</button>
     <p style="margin:10px 0 0;font-size:10.5px;color:#a3957d;text-align:center">이모지 그림: Twemoji © Twitter, Inc. 외 · CC-BY 4.0</p>
   </div>
@@ -4499,7 +4507,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-15h';
+const BUILD='2026-11-15j';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -5862,7 +5870,7 @@ function refreshHint(){const h=$('hint');let txt='';
  if(!entered||mode==='closet')txt='';else if(mode==='fish')txt=HINTS[fstate]||'';else if(mode==='cook')txt='🍳 요리하는 중이에요… 잠깐만 기다려요';
  else if(nearAnimal)txt=isTouch?`🐾 ${nearAnimal.d.name}${josa(nearAnimal.d.name,'이랑','랑')} 놀아줘요`:`🐾 ${nearAnimal.d.name} · 🤚 쓰다듬기 · 🤗 껴안기 버튼을 눌러요`+(canFish?' · F 낚시':'');
  else if(canFish&&SEAT.on)txt=isTouch?'🪑 좌대예요! 🎣 버튼을 눌러 낚시해요':'🪑 좌대예요! F 키 또는 🎣 버튼으로 낚시 · R 좌대에서 일어나기';else if(canFish&&BOAT.on)txt=isTouch?'⛵ 배 위예요! 🎣 버튼을 눌러 낚시해요':'⛵ 배 위예요! F 키 또는 🎣 버튼으로 낚시'+(nearBoatDock()?' · R 배 내리기':'');else if(canFish)txt=isTouch?'물가예요! 🎣 버튼을 눌러 낚시해요':'물가예요! F 키 또는 🎣 버튼으로 낚시';
- else txt=isTouch?'':'물가로 가면 낚시할 수 있어요 · WASD 이동 · Q/E 시점 돌리기 · ❓ 낚시하는 법';
+ else txt='';
  if(h.textContent!==txt)h.textContent=txt;h.classList.toggle('urgent',mode==='fish'&&fstate==='bite');}
 function refreshAct(){const b=$('actBtn');let want='';if(entered&&mode==='fish')want='stand';else if(entered&&mode==='walk'&&canFish)want='fish';
  const key=isTouch||!want?'':(want==='fish'?'F':'R');const sig=want+'|'+key;
@@ -6019,6 +6027,28 @@ function toast(m,ms){const r=toast_(m,ms);layoutTopStack();return r;}
 function toast_(msg,ms=2600){const el=$('toast');el.textContent=msg;el.classList.remove('rwup','rwdn');el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),ms);}
 function updateHUD(){const ph=PHASES[phaseOf(hourNow())];const cl=cycleLeft();const tm=timeMode==='real'?(cl.isDay?`밤까지 ${cl.txt}${fullMoonNight()?' · 🌕 오늘 밤 보름달':''}`:`아침까지 ${cl.txt}${fullMoonNight()?' · 🌕 보름달 (✨희귀종 2배)':''}`):'미리보기';
  const who=roomState==='online'?(netMode==='ws'?`${wsIsland}번 섬 · ${peopleCount()}명`:`이 섬에 ${peopleCount()}명`):roomState==='connecting'?'연결 중…':'혼자 모드';$('hudS').textContent=W<520?who.replace(/번 섬 · /,'번 섬, '):`${ph.em} ${ph.ko} · ${tm} · ${who}`;if(W<520){$('hudG').textContent=hudDay();$('hudG').classList.remove('buff');}}
+
+const _k=(...a)=>a.map(x=>`<kbd>${x}</kbd>`).join('');
+const CTRL_PC=`<div class="keys">
+<div>${_k('W','A','S','D')}<small>또는 방향키</small></div><span>걸어 다니기</span>
+<div>${_k('Space')}</div><span>점프 · 낚시 중에는 <b>꾹 눌러 게이지를 채우고 떼면 던지기</b>, 물고기가 걸리면 <b>누르고 있으면 감기</b></span>
+<div>${_k('F')}</div><span><b>낚시하기</b> (물가 · 좌대 · 배 위에서)</span>
+<div>${_k('R')}</div><span><b>낚시 그만하기</b> · 좌대 앉기/일어나기 · 배 타기/내리기 · 가까이 있는 상점·게시판·모닥불 요리·룰렛·명예의 전당 열기</span>
+<div>${_k('Q')}${_k('E')}</div><span>시점을 왼쪽/오른쪽으로 돌리기 (마우스로 끌어도 돼요) · 마우스 휠로 멀리/가까이</span>
+<div>${_k('C')}<small>또는</small>${_k('Enter')}</div><span>채팅</span>
+<div>${_k('B')} ${_k('M')}</div><span>🎒 가방 · 🗺️ 지도</span>
+<div>${_k('Esc')}</div><span>열린 창 닫기 · 낚시 그만하기</span>
+<div>${_k('1')}${_k('2')}${_k('3')}</div><span>물고기를 잡은 카드에서 놓아주기 / 🎒 가방에 / 🐠 수조에</span>
+<div>😊</div><span>채팅 버튼 위 😊 버튼을 누르면 이모티콘을 골라 머리 위에 띄워요</span>
+</div>`;
+const CTRL_TOUCH=`<div class="keys">
+<div>👈 왼쪽</div><span>화면 <b>왼쪽을 끌면</b> 걸어 다녀요</span>
+<div>👉 오른쪽</div><span>화면 <b>오른쪽을 끌면</b> 시점이 돌아가요 · 두 손가락을 모으면 멀리, 벌리면 가까이</span>
+<div>🎣 버튼</div><span>물가 · 좌대 · 배 위에서 오른쪽 아래 <b>🎣 낚시하기</b> 버튼이 떠요. 낚시 중에는 같은 자리 버튼으로 그만해요</span>
+<div>👆 꾹 누르기</div><span>낚시 중 화면을 <b>꾹 눌러 게이지를 채우고 떼면 던지기</b>, 물고기가 걸리면 <b>누르고 있으면 감기</b></span>
+<div>💬 상황 버튼</div><span>좌대 앉기/일어나기 · 배 타기/내리기 · 상점·게시판·요리·룰렛·명예의 전당 근처에서 버튼이 떠요</span>
+<div>😊 💬 🎒 🐠</div><span>왼쪽 버튼: 이모티콘 · 채팅 · 가방 · 수조</span>
+</div>`;
 function hudDay(){const ph=PHASES[phaseOf(hourNow())];const cl=cycleLeft();let s=`${ph.em} ${ph.ko}${timeMode==='real'?' '+cl.txt:''}`;if(timeMode==='real'&&fullMoonNight())s+=cl.isDay?' · 🌕 오늘 밤 보름달':' · 🌕 보름달 ✨희귀종 2배';return s;}
 function hudRain(){if(!rainbowOn())return'';return(legendOn()?'🎉 축하 무지개':'🌈 무지개')+` · ★7 확률 4배 · ${mmss(rainbowLeftMs())}`;}
 function hudEquip(){return`🎣 ★${GS.rod}${reelHud()}${floatHud()}${baitHud()}`;}
@@ -6078,7 +6108,7 @@ function fishSpot(kind){
 function goSpot(kind){const s=fishSpot(kind);if(!s){toast('길을 찾지 못했어요');return;}if(SEAT.on)leaveSeat(true);if(mode==='fish')exitFish();P.pos.set(s.x,groundY(s.x,s.z),s.z);P.yaw=s.yaw;camYaw=s.yaw+Math.PI;camPos.set(s.x-Math.sin(s.yaw)*8,P.pos.y+6,s.z-Math.cos(s.yaw)*8);markPresence();closeHelp();splash(s.x+Math.sin(s.yaw)*2.2,s.z+Math.cos(s.yaw)*2.2,0.5);
  toast({dock:'⛵ 나무 부두에 왔어요! 🎣 버튼을 눌러보세요',river:'🏞️ 강가에 왔어요! 🎣 버튼을 눌러보세요',pond:'🪷 저수지에 왔어요! 🎣 버튼을 눌러보세요'}[kind],3200);}
 function buildTimeChips(){timeMode='real';const el=$('timeChips');if(!el)return;el.innerHTML='';[['real','🕐 지금'],['dawn','🌅 새벽'],['day','☀️ 낮'],['dusk','🌇 해질녘'],['night','🌙 밤']].forEach(([m,l])=>{const b=document.createElement('button');b.textContent=l;if(timeMode===m)b.classList.add('on');b.addEventListener('click',()=>{timeMode=m;buildTimeChips();updateHUD();});el.appendChild(b);});}
-function openHelp(){closeEmoPanel();buildTimeChips();$('moveHelp').textContent=isTouch?'화면 왼쪽을 끌면 이동, 오른쪽을 끌면 시점이 돌아가요. 두 손가락을 모으면 멀리, 벌리면 가까이 보여요.':'WASD/방향키로 이동, Space 점프, Q/E로 시점을 왼쪽/오른쪽으로 돌려요(마우스로 끌어도 돼요). 마우스 휠로 멀리/가까이.';$('help').classList.remove('hidden');}
+function openHelp(){closeEmoPanel();buildTimeChips();$('ctrlHelp').innerHTML=isTouch?CTRL_TOUCH:CTRL_PC;$('moveHelp').textContent=isTouch?'화면 왼쪽을 끌면 이동, 오른쪽을 끌면 시점이 돌아가요. 두 손가락을 모으면 멀리, 벌리면 가까이 보여요.':'WASD/방향키로 이동, Space 점프, Q/E로 시점을 왼쪽/오른쪽으로 돌려요(마우스로 끌어도 돼요). 마우스 휠로 멀리/가까이.';$('help').classList.remove('hidden');}
 function closeHelp(){$('help').classList.add('hidden');}
 $('bHelp').addEventListener('click',openHelp);$('helpX').addEventListener('click',closeHelp);$('helpOk').addEventListener('click',closeHelp);
 $('help').addEventListener('click',e=>{if(e.target.id==='help')closeHelp();});
