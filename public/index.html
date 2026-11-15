@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-15t">
+<meta name="amollang-build" content="2026-11-15u">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -949,7 +949,7 @@ const NEW_RIVER=[
  // 🏔️ 폭포·상류
  {id:'taimen',name:'타이멘',w:0.12,time:['dusk','night','dawn'],min:80,max:200,str:0.95,r:6,minP:0.5,grp:'myth',rz:'up',rzOnly:true,fallB:true,shape:'real',h:0.22,c1:'#5c5a3e',c2:'#e9c9a8',
   rf:{m:0.34,pk:0.24,tail:'fork',tl:0.2,tw:0.42,d:[0.4,0.53,0.42],adi:1,a:[0.7,0.82,0.32],pv:0.5,pat:'xspots',pc:'#2a241a',fc:'#6a5a3e',fcT:'#c9473a',eye:0.13,mouth:'big',mid:0.45},
-  flavor:'세계에서 가장 큰 연어과 물고기. 차가운 강의 최상위 포식자로, ‘강의 신의 딸’이라는 별명이 있어요. 꼬리지느러미가 붉어요.',hint:'🏔️ 폭포·상류에서만 · 해질녘~새벽, 멀리 · 신화(★6)'},
+  flavor:'세계에서 가장 큰 연어과 물고기. 차가운 강의 최상위 포식자로, ‘강의 신의 딸’이라는 별명이 있어요. 꼬리지느러미가 붉어요.',hint:'🏔️ 폭포·상류에서만 · 해질녘~새벽, 멀리 · 💦 폭포 웅덩이에서 더 잘 잡혀요 · 신화(★6)'},
  {id:'jachi',name:'자치',w:0.12,time:['dawn','day'],min:40,max:100,str:0.9,r:6,minP:0.4,grp:'myth',rz:'up',rzOnly:true,shape:'real',h:0.19,c1:'#6a5a3a',c2:'#f0e4c8',
   rf:{m:0.35,pk:0.23,tail:'fork',tl:0.19,tw:0.4,d:[0.41,0.53,0.4],adi:1,a:[0.7,0.82,0.3],pv:0.5,pat:'xspots',pc:'#3a2c1a',fc:'#7a6440',fcT:'#d8784a',eye:0.15,mouth:'big'},
   flavor:'압록강 상류에 사는 ‘한국 타이멘’. 사는 곳에 가 보기 어려워 아직 비밀이 많은 물고기예요.',hint:'🏔️ 폭포·상류에서만 · 새벽~낮, 조금 멀리 · 신화(★6)'},
@@ -1024,7 +1024,7 @@ function riverZone(x,z){if(!_RZL){_RZL=[0];for(let i=1;i<RIVER.length;i++)_RZL.p
  return bs<30?'up':bs<74?'mid':'down';}
 const RZ_ADJ={up:{up:2.5,mid:1,down:0.25},mid:{up:1,mid:2.5,down:1},down:{up:0.25,mid:1,down:2.5}};
 function rzMul(sp){if(sp.fallOnly&&RZONE!=='fall')return 0;if(!sp.rz)return 1;const z=RZONE==='fall'?'up':(RZONE||'mid');if(sp.rzOnly&&z!==sp.rz)return 0;let k=RZ_ADJ[sp.rz][z];if(RZONE==='fall'&&sp.fallB)k*=1.5;return k;}
-const RZ_TXT={fall:'💦 폭포 웅덩이 · 연어·타이멘이 잘 와요',up:'🏔️ 강 상류 · 차가운 물 친구들',mid:'🌉 강 중류',down:'🌊 강 하류·하구 · 바다를 오가는 친구들'};
+const RZ_TXT={fall:'💦 폭포 웅덩이 · 차가운 물 친구들',up:'🏔️ 강 상류 · 차가운 물 친구들',mid:'🌉 강 중류',down:'🌊 강 하류·하구 · 바다를 오가는 친구들'};
 
 function pickFish(p,hab,noF){const _F=noF?null:floatOn();FBLK=_F?_F.block:0;
  const ph=phaseOf(hourNow());const fresh=hab!=='sea';let tot=0;
@@ -4803,7 +4803,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-15t';
+const BUILD='2026-11-15u';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
