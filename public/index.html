@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-15j">
+<meta name="amollang-build" content="2026-11-15m">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -634,7 +634,7 @@ html body .emopanel{left:var(--epl,50%);transform:var(--ept,translateX(-50%));bo
     <ul class="tips">
       <li>바다·강·저수지마다 사는 생물이 달라요. 바다 44종(물고기·게·새우·문어·상어·열대어), 강·저수지 21종으로 모두 65종이에요.</li>
       <li>섬의 하루는 20분이에요. 낮 10분, 밤 10분이 번갈아 와요.</li>
-      <li>🎯 게이지 <b>90% 이상</b>(금색 구간)에서 손을 떼고 물고기를 걸면 <b>연속 정확 던지기</b> 콤보가 쌓여요. <b>3·5·7·10연속</b>이면 최상위 크기(상위 20%) 대물이 나올 기회가 생겨요 (대물 찬스 8% · 16% · 24% · 34%, 10연속부터는 34% 그대로). 90% 미만으로 던지면 콤보가 처음부터 시작돼요. 입질 전에 회수하거나 챔질을 놓치면 콤보는 그대로예요. 게이지 속도는 던질 때마다 조금씩 달라져요.</li>
+      <li>🎯 게이지 <b>90% 이상</b>(금색 구간)에서 손을 떼고 물고기를 걸면 <b>연속 정확 던지기</b> 콤보가 쌓여요. <b>3·5·7·10연속</b>이면 큰 크기 쪽 상위 50% 대물이 나올 기회가 생겨요 (대물 찬스 8% · 16% · 24% · 34%, 10연속부터는 34% 그대로). 90% 미만으로 던지면 콤보가 처음부터 시작돼요. 입질 전에 회수하거나 챔질을 놓치면 콤보는 그대로예요. 게이지 속도는 던질 때마다 조금씩 달라져요.</li>
       <li>게·새우·주꾸미는 발밑 가까이, 상어·참치·개복치는 끝까지 멀리 던져야 잘 나와요.</li>
       <li>시간대마다 나오는 물고기도 달라요. 볼락·메기는 밤, 감성돔·잉어는 새벽과 해질녘이에요.</li>
       <li>금붕어는 저수지에서만, 아주 가끔 나와요.</li>
@@ -2367,7 +2367,7 @@ function updSeagulls(dt){const px=P.pos.x,pz=P.pos.z;
    gullPose(S,k<0.25||k>0.8?'flap':'glide',t*10);S.g.position.set(S.x,y,S.z);S.g.rotation.set(-0.1,S.yaw,0);
    if(k>=1){S.si=F.ni;S.st='stand';S.tNext=t+3+Math.random()*5;}}}}
 
-/* ---------- v85: 🎯 연속 정확 던지기 콤보 — 게이지 90%↑로 던져 물고기를 걸면 +1 · 대물 찬스(최상위 20% 크기) ---------- */
+/* ---------- v85: 🎯 연속 정확 던지기 콤보 — 게이지 90%↑로 던져 물고기를 걸면 +1 · 대물 찬스(큰 크기 상위 50% · 원래 더 크게 나왔으면 그대로) ---------- */
 const COMBO={n:0,last:-1e9,acc:false,best:0};let CHG_UP=1.1;
 const COMBO_T=[[10,0.34,'👑 대물 모드'],[7,0.24,'🔥 달인'],[5,0.16,'🎯🎯 명사수'],[3,0.08,'🎯 정확']];
 function comboTier(n){for(const x of COMBO_T)if(n>=x[0])return x;return null;}
@@ -2376,13 +2376,13 @@ function comboJudge(p){if(COMBO.n&&t-COMBO.last>180)COMBO.n=0;COMBO.last=t;COMBO
  if(!COMBO.acc&&COMBO.n>0){if(COMBO.n>=3)toast(`🎯 콤보가 끊겼어요 (${COMBO.n}연속) · 게이지 90% 이상(금색)에서 손을 떼요`,2800);COMBO.n=0;}}
 function comboHook(f){if(!COMBO.acc||!f)return;COMBO.acc=false;const b4=comboTier(COMBO.n);COMBO.n++;COMBO.best=Math.max(COMBO.best,COMBO.n);const tr=comboTier(COMBO.n);
  if(tr&&tr!==b4)toast(`${tr[2]}! ${COMBO.n}연속 정확 던지기 · 대물 찬스 ${Math.round(tr[1]*100)}%`,2800);
- const q=comboChance(COMBO.n);if(q&&Math.random()<q){const sp=f.sp;const fr=0.8+0.2*Math.random();f.frac=fr;f.size=Math.round((sp.min+(sp.max-sp.min)*fr)*10)/10;f.s=clamp(sp.str*(0.7+0.6*fr),0,1);f.bigC=true;}}
+ const q=comboChance(COMBO.n);if(q&&Math.random()<q){const sp=f.sp;const fr=Math.max(f.frac||0,0.5+0.5*Math.random());f.frac=fr;f.size=Math.round((sp.min+(sp.max-sp.min)*fr)*10)/10;f.s=clamp(sp.str*(0.7+0.6*fr),0,1);f.bigC=true;}}
 function comboShow(p){$('charge').classList.toggle('ok',p>=0.9);const n=COMBO.n,q=comboChance(n);$('comboTxt').textContent=n?`🎯 ×${n}${q?' · 대물 '+Math.round(q*100)+'%':''}`:'';}
 
 function buildWorld(){
  buildTerrain();
  // houses
- buildHouse(-15,-3,'#ef6f5e');buildHouse(16,-8,'#5aa9e6','#fff8e8');buildHouse(-9,-19,'#f4b942');
+ buildHouse(-25.7,0.2,'#ef6f5e');buildHouse(16,-8,'#5aa9e6','#fff8e8');buildHouse(-4.5,-21.4,'#f4b942');
  // plaza: campfire + logs + board
  campfire=new THREE.Group();campfire.position.set(PLAZA.x,1.2,PLAZA.z);scene.add(campfire);
  for(let i=0;i<9;i++){const a=i/9*Math.PI*2;const s=addMesh(new THREE.DodecahedronGeometry(0.28),stdMat('#9a9a96',0.95),Math.cos(a)*0.85,0.12,Math.sin(a)*0.85,campfire);s.scale.y=0.7;}
@@ -2439,7 +2439,7 @@ function buildWorld(){
  const FC=['#ff6b81','#ffd23f','#ffffff','#ff9ff3','#a29bfe','#ff9f43','#ff4757'];const fcol=new THREE.Color();let fi=0;
  const flowerSpot=(cx,cz,n,rad)=>{const c=FC[Math.floor(srand()*FC.length)];for(let k=0;k<n&&fi<480;k++){const x=cx+sr(-rad,rad),z=cz+sr(-rad,rad);const h=terrainH(x,z);if(h<0.9||distPaths(x,z)<1.0||blocked(x,z)||distPoly(x,z,RIVER)<RIVER_W+0.8||resEdge(x,z)<0.8||mountH(x,z)>6)continue;
   _m4.compose(_v3.set(x,h-0.02,z),_q.setFromEuler(_e.set(0,sr(0,6),0)),_s3.setScalar(sr(0.9,1.3)));stems.setMatrixAt(fi,_m4);heads.setMatrixAt(fi,_m4);heads.setColorAt(fi,fcol.set(srand()<0.8?c:FC[Math.floor(srand()*FC.length)]));fi++;}};
- [[-15,-3],[16,-8],[-9,-19]].forEach(([x,z])=>{flowerSpot(x+3.5,z+3.5,14,2.2);flowerSpot(x-3.5,z+3,12,2);});
+ [[-25.7,0.2],[16,-8],[-4.5,-21.4]].forEach(([x,z])=>{flowerSpot(x+3.5,z+3.5,14,2.2);flowerSpot(x-3.5,z+3,12,2);});
  for(let i=0;i<48;i++){const x=sr(-130,68),z=sr(-112,58);if(islandD(x,z)<0.75)flowerSpot(x,z,9,2.2);}
  stems.count=fi;heads.count=fi;scene.add(stems);scene.add(heads);
  const blade=mergeGeometries([part(new THREE.ConeGeometry(0.05,0.36,3),'#5fb34f',0,0.18,0,0,0,0.25),part(new THREE.ConeGeometry(0.05,0.3,3),'#6cc35a',0.06,0.15,0.03,0,0,-0.3),part(new THREE.ConeGeometry(0.05,0.28,3),'#58ab49',-0.05,0.14,-0.03,0.2,0,0)]);
@@ -2847,40 +2847,95 @@ function drawRodIcon(c,w,h,lv){const R=RODS[lv];c.clearRect(0,0,w,h);c.save();c.
  c.restore();}
 
 /* ---------- 용왕님 상점 (3D) ---------- */
-const SHOP={x:-3.4,z:-0.9,yaw:0,g:null,npc:null,label:null,greetT:-99};
+const SHOP={x:-4.2,z:-3.7,yaw:0,g:null,npc:null,label:null,greetT:-99};
 function buildShop(){SHOP.yaw=Math.atan2(PLAZA.x-SHOP.x,PLAZA.z-SHOP.z);const gy=terrainH(SHOP.x,SHOP.z);
+ /* v91: 더 크고 물건이 가득한 용왕님 상점 + 양옆 시녀 2명 */
  const g=new THREE.Group();g.position.set(SHOP.x,gy-0.05,SHOP.z);g.rotation.y=SHOP.yaw;scene.add(g);SHOP.g=g;
  const pb=[];const P_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>pb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
- const box=new THREE.BoxGeometry(1,1,1),cyl=new THREE.CylinderGeometry(1,1,1,14),cone4=new THREE.ConeGeometry(1,1,4),sph=new THREE.SphereGeometry(1,14,10),cone=new THREE.ConeGeometry(1,1,8);
- P_(box,'#b7b0a4',0,0.18,0,0,0,0,4.8,0.42,3.6);P_(box,'#a39c90',0,0.09,2.05,0,0,0,2.2,0.2,0.6);P_(box,'#a8743f',0,0.42,0,0,0,0,4.4,0.08,3.2);
- for(const sx of[-1,1])for(const sz of[-1,1]){P_(cyl,'#c8322f',sx*2.0,2.235,sz*1.38,0,0,0,0.14,3.57,0.14);P_(cyl,'#e8b84a',sx*2.0,0.52,sz*1.38,0,0,0,0.19,0.14,0.19);P_(cyl,'#e8b84a',sx*2.0,4.02,sz*1.38,0,0,0,0.17,0.1,0.17);}
- for(const sz of[-1,1])P_(box,'#c8322f',0,4.08,sz*1.38,0,0,0,4.3,0.22,0.2);for(const sx of[-1,1])P_(box,'#c8322f',sx*2.0,4.08,0,0,0,0,0.2,0.22,2.9);
- P_(box,'#2f9a86',0,4.28,0,0,0,0,4.7,0.2,3.3);for(let i=0;i<9;i++)P_(box,i%2?'#f2c14e':'#e2554f',-2.0+i*0.5,4.28,1.66,0,0,0,0.22,0.12,0.02);
- P_(box,'#1f4f7a',0,4.42,0,0,0,0,5.6,0.14,4.3);
- {const c4=new THREE.ConeGeometry(1,1,4).rotateY(Math.PI/4);P_(c4,'#2d6aa0',0,5.15,0,0,0,0,4.0,1.45,3.0);P_(c4,'#3f86c2',0,5.13,0,0,0,0,3.86,1.36,2.86);}
- for(const sx of[-1,1])for(const sz of[-1,1]){P_(cone,'#f2c14e',sx*2.75,4.58,sz*2.1,sz*0.5,0,-sx*0.5,0.09,0.4,0.09);}
- P_(box,'#1f4f7a',0,5.82,0,0,0,0,1.0,0.12,0.18);
- P_(box,'#7b4a2a',0,0.95,0.78,0,0,0,3.3,1.0,0.62);P_(box,'#c89b5c',0,1.47,0.78,0,0,0,3.45,0.08,0.75);P_(box,'#f2c14e',0,1.0,1.1,0,0,0,3.3,0.08,0.02);
- P_(box,'#7b4a2a',0,1.15,-1.2,0,0,0,3.4,1.4,0.2);
- for(let i=0;i<4;i++){const col=[RODS[2].c1,RODS[3].c1,RODS[4].c1,RODS[5].c1][i];P_(cyl,col,-1.2+i*0.8,1.45,-1.05,0.18,0,0,0.025,2.0,0.025);}
- P_(box,'#8a5a32',-1.55,0.75,-0.55,0,0.3,0,0.7,0.45,0.45);P_(cyl,'#a8703f',-1.55,0.98,-0.55,0,0.3,Math.PI/2,0.22,0.7,0.22);P_(box,'#f2c14e',-1.55,0.86,-0.32,0,0.3,0,0.72,0.06,0.02);
- for(let i=0;i<7;i++)P_(cyl,'#f5c542',-1.65+hash(i)*0.3,1.2+i*0.012,-0.55+hash(i+3)*0.2,0,0,0,0.06,0.015,0.06);
+ const box=new THREE.BoxGeometry(1,1,1),cyl=new THREE.CylinderGeometry(1,1,1,14),cyl8=new THREE.CylinderGeometry(1,1,1,8),sph=new THREE.SphereGeometry(1,14,10),cone=new THREE.ConeGeometry(1,1,8),tor=new THREE.TorusGeometry(1,0.28,8,18);
+ /* 두 점을 잇는 원기둥(팔·소매용) */
+ const _ya=new THREE.Vector3(0,1,0),_d=new THREE.Vector3(),_qq=new THREE.Quaternion(),_ee=new THREE.Euler();
+ const limbTo=(arr,col,a,b,r)=>{_d.set(b[0]-a[0],b[1]-a[1],b[2]-a[2]);const L=_d.length();_qq.setFromUnitVectors(_ya,_d.normalize());_ee.setFromQuaternion(_qq);arr.push(part(cyl8,col,(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2,_ee.x,_ee.y,_ee.z,r,L,r));};
+ // 바닥 · 계단
+ P_(box,'#b7b0a4',0,0.18,0,0,0,0,6.8,0.42,5.0);P_(box,'#a39c90',0,0.09,2.85,0,0,0,3.0,0.2,0.75);P_(box,'#a8743f',0,0.42,0,0,0,0,6.4,0.08,4.6);
+ for(let i=0;i<8;i++)P_(box,i%2?'#9a6636':'#b07a46',-2.8+i*0.8,0.465,0,0,0,0,0.04,0.012,4.5);
+ // 기둥 · 보
+ const PX=2.85,PZ=2.0;
+ for(const sx of[-1,1])for(const sz of[-1,1]){P_(cyl,'#c8322f',sx*PX,2.53,sz*PZ,0,0,0,0.17,4.15,0.17);P_(cyl,'#e8b84a',sx*PX,0.55,sz*PZ,0,0,0,0.23,0.16,0.23);P_(cyl,'#e8b84a',sx*PX,4.58,sz*PZ,0,0,0,0.21,0.12,0.21);}
+ for(const sz of[-1,1])P_(box,'#c8322f',0,4.66,sz*PZ,0,0,0,6.0,0.26,0.24);for(const sx of[-1,1])P_(box,'#c8322f',sx*PX,4.66,0,0,0,0,0.24,0.26,4.2);
+ P_(box,'#2f9a86',0,4.9,0,0,0,0,6.5,0.24,4.6);for(let i=0;i<13;i++)P_(box,i%2?'#f2c14e':'#e2554f',-3.0+i*0.5,4.9,2.31,0,0,0,0.24,0.14,0.02);
+ // 지붕 2단
+ P_(box,'#1f4f7a',0,5.06,0,0,0,0,7.8,0.16,6.0);
+ {const c4=new THREE.ConeGeometry(1,1,4).rotateY(Math.PI/4);P_(c4,'#2d6aa0',0,5.9,0,0,0,0,5.6,1.7,4.3);P_(c4,'#3f86c2',0,5.88,0,0,0,0,5.4,1.6,4.15);
+  P_(box,'#c8322f',0,6.85,0,0,0,0,2.0,0.55,1.5);P_(box,'#f2c14e',0,7.14,0,0,0,0,2.2,0.06,1.7);P_(box,'#1f4f7a',0,7.2,0,0,0,0,3.0,0.12,2.4);P_(c4,'#2d6aa0',0,7.65,0,0,0,0,2.4,0.9,1.9);}
+ for(const sx of[-1,1])for(const sz of[-1,1]){P_(cone,'#f2c14e',sx*3.85,5.22,sz*2.95,sz*0.5,0,-sx*0.5,0.11,0.48,0.11);P_(cone,'#f2c14e',sx*1.45,7.3,sz*1.15,sz*0.5,0,-sx*0.5,0.07,0.3,0.07);}
+ // 뒷벽 + 용궁 문양
+ P_(box,'#7b4a2a',0,1.76,-2.0,0,0,0,5.4,2.6,0.2);P_(box,'#f2c14e',0,3.08,-1.9,0,0,0,5.4,0.08,0.06);
+ P_(cyl,'#f2c14e',0,3.45,-1.92,Math.PI/2,0,0,0.62,0.06,0.62);P_(cyl,'#2d6aa0',0,3.45,-1.88,Math.PI/2,0,0,0.52,0.04,0.52);for(let k=0;k<3;k++)P_(tor,'#bfe3ff',-0.22+k*0.22,3.38,-1.85,0,0,0,0.11,0.11,0.05);
+ // 뒷벽 양쪽 진열장 (앞을 보게): 왼쪽 찌·릴 · 오른쪽 가방·미끼·복권·요리
+ const SHX=1.95,SHW=1.3,SHZ=-1.6;
+ for(const sx of[-1,1]){const x=sx*SHX;for(const e of[-1,1])P_(box,'#6a3f22',x+e*SHW/2,1.55,SHZ,0,0,0,0.08,2.3,0.55);for(const y of[0.62,1.22,1.82,2.42])P_(box,'#c89b5c',x,y,SHZ,0,0,0,SHW,0.06,0.55);P_(box,'#5e3820',x,2.72,SHZ+0.02,0,0,0,SHW+0.12,0.1,0.6);P_(box,'#f2c14e',x,2.42,SHZ+0.28,0,0,0,SHW,0.04,0.02);}
+ {const x0=-SHX,z=SHZ+0.05;
+  // 1칸: 빨강·흰 찌 4개
+  for(let i=0;i<4;i++){const x=x0-0.45+i*0.3;P_(sph,'#ff4d4d',x,0.79,z,0,0,0,0.1,0.09,0.1);P_(sph,'#ffffff',x,0.7,z,0,0,0,0.1,0.07,0.1);P_(cyl,'#333333',x,0.94,z,0,0,0,0.01,0.14,0.01);}
+  // 2칸: 등대 찌 · 산호성 찌 미니어처
+  P_(cyl,'#f2f2f2',x0-0.32,1.42,z,0,0,0,0.1,0.36,0.1);for(let k=0;k<2;k++)P_(cyl,'#d8323a',x0-0.32,1.32+k*0.18,z,0,0,0,0.105,0.07,0.105);P_(cone,'#d8323a',x0-0.32,1.7,z,0,0,0,0.12,0.16,0.12);P_(sph,'#fff2a8',x0-0.32,1.62,z,0,0,0,0.06,0.06,0.06);
+  P_(cyl,'#ff9fc0',x0+0.22,1.41,z,0,0,0,0.16,0.34,0.16);P_(cyl,'#a8dcf5',x0+0.42,1.48,z+0.05,0,0,0,0.08,0.48,0.08);P_(cone,'#f2c14e',x0+0.22,1.68,z,0,0,0,0.19,0.24,0.19);P_(cone,'#f2c14e',x0+0.42,1.81,z+0.05,0,0,0,0.1,0.18,0.1);
+  // 3칸: 릴 3종
+  [['#f5b7c8','#e88fa6'],['#f2c14e','#d9a63a'],['#9ad7ff','#6fb7e8']].forEach(([a,b],i)=>{const x=x0-0.4+i*0.4;P_(tor,a,x,2.0,z,0,0,0,0.14,0.14,0.14);P_(cyl,b,x,2.0,z,Math.PI/2,0,0,0.09,0.06,0.09);});
+  // 4칸: 낚싯줄 실패
+  for(let i=0;i<4;i++)P_(cyl,['#ff7a7a','#7ac4ff','#ffd56a','#9be39b'][i],x0-0.45+i*0.3,2.55,z,0,0,0,0.1,0.16,0.1);}
+ {const x0=SHX,z=SHZ+0.05;
+  // 1칸: 가방 3종
+  P_(box,'#5aa9e6',x0-0.4,0.86,z,0,0,0,0.34,0.42,0.3);P_(cone,'#3f86c2',x0-0.4,1.17,z,0,0,0,0.07,0.2,0.05);P_(sph,'#ffffff',x0-0.4,0.86,z+0.16,0,0,0,0.11,0.11,0.03);
+  P_(box,'#fff4e8',x0,0.86,z,0,0,0,0.32,0.4,0.28);for(const e of[-1,1])P_(sph,'#ffffff',x0+e*0.24,0.95,z,0,0,e*0.6,0.06,0.18,0.12);
+  P_(sph,'#2a3245',x0+0.42,0.85,z,0,0,0,0.18,0.22,0.17);P_(sph,'#ffffff',x0+0.42,0.83,z+0.11,0,0,0,0.11,0.16,0.08);P_(cone,'#ffb347',x0+0.42,0.93,z+0.18,Math.PI/2,0,0,0.035,0.07,0.035);
+  // 2칸: 🔮 프리즘 구슬 병 · 🍡 경단 접시
+  P_(cyl,'#cfeefc',x0-0.35,1.47,z,0,0,0,0.17,0.42,0.17);P_(cyl,'#9a6a3a',x0-0.35,1.71,z,0,0,0,0.12,0.06,0.12);
+  ['#ff5a5a','#ffa94d','#ffe066','#69db7c','#4dabf7','#748ffc','#da77f2'].forEach((c,i)=>P_(sph,c,x0-0.35+((i%3)-1)*0.08,1.33+Math.floor(i/3)*0.1,z+0.15,0,0,0,0.05,0.05,0.05));
+  P_(cyl,'#ffffff',x0+0.3,1.27,z,0,0,0,0.28,0.03,0.24);for(let k=0;k<3;k++){const xx=x0+0.15+k*0.15;P_(cyl,'#c8a06a',xx,1.43,z+0.04,0,0,0,0.012,0.36,0.012);['#ff9fbf','#ffffff','#8fd18f'].forEach((c,j)=>P_(sph,c,xx,1.33+j*0.11,z+0.04,0,0,0,0.055,0.055,0.055));}
+  // 3칸: 🎫 복권 · 작은 어항(수조 늘리기)
+  for(let k=0;k<4;k++)P_(box,k%2?'#ffd54a':'#ffe58a',x0-0.35,1.86+k*0.025,z,0,0.1*k,0,0.34,0.02,0.24);P_(box,'#e2554f',x0-0.35,1.97,z,0,0,0,0.35,0.01,0.06);
+  P_(box,'#bfe8f5',x0+0.3,2.02,z,0,0,0,0.5,0.36,0.36);P_(box,'#4aa8d8',x0+0.3,1.95,z,0,0,0,0.48,0.2,0.34);P_(sph,'#ff8a3d',x0+0.24,2.03,z+0.18,0,0,0,0.06,0.035,0.02);P_(sph,'#ffd84a',x0+0.38,2.07,z+0.18,0,0,0,0.045,0.03,0.02);
+  // 4칸: 요리 그릇
+  [['#e86f3a',-0.4],['#ffdca8',0],['#d8323a',0.4]].forEach(([c,dx])=>{P_(cyl,'#f3ead8',x0+dx,2.52,z,0,0,0,0.17,0.12,0.17);P_(sph,c,x0+dx,2.58,z,0,0,0,0.14,0.04,0.14);});}
+ // 낚싯대 통 2개 (판매대 양쪽 앞): ★1~★7
+ for(const sx of[-1,1]){const bx=sx*2.3,bz=2.05;P_(cyl,'#8a5a32',bx,0.78,bz,0,0,0,0.3,0.62,0.3);for(const y of[0.56,1.0])P_(cyl,'#f2c14e',bx,y,bz,0,0,0,0.31,0.05,0.31);
+  const lvs=sx<0?[1,2,3,4]:[5,6,7];lvs.forEach((lv,k)=>{const R=RODS[lv];const a=k/lvs.length*Math.PI*2+0.4;const ox=Math.cos(a)*0.13,oz=Math.sin(a)*0.13;P_(cyl,R.c1,bx+ox,1.85,bz+oz,oz*0.6,0,-ox*0.6,0.03,1.9,0.03);P_(cyl,R.c2,bx+ox*1.6,2.82,bz+oz*1.6,oz*0.6,0,-ox*0.6,0.022,0.24,0.022);});
+  if(sx>0)P_(tor,'#e8e2d0',bx+0.05,2.55,bz-0.12,0.3,0,0,0.17,0.17,0.17);}
+ // 앞 판매대 + 위 물건들
+ P_(box,'#7b4a2a',0,0.95,1.15,0,0,0,4.8,1.0,0.7);P_(box,'#c89b5c',0,1.47,1.15,0,0,0,5.0,0.08,0.86);P_(box,'#f2c14e',0,1.0,1.51,0,0,0,4.8,0.08,0.02);
+ for(const sx of[-1,1])P_(sph,'#f2c14e',sx*1.6,0.95,1.52,0,0,0,0.14,0.14,0.04);P_(sph,'#5cc7a5',0,0.95,1.52,0,0,0,0.18,0.18,0.05);
+ // 보물 상자 · 동전 더미
+ P_(box,'#8a5a32',-1.9,1.75,1.15,0,0.3,0,0.62,0.42,0.42);P_(cyl,'#a8703f',-1.9,1.96,1.15,0,0.3,Math.PI/2,0.2,0.62,0.2);P_(box,'#f2c14e',-1.9,1.86,1.36,0,0.3,0,0.64,0.06,0.02);
+ for(let i=0;i<9;i++)P_(cyl,'#f5c542',-1.25+hash(i)*0.3,1.53+i*0.014,1.0+hash(i+3)*0.25,0,0,0,0.07,0.016,0.07);
+ // 얼음 생선 진열 쟁반
+ P_(box,'#ffffff',-0.55,1.55,1.18,0,0,0,1.0,0.08,0.6);P_(box,'#dff4ff',-0.55,1.6,1.18,0,0,0,0.92,0.03,0.52);
+ [['#7a9cc6',-0.85],['#e86f6f',-0.55],['#c9b06a',-0.25]].forEach(([c,x])=>{P_(sph,c,x,1.66,1.2,0,0.25,0,0.16,0.05,0.06);P_(cone,c,x+0.18,1.66,1.24,0,0.25,-Math.PI/2,0.05,0.08,0.03);});
+ // 진주 조개 · 저울
+ P_(sph,'#f7e9d7',1.95,1.58,1.15,0,0,0,0.3,0.12,0.24);P_(sph,'#e8d4bd',1.95,1.7,0.97,-0.9,0,0,0.3,0.06,0.24);
+ P_(cyl,'#9a6a3a',0.75,1.62,1.1,0,0,0,0.04,0.25,0.04);P_(box,'#f2c14e',0.75,1.76,1.1,0,0,0,0.6,0.03,0.04);for(const s of[-1,1]){P_(cyl,'#f2c14e',0.75+s*0.27,1.66,1.1,0,0,0,0.11,0.02,0.11);}
+ // 산호 · 해초
  const coral=(x,z,col)=>{P_(cyl,col,x,0.75,z,0,0,0,0.05,0.7,0.05);P_(cyl,col,x+0.1,0.95,z,0,0,-0.6,0.04,0.4,0.04);P_(cyl,col,x-0.1,1.0,z,0,0,0.6,0.035,0.35,0.035);P_(sph,col,x,1.12,z,0,0,0,0.07,0.07,0.07);};
- coral(-2.45,1.5,'#ff6f91');coral(2.45,1.5,'#ff9a5a');coral(2.5,-1.3,'#ff6f91');
- P_(sph,'#f7e9d7',1.35,1.58,0.78,0,0,0,0.3,0.12,0.24);P_(sph,'#e8d4bd',1.35,1.7,0.6,-0.9,0,0,0.3,0.06,0.24);
+ coral(-3.25,2.35,'#ff6f91');coral(3.25,2.35,'#ff9a5a');coral(3.25,-2.3,'#ff6f91');coral(-3.25,-2.3,'#ffb15a');
+ for(const sx of[-1,1])for(let k=0;k<3;k++)P_(cyl,'#3fae6a',sx*(1.15+k*0.18),0.75,2.62,0,0,(k-1)*0.2,0.035,0.62,0.035);
  const m=new THREE.Mesh(mergeGeometries(pb),VCMAT);m.castShadow=true;m.receiveShadow=true;g.add(m);
  const pearlM=new THREE.MeshStandardMaterial({color:'#fff6e0',emissive:'#ffd88a',emissiveIntensity:0.5,roughness:0.15});NIGHT_EMISSIVE.push([pearlM,1.6]);
- addMesh(new THREE.SphereGeometry(0.3,20,14),pearlM,0,6.15,0,g);const pg=glowSprite('#ffe08a',2.2);pg.position.set(0,6.15,0);g.add(pg);
- addMesh(new THREE.SphereGeometry(0.09,14,10),pearlM,1.35,1.68,0.82,g);
+ addMesh(new THREE.SphereGeometry(0.34,20,14),pearlM,0,8.35,0,g);const pg=glowSprite('#ffe08a',2.4);pg.position.set(0,8.35,0);g.add(pg);
+ addMesh(new THREE.SphereGeometry(0.09,14,10),pearlM,1.95,1.68,1.19,g);
  const lanM=new THREE.MeshStandardMaterial({color:'#ff5a4f',emissive:'#ff7a3c',emissiveIntensity:0.3,roughness:0.5});NIGHT_EMISSIVE.push([lanM,2.2]);const lgs=[pg];
- for(const sx of[-1,1]){addMesh(new THREE.CylinderGeometry(0.01,0.01,0.3,4),stdMat('#333'),sx*2.0,3.25,1.62,g);const l=addMesh(new THREE.SphereGeometry(0.2,14,10),lanM,sx*2.0,3.0,1.62,g);l.scale.y=1.25;const lg=glowSprite('#ff9a5a',1.5);lg.position.set(sx*2.0,3.0,1.62);g.add(lg);lgs.push(lg);}
+ for(const [lx,lz] of [[-PX,2.24],[PX,2.24],[-1.2,2.24],[1.2,2.24]]){addMesh(new THREE.CylinderGeometry(0.01,0.01,0.32,4),stdMat('#333'),lx,4.36,lz,g);const l=addMesh(new THREE.SphereGeometry(lx===0?0.2:0.22,14,10),lanM,lx,4.08,lz,g);l.scale.y=1.25;const lg=glowSprite('#ff9a5a',1.5);lg.position.set(lx,4.08,lz);g.add(lg);lgs.push(lg);}
  const sign=canvasTex(512,128,(x,w,h)=>{const gr=x.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#2a1f5e');gr.addColorStop(1,'#14103a');x.fillStyle=gr;x.fillRect(0,0,w,h);x.strokeStyle='#f2c14e';x.lineWidth=12;x.strokeRect(6,6,w-12,h-12);x.fillStyle='#ffe29a';x.font='900 66px "AmoEmoji","Noto Sans KR",sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('🐉 용왕님 상점',w/2,h/2+4);});
- {const sg=new THREE.Group();sg.position.set(0,4.98,1.95);sg.rotation.x=-0.3;g.add(sg);addMesh(new THREE.BoxGeometry(3.3,0.9,0.1),stdMat('#7a4a1e',0.6),0,0,0,sg);addMesh(new THREE.BoxGeometry(3.42,0.08,0.14),stdMat('#f2c14e',0.4),0,0.47,0,sg);addMesh(new THREE.BoxGeometry(3.42,0.08,0.14),stdMat('#f2c14e',0.4),0,-0.47,0,sg);addMesh(new THREE.PlaneGeometry(3.1,0.77),new THREE.MeshStandardMaterial({map:sign,roughness:0.6,emissive:'#ffffff',emissiveMap:sign,emissiveIntensity:0.3}),0,0,0.055,sg);}
+ {const sg=new THREE.Group();sg.position.set(0,5.62,2.72);sg.rotation.x=-0.3;g.add(sg);addMesh(new THREE.BoxGeometry(4.3,1.15,0.1),stdMat('#7a4a1e',0.6),0,0,0,sg);addMesh(new THREE.BoxGeometry(4.42,0.08,0.14),stdMat('#f2c14e',0.4),0,0.6,0,sg);addMesh(new THREE.BoxGeometry(4.42,0.08,0.14),stdMat('#f2c14e',0.4),0,-0.6,0,sg);addMesh(new THREE.PlaneGeometry(4.05,1.0),new THREE.MeshStandardMaterial({map:sign,roughness:0.6,emissive:'#ffffff',emissiveMap:sign,emissiveIntensity:0.3}),0,0,0.055,sg);}
  g.userData={lgs,pick:'shop'};g.traverse(o=>{o.userData.pick='shop';});
- // 용왕님
- const npc=new THREE.Group();npc.position.set(0,0.45,-0.35);npc.scale.set(1.62,1.5,1.62);g.add(npc);SHOP.npc=npc;const nb=[];const N_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>nb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
+ // 용왕님 (팔이 어깨에서 손까지 이어지도록 다시 만들었어요)
+ const npc=new THREE.Group();npc.position.set(0,0.45,-0.55);npc.scale.set(1.72,1.6,1.72);g.add(npc);SHOP.npc=npc;const nb=[];const N_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>nb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
  N_(cyl,'#c0392b',0,0.75,0,0,0,0,0.48,1.1,0.44);N_(sph,'#c0392b',0,1.3,0,0,0,0,0.52,0.32,0.46);for(const s of[-1,1])N_(sph,'#f2c14e',s*0.5,1.38,0,0,0,0,0.2,0.13,0.2);N_(sph,'#d9473c',0,0.95,0.12,0,0,0,0.5,0.42,0.38);N_(new THREE.TorusGeometry(0.43,0.06,8,20),'#f2c14e',0,0.95,0,Math.PI/2,0,0,1,1,0.9);
- N_(box,'#f2c14e',0,1.2,0.36,0,0,0,0.12,0.5,0.04);for(const s of[-1,1]){N_(cyl,'#c0392b',s*0.42,1.05,0.18,0.9,0,s*0.3,0.11,0.55,0.11);N_(sph,'#5cc7a5',s*0.38,1.0,0.48,0,0,0,0.1,0.1,0.1);}
+ N_(box,'#f2c14e',0,1.2,0.36,0,0,0,0.12,0.5,0.04);
+ for(const s of[-1,1]){const sh=[s*0.47,1.33,0.04],el=[s*0.52,1.02,0.3],hd=[s*0.26,1.0,0.56];
+  N_(sph,'#c0392b',sh[0],sh[1],sh[2],0,0,0,0.15,0.15,0.15);limbTo(nb,'#c0392b',sh,el,0.12);N_(sph,'#c0392b',el[0],el[1],el[2],0,0,0,0.125,0.125,0.125);limbTo(nb,'#c0392b',el,[hd[0]*1.08,hd[1],hd[2]-0.06],0.13);
+  N_(new THREE.TorusGeometry(0.11,0.035,6,14),'#f2c14e',hd[0]*1.08,hd[1],hd[2]-0.08,0,s*0.9,0,1,1,1);N_(sph,'#5cc7a5',hd[0],hd[1],hd[2],0,0,0,0.1,0.09,0.1);
+  for(let k=0;k<3;k++)N_(cone,'#f2e6c8',hd[0]-s*0.02+(k-1)*0.04,hd[1]-0.02,hd[2]+0.09,Math.PI/2,0,0,0.018,0.06,0.018);}
  const body=new THREE.Mesh(mergeGeometries(nb),VCMAT);body.castShadow=true;npc.add(body);
  const head=new THREE.Group();head.position.set(0,1.78,0.05);npc.add(head);const hb=[];const H_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>hb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
  H_(sph,'#4fbf9f',0,0,0,0,0,0,0.42,0.38,0.4);H_(sph,'#8fe0c6',0,-0.08,0.33,0,0,0,0.26,0.18,0.2);for(const s of[-1,1])H_(sph,'#2a7a62',s*0.08,-0.04,0.52,0,0,0,0.025,0.02,0.02);
@@ -2894,13 +2949,45 @@ function buildShop(){SHOP.yaw=Math.atan2(PLAZA.x-SHOP.x,PLAZA.z-SHOP.z);const gy
  const hm=new THREE.Mesh(mergeGeometries(hb),VCMAT);hm.castShadow=true;head.add(hm);
  const whisk=[];const wm=stdMat('#f5f0e6',0.6);for(const s of[-1,1]){const w=new THREE.Group();w.position.set(s*0.18,-0.06,0.45);head.add(w);const c=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.006,0.7,5).translate(0,-0.35,0),wm);c.rotation.z=s*1.25;w.add(c);whisk.push(w);}
  npc.userData={head,whisk};npc.traverse(o=>{o.userData.pick='shop';});
+ // 용궁 시녀 2명 (왼쪽: 경단 쟁반 · 오른쪽: 프리즘 구슬 쟁반)
+ SHOP.maids=[];
+ [[-1,'#ff9fb8','#ffd3de','#ff6f91'],[1,'#7fd8c0','#c9f2e6','#2f9a86']].forEach(([s,skirt,sleeve,band],mi)=>{
+  const mg=new THREE.Group();mg.position.set(s*1.5,0.74,0.1);mg.rotation.y=-s*0.15;mg.scale.setScalar(1.4);g.add(mg);
+  const bb=[];const B_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>bb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
+  B_(cone,skirt,0,0.42,0,0,0,0,0.44,0.84,0.44);B_(cyl,band,0,0.06,0,0,0,0,0.42,0.06,0.42);B_(cyl,band,0,0.78,0,0,0,0,0.2,0.06,0.2);
+  B_(sph,'#fff6e8',0,0.93,0,0,0,0,0.27,0.22,0.22);B_(box,band,0.05,0.9,0.2,0,0,-0.5,0.04,0.2,0.02);B_(box,band,-0.03,0.88,0.2,0,0,0.4,0.04,0.16,0.02);
+  for(const k of[-1,1]){const sh=[k*0.24,0.98,0],hd=[k*0.13,0.82,0.3];limbTo(bb,sleeve,sh,hd,0.075);B_(cyl,band,hd[0]*1.1,hd[1]+0.01,hd[2]-0.05,1.2,0,0,0.08,0.05,0.08);B_(sph,'#ffe2c8',hd[0],hd[1],hd[2],0,0,0,0.055,0.055,0.055);}
+  // 쟁반 + 물건
+  B_(cyl,'#f2c14e',0,0.86,0.36,0,0,0,0.24,0.03,0.2);
+  if(mi===0){for(let k=0;k<2;k++){B_(cyl,'#c8a06a',-0.06+k*0.12,0.97,0.36,0,0,0.3,0.008,0.24,0.008);['#ff9fbf','#ffffff','#8fd18f'].forEach((c,j)=>B_(sph,c,-0.06+k*0.12-0.02*(j-1),0.92+j*0.06,0.36,0,0,0,0.035,0.035,0.035));}}
+  else{B_(cyl,'#ffffff',0,0.89,0.36,0,0,0,0.1,0.02,0.1);}
+  const bm=new THREE.Mesh(mergeGeometries(bb),VCMAT);bm.castShadow=true;mg.add(bm);
+  if(mi===1){const pM=new THREE.MeshStandardMaterial({color:'#ffffff',emissive:'#b9d8ff',emissiveIntensity:0.6,roughness:0.05,metalness:0.1});NIGHT_EMISSIVE.push([pM,1.4]);const orb=addMesh(new THREE.SphereGeometry(0.075,16,12),pM,0,0.98,0.36,mg);const og=glowSprite('#c7a8ff',0.55);og.position.set(0,0.98,0.36);mg.add(og);mg.userData.orb=orb;}
+  const hd=new THREE.Group();hd.position.set(0,1.27,0);mg.add(hd);const hh=[];const Q_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>hh.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
+  Q_(sph,'#ffe2c8',0,0,0,0,0,0,0.28,0.27,0.26);
+  Q_(sph,'#3a2a24',0,0.06,-0.04,0,0,0,0.295,0.27,0.27);Q_(sph,'#3a2a24',0,0.14,0.12,0,0,0,0.25,0.12,0.16);   /* 머리카락 · 앞머리 */
+  Q_(sph,'#3a2a24',0,0.12,-0.3,0,0,0,0.14,0.13,0.13);Q_(cyl,'#f2c14e',0,0.12,-0.32,0,0,Math.PI/2,0.018,0.42,0.018);Q_(sph,band,0.21,0.12,-0.32,0,0,0,0.04,0.04,0.04);   /* 쪽머리 · 비녀 */
+  Q_(sph,'#ff7a9a',-s*0.17,0.24,0.06,0,0,0,0.05,0.05,0.05);Q_(sph,'#ffb3c6',-s*0.12,0.27,0.1,0,0,0,0.035,0.035,0.035);   /* 산호 머리꽂이 */
+  for(const k of[-1,1]){Q_(sph,'#1b1b24',k*0.1,-0.02,0.235,0,0,0,0.035,0.045,0.02);Q_(sph,'#ffffff',k*0.1-0.012,0.0,0.252,0,0,0,0.01,0.012,0.006);Q_(sph,'#ffaabb',k*0.16,-0.08,0.2,0,0,0,0.045,0.03,0.02);
+   Q_(sph,s<0?'#ffc2d4':'#a8ecdc',k*0.27,0.0,0.0,0,0,k*0.35,0.03,0.1,0.07);}   /* 지느러미 귀 장식 */
+  Q_(sph,'#d9705a',0,-0.12,0.24,0,0,0,0.035,0.016,0.012);
+  const qm=new THREE.Mesh(mergeGeometries(hh),VCMAT);qm.castShadow=true;hd.add(qm);
+  mg.userData.head=hd;mg.userData.ph=mi*2.1;mg.traverse(o=>{o.userData.pick='shop';});SHOP.maids.push(mg);
+  });
  SHOP.label=makeLabel(false);SHOP.label.el.classList.add('npc');SHOP.label.nm.textContent='🐉 용왕';
- OBST.push({x:SHOP.x,z:SHOP.z,r:2.3});
- const fwx=Math.sin(SHOP.yaw),fwz=Math.cos(SHOP.yaw);for(const k of[-1.4,1.4])OBST.push({x:SHOP.x+Math.cos(SHOP.yaw)*k*1.2,z:SHOP.z-Math.sin(SHOP.yaw)*k*1.2,r:1.0});
- SHOP.front={x:SHOP.x+fwx*3.1,z:SHOP.z+fwz*3.1};}
+ OBST.push({x:SHOP.x,z:SHOP.z,r:3.1});
+ const fwx=Math.sin(SHOP.yaw),fwz=Math.cos(SHOP.yaw),rtx=Math.cos(SHOP.yaw),rtz=-Math.sin(SHOP.yaw);
+ for(const k of[-1,1])OBST.push({x:SHOP.x+rtx*k*2.7-fwx*0.6,z:SHOP.z+rtz*k*2.7-fwz*0.6,r:1.3});
+ SHOP.front={x:SHOP.x+fwx*4.3,z:SHOP.z+fwz*4.3};}
+function updMaids(dd){if(!SHOP.maids)return;const g=SHOP.g;const lp=g.worldToLocal(_c.set(P.pos.x,P.pos.y,P.pos.z));
+ for(const m of SHOP.maids){const u=m.userData;m.position.y=0.74+Math.abs(Math.sin(t*2.2+u.ph))*0.03;m.rotation.z=Math.sin(t*1.1+u.ph)*0.04;
+  const bow=dd<7?Math.max(0,Math.sin(t*0.9+u.ph))**8*0.35:0;m.rotation.x=bow;
+  const want=dd<10?clamp(Math.atan2(lp.x-m.position.x,lp.z-m.position.z)-m.rotation.y,-0.8,0.8):Math.sin(t*0.5+u.ph)*0.3;u.head.rotation.y=lerp(u.head.rotation.y,want,0.08);u.head.rotation.z=Math.sin(t*1.4+u.ph)*0.08;
+  if(u.orb){u.orb.position.y=0.98+Math.sin(t*2.5)*0.02;}}}
+
 function updShop(dt,dd){if(!SHOP.g)return;const n=SHOP.npc,u=n.userData;n.position.y=0.45+Math.sin(t*1.6)*0.03;
  const lp=SHOP.g.worldToLocal(_c.set(P.pos.x,P.pos.y,P.pos.z));const want=dd<9?clamp(Math.atan2(lp.x,lp.z+0.35),-0.7,0.7):Math.sin(t*0.4)*0.3;u.head.rotation.y=lerp(u.head.rotation.y,want,0.08);
- u.whisk.forEach((w,i)=>{w.rotation.x=Math.sin(t*1.8+i)*0.25;w.rotation.y=Math.sin(t*1.2+i*2)*0.2;});
+ updMaids(dd);u.whisk.forEach((w,i)=>{w.rotation.x=Math.sin(t*1.8+i)*0.25;w.rotation.y=Math.sin(t*1.2+i*2)*0.2;});
  const nk=S?S.night:0;for(const s of SHOP.g.userData.lgs)s.material.opacity=0.15+0.75*nk;
  const lw=SHOP.npc.localToWorld(_c.set(0,2.4,0));if(dd<26&&mode!=='closet')placeLabel(SHOP.label,lw.x,lw.y,lw.z);else SHOP.label.el.style.display='none';
  if(dd<6&&t-SHOP.greetT>25&&entered){SHOP.greetT=t;showBubble(SHOP.label,['어서 오게나! 🐉','좋은 물고기를 잡았는가?','허허, 반갑구먼!','낚싯대 구경하고 가게나'][Math.floor(Math.random()*4)],false,4);}}
@@ -3382,7 +3469,7 @@ function mapItems(){const L=[];const add=(x,z,em,label,sz,pri)=>L.push({x,z,em,l
  add(RES.x,RES.z-6,'🪷','저수지',1.05,1);add(SEATS[3].x+(SEATS[4].x-SEATS[3].x)/2,SEATS[3].z+4,'🪑','좌대 낚시터',0.85,2);
  const rv=RIVER[7];add(rv[0]+5,rv[1]+2,'🏞️','강',0.9,3);add(-12,-86,'⛰️','',1,3);
  add(0,DOCK.z1-2,'⚓','부두',0.8,3);for(const d of DOCKS)if(!d.main)add(d.ux*(d.s1-2),d.uz*(d.s1-2),d.boat?'🚤':'⚓',d.boat?'배 타는 부두':'부두',d.boat?1:0.8,2);
- for(const h of[[-15,-3],[16,-8],[-9,-19]])add(h[0],h[1],'🏠','',0.7,9);
+ for(const h of[[-25.7,0.2],[16,-8],[-4.5,-21.4]])add(h[0],h[1],'🏠','',0.7,9);
  return L;}
 function layoutMapItems(N,fs){const L=mapItems().map(o=>{const p=w2m(o.x,o.z,N);return Object.assign(o,{px:p[0],py:p[1],ix:p[0],iy:p[1],r:fs*0.62*o.sz});});
  /* 아이콘끼리 밀어내기 */
@@ -3442,7 +3529,7 @@ function onTap(cx,cy){let hit=pickAt(cx,cy);if(!hit||(hit.anim===undefined&&hit.
 
 /* ---------- 상황 버튼 (상점·요리) ---------- */
 let ctxKind='';
-function refreshCtx(){let want='';if(entered&&mode==='walk'&&!modalOpen()&&(SEAT.on||nearSeat())){want=SEAT.on?'unseat':'seat';}else if(entered&&mode==='walk'&&!modalOpen()&&(BOAT.on||nearMoor())){want=BOAT.on?(nearBoatDock()?'unboat':''):'boat';}else if(entered&&mode==='walk'&&!modalOpen()){const ds=Math.hypot(P.pos.x-SHOP.front.x,P.pos.z-SHOP.front.z);if(ds<3.2||Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z)<4.2)want='shop';else if(nearBoard())want='board';else if(nearRw())want='rw';else if(nearHof())want='hof';else if(nearCampfire()&&!(cookSt&&cookSt.stage===1))want='cook';}
+function refreshCtx(){let want='';if(entered&&mode==='walk'&&!modalOpen()&&(SEAT.on||nearSeat())){want=SEAT.on?'unseat':'seat';}else if(entered&&mode==='walk'&&!modalOpen()&&(BOAT.on||nearMoor())){want=BOAT.on?(nearBoatDock()?'unboat':''):'boat';}else if(entered&&mode==='walk'&&!modalOpen()){const ds=Math.hypot(P.pos.x-SHOP.front.x,P.pos.z-SHOP.front.z);if(ds<3.4||Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z)<5.2)want='shop';else if(nearBoard())want='board';else if(nearRw())want='rw';else if(nearHof())want='hof';else if(nearCampfire()&&!(cookSt&&cookSt.stage===1))want='cook';}
  if(want===ctxKind)return;ctxKind=want;const b=$('ctxBtn');if(!want){b.classList.add('hidden');return;}b.classList.remove('hidden');
  const kb=isTouch?'':' <kbd>R</kbd>';b.innerHTML=want==='seat'?(SEAT.armT>t?`<b>💰</b>${fmtM(SEAT_FARE)}몰랑 내고 앉기${kb}`:`<b>🪑</b>좌대 낚시 <small class=fare>🪙${fmtM(SEAT_FARE)}</small>${kb}`):want==='unseat'?`<b>🪑</b>좌대에서 일어나기${kb}`:want==='boat'?(BOAT.armT>t?`<b>💰</b>${fmtM(BOAT_FARE)}몰랑 내고 타기${kb}`:`<b>⛵</b>선상낚시 하기 <small class=fare>🪙${fmtM(BOAT_FARE)}</small>${kb}`):want==='unboat'?`<b>🛬</b>배 내리기${kb}`:want==='hof'?`<b>🏆</b>명예의 전당${kb}`:want==='shop'?`<b>🐉</b>용왕님 상점${isTouch?'':' <kbd>R</kbd>'}`:want==='board'?`<b>📋</b>게시판${isTouch?'':' <kbd>R</kbd>'}`:want==='rw'?`<b>🎰</b>아몰랑 룰렛${isTouch?'':' <kbd>R</kbd>'}`:`<b>🍳</b>요리하기${isTouch?'':' <kbd>R</kbd>'}`;b.className='ctxbtn '+(want==='seat'||want==='unseat'?'boat':want)+((want==='boat'&&BOAT.armT>t)||(want==='seat'&&SEAT.armT>t)?' arm':'');}
 function doCtx(){if(ctxKind==='seat'){sitSeat(nearSeat());return;}if(ctxKind==='unseat'){leaveSeat();return;}if(ctxKind==='boat'){boardBoat();return;}if(ctxKind==='unboat'){leaveBoat();return;}if(ctxKind==='hof'){openHof();return;}if(ctxKind==='rw'){if(RWS.open)rwClose();else openRw();return;}if(ctxKind==='board')openBoard();else if(ctxKind==='shop')openShop();else if(ctxKind==='cook')openCook();}
@@ -3702,7 +3789,7 @@ const NEWS=[
  {d:'11월 15일',t:'🎯 정확하게 던지면 대물이 와요 · 연속 콤보 대물 찬스',n:true,i:[
   '🎯 낚싯대를 던질 때 게이지가 <b>90% 이상(맨 위 금색 구간)</b>일 때 손을 떼고, 그 물고기를 걸면 <b>콤보 +1</b>이에요. 게이지가 금색으로 빛날 때가 타이밍!',
   '👑 콤보가 쌓일수록 <b>대물 찬스</b>가 커져요: <b>3연속 8% · 5연속 16% · 7연속 24% · 10연속 이상 34%</b>',
-  '🐟 대물 찬스가 터지면 그 물고기의 <b>가장 큰 크기 쪽 상위 20%</b> 크기로 잡혀요. 잡은 화면에 <b>👑 대물 찬스!</b>가 표시돼요.',
+  '🐟 대물 찬스가 터지면 그 물고기의 <b>큰 크기 쪽 상위 50%</b> 크기로 잡혀요 (원래 더 크게 잡힐 물고기는 그대로). 잡은 화면에 <b>👑 대물 찬스!</b>가 표시돼요.',
   '🔄 90% 미만으로 던지면 콤보가 <b>처음부터</b> 다시 시작해요. 입질을 놓치면 콤보가 오르지 않고, 3분 넘게 던지지 않아도 처음부터예요.',
   '⚡ 게이지가 차오르는 속도는 던질 때마다 조금씩 달라져요. 지금 콤보와 대물 찬스는 게이지 옆에 <b>🎯 ×콤보 · 대물 %</b>로 보여요.']},
  {d:'11월 15일',t:'📱 홈 화면에 앱처럼 추가하는 법',n:true,i:[
@@ -4507,7 +4594,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-15j';
+const BUILD='2026-11-15m';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
