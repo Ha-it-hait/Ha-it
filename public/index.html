@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-15e">
+<meta name="amollang-build" content="2026-11-15f">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -3673,8 +3673,14 @@ const HARD_D=0.16;
 function starRangeTxt(){const R=GS.rod;if(R>=7)return`★7 물고기까지 모두`;const hi=Math.min(7,effStar()+1),lo=R+1;return`★${R} 물고기까지 편하게 · ★${lo===hi?lo:lo+'~★'+hi}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),R=GS.rod;return`🔥 ★${st} 물고기가 걸렸어요! 내 낚싯대(★${R})보다 ${st-R>1?'두':'한'} 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.rod>1?'두':'한'} 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-15h';
+const NEWS_VER='2026-11-15i';
 const NEWS=[
+ {d:'11월 15일',t:'🎯 정확하게 던지면 대물이 와요 · 연속 콤보 대물 찬스',n:true,i:[
+  '🎯 낚싯대를 던질 때 게이지가 <b>90% 이상(맨 위 금색 구간)</b>일 때 손을 떼고, 그 물고기를 걸면 <b>콤보 +1</b>이에요. 게이지가 금색으로 빛날 때가 타이밍!',
+  '👑 콤보가 쌓일수록 <b>대물 찬스</b>가 커져요: <b>3연속 8% · 5연속 16% · 7연속 24% · 10연속 이상 34%</b>',
+  '🐟 대물 찬스가 터지면 그 물고기의 <b>가장 큰 크기 쪽 상위 20%</b> 크기로 잡혀요. 잡은 화면에 <b>👑 대물 찬스!</b>가 표시돼요.',
+  '🔄 90% 미만으로 던지면 콤보가 <b>처음부터</b> 다시 시작해요. 입질을 놓치면 콤보가 오르지 않고, 3분 넘게 던지지 않아도 처음부터예요.',
+  '⚡ 게이지가 차오르는 속도는 던질 때마다 조금씩 달라져요. 지금 콤보와 대물 찬스는 게이지 옆에 <b>🎯 ×콤보 · 대물 %</b>로 보여요.']},
  {d:'11월 15일',t:'📱 홈 화면에 앱처럼 추가하는 법',n:true,i:[
   '홈 화면에 아이콘을 만들어 두면 다음부터 한 번에 들어올 수 있어요!',
   '🤖 <b>안드로이드 · 크롬</b>: 오른쪽 위 <b>⋮</b> → <b>홈 화면에 추가</b> → <b>추가</b>',
@@ -4477,7 +4483,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-15e';
+const BUILD='2026-11-15f';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
