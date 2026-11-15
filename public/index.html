@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-15m">
+<meta name="amollang-build" content="2026-11-15n">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -4594,7 +4594,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-15m';
+const BUILD='2026-11-15n';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -5979,14 +5979,14 @@ function hook(){fish=pickFish7(fishFar(),habitat)||pickRare(fishFar(),habitat)||
 function startRetrieve(from){retrieveFrom.copy(from);rT0=t;setF('retrieve');}
 function fishPos(out){fwdOf(P.yaw,_f);const ex=P.pos.x+_f.x*1.6,ez=P.pos.z+_f.z*1.6;const surge=t<surgeUntil;const wob=(Math.sin(t*1.6)*0.9*fish.s+Math.sin(t*0.7)*0.6+(surge?Math.sin(t*13)*0.4:0))*(0.3+d)*(castDist/14);
  return out.set(lerp(ex,castTgt.x,d)+(-_f.z)*wob,0,lerp(ez,castTgt.z,d)+_f.x*wob);}
-let overT=0;
+let overT=0;const FIGHT_TEN=1.1,FIGHT_REEL=0.95;
 function updateFight(dt){
  const D=fish.over?fish.D:Math.max(0.04,fish.D*tireK(t-fish.t0));
  if(fish.over){tension=Math.min(1,tension+dt*0.85);d=Math.min(1,d+dt*0.04);surgeUntil=t+0.2;rippleAcc+=dt;if(rippleAcc>0.25){rippleAcc=0;fishPos(_a);ripple(_a.x,_a.z,1.3);splash(_a.x,_a.z,0.6);}
   if(t-fish.t0>1.7){const sp=fish.sp,st=starOf(sp);const nm=book[sp.id]?sp.name:`정체 모를 ★${st} 물고기`;sfx.snap();toast(`앗! ${nm}${josa(nm,'이','가')} 줄을 끊고 달아났어요… ★${st-1} 이상 낚싯대가 필요해요 (지금 ★${effStar()})`,4200);holding=false;fish=null;myLine.visible=false;myFloat.visible=false;setF('idle');}return;}
  if(t>nextSurge&&D>0.18){surgeUntil=t+0.35+0.5*D;nextSurge=surgeUntil+rand(1.6,3.4)/(0.5+D);fishPos(_a);splash(_a.x,_a.z,1.1);sfx.splash(0.18);}
  const surge=t<surgeUntil;
- if(holding){tension+=dt*(0.04+0.42*D+(surge?0.35+0.6*D:0))*reelTen();d-=dt*(0.34-0.18*D)*(surge?0.3:1)*(14/Math.max(castDist,6))**0.4*reelSpd();tension=Math.max(tension,0.15+0.2*D);tickAcc+=dt;if(tickAcc>0.055){tickAcc=0;sfx.tick();}}
+ if(holding){tension+=dt*(0.04+(0.42*D+(surge?0.35+0.6*D:0))*FIGHT_TEN)*reelTen();d-=dt*(0.34-0.18*D)*(surge?0.3:1)*(14/Math.max(castDist,6))**0.4*reelSpd()*FIGHT_REEL;tension=Math.max(tension,0.15+0.2*D);tickAcc+=dt;if(tickAcc>0.055){tickAcc=0;sfx.tick();}}
  else{tension-=dt*(surge?0.3:0.6);d+=dt*(0.01+0.05*D)*(surge?2:1);}
  fightPresAcc+=dt;if(fightPresAcc>0.25){fightPresAcc=0;markPresence();}
  if(surge)tension=Math.max(tension,0.22);tension=Math.max(0,tension);d=Math.min(d,1);
