@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-15a">
+<meta name="amollang-build" content="2026-11-15e">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -462,6 +462,10 @@ button,input,textarea,select{font-family:inherit}
 .baitc .bt{flex:1;min-width:180px;display:flex;flex-direction:column;gap:2px}.baitc .bt b{font-size:15px}.baitc .bt small{font-size:12px;color:#7a6f5e;line-height:1.45}.baitc .bt small.bm{color:#4a3a26}.baitc .bt em{color:#c0392b;font-style:normal}
 .baitc .bb{display:flex;gap:6px;flex-wrap:wrap;width:100%}.baitc .bb button{flex:1;width:auto;min-width:0;margin:0;padding:8px 6px}.baitc .bb button small{display:block;font-size:11px;opacity:.9}
 #hint:empty{display:none!important}
+.cbar::after{content:'';position:absolute;left:0;right:0;top:0;height:10%;background:rgba(255,215,64,.3);border-bottom:2px solid #ffd54a;pointer-events:none}
+.charge.ok .cbar{box-shadow:0 0 12px 3px rgba(255,213,74,.95);border-color:#ffe27a}
+#comboTxt{font-weight:900;font-size:12px;color:#ffe27a;text-shadow:0 1px 3px rgba(0,0,0,.55);white-space:nowrap}
+#comboTxt:empty{display:none}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/utils/BufferGeometryUtils.js":"./vendor/BufferGeometryUtils.js"}}</script>
 </head>
@@ -494,7 +498,7 @@ button,input,textarea,select{font-family:inherit}
 <button id="actBtn" class="actbtn hidden"></button>
 <div class="petbox hidden" id="petBox"><div class="pn" id="petName"></div><div class="pb"><button id="petBtn"><b>🤚</b>쓰다듬기</button><button id="hugBtn" class="hug"><b>🤗</b>껴안기</button></div><button id="folBtn" class="fol hidden"></button></div>
 <div id="joy" class="joy hidden"><div id="knob" class="knob"></div></div>
-<div id="charge" class="charge hidden"><div class="cbar"><div id="chargeFill"></div></div><div id="chargeTxt"></div></div>
+<div id="charge" class="charge hidden"><div class="cbar"><div id="chargeFill"></div></div><div id="chargeTxt"></div><div id="comboTxt"></div></div>
 <div id="tension" class="tension hidden"><div id="tHard" class="hidden"></div><div class="trow"><span>줄 장력</span><span id="tDist"></span></div><div class="tbar"><div class="tdanger"></div><div id="tFill"></div></div><div id="tMsg"></div><div id="tTire" class="hidden"></div></div>
 <div id="bang" class="bang hidden">!</div>
 <div class="toast" id="toast"></div>
@@ -608,6 +612,7 @@ button,input,textarea,select{font-family:inherit}
     <ul class="tips">
       <li>바다·강·저수지마다 사는 생물이 달라요. 바다 44종(물고기·게·새우·문어·상어·열대어), 강·저수지 21종으로 모두 65종이에요.</li>
       <li>섬의 하루는 20분이에요. 낮 10분, 밤 10분이 번갈아 와요.</li>
+      <li>🎯 게이지 <b>90% 이상</b>(금색 구간)에서 손을 떼고 물고기를 걸면 <b>연속 정확 던지기</b> 콤보가 쌓여요. <b>3·5·7·10연속</b>이면 최상위 크기(상위 20%) 대물이 나올 기회가 생겨요 (대물 찬스 8% · 16% · 24% · 34%, 10연속부터는 34% 그대로). 90% 미만으로 던지면 콤보가 처음부터 시작돼요. 입질 전에 회수하거나 챔질을 놓치면 콤보는 그대로예요. 게이지 속도는 던질 때마다 조금씩 달라져요.</li>
       <li>게·새우·주꾸미는 발밑 가까이, 상어·참치·개복치는 끝까지 멀리 던져야 잘 나와요.</li>
       <li>시간대마다 나오는 물고기도 달라요. 볼락·메기는 밤, 감성돔·잉어는 새벽과 해질녘이에요.</li>
       <li>금붕어는 저수지에서만, 아주 가끔 나와요.</li>
@@ -789,7 +794,7 @@ const SPECIES=[
  {id:"anchovy",hab:"sea",grp:"sea",name:"멸치",w:18,time:['any'],min:6,max:14,str:0.03,r:1,minP:0,shape:"fish",h:0.2,c1:"#5f7f95",c2:"#eef4f7",pat:"line",eye:0.22,flavor:"작아도 바다의 주인공. 떼 지어 반짝반짝 몰려다녀요.",hint:"바다, 가까운 물가에 많아요"},
  {id:"bekasquid",hab:"sea",grp:"critter",name:"꼴뚜기",w:10,time:['night','dusk'],min:6,max:15,str:0.06,r:1,minP:0,shape:"squid",h:1,c1:"#e8b9a8",c2:"#fff1ea",pat:"dots",eye:0.1,flavor:"“어물전 망신은 꼴뚜기가 시킨다”지만 알고 보면 귀여운 꼬마 오징어.",hint:"해질녘·밤 바다, 가까운 물가에 많아요"},
  {id:"hermitcrab",hab:"sea",grp:"critter",name:"소라게",w:9,time:['any'],min:3,max:8,str:0.03,r:1,minP:0,shape:"crab",hermit:true,h:1,c1:"#c98a5a",c2:"#f8e2c4",pat:"none",eye:0.1,flavor:"빈 소라 껍데기를 집 삼아 이고 다니는 이사 전문가.",near:true,hint:"바다, 발밑"},
- {id:"seacucumber",hab:"sea",grp:"critter",name:"해삼",w:7,time:['any'],min:10,max:30,str:0.04,r:1,minP:0,shape:"eel",h:0.2,c1:"#4a3a32",c2:"#8a6e5a",pat:"spots",eye:0.1,flavor:"느릿느릿 바닥을 기어 다니는 바다의 청소부. 오돌토돌한 돌기가 매력.",near:true,hint:"바다, 발밑"},
+ {id:"seacucumber",hab:"sea",grp:"critter",name:"해삼",w:7,time:['any'],min:10,max:30,str:0.04,r:1,minP:0,shape:"cucumber",h:0.2,c1:"#4a3a32",c2:"#8a6e5a",pat:"spots",eye:0.1,flavor:"느릿느릿 바닥을 기어 다니는 바다의 청소부. 오돌토돌한 돌기가 매력.",near:true,hint:"바다, 발밑"},
  {id:"sandlance",hab:"sea",grp:"sea",name:"까나리",w:14,time:['day','dawn'],min:8,max:18,str:0.05,r:1,minP:0,shape:"fish",h:0.13,c1:"#6f8fa0",c2:"#f1f5f7",pat:"line",eye:0.2,flavor:"모래 속에 쏙 숨었다가 튀어나오는 가늘고 긴 은빛 물고기.",hint:"새벽·낮 바다, 가까운 물가에 많아요"},
  {id:"shorecrab",hab:"sea",grp:"critter",name:"칠게",w:10,time:['any'],min:3,max:6,str:0.03,r:1,minP:0,shape:"crab",h:1,c1:"#7a6a4a",c2:"#c8b48a",pat:"none",eye:0.1,flavor:"갯벌 구멍에서 눈자루를 쫑긋 세우고 두리번두리번.",near:true,hint:"바다, 발밑"},
  {id:"bitterling",hab:"fresh",grp:"fresh",name:"납자루",w:14,time:['day','dawn'],min:4,max:9,str:0.05,r:1,minP:0,shape:"fish",h:0.38,c1:"#7a8a9a",c2:"#f0d0d8",pat:"none",eye:0.2,flavor:"조개 속에 알을 낳는 신기한 꼬마. 봄이면 혼인색으로 반짝여요.",hint:"새벽·낮 강·저수지"},
@@ -1136,7 +1141,7 @@ const HAB_KO={sea:'🌊 바다',river:'🏞️ 강',pond:'🪷 저수지'};
 function showCatch(f,rec){if(acSkip)acSkip=false;else if(autoCatch(f,rec))return;
  $('cName').textContent=f.sp.name;$('cSize').textContent=fmtSize(f.size);
  $('cStars').textContent=starStr(starOf(f.sp));$('cPrice').textContent=fishBonus(f)===3?`💰 상점 가격 ${fmtM(priceOf(f.sp.id,f.size)*3)}몰랑 · 🔥 한 단계 위 도전 성공! 몰랑 3배`:`💰 상점 가격 ${fmtM(priceOf(f.sp.id,f.size))}몰랑`;
- $('cFlavor').textContent=f.sp.flavor;const ph=PHASES[phaseOf(hourNow())];$('cMeta').textContent=`${ph.em} ${ph.ko} · ${HAB_KO[habitat]} · ${castMeters}m`;
+ $('cFlavor').textContent=f.sp.flavor;const ph=PHASES[phaseOf(hourNow())];$('cMeta').textContent=`${ph.em} ${ph.ko} · ${HAB_KO[habitat]} · ${castMeters}m`+(f.bigC?` · 👑 대물 찬스! (🎯 ${COMBO.n}연속)`:'');
  const b=$('cBadge');if(rec.isNew){b.textContent='도감 새로 등록!';b.hidden=false;}else if(rec.isBest){b.textContent='최고 기록!';b.hidden=false;}else b.hidden=true;
  if(f.sp.rare){b.textContent='✨ 희귀종 발견!'+(rec.isNew?' · 도감 새로 등록':rec.isBest?' · 최고 기록':'');b.hidden=false;}
  const c=$('cFish'),cc=c.getContext('2d');cc.clearRect(0,0,c.width,c.height);const gr=cc.createLinearGradient(0,0,0,c.height);gr.addColorStop(0,'#e3ecef');gr.addColorStop(1,'#c7d8dd');cc.fillStyle=gr;cc.fillRect(0,0,c.width,c.height);
@@ -1157,7 +1162,7 @@ function openBook(){renderLegCard();const root=$('grid');root.innerHTML='';let f
 
 
 /* ---------- creature drawings (new shapes) ---------- */
-const HALF={seal:0.36,dolphin:0.27,orca:0.32,seaotter:0.32,otter:0.24,flat:0.26,star:0.47,shark:0.31,hammer:0.31,eel:0.16,octo:0.46,squid:0.22,jelly:0.5,seahorse:0.5,crab:0.38,shrimp:0.36,lobster:0.34,urchin:0.45,ray:0.42,puffer:0.4,box:0.24,disc:0.42,sunfish:0.6,turtle:0.3,fancy:0.42,lion:0.5};
+const HALF={cucumber:0.22,seal:0.36,dolphin:0.27,orca:0.32,seaotter:0.32,otter:0.24,flat:0.26,star:0.47,shark:0.31,hammer:0.31,eel:0.16,octo:0.46,squid:0.22,jelly:0.5,seahorse:0.5,crab:0.38,shrimp:0.36,lobster:0.34,urchin:0.45,ray:0.42,puffer:0.4,box:0.24,disc:0.42,sunfish:0.6,turtle:0.3,fancy:0.42,lion:0.5};
 function fishL(sp,maxL,halfH){if(sp.shape==='star')return Math.min(maxL*0.5,halfH*2.1);const f=HALF[sp.shape]??sp.h*0.95;return Math.min(maxL,halfH/f);}
 function fmtSize(s){s=+s;return s>=100?(s/100).toFixed(2)+'m':s.toFixed(1)+'cm';}
 function eyeDot(c,x,y,r,big){c.fillStyle='#fff';c.beginPath();c.arc(x,y,r,0,7);c.fill();c.fillStyle='#16181f';c.beginPath();c.arc(x,y,r*(big?0.62:0.7),0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(x-r*0.25,y-r*0.28,r*0.24,0,7);c.fill();}
@@ -1390,7 +1395,48 @@ const TANK_KEY='monggeul-tank',TANK_MAX=50;let tank=[];
 try{const a=JSON.parse(localStorage.getItem(TANK_KEY)||'[]');if(Array.isArray(a))tank=a.filter(o=>o&&SPECIES.some(s=>s.id===o.id)&&Number.isFinite(+o.s)).slice(0,1000).map((o,i)=>(+o.t?o:Object.assign({},o,{t:1000+i})));}catch(e){}
 function saveTank(){try{localStorage.setItem(TANK_KEY,JSON.stringify(tank));}catch(e){}markSave();markPresence();}
 let tankOpen=false,tankCr=[],tankRAF=0,tankSel=null,tankT=0,tankLast=0;const tankBub=[];
-const T_BOTTOM=new Set(['crab','lobster','star','urchin']),T_FLOAT=new Set(['jelly','seahorse']);
+
+/* v86: 해삼 — 옆에서 본 통통한 애벌레형 몸. 머리(입)는 왼쪽 */
+CREATURE.cucumber=(c,sp,L)=>{const N=28,X0=-L*0.45,X1=L*0.45;
+ const arch=u=>-L*0.05*(1-u*u)+L*0.012*u;                       // 등이 살짝 굽은 몸
+ const hh=u=>L*0.135*Math.pow(Math.max(0,1-Math.pow(Math.abs(u),3)),0.42)*(0.88+0.12*(u+1)/2); // 끝이 둥근 원통
+ const xs=u=>X0+(X1-X0)*(u+1)/2;
+ const top=[],bot=[];for(let i=0;i<=N;i++){const u=-1+2*i/N;top.push([xs(u),arch(u)-hh(u)]);bot.push([xs(u),arch(u)+hh(u)*0.78]);}
+ const dk=mixHex(sp.c1,'#000000',0.35),lt=mixHex(sp.c2,'#ffffff',0.25);
+ // 배 쪽 관족(작은 발)
+ c.fillStyle=mixHex(sp.c2,'#e8d8c0',0.35);
+ for(let i=3;i<=N-3;i++){const u=-1+2*i/N;const x=xs(u),y=arch(u)+hh(u)*0.78;c.beginPath();c.ellipse(x,y+L*0.012,L*0.009,L*0.016,0,0,7);c.fill();}
+ // 몸통
+ const b=new Path2D();b.moveTo(top[0][0],top[0][1]);for(let i=1;i<=N;i++)b.lineTo(top[i][0],top[i][1]);
+ b.quadraticCurveTo(X1+L*0.03,arch(1),bot[N][0],bot[N][1]);for(let i=N-1;i>=0;i--)b.lineTo(bot[i][0],bot[i][1]);
+ b.quadraticCurveTo(X0-L*0.035,arch(-1),top[0][0],top[0][1]);b.closePath();
+ const g=c.createLinearGradient(0,-L*0.16,0,L*0.1);g.addColorStop(0,dk);g.addColorStop(0.55,sp.c1);g.addColorStop(1,sp.c2);c.fillStyle=g;c.fill(b);
+ c.save();c.clip(b);
+ // 마디 주름 (애벌레 느낌)
+ c.strokeStyle='rgba(20,10,5,.28)';c.lineCap='round';LW(c,L*0.006);
+ for(let k=1;k<9;k++){const u=-1+2*k/9;const x=xs(u),a=arch(u),r=hh(u);c.beginPath();c.moveTo(x-L*0.006,a-r);c.quadraticCurveTo(x+L*0.018,a,x-L*0.004,a+r*0.78);c.stroke();}
+ // 옆구리 오돌토돌 돌기
+ for(let k=0;k<22;k++){const u=-0.86+1.72*hash(k*3+1);const v=-0.55+0.9*hash(k*7+2);const x=xs(u),y=arch(u)+hh(u)*v;const r=L*(0.009+0.007*hash(k*11));
+  c.fillStyle=lt;c.globalAlpha=0.55;c.beginPath();c.arc(x,y,r,0,7);c.fill();c.globalAlpha=0.45;c.fillStyle=dk;c.beginPath();c.arc(x+r*0.35,y+r*0.35,r*0.6,0,7);c.fill();}
+ c.globalAlpha=1;
+ // 등 하이라이트
+ c.strokeStyle='rgba(255,240,220,.18)';LW(c,L*0.014);c.beginPath();for(let i=4;i<=N-4;i++){const u=-1+2*i/N;const x=xs(u),y=arch(u)-hh(u)*0.62;i===4?c.moveTo(x,y):c.lineTo(x,y);}c.stroke();
+ c.restore();
+ // 등의 원뿔형 돌기 — 끝이 뭉툭한 혹, 두 줄 엇갈림
+ const cone=(x,y,ux,uy,ln,w,col)=>{const px=-uy,py=ux;c.fillStyle=col;c.beginPath();c.moveTo(x-px*w,y-py*w);c.quadraticCurveTo(x+ux*ln*0.7-px*w*0.5,y+uy*ln*0.7-py*w*0.5,x+ux*ln,y+uy*ln);c.quadraticCurveTo(x+ux*ln*0.7+px*w*0.5,y+uy*ln*0.7+py*w*0.5,x+px*w,y+py*w);c.closePath();c.fill();
+  c.fillStyle=lt;c.globalAlpha=0.7;c.beginPath();c.arc(x+ux*ln*0.92,y+uy*ln*0.92,w*0.32,0,7);c.fill();c.globalAlpha=1;};
+ for(let k=0;k<12;k++){const u=-0.84+1.68*k/11+(hash(k)-0.5)*0.05;const x=xs(u),y=arch(u)-hh(u)*0.93;const ang=Math.atan2(-1,u*0.9);const ln=L*(0.022+0.012*hash(k+5));cone(x,y,Math.cos(ang),Math.sin(ang),ln,L*0.017,mixHex(sp.c1,'#000000',0.12));}
+ for(let k=0;k<11;k++){const u=-0.76+1.52*(k+0.5)/11;const x=xs(u),y=arch(u)-hh(u)*0.5;const ln=L*(0.016+0.008*hash(k+9));cone(x,y,0.15,-1,ln,L*0.014,sp.c1);}
+ // 몸 테두리
+ c.strokeStyle='rgba(20,10,5,.45)';LW(c,L*0.006);c.stroke(b);
+ // 입 쪽 촉수(작은 꽃술)
+ const mx=X0-L*0.012,my=arch(-1)-L*0.005;c.strokeStyle=mixHex(sp.c2,'#f0e0c0',0.45);c.lineCap='round';
+ for(let i=0;i<7;i++){const a=Math.PI*(0.62+i*0.12);const ex=mx+Math.cos(a)*L*0.042,ey=my+Math.sin(a)*L*0.04-L*0.006;LW(c,L*0.008);c.beginPath();c.moveTo(mx+L*0.01,my);c.quadraticCurveTo((mx+ex)/2,(my+ey)/2-L*0.012,ex,ey);c.stroke();
+  LW(c,L*0.005);c.beginPath();c.moveTo(ex,ey);c.lineTo(ex-L*0.012,ey-L*0.012);c.moveTo(ex,ey);c.lineTo(ex-L*0.014,ey+L*0.008);c.stroke();}
+ // 꼬리 끝 항문
+ c.fillStyle='rgba(15,8,5,.6)';c.beginPath();c.arc(X1+L*0.006,arch(1)-L*0.004,L*0.008,0,7);c.fill();};
+
+const T_BOTTOM=new Set(['crab','lobster','star','urchin','cucumber']),T_FLOAT=new Set(['jelly','seahorse']);
 function tankSprite(sp,size,k=1){const big=sp.shape==='shark'||sp.shape==='hammer'||sp.shape==='sunfish'||sp.shape==='ray';const PL=clamp(17.5*Math.pow(Math.max(size,1.5),0.46),21,big?320:235)*k;
  const half=PL*(HALF[sp.shape]??sp.h*0.95)+6;const w=Math.ceil(PL*1.22+12),h=Math.ceil(half*2+8);const dpr=Math.min(2,devicePixelRatio||1);
  const cv=document.createElement('canvas');cv.width=Math.ceil(w*dpr);cv.height=Math.ceil(h*dpr);const cx=cv.getContext('2d');cx.scale(dpr,dpr);cx.__noAura=1;drawFishBase(cx,sp,w/2,h/2,PL,false);return{cv,w,h};}
@@ -1666,7 +1712,7 @@ float band=smoothstep(0.09,0.0,abs(depth-0.22-wob))*0.85;
 float edge=smoothstep(0.16,0.0,depth);
 float foam=clamp(band+edge*0.9,0.,1.)*uFoam*(0.75+0.25*sin(q.x*3.1+q.y*2.3+uTime*3.));
 col=mix(col,vec3(1.,1.,0.98)*mix(1.,0.55,1.-uSunVis*0.5),foam*0.8);
-vec3 R=reflect(-V,N);float sp=max(dot(R,uSunDir),0.);col+=uSunCol*(pow(sp,200.)*1.8+pow(sp,26.)*0.14)*uSunVis;
+vec3 R=reflect(-V,N);float sp=max(dot(R,uSunDir),0.);float gK=mix(1.,0.6,smoothstep(40.,160.,dist));col+=min(uSunCol*(pow(sp,240.)*0.62*gK+pow(sp,28.)*0.075)*uSunVis,vec3(0.5));
 col=mix(col,uFog,smoothstep(uFogNear,uFogFar,dist));gl_FragColor=vec4(col,1.);}`,
  });
  const m=new THREE.Mesh(new THREE.PlaneGeometry(760,760,190,190).rotateX(-Math.PI/2),waterMat);scene.add(m);
@@ -2298,6 +2344,18 @@ function updSeagulls(dt){const px=P.pos.x,pz=P.pos.z;
   else{const F=S.fl,k=Math.min(1,(t-F.t0)/F.dur);const e=smooth(0,1,k);S.x=lerp(F.x0,F.x1,e);S.z=lerp(F.z0,F.z1,e);const y=lerp(F.y0,F.y1,e)+Math.sin(k*Math.PI)*Math.min(9,2+F.d*0.25);
    gullPose(S,k<0.25||k>0.8?'flap':'glide',t*10);S.g.position.set(S.x,y,S.z);S.g.rotation.set(-0.1,S.yaw,0);
    if(k>=1){S.si=F.ni;S.st='stand';S.tNext=t+3+Math.random()*5;}}}}
+
+/* ---------- v85: 🎯 연속 정확 던지기 콤보 — 게이지 90%↑로 던져 물고기를 걸면 +1 · 대물 찬스(최상위 20% 크기) ---------- */
+const COMBO={n:0,last:-1e9,acc:false,best:0};let CHG_UP=1.1;
+const COMBO_T=[[10,0.34,'👑 대물 모드'],[7,0.24,'🔥 달인'],[5,0.16,'🎯🎯 명사수'],[3,0.08,'🎯 정확']];
+function comboTier(n){for(const x of COMBO_T)if(n>=x[0])return x;return null;}
+function comboChance(n){const x=comboTier(n);return x?x[1]:0;}
+function comboJudge(p){if(COMBO.n&&t-COMBO.last>180)COMBO.n=0;COMBO.last=t;COMBO.acc=p>=0.9;
+ if(!COMBO.acc&&COMBO.n>0){if(COMBO.n>=3)toast(`🎯 콤보가 끊겼어요 (${COMBO.n}연속) · 게이지 90% 이상(금색)에서 손을 떼요`,2800);COMBO.n=0;}}
+function comboHook(f){if(!COMBO.acc||!f)return;COMBO.acc=false;const b4=comboTier(COMBO.n);COMBO.n++;COMBO.best=Math.max(COMBO.best,COMBO.n);const tr=comboTier(COMBO.n);
+ if(tr&&tr!==b4)toast(`${tr[2]}! ${COMBO.n}연속 정확 던지기 · 대물 찬스 ${Math.round(tr[1]*100)}%`,2800);
+ const q=comboChance(COMBO.n);if(q&&Math.random()<q){const sp=f.sp;const fr=0.8+0.2*Math.random();f.frac=fr;f.size=Math.round((sp.min+(sp.max-sp.min)*fr)*10)/10;f.s=clamp(sp.str*(0.7+0.6*fr),0,1);f.bigC=true;}}
+function comboShow(p){$('charge').classList.toggle('ok',p>=0.9);const n=COMBO.n,q=comboChance(n);$('comboTxt').textContent=n?`🎯 ×${n}${q?' · 대물 '+Math.round(q*100)+'%':''}`:'';}
 
 function buildWorld(){
  buildTerrain();
@@ -3615,8 +3673,16 @@ const HARD_D=0.16;
 function starRangeTxt(){const R=GS.rod;if(R>=7)return`★7 물고기까지 모두`;const hi=Math.min(7,effStar()+1),lo=R+1;return`★${R} 물고기까지 편하게 · ★${lo===hi?lo:lo+'~★'+hi}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),R=GS.rod;return`🔥 ★${st} 물고기가 걸렸어요! 내 낚싯대(★${R})보다 ${st-R>1?'두':'한'} 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.rod>1?'두':'한'} 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-15d';
+const NEWS_VER='2026-11-15h';
 const NEWS=[
+ {d:'11월 15일',t:'📱 홈 화면에 앱처럼 추가하는 법',n:true,i:[
+  '홈 화면에 아이콘을 만들어 두면 다음부터 한 번에 들어올 수 있어요!',
+  '🤖 <b>안드로이드 · 크롬</b>: 오른쪽 위 <b>⋮</b> → <b>홈 화면에 추가</b> → <b>추가</b>',
+  '🤖 <b>안드로이드 · 삼성 인터넷</b>: 아래쪽 <b>≡</b> → <b>현재 페이지 추가</b> → <b>홈 화면</b> → <b>추가</b>',
+  '🟢 <b>네이버 앱 (안드로이드)</b>: 아래쪽 <b>메뉴</b> → <b>홈 화면에 추가</b> → <b>추가</b>',
+  '🍎 <b>아이폰 · 크롬</b>: 주소창 옆 <b>공유 버튼(네모에 ↑)</b> → <b>홈 화면에 추가</b> → <b>추가</b> (목록에 없으면 iOS를 최신으로 업데이트해 주세요)',
+  '💬 <b>카카오톡에서 링크를 눌렀다면</b>: 카카오톡 안에서는 홈 화면 추가가 안 돼요. 오른쪽 위 <b>⋮</b>(또는 <b>⋯</b>) → <b>다른 브라우저로 열기</b>로 연 다음 위 방법대로 추가해 주세요.',
+  '⚠️ 메뉴 이름은 앱 버전에 따라 조금 다를 수 있어요. 잘 안 되면 📋 게시판에 남겨 주세요!']},
  {d:'11월 15일',t:'🪱 상점에 미끼가 생겼어요 · 🔮 프리즘 구슬 · 🍡 용궁 떡집 경단',n:true,i:[
   '🔮 <b>프리즘 구슬</b>: 햇빛을 일곱 빛깔로 쪼개는 유리구슬 · ★7 무지개 전설이 걸릴 확률 <b>2배</b> · 개당 500몰랑 · ★6 이상 낚싯대(요리 ★+1 포함)',
   '🍡 <b>용궁 떡집 경단</b>: 갓 빚은 쫀득한 삼색 경단 · 희귀종이 걸릴 확률 <b>2배</b> · 개당 300몰랑 · ★5 이상 낚싯대',
@@ -4411,7 +4477,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-15a';
+const BUILD='2026-11-15e';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -5780,7 +5846,7 @@ function refreshAct(){const b=$('actBtn');let want='';if(entered&&mode==='fish')
  const key=isTouch||!want?'':(want==='fish'?'F':'R');const sig=want+'|'+key;
  if(b.dataset.m===sig)return;b.dataset.m=sig;if(!want){b.classList.add('hidden');return;}b.classList.remove('hidden');const kb=key?` <kbd>${key}</kbd>`:'';
  if(want==='fish'){b.className='actbtn';b.innerHTML=`<b>🎣</b><span>낚시하기${kb}</span>`;}else{b.className='actbtn stand';b.innerHTML=`<b>↩</b><span>일어나기${kb}</span>`;}}
-function chargePower(){const k=(t-chargeT0)/1.1;return 1-Math.abs((k%2)-1);}
+function chargePower(){const k=(t-chargeT0)/CHG_UP;return 1-Math.abs((k%2)-1);}
 function enterFish(){if(!canFish)return;mode='fish';fwdOf(P.yaw,_f);const q=[P.pos.x+_f.x*1.7,P.pos.z+_f.z*1.7];habitat=habitatAt(q[0],q[1]);
  minD=habitat==='sea'?6:3;maxD=habitat==='sea'?30:habitat==='pond'?24:12;P.char.rodPivot.visible=true;closeEmoPanel();setF('idle');refreshAct();
  toast(habitat==='sea'?'🌊 바다 낚시':habitat==='river'?'🏞️ 강 낚시':'🪷 저수지 낚시',1600);ctxKind='x';refreshCtx();}
@@ -5788,11 +5854,11 @@ function exitFish(){mode='walk';P.char.rodPivot.visible=false;myFloat.visible=fa
 function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=false;
  for(;dd>=1.5;dd-=0.4){const x=P.pos.x+_f.x*dd,z=P.pos.z+_f.z*dd;if(isWater(x,z)){ok=true;break;}}
  if(!ok){toast('여기선 던질 수 없어요. 물 쪽을 바라봐요');setF('idle');return;}
- castTgt.set(P.pos.x+_f.x*dd,0,P.pos.z+_f.z*dd);habitat=habitatAt(castTgt.x,castTgt.z);castDist=dd;castMeters=Math.round(dd);power=clamp((dd-minD)/(maxD-minD),0,1);
+ comboJudge(p);castTgt.set(P.pos.x+_f.x*dd,0,P.pos.z+_f.z*dd);habitat=habitatAt(castTgt.x,castTgt.z);castDist=dd;castMeters=Math.round(dd);power=clamp((dd-minD)/(maxD-minD),0,1);
  rodTipWorld(P.char,castFrom);castDur=0.5+0.45*p;castT0=t;rbCastStart();sfx.whoosh(p);setF('casting');}
 function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(habitat==='sea')toast(farZoneTxt(fishFar())+(BOAT.on&&BOAT.far?' · 🌊 선상 보너스 ★4↑ 2배':''),2000);biteAt=t+rand(3.2,9.5)*floatSlow();nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
 function startBite(){setF('bite');biteT0=t;sfx.bell();try{navigator.vibrate&&navigator.vibrate([60,40,60]);}catch(e){}ripple(castTgt.x,castTgt.z,1.3);}
-function hook(){fish=pickFish7(fishFar(),habitat)||pickRare(fishFar(),habitat)||pickFish(fishFar(),habitat);useBaits(fishFar(),habitat);fish.D=fightD(fish.sp,fish.frac);fish.ease=easeFor(fish.sp);if(fish.ease>0)fish.D=Math.max(0.04,fish.D*(1-fish.ease));fish.over=starOf(fish.sp)>effStar()+1;fish.hard=!fish.over&&starOf(fish.sp)>GS.rod;$('tHard').textContent=fish.hard?hardTag(fish.sp):'';$('tHard').classList.toggle('hidden',!fish.hard);fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);if(fish.hard){toast(hardTxt(fish.sp)+'. 줄이 빨개지면 잠깐 손을 떼요!',4200);sfx.splash(0.25);}else toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
+function hook(){fish=pickFish7(fishFar(),habitat)||pickRare(fishFar(),habitat)||pickFish(fishFar(),habitat);useBaits(fishFar(),habitat);comboHook(fish);fish.D=fightD(fish.sp,fish.frac);fish.ease=easeFor(fish.sp);if(fish.ease>0)fish.D=Math.max(0.04,fish.D*(1-fish.ease));fish.over=starOf(fish.sp)>effStar()+1;fish.hard=!fish.over&&starOf(fish.sp)>GS.rod;$('tHard').textContent=fish.hard?hardTag(fish.sp):'';$('tHard').classList.toggle('hidden',!fish.hard);fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);if(fish.hard){toast(hardTxt(fish.sp)+'. 줄이 빨개지면 잠깐 손을 떼요!',4200);sfx.splash(0.25);}else toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
 function startRetrieve(from){retrieveFrom.copy(from);rT0=t;setF('retrieve');}
 function fishPos(out){fwdOf(P.yaw,_f);const ex=P.pos.x+_f.x*1.6,ez=P.pos.z+_f.z*1.6;const surge=t<surgeUntil;const wob=(Math.sin(t*1.6)*0.9*fish.s+Math.sin(t*0.7)*0.6+(surge?Math.sin(t*13)*0.4:0))*(0.3+d)*(castDist/14);
  return out.set(lerp(ex,castTgt.x,d)+(-_f.z)*wob,0,lerp(ez,castTgt.z,d)+_f.x*wob);}
@@ -5819,7 +5885,7 @@ function landed(){setF('caught');holding=false;myLine.visible=false;myFloat.visi
 function press(){
  if(!entered||mode==='closet'||modalOpen())return;if(closeEmoPanel())return;initAudio();
  if(mode!=='fish')return;
- if(fstate==='idle'){setF('charging');chargeT0=t;}
+ if(fstate==='idle'){setF('charging');chargeT0=t;CHG_UP=0.85+Math.random()*0.5;}
  else if(fstate==='waiting'){const nib=nibbles.some(nb=>t>=nb.t&&t<nb.t+0.35);toast(nib?'앗, 너무 빨랐어요. 찌가 쑥 들어갈 때 탭!':'채비를 회수했어요');floatTip(myFloat,_a);startRetrieve(_a);}
  else if(fstate==='bite')hook();
  else if(fstate==='fight')holding=true;
@@ -5829,7 +5895,7 @@ function updateFishing(dt){
  if(mode!=='fish'){return;}
  const c=P.char;let bend=0;
  $('charge').classList.toggle('hidden',fstate!=='charging');
- if(fstate==='charging'){const p=chargePower();$('chargeFill').style.height=(p*100).toFixed(0)+'%';$('chargeTxt').textContent=Math.round(minD+p*(maxD-minD))+'m';bend=-0.25*p;}
+ if(fstate==='charging'){const p=chargePower();$('chargeFill').style.height=(p*100).toFixed(0)+'%';$('chargeTxt').textContent=Math.round(minD+p*(maxD-minD))+'m';comboShow(p);bend=-0.25*p;}
  rodTipWorld(c,_tip);
  if(fstate==='casting'){const k=clamp((t-castT0)/castDur,0,1);lure.lerpVectors(castFrom,castTgt,k);lure.y+=Math.sin(k*Math.PI)*(1.5+power*4.5);setLine(myLine,_tip,lure,0);if(k>=1)land();}
  else if(fstate==='waiting'||fstate==='bite'){let dip=0;for(const nb of nibbles){if(!nb.played&&t>=nb.t){nb.played=true;sfx.nibble();ripple(castTgt.x,castTgt.z,0.5);}if(t>=nb.t&&t<nb.t+0.22)dip=Math.sin((t-nb.t)/0.22*Math.PI)*0.06;}
