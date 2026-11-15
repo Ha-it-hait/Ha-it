@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-14y">
+<meta name="amollang-build" content="2026-11-15a">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -3427,7 +3427,7 @@ async function logout(){if(!acct)return;await doSave(false);try{await authCall('
 let v2HudAcc=0;
 function updV2(dt){updHappy(dt);updFoam(dt);updReels(dt);const dd=Math.hypot(P.pos.x-SHOP.x,P.pos.z-SHOP.z);updShop(dt,dd);rwTick(dt);opTick(dt);nmTick(dt);updSeat(dt);updBeach(dt);updBaitFx(dt);updPondDeco(dt);updBirds(dt);updSeagulls(dt);updFall(dt,skyMat?skyMat.uniforms.uSunVis.value:1);petTick(dt);attTick(dt);updCook(dt);poseRod(P.char,mode==='fish',dt);cookPose(P.char);
  for(const r of remote.values()){if(r.cookT){const k=animTable(r.cookT,r.ckSt,dt);if(r.char)r.char.ckP=k;}}
- v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();const bs=buffShort();$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}${reelHud()}${floatHud()}${baitHud()}`+(bs?` · ${bs}`:'');$('hudG').classList.toggle('buff',!!bs);
+ v2HudAcc+=dt;if(v2HudAcc>0.25){v2HudAcc=0;refreshCtx();const bl=buffLeft();const bs=buffShort();if(W<520){$('hudG').textContent=hudDay();$('hudG').classList.remove('buff');}else{$('hudG').textContent=`🪙 ${fmtM(GS.money)}몰랑 · 🎣 ★${GS.rod}${reelHud()}${floatHud()}${baitHud()}`+(bs?` · ${bs}`:'');$('hudG').classList.toggle('buff',!!bs);}
   if(GS._buffWas&&bl<=0)toast('🍳 요리 효과가 끝났어요',2400);GS._buffWas=bl>0;saveTick();}}
 
 /* ---------- 게시판 (업데이트 요청) ---------- */
@@ -4411,7 +4411,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-14y';
+const BUILD='2026-11-15a';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -5772,19 +5772,19 @@ let myFloat,myLine;
 function setF(s){fstate=s;markPresence();refreshHint();acStateHook(s);$('bang').classList.toggle('hidden',s!=='bite');}
 function refreshHint(){const h=$('hint');let txt='';
  if(!entered||mode==='closet')txt='';else if(mode==='fish')txt=HINTS[fstate]||'';else if(mode==='cook')txt='🍳 요리하는 중이에요… 잠깐만 기다려요';
- else if(nearAnimal)txt=isTouch?`🐾 ${nearAnimal.d.name}${josa(nearAnimal.d.name,'이랑','랑')} 놀아줘요`:`🐾 ${nearAnimal.d.name} · 🤚 쓰다듬기 · 🤗 껴안기 버튼을 눌러요`+(canFish?' · R 낚시':'');
- else if(canFish&&SEAT.on)txt=isTouch?'🪑 좌대예요! 🎣 버튼을 눌러 낚시해요':'🪑 좌대예요! F 키 또는 🎣 버튼으로 낚시 · R 일어나기';else if(canFish)txt=isTouch?'물가예요! 🎣 버튼을 눌러 낚시해요':'물가예요! R 키 또는 🎣 버튼으로 낚시';
+ else if(nearAnimal)txt=isTouch?`🐾 ${nearAnimal.d.name}${josa(nearAnimal.d.name,'이랑','랑')} 놀아줘요`:`🐾 ${nearAnimal.d.name} · 🤚 쓰다듬기 · 🤗 껴안기 버튼을 눌러요`+(canFish?' · F 낚시':'');
+ else if(canFish&&SEAT.on)txt=isTouch?'🪑 좌대예요! 🎣 버튼을 눌러 낚시해요':'🪑 좌대예요! F 키 또는 🎣 버튼으로 낚시 · R 좌대에서 일어나기';else if(canFish&&BOAT.on)txt=isTouch?'⛵ 배 위예요! 🎣 버튼을 눌러 낚시해요':'⛵ 배 위예요! F 키 또는 🎣 버튼으로 낚시'+(nearBoatDock()?' · R 배 내리기':'');else if(canFish)txt=isTouch?'물가예요! 🎣 버튼을 눌러 낚시해요':'물가예요! F 키 또는 🎣 버튼으로 낚시';
  else txt=isTouch?'':'물가로 가면 낚시할 수 있어요 · WASD 이동 · Q/E 시점 돌리기 · ❓ 낚시하는 법';
  if(h.textContent!==txt)h.textContent=txt;h.classList.toggle('urgent',mode==='fish'&&fstate==='bite');}
 function refreshAct(){const b=$('actBtn');let want='';if(entered&&mode==='fish')want='stand';else if(entered&&mode==='walk'&&canFish)want='fish';
- const key=isTouch||!want?'':(want==='fish'&&ctxKind?'F':'R');const sig=want+'|'+key;
+ const key=isTouch||!want?'':(want==='fish'?'F':'R');const sig=want+'|'+key;
  if(b.dataset.m===sig)return;b.dataset.m=sig;if(!want){b.classList.add('hidden');return;}b.classList.remove('hidden');const kb=key?` <kbd>${key}</kbd>`:'';
  if(want==='fish'){b.className='actbtn';b.innerHTML=`<b>🎣</b><span>낚시하기${kb}</span>`;}else{b.className='actbtn stand';b.innerHTML=`<b>↩</b><span>일어나기${kb}</span>`;}}
 function chargePower(){const k=(t-chargeT0)/1.1;return 1-Math.abs((k%2)-1);}
 function enterFish(){if(!canFish)return;mode='fish';fwdOf(P.yaw,_f);const q=[P.pos.x+_f.x*1.7,P.pos.z+_f.z*1.7];habitat=habitatAt(q[0],q[1]);
  minD=habitat==='sea'?6:3;maxD=habitat==='sea'?30:habitat==='pond'?24:12;P.char.rodPivot.visible=true;closeEmoPanel();setF('idle');refreshAct();
- toast(habitat==='sea'?'🌊 바다 낚시':habitat==='river'?'🏞️ 강 낚시':'🪷 저수지 낚시',1600);}
-function exitFish(){mode='walk';P.char.rodPivot.visible=false;myFloat.visible=false;myLine.visible=false;holding=false;fish=null;fstate='idle';$('charge').classList.add('hidden');$('tension').classList.add('hidden');$('bang').classList.add('hidden');camYaw=P.yaw+Math.PI;markPresence();refreshHint();refreshAct();acOnce=null;acOpen=false;acBanner();}
+ toast(habitat==='sea'?'🌊 바다 낚시':habitat==='river'?'🏞️ 강 낚시':'🪷 저수지 낚시',1600);ctxKind='x';refreshCtx();}
+function exitFish(){mode='walk';P.char.rodPivot.visible=false;myFloat.visible=false;myLine.visible=false;holding=false;fish=null;fstate='idle';$('charge').classList.add('hidden');$('tension').classList.add('hidden');$('bang').classList.add('hidden');camYaw=P.yaw+Math.PI;markPresence();refreshHint();refreshAct();ctxKind='x';refreshCtx();acOnce=null;acOpen=false;acBanner();}
 function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=false;
  for(;dd>=1.5;dd-=0.4){const x=P.pos.x+_f.x*dd,z=P.pos.z+_f.z*dd;if(isWater(x,z)){ok=true;break;}}
  if(!ok){toast('여기선 던질 수 없어요. 물 쪽을 바라봐요');setF('idle');return;}
@@ -5930,7 +5930,8 @@ let toastTimer=0;
 function toast(m,ms){const r=toast_(m,ms);layoutTopStack();return r;}
 function toast_(msg,ms=2600){const el=$('toast');el.textContent=msg;el.classList.remove('rwup','rwdn');el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),ms);}
 function updateHUD(){const ph=PHASES[phaseOf(hourNow())];const cl=cycleLeft();const tm=timeMode==='real'?(cl.isDay?`밤까지 ${cl.txt}${fullMoonNight()?' · 🌕 오늘 밤 보름달':''}`:`아침까지 ${cl.txt}${fullMoonNight()?' · 🌕 보름달 (✨희귀종 2배)':''}`):'미리보기';
- const who=roomState==='online'?(netMode==='ws'?`${wsIsland}번 섬 · ${peopleCount()}명`:`이 섬에 ${peopleCount()}명`):roomState==='connecting'?'연결 중…':'혼자 모드';$('hudS').textContent=W<520?`${ph.em} ${ph.ko}${timeMode==='real'?' '+cl.txt:''} · ${who}`:`${ph.em} ${ph.ko} · ${tm} · ${who}`;}
+ const who=roomState==='online'?(netMode==='ws'?`${wsIsland}번 섬 · ${peopleCount()}명`:`이 섬에 ${peopleCount()}명`):roomState==='connecting'?'연결 중…':'혼자 모드';$('hudS').textContent=W<520?who.replace(/번 섬 · /,'번 섬, '):`${ph.em} ${ph.ko} · ${tm} · ${who}`;if(W<520){$('hudG').textContent=hudDay();$('hudG').classList.remove('buff');}}
+function hudDay(){const ph=PHASES[phaseOf(hourNow())];const cl=cycleLeft();return`${ph.em} ${ph.ko}${timeMode==='real'?' '+cl.txt:''}`;}
 function modalOpen(){return tankOpen||!!profPeer||mapOpen||['shop','bag','cook','auth','boardM','newsM','hofM','attM'].some(id=>!$(id).classList.contains('hidden'))||!$('catch').classList.contains('hidden')||!$('book').classList.contains('hidden')||!$('help').classList.contains('hidden');}
 function sendEmote(e,remember=true){if(!EMOJI_SET.has(e))return;initAudio();sfx.pop();showBubble(P.label,e,true,2.8);P.hopT=t;ME.eid++;ME.e=e;markPresence();
  if(remember){recentEmoji=[e,...recentEmoji.filter(x=>x!==e)].slice(0,5);try{localStorage.setItem('monggeul-emoji',JSON.stringify(recentEmoji));}catch(_){}buildEmoteBar();}}
@@ -6012,10 +6013,10 @@ window.addEventListener('keydown',e=>{const tg=e.target;if(tg&&(tg.tagName==='IN
  if(e.code==='Escape'){if(closeChat())return;for(const id of['shop','bag','cook','map','prof','boardM','newsM','hofM'])if(!$(id).classList.contains('hidden')){({shop:closeShop,bag:closeBag,cook:closeCook,map:closeMap,prof:closeProfile,boardM:closeBoard,newsM:closeNews,hofM:closeHof})[id]();return;}}
  if(!entered||mode==='closet')return;
  if(e.code==='Enter'||e.code==='NumpadEnter'){e.preventDefault();openChat();setTimeout(()=>$('chatIn').focus(),30);return;}
- if(!modalOpen()){if(e.code==='KeyC'&&!e.repeat){e.preventDefault();openChat();setTimeout(()=>$('chatIn').focus(),30);return;}if(e.code==='KeyB'){openBag();return;}if(e.code==='KeyM'){openMap();return;}if(e.code==='KeyR'){if(e.repeat)return;if(ctxKind)doCtx();else if(mode==='fish')exitFish();else if(mode==='walk'&&canFish){initAudio();enterFish();}return;}}
+ if(!modalOpen()){if(e.code==='KeyC'&&!e.repeat){e.preventDefault();openChat();setTimeout(()=>$('chatIn').focus(),30);return;}if(e.code==='KeyB'){openBag();return;}if(e.code==='KeyM'){openMap();return;}if(e.code==='KeyR'){if(e.repeat)return;if(mode==='fish')exitFish();else if(ctxKind)doCtx();else if(false){initAudio();enterFish();}return;}}
  keys.add(e.code);
  if(e.code==='Space'){e.preventDefault();if(e.repeat)return;if(mode==='fish')press();else if(P.jy<=0){P.vy=4.6;initAudio();}}
- if(e.code==='KeyF'&&!e.repeat){if(mode==='fish')exitFish();else if(canFish){initAudio();enterFish();}}
+ if(e.code==='KeyF'&&!e.repeat){if(mode!=='fish'&&canFish){initAudio();enterFish();}}
  if(e.code==='Escape'&&mode==='fish')exitFish();});
 window.addEventListener('keyup',e=>{keys.delete(e.code);if(e.code==='Space'&&mode==='fish')release();});
 window.addEventListener('blur',()=>{keys.clear();release();});
