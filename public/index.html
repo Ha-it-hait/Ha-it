@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-16b">
+<meta name="amollang-build" content="2026-11-16d">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -3173,8 +3173,8 @@ function buildShop(){SHOP.yaw=Math.atan2(PLAZA.x-SHOP.x,PLAZA.z-SHOP.z);const gy
  [[-1,'#ff9fb8','#ffd3de','#ff6f91'],[1,'#7fd8c0','#c9f2e6','#2f9a86']].forEach(([s,skirt,sleeve,band],mi)=>{
   const mg=new THREE.Group();mg.position.set(s*1.5,0.74,0.1);mg.rotation.y=-s*0.15;mg.scale.setScalar(1.4);g.add(mg);
   const bb=[];const B_=(geom,col,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>bb.push(part(geom,col,x,y,z,rx,ry,rz,sx,sy,sz));
-  B_(cone,skirt,0,0.42,0,0,0,0,0.44,0.84,0.44);B_(cyl,band,0,0.06,0,0,0,0,0.42,0.06,0.42);B_(cyl,band,0,0.78,0,0,0,0,0.2,0.06,0.2);
-  B_(sph,'#fff6e8',0,0.93,0,0,0,0,0.27,0.22,0.22);B_(box,band,0.05,0.9,0.2,0,0,-0.5,0.04,0.2,0.02);B_(box,band,-0.03,0.88,0.2,0,0,0.4,0.04,0.16,0.02);
+  B_(new THREE.CylinderGeometry(0.17,0.45,0.84,16),skirt,0,0.44,0);B_(cyl,band,0,0.06,0,0,0,0,0.455,0.06,0.455);B_(cyl,band,0,0.84,0,0,0,0,0.19,0.06,0.19);
+  B_(sph,'#fff6e8',0,0.94,0,0,0,0,0.28,0.22,0.23);B_(box,band,0.05,0.9,0.2,0,0,-0.5,0.04,0.2,0.02);B_(box,band,-0.03,0.88,0.2,0,0,0.4,0.04,0.16,0.02);
   for(const k of[-1,1]){const sh=[k*0.24,0.98,0],hd=[k*0.13,0.82,0.3];limbTo(bb,sleeve,sh,hd,0.075);B_(cyl,band,hd[0]*1.1,hd[1]+0.01,hd[2]-0.05,1.2,0,0,0.08,0.05,0.08);B_(sph,'#ffe2c8',hd[0],hd[1],hd[2],0,0,0,0.055,0.055,0.055);}
   // 쟁반 + 물건
   B_(cyl,'#f2c14e',0,0.86,0.36,0,0,0,0.24,0.03,0.2);
@@ -4826,7 +4826,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-16b';
+const BUILD='2026-11-16d';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
