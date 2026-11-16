@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-16s">
+<meta name="amollang-build" content="2026-11-16t">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -717,7 +717,7 @@ html body .emopanel{left:var(--epl,50%);transform:var(--ept,translateX(-50%));bo
     </ul>
     <div class="btitle">🐾 동물 친구들</div>
     <ul class="tips">
-      <li>섬 곳곳에 토끼·강아지(말티즈·퍼그 등)·고양이·아기 코끼리·판다·레서판다·사슴·너구리·다람쥐가, 북쪽 산과 언덕에는 아기 여우·아기 산양·고슴도치·아기 반달가슴곰·알파카·카피바라가 살아요(모두 24마리). 모두에게 같은 자리에 보여요.</li>
+      <li>섬 곳곳에 토끼·강아지(말티즈·퍼그·슈나우저 등)·고양이·아기 코끼리·판다·레서판다·사슴·너구리·다람쥐가, 북쪽 산과 언덕에는 아기 여우·아기 산양·고슴도치·아기 반달가슴곰·알파카·카피바라가 살아요(모두 25마리). 모두에게 같은 자리에 보여요.</li>
       <li>🦆 저수지와 강에는 <b>흰 오리 가족 · 청둥오리 · 기러기 · 왜가리 · 백로</b>가 살아요. 오리는 헤엄치다 물구나무서서 먹이를 찾고, 왜가리·백로는 얕은 물가에서 물고기를 노려요. 가끔 하늘 위로 기러기 떼가 V자로 날아가요. 바다에는 <b>갈매기</b>가 날고, 물 위에 동동 떠 있거나 모래밭·부두 기둥에서 쉬어요. 가까이 가면 깜짝 놀라 날아올라요. (구경만 할 수 있어요)</li>
       <li>동물을 <b>직접 누르면</b> <em>🤚 쓰다듬기</em>, <em>🤗 껴안기</em> 버튼이 떠요. (몇 초 동안 아무것도 안 하면 버튼이 사라져요) 하트가 나오고, 같은 섬 친구들에게도 보여요.</li>
       <li>교감할 때마다 친밀도 💕+1. <b>친밀도 10 이상</b>이 되면 그 동물이 나를 졸졸 따라다녀요! 같은 동물을 더 아끼는 사람이 있으면 그 사람을 따라가고, 한 사람에게는 가장 친한 동물 1마리만 따라와요. 🎒 가방 → 🐾 동물에서 확인해요. 따라오는 동물은 <b>직접 눌러야</b> 쓰다듬기·껴안기 버튼이 떠요. 그때 <b>🏠 그만 따라오기</b>를 누르면 집으로 돌아가요.</li>
@@ -2848,7 +2848,7 @@ const A_CAPS={};function aCap(r,l){const k=r.toFixed(3)+'_'+l.toFixed(3);return 
 function ap(pb,g,hex,x,y,z,sx=1,sy=1,sz=1,rx=0,ry=0,rz=0){pb.push(part(g,hex,x,y,z,rx,ry,rz,sx,sy,sz));}
 function bake(pb,parent,shadow=true){if(!pb.length)return null;const m=new THREE.Mesh(mergeGeometries(pb),AMAT);m.castShadow=shadow;m.receiveShadow=true;parent.add(m);return m;}
 function grp(parent,x,y,z){const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);return g;}
-function eyes2(head,H,ring,ep){const out=[];const ex=ep?ep[0]:0.4,ey=ep?ep[1]:0.15,ez=ep?ep[2]:0.8,es=ep&&ep[3]||1;for(const s of[-1,1]){const g=grp(head,s*H*ex,H*ey,H*ez);g.scale.setScalar(es);g.rotation.y=s*0.35;const pb=[];if(ring)ap(pb,A_SPH,'#ffffff',0,0,-H*0.02,H*0.19,H*0.2,H*0.1);ap(pb,A_SPH,'#17171d',0,0,0,H*0.13,H*0.15,H*0.09);ap(pb,A_SPH,'#ffffff',-H*0.04,H*0.05,H*0.07,H*0.045,H*0.045,H*0.03);const m=bake(pb,g,false);m.userData.sy=1;out.push(m);}return out;}
+function eyes2(head,H,ring,ep,eo){const out=[];const ex=ep?ep[0]:0.4,ey=ep?ep[1]:0.15,ez=ep?ep[2]:0.8,es=ep&&ep[3]||1;for(const s of[-1,1]){const g=grp(head,s*H*ex,H*ey,H*ez);g.scale.setScalar(es);g.rotation.y=s*(eo&&eo.ry!=null?eo.ry:0.35);if(eo&&eo.rx)g.rotation.x=eo.rx;const pb=[];if(ring)ap(pb,A_SPH,'#ffffff',0,0,-H*0.02,H*0.19,H*0.2,H*0.1);if(eo){const k=eo.s||[0.13,0.15,0.09],h=eo.hi||0.045;if(eo.rim)ap(pb,A_SPH,eo.rim,0,0,-H*0.012,H*k[0]*1.16,H*k[1]*1.14,H*k[2]*0.8);ap(pb,A_SPH,eo.c||'#17171d',0,0,0,H*k[0],H*k[1],H*k[2]);ap(pb,A_SPH,'#ffffff',-H*k[0]*0.34,H*k[1]*0.38,H*k[2]*0.8,H*h,H*h,H*h*0.65);if(eo.hi2)ap(pb,A_SPH,'#ffffff',H*k[0]*0.32,-H*k[1]*0.3,H*k[2]*0.8,H*eo.hi2,H*eo.hi2,H*eo.hi2*0.6);}else{ap(pb,A_SPH,'#17171d',0,0,0,H*0.13,H*0.15,H*0.09);ap(pb,A_SPH,'#ffffff',-H*0.04,H*0.05,H*0.07,H*0.045,H*0.045,H*0.03);}const m=bake(pb,g,false);m.userData.sy=1;out.push(m);}return out;}
 function blush(pb,H){for(const s of[-1,1])ap(pb,A_SPH,'#ffb3c3',s*H*0.6,-H*0.15,H*0.72,H*0.13,H*0.085,H*0.04,0,s*0.6,0);}
 function aEars(pb,c){const H=c.H,col=c.earC||c.head||c.body,inn=c.earIn||'#ffc4cf',S=c.earS||1,Wd=c.earW||1;
  if(c.ear==='pointy')for(const s of[-1,1]){ap(pb,A_CONE,col,s*H*0.5,H*0.85,-H*0.05,H*0.27*Wd,H*0.55*S,H*0.15,0,0,-s*0.35);ap(pb,A_CONE,inn,s*H*0.5,H*0.82,H*0.02,H*0.15*Wd,H*0.36*S,H*0.07,0,0,-s*0.35);}
@@ -2858,6 +2858,7 @@ function aEars(pb,c){const H=c.H,col=c.earC||c.head||c.body,inn=c.earIn||'#ffc4c
  if(c.ear==='side')for(const s of[-1,1]){ap(pb,A_SPH,col,s*H*0.85,H*0.3,-H*0.1,H*0.45,H*0.16,H*0.1,0,0,s*0.3);ap(pb,A_SPH,inn,s*H*0.85,H*0.3,-H*0.04,H*0.3,H*0.09,H*0.05,0,0,s*0.3);}}
 function aTail(pb,c){const R=c.R,col=c.tailC||c.body;switch(c.tail){
  case'stub':ap(pb,A_SPH,col,0,0,0,R*0.3,R*0.3,R*0.3);break;
+ case'tuft':ap(pb,aCap(R*0.17,R*0.55),col,0,R*0.32,-R*0.22,1,1,1,-0.55,0,0);ap(pb,A_SPH,col,0,R*0.72,-R*0.52,R*0.34,R*0.36,R*0.34);for(let i=0;i<7;i++){const a=i/7*Math.PI*2;ap(pb,A_SPH,i%2?'#ffffff':'#f6f4ee',Math.cos(a)*R*0.24,R*0.78+Math.sin(a)*R*0.24,-R*0.58-Math.abs(Math.sin(a*1.5))*R*0.08,R*0.17,R*0.2,R*0.17);}ap(pb,A_SPH,col,0,R*1.02,-R*0.62,R*0.2,R*0.22,R*0.2);break;
  case'wag':ap(pb,aCap(R*0.17,R*1.3),col,0,R*0.45,-R*0.55,1,1,1,-0.9,0,0);break;
  case'fluffy':ap(pb,A_SPH,col,0,R*0.35,-R*0.7,R*0.38,R*0.38,R*0.95,-0.5,0,0);if(c.tailTip)ap(pb,A_SPH,c.tailTip,0,R*0.75,-R*1.45,R*0.26,R*0.26,R*0.36,-0.5,0,0);break;
  case'curl':ap(pb,A_TOR,col,0,R*0.75,R*0.1,R*0.55,R*0.55,R*0.55,0,Math.PI/2,-0.4);break;
@@ -2880,7 +2881,7 @@ function buildQuad(c){const root=new THREE.Group(),body=grp(root,0,0,0);const C=
  ap(hp,A_SPH,c.nose||'#1d1a1c',0,-H*0.12,H*(0.72+sn.l*0.92),H*0.11,H*0.085,H*0.08);
  ap(hp,A_SPH,'#6b3b3b',0,-H*0.42,H*(0.7+sn.l*0.55),H*0.07,H*0.025,H*0.03);
  blush(hp,H);aEars(hp,c);if(c.headExtra)c.headExtra(hp,H);bake(hp,head,true);
- const ey=eyes2(head,H,c.eyeRing,c.eyeP);
+ const ey=eyes2(head,H,c.eyeRing,c.eyeP,c.eyeX);
  const tail=grp(body,0,hip+c.R*0.3,-(lz+c.R*0.75));const tp=[];aTail(tp,c);bake(tp,tail,true);
  let trunk=null;if(c.trunk){trunk=grp(head,0,-H*0.3,H*0.9);const kp=[];for(let i=0;i<6;i++){const a=i/5,s=H*(0.22-a*0.08);ap(kp,A_SPH,C('head'),0,-a*H*0.7+Math.max(0,a-0.7)*H*1.3,a*H*0.35,s,s,s);}bake(kp,trunk,true);}
  return{root,body,head,tail,legs,eyes:ey,trunk,hop:!!c.hop,labelY:hip+c.R+H*2.1+0.2,lz};}
@@ -2950,6 +2951,23 @@ const ANIM_DEFS=[
  {id:'capybara',kind:'capybara',name:'유자',sp:'카피바라',em:'🍊',home:[-23,-66],speed:0.6,scale:1.3,cfg:{eyeP:[0.47,0.3,0.97,0.9],R:.3,L:.52,leg:.14,legR:.07,H:.27,neck:0,snout:{l:.7,r:.78},body:'#a9774e',head:'#b07f55',snoutC:'#9f6e47',legs:'#8d5f3f',paws:'#6b4630',nose:'#3a2618',ear:'round',earS:0.7,earC:'#8d5f3f',earIn:'#6b4630',tail:'stub',tailC:'#a9774e',
    bodyExtra:(p,o)=>{ap(p,A_SPH,'#a2704a',0,o.hip+o.R*0.1,-o.lz*0.1,o.R*1.1,o.R*1.05,o.L*0.85);},
    headExtra:(p,H)=>{ap(p,A_SPH,'#b07f55',0,H*0.05,H*0.35,H*0.9,H*0.82,H*0.75);ap(p,A_SPH,'#ffb627',0,H*1.05,-H*0.05,H*0.34,H*0.3,H*0.34);ap(p,A_SPH,'#ffd36b',-H*0.1,H*1.18,H*0.08,H*0.1,H*0.07,H*0.08);ap(p,A_SPH,'#4caf50',H*0.12,H*1.38,-H*0.05,H*0.16,H*0.05,H*0.09,0,0,0.5);}}},
+ {id:'wol',kind:'dog',name:'월이',sp:'흰색 슈나우저',em:'🐶',home:[-1.2,-6.2],roam:7,speed:1.3,scale:1.38,tilt:0.36,cfg:{R:.17,L:.3,leg:.17,legR:.055,H:.26,neck:.05,snout:{l:.3,r:.5},body:'#fbfbf7',head:'#ffffff',snoutC:'#ffffff',legs:'#fbfaf5',paws:'#f6f2ea',nose:'#121216',ear:'none',tail:'tuft',tailC:'#ffffff',
+   eyeP:[0.34,0.22,0.8,1.12],eyeX:{c:'#1d1512',s:[0.125,0.135,0.11],hi:0.038,hi2:0.015,ry:0.18,rx:-0.3},
+   bodyExtra:(p,o)=>{ap(p,A_SPH,'#ffffff',0,o.hip+o.R*0.1,o.lz+o.R*0.3,o.R*0.9,o.R*1.0,o.R*0.7);
+     for(const sx of[-1,1])for(const sz of[-1,1])ap(p,A_SPH,'#fbfaf5',sx*o.lx,o.hip-o.R*1.05,sz*o.lz,o.R*0.32,o.R*0.42,o.R*0.32);},
+   headExtra:(p,H)=>{const Z=0.97,ML=0.26,F=Z+ML/2+0.26;
+     /* 보송한 정수리 */ap(p,A_SPH,'#ffffff',0,H*0.55,H*0.02,H*0.68,H*0.38,H*0.64);
+     /* 귀: 바깥으로 기운 세모 귀 + 끝이 접혀 내려온 보송한 털 */
+     for(const s of[-1,1]){ap(p,A_CONE,'#ffffff',s*H*0.58,H*0.95,0,H*0.3,H*0.44,H*0.13,0.2,0,-s*0.75);ap(p,A_CONE,'#f8c6cd',s*H*0.58,H*0.93,H*0.06,H*0.16,H*0.27,H*0.05,0.2,0,-s*0.75);
+       ap(p,A_SPH,'#ffffff',s*H*0.78,H*1.07,H*0.08,H*0.23,H*0.16,H*0.2,0.3,0,-s*0.6);ap(p,A_SPH,'#fdfcf8',s*H*0.92,H*0.94,H*0.1,H*0.16,H*0.19,H*0.15,0,0,-s*0.3);}
+     /* 주둥이: 앞으로 쭉 나온 슈나우저 주둥이 (옆에서 보면 네모) */
+     ap(p,aCap(H*0.26,H*ML),'#ffffff',0,-H*0.22,H*Z,1.45,1,1.05,Math.PI/2,0,0);
+     /* 이마에서 콧등으로 이어지는 선 */ap(p,aCap(H*0.18,H*0.28),'#ffffff',0,-H*0.01,H*(Z-0.14),1.35,1,0.8,Math.PI/2-0.3,0,0);
+     /* 코 아래 양쪽으로 풍성한 콧수염 */for(const s of[-1,1])ap(p,A_SPH,'#ffffff',s*H*0.2,-H*0.34,H*(F-0.25),H*0.27,H*0.27,H*0.27);
+     /* 턱수염 (끝은 살짝 크림색) */ap(p,A_SPH,'#fbf7ee',0,-H*0.52,H*(F-0.33),H*0.33,H*0.22,H*0.25);ap(p,A_SPH,'#efe2c3',0,-H*0.68,H*(F-0.38),H*0.23,H*0.1,H*0.18);
+     /* 주둥이 끝의 크고 까만 코 */ap(p,A_SPH,'#141417',0,-H*0.05,H*F,H*0.19,H*0.13,H*0.12);ap(p,A_SPH,'#50505c',-H*0.05,0,H*(F+0.09),H*0.05,H*0.03,H*0.03);
+     /* 빼꼼 혀 */ap(p,A_SPH,'#ff8fa6',0,-H*0.49,H*(F-0.08),H*0.07,H*0.06,H*0.045);
+     /* 눈썹: 보송하고 순한 눈썹 (눈을 가리지 않게) */for(const s of[-1,1])ap(p,A_SPH,'#ffffff',s*H*0.33,H*0.5,H*0.78,H*0.17,H*0.065,H*0.08,0.15,0,-s*0.14);}}},
 ];
 const HEART_TEX=canvasTex(64,64,(x)=>{x.fillStyle='#ff5b8a';x.beginPath();x.moveTo(32,54);x.bezierCurveTo(4,34,8,10,24,12);x.bezierCurveTo(30,12,32,18,32,20);x.bezierCurveTo(32,18,34,12,40,12);x.bezierCurveTo(56,10,60,34,32,54);x.fill();x.fillStyle='rgba(255,255,255,.75)';x.beginPath();x.ellipse(22,22,5,3,-0.6,0,7);x.fill();});
 const HEARTS=[];
@@ -2962,7 +2980,7 @@ function findNear(x,z){for(let r=0;r<14;r+=0.5)for(let a=0;a<16;a++){const px=x+
 function buildAnimals(){
  ANIM_DEFS.forEach((d,i)=>{const m=d.kind==='rabbit'?buildRabbit(d.cfg):buildQuad(d.cfg);const sc=d.scale||1.3;m.root.scale.setScalar(sc);scene.add(m.root);
   const rng=mulberry32(4242+i*7919);const home=findNear(d.home[0],d.home[1]);const pts=[home];let cur=home;const hop=d.kind==='rabbit'||d.kind==='squirrel';
-  for(let k=0;k<10;k++){let ok=null;for(let tr=0;tr<40;tr++){const a=rng()*Math.PI*2,dist=2.5+rng()*(hop?5:7);const nx=cur[0]+Math.cos(a)*dist,nz=cur[1]+Math.sin(a)*dist;if(Math.hypot(nx-home[0],nz-home[1])>13)continue;if(segOK(cur[0],cur[1],nx,nz)){ok=[nx,nz];break;}}if(!ok)break;pts.push(ok);cur=ok;}
+  for(let k=0;k<10;k++){let ok=null;for(let tr=0;tr<40;tr++){const a=rng()*Math.PI*2,dist=2.5+rng()*(hop?5:7);const nx=cur[0]+Math.cos(a)*dist,nz=cur[1]+Math.sin(a)*dist;if(Math.hypot(nx-home[0],nz-home[1])>(d.roam||13))continue;if(segOK(cur[0],cur[1],nx,nz)){ok=[nx,nz];break;}}if(!ok)break;pts.push(ok);cur=ok;}
   const route=pts.concat(pts.slice(1,-1).reverse());const tl=[];let tc=0,yaw=rng()*6.28;
   for(let k=0;k<route.length;k++){const a=route[k],b=route[(k+1)%route.length];const idle=(hop?2:4)+rng()*(hop?5:10);tl.push({t0:tc,dur:idle,walk:false,a,yaw});tc+=idle;
    const L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L>0.01){yaw=Math.atan2(b[0]-a[0],b[1]-a[1]);const dur=L/d.speed;tl.push({t0:tc,dur,walk:true,a,b,yaw});tc+=dur;}}
@@ -2972,7 +2990,7 @@ function buildAnimals(){
 }
 function animalAt(A,now){const T=((now+A.offset)%A.period+A.period)%A.period;let e=A.tl[A.tl.length-1];for(const s of A.tl){if(T<s.t0+s.dur){e=s;break;}}
  if(!e.walk)return{x:e.a[0],z:e.a[1],yaw:e.yaw,moving:false};const k=clamp((T-e.t0)/e.dur,0,1);return{x:lerp(e.a[0],e.b[0],k),z:lerp(e.a[1],e.b[1],k),yaw:e.yaw,moving:true};}
-function animAnimal(A,dt,moving){animAnimal0(A,dt,moving);const m=A.m;const rk=A.reactT!=null?t-A.reactT:9;const RD=A.reactK===1?2.7:2.3;
+function animAnimal(A,dt,moving){animAnimal0(A,dt,moving);const m=A.m;if(A.d.tilt){const c=(t+A.i*1.7)%6.5;const tw=!moving&&c<2.2?Math.sin(c/2.2*Math.PI):0;A.tw=lerp(A.tw||0,tw,0.15);m.head.rotation.z=A.tw*A.d.tilt;}const rk=A.reactT!=null?t-A.reactT:9;const RD=A.reactK===1?2.7:2.3;
  const w=rk<RD?Math.min(1,rk/0.25)*(rk>RD-0.4?(RD-rk)/0.4:1):0;A.rw=lerp(A.rw||0,w,0.25);const W=A.rw;if(W<0.01&&!A.rwOn)return;A.rwOn=W>0.01;
  if(A.reactK===1){/* 껴안기: 앞발을 들고 일어서서 반김 */const up=W*(m.hop?0.5:0.62),L=A.lz||0.3;
   m.body.rotation.x=-up;m.body.position.y+=Math.sin(up)*L*(m.hop?0.6:1);m.body.position.z=-(1-Math.cos(up))*L*0.4;
@@ -4982,7 +5000,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-16s';
+const BUILD='2026-11-16t';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
