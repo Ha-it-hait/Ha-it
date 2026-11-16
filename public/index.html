@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-16l">
+<meta name="amollang-build" content="2026-11-16n">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -954,10 +954,15 @@ const RARE_DEF=[
  ['arapaima','떡볶이 피라루쿠','#d8352a','#ff9466','sauce','아마존에서 한국까지 놀러 왔다가 떡볶이에 반해 그대로 눌러앉았어요.'],
  ['mihojonggae','초고추장 미호종개','#e2432f','#ff8c7a','sauce','미꾸라지 친척답게 초고추장 그릇에 쏙! 새콤달콤 빨개졌어요. (그래도 천연기념물이라 꼭 놓아주세요)']];
 const RARE_OF={};
+/* 🌕 보름달은 밤에만 떠요: 밤에 잘 나오는(밤·언제나) 친구만 표시하던 함수 (지금은 도감에 보름달 문구를 적지 않아요) */
+function rareMoon(b){const t=b.time||[];return t.includes('any')||t.includes('night');}
+/* 희귀종이 강 구역을 따르지 않으면 기본형의 '강은 ○○에서 잘 잡혀요' 문구를 빼요 */
+function rareBaseHint(r,b){let h=b.hint||'';if(b.rz&&!r.rz)h=h.replace(/ · 강은 .*?에서 잘 잡혀요/,'');return h;}
+function rareTimeTxt(b){const t=b.time||[];if(t.includes('any'))return'언제든';return['dawn','day','dusk','night'].filter(k=>t.includes(k)).map(k=>({dawn:'새벽',day:'낮',dusk:'해질녘',night:'밤'})[k]).join('·')+'에 잘 나와요';}
 for(const[bid,name,c1,c2,top,flavor]of RARE_DEF){const b=SPECIES.find(s=>s.id===bid);if(!b)continue;
  const r=Object.assign({},b,{id:bid+'_r',name,c1,c2,top,flavor,rare:bid,w:0});
  /* 기본형을 아직 못 잡았으면 기본형 이름을 감춰요 (???의 희귀종) */
- Object.defineProperty(r,'hint',{enumerable:true,configurable:true,get(){let known=false;try{known=!!(book&&book[bid]);}catch(e){}const bn=known?b.name:'???';return`✨ ${bn}의 희귀종 · 멀리 던졌을 때 아주 가끔 (🌕 보름달 밤엔 2배) · ${b.hint||''}`;}});
+ Object.defineProperty(r,'hint',{enumerable:true,configurable:true,get(){let known=false;try{known=!!(book&&book[bid]);}catch(e){}const bn=known?b.name:'???';return`✨ ${bn}의 희귀종 · 멀리 던졌을 때 아주 가끔 · ${rareBaseHint(r,b)}`;}});
  SPECIES.push(r);RARE_OF[bid]=r;}
 
 /* ---------- v95: 강 구역(폭포·상류/중류/하류·하구) + 새 친구 18종 + 희귀종 4종 ---------- */
@@ -975,42 +980,42 @@ const NEW_RIVER=[
   flavor:'바다에서 자라 태어난 강으로 돌아오는 회귀 물고기. 폭포 아래 웅덩이에서 펄쩍펄쩍 뛰어올라요. 알 낳을 때가 되면 몸에 보랏빛 무늬가 생겨요.',hint:'🏔️ 폭포·상류에서만 · 💦 폭포 웅덩이에서 더 잘 잡혀요'},
  {id:'dolsangeo',name:'돌상어',w:2,time:['day','dawn'],min:8,max:15,str:0.2,r:3,minP:0.1,grp:'fresh',rz:'up',shape:'real',h:0.16,c1:'#8a7a5a',c2:'#f2e8ce',
   rf:{m:0.3,pk:0.24,nose:0.65,tail:'fork',tl:0.17,tw:0.36,d:[0.36,0.48,0.4],a:[0.7,0.8,0.25],pv:0.5,pat:'blots',pc:'#3e3326',barb:1,mouth:'down',eye:0.2,bel:0.8},
-  flavor:'이름은 상어지만 상어와는 상관없는 한국 고유종이에요. 멸종위기 야생생물이라 꼭 놓아주세요.',hint:'🏔️ 상류에서 잘 잡혀요 · 낮, 자갈 여울'},
+  flavor:'이름은 상어지만 상어와는 상관없는 한국 고유종이에요. 멸종위기 야생생물이라 꼭 놓아주세요.',hint:'🏔️ 상류에서 잘 잡혀요 · 새벽·낮, 자갈 여울'},
  {id:'kumgangmochi',name:'금강모치',w:8,time:['day','dawn'],min:6,max:10,str:0.12,r:2,minP:0,grp:'fresh',rz:'up',rzOnly:true,shape:'real',h:0.2,c1:'#4a4a3e',c2:'#f0eadc',
   rf:{m:0.36,pk:0.2,tail:'fork',tl:0.18,tw:0.38,d:[0.42,0.52,0.42],a:[0.66,0.76,0.3],pv:0.48,pat:'stripe',pc:'#e8892e',pc2:'#2a2a26',sy:0.02,sw:0.12,eye:0.22},
-  flavor:'한국에만 사는 작은 냉수성 물고기. 열목어와 같은 차갑고 맑은 계곡에 살아요. 옆구리의 주황 줄이 예뻐요.',hint:'🏔️ 상류에서만 · 낮, 가까이'},
+  flavor:'한국에만 사는 작은 냉수성 물고기. 열목어와 같은 차갑고 맑은 계곡에 살아요. 옆구리의 주황 줄이 예뻐요.',hint:'🏔️ 상류에서만 · 새벽·낮, 가까이'},
  {id:'dukjunggae',name:'둑중개',w:4,time:['dusk','night'],min:8,max:15,str:0.18,r:2,minP:0,grp:'fresh',rz:'up',rzOnly:true,shape:'real',h:0.24,c1:'#6a5a44',c2:'#dccfb2',
   rf:{m:0.14,pk:0.24,nose:0.85,tk:0.9,bel:0.7,top:1.08,tail:'round',tl:0.15,tw:0.36,d:[0.28,0.42,0.3],d2:[0.46,0.8,0.36],a:[0.55,0.8,0.28],pec:1.7,pu:0.2,py:0.1,pat:'mottle',pc:'#3a2e22',eye:0.17,ey:-0.24,mouth:'big',my:0.08},
   flavor:'차가운 계곡의 돌 밑에 숨어 사는 커다란 머리의 바닥고기예요. 부채 같은 가슴지느러미로 바닥을 짚어요.',hint:'🏔️ 상류에서만 · 저녁~밤, 발밑 돌 사이'},
  {id:'tunggari',name:'퉁가리',w:4,time:['night','dusk'],min:6,max:12,str:0.16,r:2,minP:0,grp:'fresh',rz:'up',shape:'real',h:0.2,c1:'#a8783a',c2:'#f2dcae',
   rf:{m:0.24,pk:0.3,nose:0.8,tail:'round',tl:0.14,tw:0.34,d:[0.32,0.4,0.4],adi:2,a:[0.64,0.88,0.22],pv:0.5,pec:1.1,barb:4,bc:'rgba(90,60,30,.8)',eye:0.1,mouth:'big'},
-  flavor:'수염이 여덟 가닥인 작은 메기 친구. 가슴지느러미 가시에 쏘이면 따끔하니 조심해요.',hint:'🏔️ 상류에서 잘 잡혀요 · 밤'},
+  flavor:'수염이 여덟 가닥인 작은 메기 친구. 가슴지느러미 가시에 쏘이면 따끔하니 조심해요.',hint:'🏔️ 상류에서 잘 잡혀요 · 해질녘·밤'},
  {id:'chamgalgyeoni',name:'참갈겨니',w:18,time:['day','dawn'],min:8,max:15,str:0.14,r:1,minP:0,grp:'fresh',rz:'up',shape:'real',h:0.22,c1:'#4a5a5c',c2:'#f3efe6',
   rf:{m:0.38,pk:0.2,tail:'fork',tl:0.19,tw:0.4,d:[0.42,0.52,0.38],a:[0.6,0.8,0.34],pv:0.48,pat:'stripe',pc:'#26323a',sy:-0.02,sw:0.13,fc:'#d89a52',eye:0.26},
-  flavor:'계곡에서 가장 흔하게 만나는 한국 고유종. 눈이 크고 옆구리에 굵은 검은 줄이 있어요.',hint:'🏔️ 상류에서 잘 잡혀요 · 낮'},
+  flavor:'계곡에서 가장 흔하게 만나는 한국 고유종. 눈이 크고 옆구리에 굵은 검은 줄이 있어요.',hint:'🏔️ 상류에서 잘 잡혀요 · 새벽·낮'},
  {id:'salamander',name:'꼬리치레도롱뇽',w:5,time:['night','dusk'],min:10,max:18,str:0.1,r:2,minP:0,grp:'fresh',rz:'up',rzOnly:true,near:true,shape:'salamander',h:0.2,c1:'#b8913a',c2:'#ecd28e',pat:'none',eye:0.1,
-  flavor:'차가운 계곡 바위틈에 사는 도롱뇽. 꼬리가 길고 납작해서 거센 물살에도 잘 버텨요.',hint:'🏔️ 상류에서만 · 밤, 발밑'},
+  flavor:'차가운 계곡 바위틈에 사는 도롱뇽. 꼬리가 길고 납작해서 거센 물살에도 잘 버텨요.',hint:'🏔️ 상류에서만 · 해질녘·밤, 발밑'},
  // 🌊 하류·하구
  {id:'gar',name:'앨리게이터가아',w:0.12,time:['day','dusk'],min:80,max:200,str:0.95,r:6,minP:0.6,grp:'myth',rz:'down',shape:'real',h:0.11,c1:'#5a5e3a',c2:'#ebe2c4',
   rf:{xs:0.31,xt:0.33,m:0.4,pk:0.45,nose:0.6,tk:0.7,tail:'round',tl:0.15,tw:0.5,d:[0.82,0.92,0.7],a:[0.8,0.92,0.6],pv:0.55,pec:0.8,pu:0.12,gu:0.08,pat:'diamond',pc:'#2e2e1e',gar:0.18,eye:0.24,eu:0.04,ey:-0.12},
   flavor:'악어 같은 긴 주둥이와 갑옷처럼 단단한 비늘을 가진 고대 물고기예요. 공기를 들이마시러 물 위로 올라오기도 해요.',hint:'🌊 하류·하구에서 잘 잡혀요 · 낮~해질녘, 멀리 · 신화(★6)'},
  {id:'hwangbok',name:'황복',w:2,time:['day','dawn'],min:20,max:45,str:0.45,r:4,minP:0.2,grp:'fresh',rz:'down',rzOnly:true,shape:'real',h:0.38,c1:'#4a4636',c2:'#fbf7ec',
   rf:{m:0.42,pk:0.3,nose:0.75,tk:1.4,bel:1.12,tail:'trunc',tl:0.13,tw:0.32,d:[0.66,0.74,0.25],a:[0.66,0.74,0.22],pec:0.8,pu:0.3,py:-0.02,pat:'stripe',pc:'#f2c94a',sy:0.02,sw:0.16,eye:0.12,ey:-0.16,mouth:'small'},
-  flavor:'바다에서 자라다 봄이면 알을 낳으러 강을 거슬러 오르는 한반도 고유 복어. 옆구리에 노란 줄이 있어요.',hint:'🌊 하류·하구에서만 · 낮'},
+  flavor:'바다에서 자라다 봄이면 알을 낳으러 강을 거슬러 오르는 한반도 고유 복어. 옆구리에 노란 줄이 있어요.',hint:'🌊 하류·하구에서만 · 새벽·낮'},
  {id:'ungeo',name:'웅어',w:4,time:['dawn','day'],min:20,max:30,str:0.3,r:3,minP:0.2,grp:'fresh',rz:'down',rzOnly:true,shape:'real',h:0.15,c1:'#9aa8b0',c2:'#f6f8f8',
   rf:{m:0.22,pk:0.08,tk:0.8,tail:'fork',tl:0.12,tw:0.26,d:[0.2,0.3,0.45],a:[0.34,0.98,0.2],pv:0.3,pec:1.2,pu:0.16,pat:'none',silver:1,eye:0.22,eu:0.07},
   flavor:'은빛 칼처럼 길쭉한 몸. 바다에서 살다가 알을 낳으러 강으로 와요.',hint:'🌊 하류·하구에서만 · 새벽~낮'},
  {id:'kkeokjeongi',name:'꺽정이',w:3,time:['night','dusk'],min:10,max:17,str:0.28,r:3,minP:0.1,grp:'fresh',rz:'down',shape:'real',h:0.24,c1:'#7a6a52',c2:'#e2d6bc',
   rf:{m:0.14,pk:0.24,nose:0.85,tk:0.9,bel:0.72,top:1.06,tail:'round',tl:0.15,tw:0.34,d:[0.28,0.42,0.28],d2:[0.46,0.8,0.34],a:[0.55,0.8,0.26],pec:1.6,pu:0.2,py:0.1,pat:'blots',pc:'#3a2e22',gillMark:'#e8702a',eye:0.16,ey:-0.24,mouth:'big',my:0.08},
-  flavor:'큰 머리에 볼이 주황색인 바닥고기. 민물에서 살다 알을 낳으러 바다로 내려가요.',hint:'🌊 하류·하구에서 잘 잡혀요 · 밤'},
+  flavor:'큰 머리에 볼이 주황색인 바닥고기. 민물에서 살다 알을 낳으러 바다로 내려가요.',hint:'🌊 하류·하구에서 잘 잡혀요 · 해질녘·밤'},
  {id:'nuchi',name:'누치',w:5,time:['dawn','dusk'],min:30,max:60,str:0.4,r:3,minP:0.2,grp:'fresh',rz:'down',shape:'real',h:0.23,c1:'#76808a',c2:'#f3f1ea',
   rf:{m:0.38,pk:0.2,tail:'fork',tl:0.2,tw:0.44,d:[0.4,0.52,0.45],a:[0.68,0.78,0.3],pv:0.5,scales:1,barb:1,mouth:'down',fc:'#c9a4a0',eye:0.15,pat:'dots',pc:'#3a4048'},
   flavor:'강바닥 모래를 뒤지며 먹이를 찾는 커다란 은빛 잉어 친구예요.',hint:'🌊 하류·하구에서 잘 잡혀요 · 새벽·저녁'},
  {id:'hwangeo',name:'황어',w:8,time:['day','dawn'],min:25,max:45,str:0.3,r:2,minP:0.1,grp:'fresh',rz:'down',shape:'real',h:0.22,c1:'#2e3a3a',c2:'#f0ece2',
   rf:{m:0.38,pk:0.2,tail:'fork',tl:0.19,tw:0.42,d:[0.42,0.53,0.42],a:[0.66,0.77,0.3],pv:0.5,pat:'redbands',pc:'#e8502e',pc2:'#1e2626',fc:'#d8603a',eye:0.15},
-  flavor:'강에서 태어나 바다에서 살다가 봄에 돌아오는 회귀 물고기. 알 낳을 때가 되면 배에 붉은 띠가 생겨요.',hint:'🌊 하류·하구에서 잘 잡혀요 · 낮'},
+  flavor:'강에서 태어나 바다에서 살다가 봄에 돌아오는 회귀 물고기. 알 낳을 때가 되면 배에 붉은 띠가 생겨요.',hint:'🌊 하류·하구에서 잘 잡혀요 · 새벽·낮'},
  {id:'chamge',name:'참게',w:7,time:['night','dusk'],min:5,max:9,str:0.12,r:2,minP:0,grp:'fresh',rz:'down',rzOnly:true,near:true,shape:'mitten',h:1,c1:'#5a5a38',c2:'#8f8f5c',pat:'none',eye:0.1,
-  flavor:'집게발에 털이 보송보송한 게. 강과 바다를 오가며 살아요.',hint:'🌊 하류·하구에서만 · 밤, 발밑'},
+  flavor:'집게발에 털이 보송보송한 게. 강과 바다를 오가며 살아요.',hint:'🌊 하류·하구에서만 · 해질녘·밤, 발밑'},
  // 🌈 ★7 무지개 전설 (폭포·상류 전용)
  {id:'rainbowlenok',name:'물보라 무지개 열목어',w:1,time:['dawn','day'],min:80,max:140,str:1,r:7,minP:0.9,grp:'rainbow',rainbow:true,rz:'up',rzOnly:true,fallB:true,z7:['fall','up'],shape:'real',h:0.21,c1:'#b0403a',c2:'#f7d6bc',
   rf:{m:0.36,pk:0.22,tail:'fork',tl:0.2,tw:0.42,d:[0.4,0.53,0.48],adi:1,a:[0.7,0.82,0.34],pv:0.5,pat:'dots',pc:'#5a1e1a',fc:'#d0603a',fcT:'#e0703a',eye:0.15,mouth:'big'},
@@ -1032,7 +1037,7 @@ for(const o of NEW_RIVER){o.hab='fresh';o.riverOnly=true;SPECIES.push(o);}
 ].forEach(([bid,name,c1,c2,top,flavor,ov])=>{const b=SPECIES.find(s=>s.id===bid);if(!b)return;
  const r=Object.assign({},b,{id:bid+'_r',name,c1,c2,top,flavor,rare:bid,w:0},ov);
  Object.defineProperty(r,'hint',{enumerable:true,configurable:true,get(){let known=false;try{known=!!(book&&book[bid]);}catch(e){}const bn=known?b.name:'???';
-  return r.fallOnly?`✨ ${bn}의 희귀종 · 💦 폭포 웅덩이에 멀리 던졌을 때만 아주 가끔 (🌕 보름달 밤엔 2배)`:`✨ ${bn}의 희귀종 · 멀리 던졌을 때 아주 가끔 (🌕 보름달 밤엔 2배) · ${b.hint||''}`;}});
+  return r.fallOnly?`✨ ${bn}의 희귀종 · 💦 폭포 웅덩이에 멀리 던졌을 때만 아주 가끔 · ${rareTimeTxt(b)}`:`✨ ${bn}의 희귀종 · 멀리 던졌을 때 아주 가끔 · ${rareBaseHint(r,b)}`;}});
  SPECIES.push(r);RARE_OF[bid]=r;});
 /* 지금 찌가 떨어진 강 구역 */
 let RZONE='';
@@ -3350,7 +3355,8 @@ function bookGuideHTML(){const E=effStar(),bl=buffLeft();
  <p>낚싯대 ★가 물고기 ★보다 높을수록 훨씬 쉽게 끌려와요. ★가 같으면 <em>줄이 빨개질 때 잠깐 손을 떼는</em> 요령이 필요해요. 몰랑은 🐉 용왕님 상점에서 물고기를 팔아 모으고, 요리를 먹으면 재료 ★ 이하 물고기의 낚시 난이도가 쉬워지고(탕 -20% · 구이 -30% · 회 -40%), 재료와 같은 ★ 물고기가 2배 잘 잡혀요. 낚싯대보다 높은 ★ 물고기도 더 잘 걸리지만 그 물고기의 난이도는 그대로예요.</p>
  <p>🌈 <em>★7 무지개 전설</em>: 배 타고 먼 바다(또는 강·저수지 끝까지 멀리)에서만 아주 드물게 나와요. 30분마다 3분 동안 <b>무지개가 뜨면 4배</b>! 오래 못 만나면 <b>전설의 기운</b>이 쌓여 최대 3배까지 올라가요(무지개가 뜬 동안에는 기운 대신 딱 4배). 🎯 찌를 끼우면 상어 지느러미찌 1.2배 · 꼬마 등대찌 1.5배${floatOn()?' <em>· 지금 '+FLOATS[GS.float].name+' 효과 중</em>':''}. 지금 전설의 기운 <em>${legGauge()}%</em> (×${legPity().toFixed(1)}) · ${rainbowOn()?`🌈 무지개 이벤트 중 (${mmss(rainbowLeftMs())} 남음)`:`다음 무지개까지 ${mmss(rainbowLeftMs())}`}</p>
  <p>📐 <em>물고기 크기</em>: 생물마다 <b>최소~최대 크기</b>가 정해져 있고(각 칸의 📏), 그 사이에서 무작위로 잡혀요. <em>멀리 던질수록 큰 개체</em>가 나올 확률이 높아요. 같은 생물이라도 클수록 상점 가격이 올라가요. 최대 크기는 최소 크기보다 값을 약 1.75배 받아요. 잡은 생물은 📏 아래 막대로 내 최고 기록이 최대 크기의 어디쯤인지 보여줘요. 명예의 전당은 생물별 가장 큰 기록을 겨뤄요.</p>
- <p>📏 <em>거리 힌트</em> (바다는 해안선에서 찌까지 거리): 가까운 물가 0~10m · 조금 멀리 10m~ · 멀리 15~25m~ · 아주 멀리 약 30m(해안에서 끝까지 던지기) · 끝까지 멀리 35m~(부두 끝이나 배). 강·저수지는 던지는 힘 기준이에요.</p></div>`;}
+ <p>📏 <em>거리 힌트</em> (바다는 해안선에서 찌까지 거리): 가까운 물가 0~10m · 조금 멀리 10m~ · 멀리 15~25m~ · 아주 멀리 약 30m(해안에서 끝까지 던지기) · 끝까지 멀리 35m~(부두 끝이나 배). 강·저수지는 던지는 힘 기준이에요.</p>
+ <p>🕐 <em>시간 힌트</em>: 적힌 시간대에 <b>훨씬 잘</b> 나와요(다른 시간대에는 드물게 나와요). 🌕 보름달 밤에는 희귀종이 걸릴 확률이 2배가 되지만, 낮에 잘 나오는 친구는 보름달 밤에도 낮보다 드물게 나와요.</p></div>`;}
 
 /* ========== v2-B: 요리 · 채팅 · 수조 구경 · 지도 · 저장 ========== */
 /* ---------- 요리 ---------- */
@@ -4928,7 +4934,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-16l';
+const BUILD='2026-11-16n';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
