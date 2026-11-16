@@ -144,6 +144,7 @@ function sanitize(d, op) {
     pk: idx(d.pk, 4),
     pt: d.pt === 1 ? 1 : 0,
     fl: idx(d.fl, 4),
+    bx: idx(d.bx, 4),
     rl: idx(d.rl, 3),
     bt: d.bt === 1 ? 1 : 0,
     zs: idx(d.zs, 16),
