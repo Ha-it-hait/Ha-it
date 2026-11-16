@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-16r">
+<meta name="amollang-build" content="2026-11-16s">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -914,7 +914,7 @@ const SPECIES=[
  {id:"giantmoray",hab:"sea",grp:"sea",name:"대왕곰치",w:0.4,time:['night'],min:150,max:300,str:0.9,r:5,minP:0.6,shape:"eel",h:0.15,c1:"#5a6a3a",c2:"#a0a87a",pat:"spots",eye:0.15,flavor:"사람 키보다 긴 거대한 곰치. 바위 굴에서 고개만 쏙 내밀어요.",hint:"밤 바다, 아주 멀리(약 30m~) · 아주 가끔"},
  {id:"sturgeon",hab:"fresh",grp:"fresh",name:"철갑상어",w:0.9,time:['dawn','dusk'],min:100,max:250,str:0.9,r:5,minP:0.6,shape:"fish",h:0.18,c1:"#5a5f60",c2:"#c8ccc8",pat:"scales",eye:0.12,flavor:"공룡 시대부터 살아온 강의 고대 물고기. 등에 갑옷 같은 비늘판이 있어요.",riverOnly:true,hint:"새벽·해질녘 강, 끝까지 멀리 · 아주 가끔"},
  {id:"giantcatfish",hab:"fresh",grp:"fresh",name:"메콩대왕메기",w:0.4,time:['night'],min:150,max:250,str:1,r:5,minP:0.7,shape:"fish",h:0.26,c1:"#6a6a66",c2:"#c8c6bc",pat:"none",eye:0.07,flavor:"세상에서 가장 큰 민물고기 중 하나. 이 강까지 어떻게 왔을까?",riverOnly:true,whisker:true,hint:"밤 강, 끝까지 멀리 · 아주 가끔"},
- {id:"mutae",hab:"fresh",grp:"fresh",name:"무태장어",w:0.45,time:['night'],min:100,max:200,str:0.85,r:5,minP:0.5,shape:"eel",h:0.14,c1:"#6a5a3a",c2:"#c8b080",pat:"spots",eye:0.15,flavor:"몸에 얼룩무늬가 있는 거대한 장어. 천연기념물이에요.",riverOnly:true,hint:"밤 강, 멀리 · 아주 가끔"},
+ {id:"mutae",hab:"fresh",grp:"fresh",name:"무태장어",w:0.45,time:['night'],min:100,max:200,str:0.85,r:5,minP:0.5,shape:"eel",h:0.14,c1:"#6a5a3a",c2:"#c8b080",pat:"spots",eye:0.15,flavor:"몸에 얼룩무늬가 있는 거대한 장어. 제주 천지연의 무태장어 서식지는 천연기념물이에요.",riverOnly:true,hint:"밤 강, 멀리 · 아주 가끔"},
  {id:"goldkoi",hab:"fresh",grp:"fresh",name:"황금 비단잉어",w:0.5,time:['any'],min:40,max:90,str:0.55,r:5,minP:0.3,shape:"fish",h:0.32,c1:"#f5c040",c2:"#ffe8a0",pat:"scales",eye:0.12,flavor:"온몸이 황금빛으로 번쩍! 저수지의 행운을 몰고 다녀요.",pondOnly:true,hint:"저수지, 멀리 · 아주 가끔"},
  {id:"humpback",hab:"sea",grp:"myth",name:"아기 혹등고래",w:0.14,time:['dawn','day','dusk'],min:400,max:700,str:1,r:6,minP:0.9,shape:"dolphin",h:0.28,c1:"#2a3240",c2:"#c0c8d0",pat:"none",eye:0.1,flavor:"노래하는 고래! 커다란 가슴지느러미로 바다를 날 듯 헤엄쳐요.",hint:"새벽~해질녘 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
  {id:"bluewhale",hab:"sea",grp:"myth",name:"아기 대왕고래",w:0.1,time:['day'],min:600,max:950,str:1,r:6,minP:0.95,shape:"dolphin",h:0.28,c1:"#3a5a7a",c2:"#a8c0d0",pat:"none",eye:0.1,flavor:"지구에서 가장 큰 동물, 대왕고래의 아기. 아기인데도 버스만 해요!",hint:"낮 바다, 끝까지 멀리(부두 끝·배) · 신화(★6)"},
@@ -3428,7 +3428,7 @@ function cookSecOf(k,st){return(COOK_SEC[k]||COOK_SEC.grill)[clamp(st|0,1,7)];}
 const OLD_F=['grill','stew','grill','stew','sashimi','stew','sashimi','sashimi'];
 function foodKey(k){if(typeof k!=='string')return null;if(DISH[k])return k;if(k==='cgrill'||k==='fantasy')return'grill';if(k==='steam')return'stew';const m=/^f(\d)$/.exec(k);return m?(OLD_F[+m[1]]||'grill'):null;}
 const CRUST=new Set(['hermitcrab','shorecrab','hairycrab','lobster','kingcrab','bluecrab','snowcrab','prawn','spinylobster','crayfish','freshshrimp']);
-const PROTECTED=new Set(['humpback','bluewhale','spermwhale','beluga','narwhal','sealion','walrus','dugong','manatee','leatherback','greenturtle','giantsquid','oarfish','coelacanth','mantaray','leafyseadragon','goldmandarin','eoreumchi','arapaima','mihojonggae','mutae','lenok','turtle','whaleshark','seal','dolphin','orca','seaotter','otter']);
+const PROTECTED=new Set(['humpback','bluewhale','spermwhale','beluga','narwhal','sealion','walrus','dugong','manatee','leatherback','greenturtle','coelacanth','mantaray','goldmandarin','eoreumchi','mihojonggae','lenok','turtle','whaleshark','seal','dolphin','orca','seaotter','otter']);
 function dishesFor(id){if(PROTECTED.has(id))return[];return DISH_ORDER.slice();}
 function foodInfo(f){const k=foodKey(f.k)||'grill',D=DISH[k],sp=SP_BY[f.s],st=sp?starOf(sp):1,rare=!!(sp&&sp.rare);
  return{k,name:D.name,em:D.em,s:f.s,st,rare,sec:cookSecOf(k,st),dmin:D.dmin,ease:D.ease,code:cookCode(k,st)};}
@@ -4982,7 +4982,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-16r';
+const BUILD='2026-11-16s';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
