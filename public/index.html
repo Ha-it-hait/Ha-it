@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-17r">
+<meta name="amollang-build" content="2026-11-17s">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -144,6 +144,62 @@ button{font-family:inherit}
 .cmeta{font-size:12px;color:#9a8f7a}
 .card .primary{background:#5aa0e6;box-shadow:0 4px 0 #3a7cc0}
 .book{width:min(600px,100%);max-height:86vh;overflow:auto;text-align:left}
+.btabs{display:flex;gap:6px;margin:8px 0 8px}
+.btab{border:0;border-radius:12px;padding:9px 10px;font:900 12.5px/1.25 inherit;font-family:inherit;background:#efe5cf;color:#6a5f4a;cursor:pointer;flex:0 0 auto}
+.btab.calc{flex:1;min-width:0;background:linear-gradient(90deg,#fff1c7,#ffe0ec,#dff1ff);color:#5a4a2a;box-shadow:inset 0 0 0 1.5px #ead9b0}
+.btab.on{background:#3a3326;color:#fff;box-shadow:none}
+#pcalc{font-size:13px;line-height:1.45}
+#pcalc .pcnote{font-size:11.5px;color:#8a7f6a;margin:2px 2px 8px}
+#pcalc .pcsum{display:flex;flex-wrap:wrap;gap:4px;align-items:center;background:#fff;border:1px solid #eadfc6;border-radius:14px;padding:8px}
+#pcalc .pcsum span{background:#f6efdf;border-radius:999px;padding:3px 8px;font-size:11.5px;font-weight:800;color:#5a4f3a}
+#pcalc .pcbtns{display:flex;gap:6px;margin:8px 0 2px}
+#pcalc .pcbtns button{flex:1;border:0;border-radius:12px;padding:9px 6px;font:900 12.5px inherit;font-family:inherit;cursor:pointer;background:#efe5cf;color:#3a3326}
+#pcalc .pcbtns button.pri{background:#5aa0e6;color:#fff;box-shadow:0 3px 0 #3a7cc0}
+#pcalc .pccfg{background:#fff;border:1px solid #eadfc6;border-radius:14px;padding:4px 10px 10px;margin-top:8px}
+#pcalc .pcl{font-size:12px;font-weight:900;color:#5a8f6a;margin:9px 0 5px;display:flex;align-items:center;gap:6px}
+#pcalc .pcl em{font-style:normal;color:#2b6cb0}
+#pcalc .pcrow{display:flex;flex-wrap:wrap;gap:5px}
+#pcalc .pcc{border:1.5px solid #e3d6ba;background:#fffdf8;color:#3a3326;border-radius:999px;padding:6px 10px;font:800 12px inherit;font-family:inherit;cursor:pointer}
+#pcalc .pcc.on{background:#3a3326;border-color:#3a3326;color:#fff}
+#pcalc .pcc:disabled{opacity:.35;cursor:default}
+#pcalc .pch{font-size:11px;color:#8a7f6a;margin-top:4px}
+#pcalc input[type=range]{width:100%;accent-color:#5aa0e6;margin:2px 0}
+#pcalc .pctg{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;margin:6px 0;cursor:pointer}
+#pcalc .pctg input{width:18px;height:18px;accent-color:#5aa0e6}
+#pcalc .pcbig{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+#pcalc .pct{border-radius:14px;padding:8px 10px;background:#fff;border:1px solid #eadfc6}
+#pcalc .pct i{display:block;font-style:normal;font-size:11px;font-weight:900;opacity:.85}
+#pcalc .pct b{display:block;font-size:19px;font-weight:900;letter-spacing:-.3px}
+#pcalc .pct small{display:block;font-size:11px;font-weight:700;opacity:.85}
+#pcalc .pct.s7{background:linear-gradient(120deg,#ff6b6b,#ffb347,#ffe066,#69db7c,#4dabf7,#9775fa);color:#fff;border:0;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+#pcalc .pct.rr{background:#fff6d8;border-color:#f1d98a;color:#6a5310}
+#pcalc .pcsm{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+#pcalc .pcsm .pct{padding:6px 8px}#pcalc .pcsm .pct b{font-size:15px}
+#pcalc .pcbox{background:#fff;border:1px solid #eadfc6;border-radius:14px;padding:8px 10px;margin-top:10px}
+#pcalc .pcbox>b{display:block;font-size:13px;margin-bottom:4px}
+#pcalc .pcbt{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:2px 6px;align-items:center;font-size:12px}
+#pcalc .pcbt>div{padding:5px 0;border-top:1px solid #f1e8d4}
+#pcalc .pcbt>div.h{border-top:0;font-size:11px;font-weight:900;color:#8a7f6a;padding:0 0 2px}
+#pcalc .pcbt>div.n{text-align:right;font-weight:900}
+#pcalc .pcbt>div.n small{display:block;font-weight:700;font-size:10.5px;color:#8a7f6a}
+#pcalc .pcbt>div.on{color:#2b6cb0}
+#pcalc .pcq{display:flex;gap:6px;margin:4px 0 6px}
+#pcalc .pcq input,#pcalc .pcq select{min-width:0;border:1.5px solid #e3d6ba;border-radius:10px;padding:7px 8px;font:700 12.5px inherit;font-family:inherit;background:#fffdf8;color:#3a3326}
+#pcalc .pcq input{flex:1}
+#pcalc .pcf{position:relative;display:grid;grid-template-columns:1fr auto 74px;gap:6px;align-items:center;padding:6px 2px 7px;border-top:1px solid #f1e8d4;font-size:12.5px}
+#pcalc .pcf .nm{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pcalc .pcf .nm.lk{color:#a39880}
+#pcalc .pcf .st{color:#e0a21b;font-weight:900;font-size:11.5px}
+#pcalc .pcf .pr{text-align:right;font-weight:900}
+#pcalc .pcf .pr small{display:block;font-weight:700;font-size:10.5px;color:#8a7f6a}
+#pcalc .pcf>i{position:absolute;left:2px;bottom:1px;height:3px;border-radius:2px;background:#9cc7f0}
+#pcalc .pcf.s7>i{background:linear-gradient(90deg,#ff6b6b,#ffe066,#4dabf7,#9775fa)}
+#pcalc .pcf.rr>i{background:#f1c94a}
+#pcalc .pcf .why{grid-column:2/4;text-align:right;font-size:10.5px;color:#8a7f6a}
+#pcalc .tg{display:inline-block;font-size:10px;font-weight:900;border-radius:6px;padding:0 4px;margin-left:4px;vertical-align:1px}
+#pcalc .tg.rr{background:#fff0b8;color:#8a6a00}#pcalc .tg.s7{background:#efe3ff;color:#6a3fc0}#pcalc .tg.ev{background:#ffe3ea;color:#c0395f}
+#pcalc .pcdead{margin-top:8px;width:100%;border:0;border-radius:10px;padding:8px;background:#f6efdf;color:#6a5f4a;font:900 12px inherit;font-family:inherit;cursor:pointer}
+#pcalc .pcfoot{font-size:11px;color:#8a7f6a;margin:10px 2px 2px;line-height:1.5}
 .bhead{display:flex;align-items:center;gap:10px}
 .bhead b{font-size:20px}
 .bhead span{font-size:13px;color:#8a7f6a;font-weight:800}
@@ -765,10 +821,13 @@ body.cine .lgpop{opacity:0}
 <div class="overlay hidden" id="book">
   <div class="card book">
     <div class="bhead"><b>도감</b><span id="bookCount"></span><button class="x" id="bookX">✕</button></div>
+    <div class="btabs"><button class="btab on" data-bt="book">📖 도감</button><button class="btab calc" data-bt="calc">🎲 아몰랑아일랜드 낚시 확률 계산기</button></div>
+    <div id="bookMain">
     <p class="bsub">바다·강·저수지마다, 시간대와 던지는 거리마다 나오는 물고기가 달라요. ❓ 도움말에서 시간대를 바꿔볼 수 있어요.</p>
     <div id="legCard"></div>
     <div id="bookGuide"></div>
-    <div id="grid"></div>
+    <div id="grid"></div></div>
+    <div id="pcalc" class="hidden"></div>
   </div>
 </div>
 
@@ -1355,7 +1414,7 @@ function showCatch(f,rec){if(acSkip)acSkip=false;else if(autoCatch(f,rec))return
  const L=fishL(f.sp,470,125);drawFish(cc,f.sp,c.width/2+(f.sp.shape==='beak'?24:0),c.height/2,L,false);
  $('catch').classList.remove('hidden');
 }
-function openBook(){renderLegCard();const root=$('grid');root.innerHTML='';let found=0;$('bookGuide').innerHTML=bookGuideHTML();const E=effStar();
+function openBook(){renderLegCard();pcBookOpen();const root=$('grid');root.innerHTML='';let found=0;$('bookGuide').innerHTML=bookGuideHTML();const E=effStar();
  [['🐟 바다 물고기','sea'],['🦀 바다 친구들','critter'],['🦈 상어','shark'],['🐠 열대어','tropical'],['🏞️ 강·저수지','fresh'],['✨ 신화의 친구들 (★6)','myth'],['🌈 무지개 전설 (★7)','rainbow'],['🍡 희귀종 (색깔 친구들)','__rare']].forEach(([title,grp])=>{const list=grp==='__rare'?spOrder(SPECIES.filter(s=>s.rare)):spOrder(SPECIES.filter(s=>s.grp===grp&&!s.rare));const tt=document.createElement('div');tt.className='btitle';tt.textContent=`${title}  ${list.filter(s=>book[s.id]).length}/${list.length}`;const grid=document.createElement('div');grid.className='grid';
   list.forEach(sp=>{const rec=book[sp.id];if(rec)found++;const cell=document.createElement('div');cell.className='cell'+(rec?'':' locked')+(sp.rare?' rare':'');
    const c=document.createElement('canvas');c.width=240;c.height=112;cell.appendChild(c);
@@ -5070,7 +5129,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-17r';
+const BUILD='2026-11-17s';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -6399,6 +6458,102 @@ function pickRare(p,hab){if(window.__pick)return null;const c=rareChance(p,hab);
 /* 반달(보름달이 아닌 밤): 달 그림의 한쪽을 지워요 */
 function moonShade(full){if(full===undefined)full=fullMoonNight();if(full)return;const c=moonCtx,S=256;c.save();c.globalCompositeOperation='destination-out';c.fillStyle='#000';c.beginPath();c.arc(S/2+70,S/2-18,112,0,7);c.fill();c.restore();moonTex.needsUpdate=true;}
 
+/* ---------- v118: 🎲 아몰랑아일랜드 낚시 확률 계산기 (도감 탭) — 게임과 같은 식 · 같은 물고기 데이터 ---------- */
+const PC={tab:'book',s:null,cfg:false,dead:false,q:'',f:''};
+const PC_RZ={fall:'💦 폭포 웅덩이',up:'🏔️ 상류',mid:'🌉 중류',down:'🌊 하류·하구'};
+const PC_PL={shore:'🌊 바다',far:'⛵ 먼 바다',pond:'🪷 저수지',seat:'🪑 저수지 좌대',river:'🏞️ 강'},PC_PH={dawn:'🌅 새벽',day:'☀️ 낮',dusk:'🌇 해질녘',night:'🌙 밤'};
+function pcRz(sp,RZ){if(sp.fallOnly&&RZ!=='fall')return 0;if(!sp.rz)return 1;const z=RZ==='fall'?'up':(RZ||'mid');if(sp.rzOnly&&z!==sp.rz)return 0;let k=RZ_ADJ[sp.rz][z];if(RZ==='fall'&&sp.fallB)k*=1.5;return k;}
+/* pickFish7 → pickRare → pickFish 순서 그대로 (입질 1번에 걸리는 물고기 확률) */
+function pcCalc(o){const hab=(o.place==='pond'||o.place==='seat')?'pond':o.place==='river'?'river':'sea',fresh=hab!=='sea',far=o.place==='far',seat=o.place==='seat',RZ=hab==='river'?(o.rz||'mid'):'';
+ const fs=o.food==='r'?6:(+o.food||0),fr=o.food==='r';const E=Math.min(7,o.rod+(fs?1:0));const F0=FLOATS[o.float|0];const F=F0&&o.rod>=F0.minRod?F0:null;
+ const weights=blk=>{let tot=0;const ws=SPECIES.map(sp=>{if((sp.hab==='fresh')!==fresh)return 0;if(sp.pondOnly&&hab!=='pond')return 0;if(sp.riverOnly&&hab!=='river')return 0;
+  let w=sp.w;if(hab==='river'){const zm=pcRz(sp,RZ);if(!zm)return 0;w*=zm;}else if(sp.fallOnly)return 0;if(sp.riverPref&&hab==='pond')w*=0.3;if(sp.near)w*=1.6-1.2*o.p;if(!sp.time.includes('any'))w*=sp.time.includes(o.ph)?2.4:0.3;if(o.p<sp.minP)w*=0.1;
+  const st=starOf(sp);if(sp.rare||st>=7)return 0;if(st<=blk)return 0;w*=starW(st,o.p);if(far&&!fresh&&st>=4)w*=2;if(seat&&st>=4)w*=2;if(st>E)w*=0.4;tot+=w;return w;});return{ws,tot};};
+ let blk=F?F.block:0;let{ws,tot}=weights(blk);if(!tot&&blk){blk=0;({ws,tot}=weights(0));}
+ if(fs>=1&&fs<=6){let W=0;SPECIES.forEach((sp,i)=>{if(ws[i]&&!sp.rare&&starOf(sp)===fs)W+=ws[i];});if(W>0&&W<tot){const s1=W/tot,s2=Math.min(1,FOOD_X*s1),a=s2/s1,c=(1-s2)/(1-s1);SPECIES.forEach((sp,i)=>{if(ws[i])ws[i]*=starOf(sp)===fs?a:c;});tot=W*a+(tot-W)*c;}}
+ let base=0;if(hab==='sea'){if(o.p>=0.8)base=LEG_BASE*(far?1:0.5);}else if(o.p>=0.85)base=LEG_BASE*0.5;
+ const mult=o.rainbow?4:1+2*(o.pity||0);const rf=E>=7?1:0.4;
+ const c7=[];let t7=0;for(const sp of SPECIES){if(starOf(sp)!==7)continue;if((sp.hab==='fresh')!==fresh)continue;if(sp.pondOnly&&hab!=='pond')continue;if(sp.riverOnly&&hab!=='river')continue;if(sp.eventOnly&&!o.rainbow)continue;if(hab==='river'&&sp.z7&&!sp.z7.includes(RZ))continue;
+  let w=sp.w;if(!sp.time.includes('any'))w*=sp.time.includes(o.ph)?2.4:0.3;if(hab==='river'&&RZ==='fall'&&sp.fallB)w*=1.5;c7.push([sp,w]);t7+=w;}
+ const b7=(o.bait==='7'||o.bait==='b')&&E>=BAITS.b7.minE?2:1,bR=(o.bait==='r'||o.bait==='b')&&E>=BAITS.br.minE?2:1;
+ const P7=t7?Math.min(1,base*mult*rf*(F?F.leg:1)*(o.otter?1.5:1)*(fs===7?FOOD_X:1)*b7):0;
+ const moon=!!o.moon&&o.ph==='night';const cr=[];let tr=0,tr0=0;
+ for(const r of Object.values(RARE_OF)){const b=SP_BY[r.rare];if(!b)continue;if((b.hab==='fresh')!==fresh)continue;if(b.pondOnly&&hab!=='pond')continue;if(b.riverOnly&&hab!=='river')continue;
+  if(r.fallOnly&&hab!=='river')continue;let w=r.rw!=null?r.rw:b.w;if(hab==='river'){const zm=pcRz(r,RZ);if(!zm)continue;w*=zm;}if(b.riverPref&&hab==='pond')w*=0.3;if(!b.time.includes('any'))w*=b.time.includes(o.ph)?2.4:0.3;tr0+=w;w*=(RARE_WK[r.id]||1);cr.push([r,w]);tr+=w;}
+ const rfR=o.rod>=7?1:0.4,cR=tr&&base?Math.min(1,RARE_K*base*rfR*(moon?2:1)*(fr?FOOD_X:1)*bR*tr/tr0):0,PR=(1-P7)*cR;
+ const out=[],seen=new Set();
+ SPECIES.forEach((sp,i)=>{if(ws[i])out.push({sp,p:(1-P7)*(1-cR)*ws[i]/tot});});
+ for(const[sp,w]of c7)out.push({sp,p:P7*w/t7});for(const[sp,w]of cr)out.push({sp,p:PR*w/tr});
+ out.sort((a,b)=>b.p-a.p);for(const x of out)seen.add(x.sp.id);
+ for(const sp of SPECIES){if(seen.has(sp.id))continue;const b=sp.rare?SP_BY[sp.rare]:sp;if(!b)continue;const z=sp.rare?sp:b;const st=starOf(sp);let why='';
+  if((b.hab==='fresh')!==fresh)why=b.hab==='fresh'?(b.pondOnly?'저수지에서만':(b.riverOnly||z.fallOnly)?'강에서만':'민물(저수지·강)에서'):'바다에서만';
+  else if(b.pondOnly&&hab!=='pond')why='저수지에서만';else if((b.riverOnly||z.fallOnly)&&hab!=='river')why=z.fallOnly?'강 💦 폭포 웅덩이에서만':'강에서만';
+  else if(hab==='river'&&z.fallOnly&&RZ!=='fall')why='💦 폭포 웅덩이에서만';
+  else if(hab==='river'&&st===7&&sp.z7&&!sp.z7.includes(RZ))why=sp.z7.map(k=>PC_RZ[k]).join('·')+'에서만';
+  else if(hab==='river'&&z.rzOnly&&pcRz(z,RZ)===0)why=PC_RZ[z.rz]+'에서만';
+  else if(sp.eventOnly&&!o.rainbow)why='🌈 무지개 이벤트 때만';
+  else if((st===7||sp.rare)&&!base)why=hab==='sea'?'거리 80%↑로 멀리 던져야':'힘 85%↑로 던져야';
+  else if(st<=blk)why='찌 때문에 안 걸려요';else why='이 조건에선 안 나와요';
+  out.push({sp,p:0,why});}
+ const P7t=t7?P7:0;return{list:out,P7:P7t,PR,blocked:blk,E,F,base,b7,bR};}
+/* 지금 내 상황 */
+function pcNow(){const hab=habitat||'sea',b=fbOn(),F=floatOn();const w7=baitWant(BAITS.b7)&&baitCnt(BAITS.b7)>0,wR=baitWant(BAITS.br)&&baitCnt(BAITS.br)>0;
+ return{place:hab==='sea'?(BOAT.on&&BOAT.far?'far':'shore'):hab==='pond'?(SEAT.on?'seat':'pond'):'river',rz:RZONE||'mid',ph:phaseOf(hourNow()),p:1,rod:Math.max(1,Math.min(7,GS.rod|0)),
+  food:b?(b.r?'r':(b.st|0)):0,bait:w7&&wR?'b':w7?'7':wR?'r':'0',float:F?F.lv:0,rainbow:!!rainbowOn(),otter:petBuffLeft()>0,moon:!!fullMoonNight(),pity:Math.round((legPity()-1)/2*20)/20};}
+function pcFmt(p){if(!(p>0))return'0%';const x=p*100;return x>=10?x.toFixed(1)+'%':x>=1?x.toFixed(2)+'%':x>=0.01?x.toFixed(3)+'%':x.toPrecision(2)+'%';}
+function pcEvery(p){if(!(p>0))return'—';const n=1/p;return n<1.05?'매번':n<10?n.toFixed(1)+'번에 1번':Math.round(n).toLocaleString('ko-KR')+'번에 1번';}
+function pcChips(k,items,dis){const S=PC.s;return`<div class="pcrow">${items.map(([v,l])=>`<button class="pcc${String(S[k])===String(v)?' on':''}" data-k="${k}" data-v="${v}"${dis&&dis(v)?' disabled':''}>${l}</button>`).join('')}</div>`;}
+function pcName(sp){return book[sp.id]?sp.name:'???';}
+function pcTags(sp){return(sp.rare?'<span class="tg rr">✨희귀</span>':'')+(starOf(sp)===7?'<span class="tg s7">🌈전설</span>':'')+(sp.eventOnly?'<span class="tg ev">이벤트</span>':'');}
+function renderPC(){const el=$('pcalc');if(!el||!PC.s)return;const S=PC.s;if(S.float&&S.rod<FLOATS[S.float].minRod)S.float=0;
+ const sum=[PC_PL[S.place]+(S.place==='river'?' '+PC_RZ[S.rz]:''),PC_PH[S.ph],'거리 '+Math.round(S.p*100)+'%','🎣 ★'+S.rod+' 낚싯대',S.food?'🍳 '+(S.food==='r'?'✨희귀종':'★'+S.food)+' 요리':null,S.bait!=='0'?{'7':'🔮 구슬','r':'🍡 경단','b':'🔮🍡 미끼 둘 다'}[S.bait]:null,S.float?FLOATS[S.float].em+' '+FLOATS[S.float].name:null,S.rainbow?'🌈 무지개 이벤트':null,S.otter?'🦦 해달 버프':null,S.moon&&S.ph==='night'?'🌕 보름달 밤':null,!S.rainbow&&S.pity>0?'전설 게이지 ×'+(1+2*S.pity).toFixed(1):null].filter(Boolean);
+ let h=`<div class="pcnote">상황을 고르면 <b>입질 1번에 어떤 물고기가 걸리는지</b> 확률을 게임과 똑같은 식으로 계산해요. 처음엔 <b>지금 내 상황</b>으로 맞춰져 있어요.</div>
+ <div class="pcsum">${sum.map(x=>`<span>${x}</span>`).join('')}</div>
+ <div class="pcbtns"><button class="pri" data-a="cfg">⚙️ 조건 ${PC.cfg?'접기 ▴':'바꾸기 ▾'}</button><button data-a="now">🎯 지금 내 상황으로</button></div>`;
+ if(PC.cfg){const sea=S.place==='shore'||S.place==='far';
+  h+=`<div class="pccfg"><div class="pcl">📍 장소</div>${pcChips('place',[['shore','🌊 바다'],['far','⛵ 먼 바다'],['pond','🪷 저수지'],['seat','🪑 좌대'],['river','🏞️ 강']])}
+  <div class="pch">${S.place==='far'?'배를 타고 빨간 부표 밖 · ★4↑ 2배 · ★7 기본 확률 2배':S.place==='shore'?'해변·부두 · 배를 타도 빨간 부표 안쪽이면 여기예요':S.place==='seat'?'저수지 좌대 · ★4↑ 2배':S.place==='river'?'강은 구역마다 나오는 물고기가 달라요':'저수지 물가'}</div>
+  ${S.place==='river'?`<div class="pcl">🏞️ 강 구역</div>${pcChips('rz',[['fall','💦 폭포 웅덩이'],['up','🏔️ 상류'],['mid','🌉 중류'],['down','🌊 하류·하구']])}<div class="pch">자기 구역 종 ×2.5 · 반대쪽 끝 ×0.25 · 폭포는 상류로 치고 폭포 좋아하는 종 ×1.5</div>`:''}
+  <div class="pcl">🕐 시간대</div>${pcChips('ph',[['dawn','🌅 새벽'],['day','☀️ 낮'],['dusk','🌇 해질녘'],['night','🌙 밤']])}
+  <div class="pcl">🎯 던진 거리 <em id="pcPv">${Math.round(S.p*100)}%</em></div><input type="range" min="0" max="1" step="0.05" value="${S.p}" data-r="p"><div class="pch">${sea?'바다: 해안에서 찌까지 거리 (48m↑ = 100%) · ★7·희귀종은 80%↑':'민물: 던질 때 힘 게이지 · ★7·희귀종은 85%↑'}</div>
+  <div class="pcl">🎣 낚싯대</div>${pcChips('rod',[1,2,3,4,5,6,7].map(n=>[n,'★'+n]))}
+  <div class="pcl">🍳 먹은 요리</div>${pcChips('food',[[0,'없음'],...[1,2,3,4,5,6,7].map(n=>[n,'★'+n]),['r','✨ 희귀종']])}<div class="pch">재료와 같은 ★ 물고기 2배 · 낚싯대 ★+1 (★7 요리는 ★7 2배 · 희귀종 요리는 희귀종 2배)</div>
+  <div class="pcl">🪱 미끼</div>${pcChips('bait',[['0','없음'],['7','🔮 프리즘 구슬'],['r','🍡 떡집 경단'],['b','🔮+🍡 둘 다']])}<div class="pch">🔮 ★7 ×2 (★6↑ 낚싯대) · 🍡 희귀종 ×2 (★5↑ 낚싯대) · 요리 ★+1 포함</div>
+  <div class="pcl">🪝 찌</div>${pcChips('float',[[0,'없음'],[1,'🦈 지느러미'],[2,'💡 등대'],[3,'🏰 산호성']],v=>v&&S.rod<FLOATS[v].minRod)}<div class="pch">🦈 ★1 차단·★7 ×1.2 (★2↑) · 💡 ★1~2 차단·★7 ×1.5 (★3↑) · 🏰 ★1~3 차단·★7 ×2 (★4↑)</div>
+  <div class="pcl">🌈 보너스</div>
+  <label class="pctg"><input type="checkbox" data-t="rainbow"${S.rainbow?' checked':''}> 🌈 무지개 이벤트 중 (★7 ×4)</label>
+  <label class="pctg"><input type="checkbox" data-t="otter"${S.otter?' checked':''}> 🦦 아기 해달 버프 중 (★7 ×1.5)</label>
+  <label class="pctg"><input type="checkbox" data-t="moon"${S.moon?' checked':''}> 🌕 보름달 (밤에 희귀종 ×2)</label>
+  <div class="pcl">전설 게이지 <em id="pcGv">×${(1+2*S.pity).toFixed(1)}</em></div><input type="range" min="0" max="1" step="0.05" value="${S.pity}" data-r="pity"${S.rainbow?' disabled':''}><div class="pch">★6↑ 낚싯대로 던질 때마다 쌓여요 (600번 ×2 · 1200번 ×3 · 무지개 중엔 ×4 고정)</div></div>`;}
+ h+=`<div id="pcRes"></div><div class="pcbox"><b>🐟 물고기별 확률</b><div class="pcq"><input id="pcQ" placeholder="🔍 이름 찾기 (잡아 본 물고기)" value="${PC.q.replace(/"/g,'&quot;')}"><select id="pcF">${[['','모든 별'],['1','★1'],['2','★2'],['3','★3'],['4','★4'],['5','★5'],['6','★6'],['7','🌈 ★7'],['r','✨ 희귀종'],['u','❓ 미등록']].map(([v,l])=>`<option value="${v}"${PC.f===v?' selected':''}>${l}</option>`).join('')}</select></div><div id="pcList"></div></div>
+ <div class="pcfoot">· 확률은 <b>입질이 왔을 때 걸리는 물고기</b> 기준이에요. 끌어올릴 수 있는지는 낚싯대 ★와 손맛에 달려 있어요.<br>· 찌를 쓰면 입질이 늦게 와요 (🦈 약 20% · 💡 약 40% · 🏰 약 60%). 입질 1번당 확률은 같지만 시간당 마릿수는 줄어요.<br>· 도감에 없는 물고기는 이름 대신 ???로 보여요.</div>`;
+ el.innerHTML=h;renderPCRes();}
+function renderPCRes(){const S=PC.s,R=pcCalc(S);const res=$('pcRes');if(!res)return;
+ const by={1:0,2:0,3:0,4:0,5:0,6:0};for(const x of R.list)if(x.p>0&&!x.sp.rare&&starOf(x.sp)<7)by[starOf(x.sp)]+=x.p;
+ const bt=[['0','미끼 없음'],['7','🔮 구슬'],['r','🍡 경단'],['b','🔮+🍡']].map(([k,l])=>{const r=k===S.bait?R:pcCalc({...S,bait:k});return`<div${k===S.bait?' class="on"':''}>${k===S.bait?'▶ ':''}${l}</div><div class="n${k===S.bait?' on':''}">${pcFmt(r.P7)}<small>${pcEvery(r.P7)}</small></div><div class="n${k===S.bait?' on':''}">${pcFmt(r.PR)}<small>${pcEvery(r.PR)}</small></div>`;}).join('');
+ res.innerHTML=`<div class="pcbig"><div class="pct s7"><i>🌈 ★7 무지개 전설</i><b>${pcFmt(R.P7)}</b><small>${R.P7>0?pcEvery(R.P7):R.base?'이 조건엔 ★7이 없어요':'멀리 던져야 나와요'}</small></div><div class="pct rr"><i>✨ 희귀종</i><b>${pcFmt(R.PR)}</b><small>${R.PR>0?pcEvery(R.PR):R.base?'이 조건엔 희귀종이 없어요':'멀리 던져야 나와요'}</small></div></div>
+ <div class="pcsm">${[1,2,3,4,5,6].map(k=>`<div class="pct"><i>★${k}</i><b>${pcFmt(by[k])}</b></div>`).join('')}</div>
+ <div class="pcbox"><b>🪱 미끼별 비교 <small style="font-weight:700;color:#8a7f6a">(다른 조건은 그대로)</small></b><div class="pcbt"><div class="h">미끼</div><div class="h n">🌈 ★7</div><div class="h n">✨ 희귀종</div>${bt}</div>
+ <div class="pch">실제 적용 낚싯대 ★${R.E}${R.blocked?` · ★${R.blocked===1?'1':'1~'+R.blocked} 찌로 차단 중`:''}${R.base?'':' · 지금 거리에선 ★7·희귀종이 안 나와서 미끼를 쓰지 않아요'}${R.base&&R.E<BAITS.b7.minE?` · 🔮은 ★${BAITS.b7.minE}↑${R.E<BAITS.br.minE?`, 🍡은 ★${BAITS.br.minE}↑`:''} 낚싯대(요리 ★+1 포함)부터 효과가 있어요`:''}</div></div>`;
+ PC.R=R;renderPCList();}
+function renderPCList(){const R=PC.R,el=$('pcList');if(!R||!el)return;const q=PC.q.trim(),f=PC.f;
+ const ok=x=>{const st=starOf(x.sp),own=!!book[x.sp.id];if(q&&!(own&&x.sp.name.includes(q)))return false;if(!f)return true;if(f==='r')return!!x.sp.rare;if(f==='u')return!own;return!x.sp.rare&&String(st)===f;};
+ const live=R.list.filter(x=>x.p>0&&ok(x)),dead=R.list.filter(x=>!(x.p>0)&&ok(x));const mx=live.length?live[0].p:1;
+ let h=live.length?live.map(x=>{const st=starOf(x.sp),own=!!book[x.sp.id];return`<div class="pcf${st===7?' s7':x.sp.rare?' rr':''}"><div class="nm${own?'':' lk'}">${pcName(x.sp)}${pcTags(x.sp)}</div><div class="st">★${st}</div><div class="pr">${pcFmt(x.p)}<small>${pcEvery(x.p)}</small></div><i style="width:${Math.max(1,Math.sqrt(x.p/mx)*96).toFixed(1)}%"></i></div>`;}).join(''):'<div class="pch" style="padding:8px 2px">이 조건에 맞는 물고기가 없어요.</div>';
+ if(dead.length){h+=`<button class="pcdead" data-a="dead">🚫 이 조건에선 안 나오는 물고기 ${dead.length}종 ${PC.dead?'접기 ▴':'보기 ▾'}</button>`;
+  if(PC.dead)h+=dead.map(x=>{const own=!!book[x.sp.id];return`<div class="pcf" style="opacity:.6"><div class="nm${own?'':' lk'}">${pcName(x.sp)}${pcTags(x.sp)}</div><div class="why">★${starOf(x.sp)} · ${x.why}</div></div>`;}).join('');}
+ el.innerHTML=h;}
+function pcTab(t){PC.tab=t;document.querySelectorAll('#book .btab').forEach(b=>b.classList.toggle('on',b.dataset.bt===t));$('bookMain').classList.toggle('hidden',t!=='book');$('pcalc').classList.toggle('hidden',t!=='calc');
+ if(t==='calc'){PC.s=pcNow();PC.cfg=false;PC.dead=false;renderPC();}const c=$('book').querySelector('.card');if(c)c.scrollTop=0;}
+function pcBookOpen(){pcTab(PC.tab);}
+document.querySelectorAll('#book .btab').forEach(b=>b.addEventListener('click',()=>{try{sfx.pop();}catch(e){}pcTab(b.dataset.bt);}));
+{const el=$('pcalc');
+ el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const S=PC.s;
+  if(b.dataset.k){const k=b.dataset.k,v=b.dataset.v;S[k]=(k==='rod'||k==='float')?+v:k==='food'?(v==='r'?'r':+v):v;try{sfx.pop();}catch(x){}renderPC();return;}
+  const a=b.dataset.a;if(a==='cfg'){PC.cfg=!PC.cfg;renderPC();}else if(a==='now'){PC.s=pcNow();renderPC();toast('🎯 지금 내 상황으로 맞췄어요',1400);}else if(a==='dead'){PC.dead=!PC.dead;renderPCList();}});
+ el.addEventListener('change',e=>{const t=e.target;if(t.dataset.t){PC.s[t.dataset.t]=t.checked;renderPC();}else if(t.id==='pcF'){PC.f=t.value;renderPCList();}});
+ el.addEventListener('input',e=>{const t=e.target;if(t.dataset.r){PC.s[t.dataset.r]=+t.value;if(t.dataset.r==='p'){const v=$('pcPv');if(v)v.textContent=Math.round(PC.s.p*100)+'%';}else{const v=$('pcGv');if(v)v.textContent='×'+(1+2*PC.s.pity).toFixed(1);}renderPCRes();}else if(t.id==='pcQ'){PC.q=t.value;renderPCList();}});
+ el.addEventListener('change',e=>{if(e.target.dataset.r)renderPC();});}
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
 function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
