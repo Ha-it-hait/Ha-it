@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-17b">
+<meta name="amollang-build" content="2026-11-17d">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -549,6 +549,16 @@ html body .emopanel{left:var(--epl,50%);transform:var(--ept,translateX(-50%));bo
 .lgbanner.swap{animation:lgflow 6s linear infinite,lgswap .9s ease-out 2}
 @keyframes lgswap{0%{transform:translateX(-50%) scale(1)}35%{transform:translateX(-50%) scale(1.12)}100%{transform:translateX(-50%) scale(1)}}
 body.cine .lgpop{opacity:0}
+.newsp{position:fixed;left:50%;top:120px;transform:translate(-50%,-6px) scale(.96);z-index:55;pointer-events:none;opacity:0;transition:opacity .3s,transform .3s,top .25s;display:flex;align-items:center;gap:8px;padding:7px 14px 7px 8px;border-radius:16px;background:linear-gradient(180deg,#f3fbff,#e6f5ff);box-shadow:0 0 0 2px #8fd0f7,0 8px 22px rgba(40,120,180,.28);color:#24506e;width:min(88vw,360px);box-sizing:border-box}
+.newsp.on{opacity:1;transform:translate(-50%,0) scale(1)}
+.newsp canvas{width:72px;height:38px;flex:none;border-radius:10px;background:linear-gradient(180deg,#e3ecef,#c7d8dd)}
+.newsp .nt{min-width:0;text-align:left}
+.newsp .n1{font-size:12px;font-weight:800;color:#2f86c4;white-space:nowrap}
+.newsp .n2{font-size:15px;font-weight:800;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.newsp .n2 .sz{font-size:12px;font-weight:700;color:#5a7f99}
+.newsp .n3{font-size:11px;font-weight:700;color:#6b8aa0;white-space:nowrap}
+.newsp.rare{background:linear-gradient(180deg,#fff4fa,#ffeef3);box-shadow:0 0 0 2px #ff9cc8,0 8px 22px rgba(200,60,120,.25)}.newsp.rare .n1{color:#d6337a}
+.newsp.leg{background:linear-gradient(90deg,#fff0f0,#fff7e3,#fffbe0,#eefbf0,#eaf3ff,#f5ecff);box-shadow:0 0 0 2px #c9a8ff,0 8px 22px rgba(120,80,200,.28)}.newsp.leg .n1{color:#7b4dff}
+@media (max-width:520px){.newsp{padding:6px 11px 6px 7px}.newsp .n2{font-size:13.5px}.newsp canvas{width:60px;height:32px}}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/utils/BufferGeometryUtils.js":"./vendor/BufferGeometryUtils.js"}}</script>
 </head>
@@ -1109,6 +1119,25 @@ function pickFish(p,hab,noF){const _F=noF?null:floatOn();FBLK=_F?_F.block:0;
 const KEY='monggeul-book-v1';let book={};
 try{book=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){book={};}
 function saveBook(){try{localStorage.setItem(KEY,JSON.stringify(book));}catch(e){}markSave();}
+const NEWSP={q:[],cur:null,left:0,el:null,last:0};
+function newSpNote(sp,size){NEWSP.q.push({sp,size});newSpTick();}
+function newSpTopBelow(){let y=0;for(const id of['toast','lgBanner','lgPop','boatBadge','rbBadge','acBanner']){const e=document.getElementById(id);if(!e||e.classList.contains('hidden'))continue;const cs=getComputedStyle(e);if(cs.display==='none'||cs.visibility==='hidden'||(+cs.opacity<0.05&&!e.classList.contains('on')))continue;const r=e.getBoundingClientRect();if(r.height<2||r.top>innerHeight*0.5)continue;y=Math.max(y,r.bottom);}return y;}
+function newSpTick(){const now=performance.now(),dt=NEWSP.last?Math.min(5,(now-NEWSP.last)/1000):0;NEWSP.last=now;
+ let el=NEWSP.el;if(!el){el=NEWSP.el=document.createElement('div');el.id='newSp';el.className='newsp';document.body.appendChild(el);}
+ const blocked=!entered||modalOpen()||mode==='closet'||document.body.classList.contains('cine');
+ if(!NEWSP.cur&&NEWSP.q.length&&!blocked){const o=NEWSP.cur=NEWSP.q.shift();NEWSP.left=7;NEWSP.wait=0.35;/* 같은 순간 뜨는 다른 알림이 자리 잡은 뒤에 */
+  const cnt=Object.keys(book).filter(k=>SP_BY[k]).length,tot=SPECIES.length,st=starOf(o.sp);
+  el.innerHTML=`<canvas width="120" height="64"></canvas><div class="nt"><div class="n1">📖 도감에 새 친구가 생겼어요!</div><div class="n2"><b></b> <span class="sz"></span></div><div class="n3">${o.sp.rare?'✨ 희귀종 · ':''}${starStr(st)} · 도감 ${cnt} / ${tot}종</div></div>`;
+  el.querySelector('.n2 b').textContent=o.sp.name;el.querySelector('.sz').textContent=fmtSize(o.size);
+  try{const c=el.querySelector('canvas'),cc=c.getContext('2d');cc.clearRect(0,0,120,64);drawFish(cc,o.sp,60,32,fishL(o.sp,104,26),false);}catch(e){}
+  el.classList.toggle('rare',!!o.sp.rare);el.classList.toggle('leg',st>=7&&!o.sp.rare);}
+ if(!NEWSP.cur){el.classList.remove('on');return;}
+ if(blocked){el.classList.remove('on');return;}/* 창이 열려 있으면 숨기고 시간도 멈춰요 */
+ {const yb=Math.round(newSpTopBelow());if(yb!==NEWSP.yb){NEWSP.yb=yb;NEWSP.stable=0;}else NEWSP.stable=(NEWSP.stable||0)+1;}
+ if(!el.classList.contains('on')&&(NEWSP.wait>0||NEWSP.stable<2)){NEWSP.wait-=dt;return;}/* 위쪽 알림들이 자리를 다 잡은 뒤에 나타나요 */
+ NEWSP.left-=dt;if(NEWSP.left<=0){NEWSP.cur=null;el.classList.remove('on');return;}
+ const top=Math.max(newSpTopBelow()+10,parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nsTop'))||0);const ty=Math.round(Math.max(top,90))+'px';if(!el.classList.contains('on')){el.style.transition='none';el.style.top=ty;void el.offsetWidth;el.style.transition='';}else el.style.top=ty;el.classList.add('on');}
+setInterval(newSpTick,200);
 function recordCatch(f){const r=book[f.sp.id];let isNew=false,isBest=false;if(!r){book[f.sp.id]={n:1,best:f.size};isNew=true;}else{r.n++;if(f.size>r.best){r.best=f.size;isBest=true;}}saveBook();return{isNew,isBest};}
 
 /* ---------- audio ---------- */
@@ -4200,8 +4229,12 @@ const HARD_D=0.16;
 function starRangeTxt(){const R=GS.rod;if(R>=7)return`★7 물고기까지 모두`;const hi=Math.min(7,effStar()+1),lo=R+1;return`★${R} 물고기까지 편하게 · ★${lo===hi?lo:lo+'~★'+hi}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),R=GS.rod;return`🔥 ★${st} 물고기가 걸렸어요! 내 낚싯대(★${R})보다 ${st-R>1?'두':'한'} 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.rod>1?'두':'한'} 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-15k';
+const NEWS_VER='2026-11-17a';
 const NEWS=[
+ {d:'11월 17일',t:'🎣 찌 조정 · 💡 등대찌와 🏰 산호성 찌는 입질이 조금 더 늦게 와요',n:true,i:[
+  '💡 <b>꼬마 등대찌</b>: 입질이 오기까지 걸리는 시간이 기본 찌보다 <b>약 40%</b> 길어져요 (이전 약 30%).',
+  '🏰 <b>용궁 산호성 찌</b>: 입질이 기본 찌보다 <b>약 80%</b> 늦게 와요 (이전 약 40%).',
+  '🌈 ★7 무지개 전설 확률(등대찌 1.5배 · 산호성 찌 2배)과 걸리지 않는 물고기는 그대로예요. 🦈 상어 지느러미찌도 바뀌지 않았어요.']},
  {d:'11월 15일',t:'🏞️ 강이 세 구역으로 나뉘었어요 · 새 강 친구 16종 · 희귀종 4종 · 🌈 ★7 물보라 무지개 열목어',n:true,i:[
   '🏞️ 강이 <b>💦 폭포 웅덩이 · 🏔️ 상류</b>(폭포~서쪽 다리) · <b>🌉 중류</b>(두 다리 사이) · <b>🌊 하류·하구</b>(동쪽 다리~바다 어귀)로 나뉘었어요. 찌가 떨어지면 어느 구역인지 알려 줘요.',
   '🐟 구역마다 잘 잡히는 친구가 달라요. 사는 구역에서는 <b>2.5배</b> 잘 잡히고, 반대쪽 끝에서는 잘 안 잡혀요. 원래 있던 강 친구들도 사는 구역이 생겼으니 📖 도감 힌트를 확인해 보세요.',
@@ -4306,7 +4339,7 @@ const NEWS=[
   '🙏 사라졌던 장비는 게시판에 아이디를 남겨 주시면 다시 넣어 드려요.']},
  {d:'11월 12일',t:'🎫 아몰랑복권이 나왔어요',i:[
   '🐉 용왕님 상점에 <b>🎫 복권</b> 칸이 생겼어요. 한 장 <b>3,000몰랑</b>, 은박 6칸을 긁어서 <b>같은 그림 3개</b>가 나오면 당첨이에요.',
-  '🏰🏰🏰 <b>특등(0.1%)</b> — 복권에서만 나오는 전설의 <b>🏰 용궁 산호성 찌</b>! ★1·★2·★3 물고기가 안 걸리고 ★7 확률 2배 (입질 약 40% 늦게 · ★4 이상 낚싯대).',
+  '🏰🏰🏰 <b>특등(0.1%)</b> — 복권에서만 나오는 전설의 <b>🏰 용궁 산호성 찌</b>! ★1·★2·★3 물고기가 안 걸리고 ★7 확률 2배 (입질 약 80% 늦게 · ★4 이상 낚싯대).',
   '🌈 1등 30,000 · 🐋 2등 12,000 · 🐬 3등 6,000 · 🐙 4등 3,000(본전) · 🦀 위로상 1,200몰랑. 확률은 상점에 모두 공개돼 있어요.',
   '📅 하루 40장까지 살 수 있어요. 1등·특등이 나오면 섬 채팅에 자동으로 알려져요.',
   '💾 긁다가 창을 닫아도 괜찮아요. 결과는 산 순간 정해지고 저장돼서, 다음에 상점에서 이어서 긁을 수 있어요.']},
@@ -4334,7 +4367,7 @@ const NEWS=[
  {d:'11월 12일',t:'🎯 상점에 찌가 생겼어요',i:[
   '🦈 <b>상어 지느러미찌</b> (70,000몰랑) — ★1 물고기가 걸리지 않아요. 지느러미가 찌 주변을 빙글빙글 돌며 물살을 일으켜요. ★2 이상 낚싯대에서 쓸 수 있어요.',
   '💡 <b>꼬마 등대찌</b> (150,000몰랑) — ★1·★2 물고기가 걸리지 않아요. 꼭대기 불빛이 빙글 돌며 바다를 비춰요(밤에 더 밝아요). ★3 이상 낚싯대에서 쓸 수 있어요.',
-  '🌈 찌를 끼우면 ★7 무지개 전설 확률이 올라가요: 🦈 상어 지느러미찌 1.2배 · 💡 꼬마 등대찌 1.5배. 대신 예민한 찌라 입질이 조금 늦게 와요(상어 약 20% · 등대 약 30%).',
+  '🌈 찌를 끼우면 ★7 무지개 전설 확률이 올라가요: 🦈 상어 지느러미찌 1.2배 · 💡 꼬마 등대찌 1.5배. 대신 예민한 찌라 입질이 조금 늦게 와요(상어 약 20% · 등대 약 40% · 🏰 산호성 약 80%).',
   '🎒 산 찌는 가방 › 🎣 장비·옷에서 끼우고 뺄 수 있어요. 끼운 동안 막힌 ★ 물고기는 도감에 안 들어와요.',
   '🌦️ 무지개 이벤트는 이제 <b>딱 4배</b>예요 (전설의 기운과 겹쳐서 커지지 않아요). 예) 해안 먼 바다 0.1% → 무지개 0.4% · 상어 지느러미찌 0.12% → 무지개 0.48% · 꼬마 등대찌 0.15% → 무지개 0.6%',
   '🎉 누군가 ★7을 잡았을 때 열리는 축하 무지개는 <b>3분</b>으로 바뀌었어요.']},
@@ -4959,14 +4992,14 @@ document.addEventListener('pointerdown',e=>{const inp=document.getElementById('c
 /* ---------- v27: 위쪽 안내 배지(선상낚시·무지개)와 알림이 겹치지 않게 ---------- */
 let TOP_PUSH=-1;
 function layoutTopStack(){{const h=document.querySelector('.hud');if(h){const r=h.getBoundingClientRect();const v=r.height>0?Math.round(r.bottom+8)+'px':'0px';if(document.documentElement.style.getPropertyValue('--hudB')!==v)document.documentElement.style.setProperty('--hudB',v);}}
- const GAP=8,shown=el=>{if(!el||el.classList.contains('hidden'))return false;const cs=getComputedStyle(el);if(cs.display==='none'||+cs.opacity<0.05)return false;return el.getBoundingClientRect().height>0;};
+ const GAP=8,shown=el=>{if(!el||el.classList.contains('hidden'))return false;const cs=getComputedStyle(el);if(cs.display==='none'||(+cs.opacity<0.05&&!el.classList.contains('on')))return false;return el.getBoundingClientRect().height>0;};
  /* 왼쪽 위 정보·일어나기 버튼, 오른쪽 위 버튼과도 겹치지 않게 */
  const obs=[];for(const q of['.hud','.btns','#actBtn']){const el=document.querySelector(q);if(shown(el))obs.push(el.getBoundingClientRect());}
  let y=0;const place=(el,force)=>{if(!el)return;el.style.top='';if(!force&&!shown(el))return;const r0=el.getBoundingClientRect();let top=r0.top;if(y)top=Math.max(top,y+GAP);
   for(let k=0;k<3;k++)for(const o of obs){if(r0.left<o.right&&o.left<r0.right&&top<o.bottom&&top+r0.height>o.top)top=o.bottom+GAP;}
   if(Math.abs(top-r0.top)>0.5)el.style.top=Math.round(top)+'px';y=Math.max(y,top+r0.height);};
  const ac=document.getElementById('acBar');
- place(document.getElementById('boatBadge'));place(document.getElementById('rbBadge'));place(document.getElementById('lgBanner'));acLayout();
+ place(document.getElementById('boatBadge'));place(document.getElementById('rbBadge'));place(document.getElementById('lgBanner'));place(document.getElementById('lgPop'));acLayout();
  /* 알림(토스트)은 맨 아래에 */
  let v=y?Math.round(y+GAP+2):0;const te=document.getElementById('toast');
  if(te&&te.classList.contains('on')){document.documentElement.style.setProperty('--toastPush','0px');TOP_PUSH=0;const r=te.getBoundingClientRect();let top=Math.max(r.top,v);
@@ -5035,7 +5068,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-17b';
+const BUILD='2026-11-17d';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -5253,9 +5286,9 @@ function updHappy(dt){
 var FLOATS=[null,
  {lv:1,name:'상어 지느러미찌',em:'🦈',short:'🦈찌',price:70000,block:1,slow:0.2,leg:1.2,minRod:2,
   desc:'수면 위로 쏙 나온 상어 지느러미가 찌 주변을 빙글빙글 돌아요. 상어가 지키는 자리라 작은 ★1 물고기는 얼씬도 못 해요.'},
- {lv:2,name:'꼬마 등대찌',em:'💡',short:'💡등대찌',price:150000,block:2,slow:0.3,leg:1.5,minRod:3,
+ {lv:2,name:'꼬마 등대찌',em:'💡',short:'💡등대찌',price:150000,block:2,slow:0.4,leg:1.5,minRod:3,
   desc:'빨강·하양 줄무늬 꼬마 등대예요. 꼭대기 불빛이 빙글 돌며 바다를 비추면 작은 ★1·★2 물고기는 눈이 부셔 비켜 가고, 큰 물고기만 불빛을 따라와요.'},
- {lv:3,name:'용궁 산호성 찌',em:'🏰',short:'🏰산호성찌',price:0,lotto:true,block:3,slow:0.4,leg:2,minRod:4,
+ {lv:3,name:'용궁 산호성 찌',em:'🏰',short:'🏰산호성찌',price:0,lotto:true,block:3,slow:0.8,leg:2,minRod:4,
   desc:'용궁의 산호성 하나를 통째로 띄운 전설의 찌예요. 분홍·하늘빛 산호 탑과 금빛 지붕, 빛나는 물방울이 보글보글 올라와요. 용왕님이 초대한 귀한 손님(★4 이상)만 다가와요. 🎫 아몰랑복권 특등에서만 얻을 수 있어요.'}];
 var FL_LEG=1.5,FBLK=0;
 function floatOn(){const F=FLOATS[GS.float|0];if(!F||!(GS.floats||[]).includes(F.lv))return null;return GS.rod>=F.minRod?F:null;}
@@ -6459,7 +6492,7 @@ function updateFight(dt){
  rippleAcc+=dt;if(rippleAcc>0.3){rippleAcc=0;fishPos(_a);ripple(_a.x,_a.z,surge?1.2:0.7);}
 }
 function landed(){setF('caught');holding=false;myLine.visible=false;myFloat.visible=false;const rec=recordCatch(fish);sfx.catch();showBubble(P.label,`${fish.sp.name} ${fmtSize(fish.size)}`,false,6);
- ME.cid++;ME.cs=fish.sp.id;ME.cz=fish.size;P.hopT=t;markPresence();markSave();showCatch(fish,rec);happyStart(P);hofSubmit(fish.sp,fish.size);if(rec.isNew)colSync();legCatch(fish);}
+ ME.cid++;ME.cs=fish.sp.id;ME.cz=fish.size;P.hopT=t;markPresence();markSave();showCatch(fish,rec);happyStart(P);hofSubmit(fish.sp,fish.size);if(rec.isNew){colSync();newSpNote(fish.sp,fish.size);}legCatch(fish);}
 function press(){
  if(!entered||mode==='closet'||modalOpen())return;if(closeEmoPanel())return;initAudio();
  if(mode!=='fish')return;
