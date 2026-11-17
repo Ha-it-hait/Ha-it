@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-17s">
+<meta name="amollang-build" content="2026-11-17t">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -4288,8 +4288,15 @@ const HARD_D=0.16;
 function starRangeTxt(){const R=GS.rod;if(R>=7)return`★7 물고기까지 모두`;const hi=Math.min(7,effStar()+1),lo=R+1;return`★${R} 물고기까지 편하게 · ★${lo===hi?lo:lo+'~★'+hi}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),R=GS.rod;return`🔥 ★${st} 물고기가 걸렸어요! 내 낚싯대(★${R})보다 ${st-R>1?'두':'한'} 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.rod>1?'두':'한'} 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-17c';
+const NEWS_VER='2026-11-17d';
 const NEWS=[
+ {d:'11월 17일',t:'🎲 도감에 낚시 확률 계산기가 생겼어요',n:true,i:[
+  '📖 <b>도감</b>을 열면 맨 위에 <b>🎲 아몰랑아일랜드 낚시 확률 계산기</b> 탭이 있어요. 누르면 입질 1번에 어떤 물고기가 몇 % 확률로 걸리는지 보여 줘요.',
+  '🎯 처음엔 <b>지금 내 상황</b>(장소·강 구역·시간대·낚싯대·먹은 요리·미끼·찌·무지개 이벤트·해달 버프·보름달·전설 기운)으로 자동으로 맞춰져요.',
+  '⚙️ <b>조건 바꾸기</b>를 누르면 장소, 시간대, 던진 거리, 낚싯대, 요리, 미끼, 찌 등을 바꿔 가며 미리 계산해 볼 수 있어요.',
+  '🌈 ★7 무지개 전설과 ✨ 희귀종 확률을 <b>몇 번에 1번</b>인지로 보여 주고, 🪱 미끼별로 확률이 얼마나 달라지는지도 한눈에 비교할 수 있어요.',
+  '🐟 물고기별 확률도 볼 수 있어요. 아직 도감에 없는 물고기는 이름이 <b>???</b>로 가려져 있으니 직접 낚아서 확인해 보세요!',
+  '📌 계산기는 게임과 똑같은 식으로 계산해요. 실제로 끌어올릴 수 있는지는 낚싯대 ★와 손맛에 달려 있어요.']},
  {d:'11월 17일',t:'🎣 찌 조정 · 💡 등대찌와 🏰 산호성 찌는 입질이 조금 더 늦게 와요',n:true,i:[
   '💡 <b>꼬마 등대찌</b>: 입질이 기본 찌보다 <b>약 40%</b> 늦게 와요 (이전 약 30%).',
   '🏰 <b>용궁 산호성 찌</b>: 입질이 기본 찌보다 <b>약 60%</b> 늦게 와요 (이전 약 40%).',
@@ -5129,7 +5136,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-17s';
+const BUILD='2026-11-17t';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
