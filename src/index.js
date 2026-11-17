@@ -635,11 +635,19 @@ export class Vault extends DurableObject {
       if (!Number.isFinite(sz) || sz <= 0 || sz > SPECIES_MAX[id] + 0.05) return J({ error: '크기가 이상해요' }, 400);
       const ipKey = ip.slice(0, 64);
       const nm = this.nameOf(body) || '익명의 낚시꾼', rec = this.isRecord(id, sz, nm, now) ? 1 : 0;
-      // 같은 곳(IP)에서 5분 안에 다시 보고하면 무시 (서버가 잠들었다 깨어나도 기억하도록 저장소에 기록) · 최장 기록이면 기록 알림만
-      const ipK = 'lgip:' + ipKey;
-      const last = this.lgByIp.get(ipKey) || (await this.ctx.storage.get(ipK)) || 0;
-      if (now - last < 5 * 60 * 1000) return J({ ok: true, lg: this.legendNow(now), skipped: true, note: rec ? { k: 'rec', id, s: sz, n: nm, ts: now, rec: 1 } : null });
-      this.lgByIp.set(ipKey, now); await this.ctx.storage.put(ipK, now);
+      // 새 ★7이 오면 이전 무지개를 새 무지개(3분)로 바꿔요.
+      // 장난 방지: 같은 사람(같은 곳+같은 이름)은 1분 안에 다시 못 띄우고, 같은 곳(IP)은 5분에 5번까지만 (통신사 공용 IP를 여러 명이 함께 써도 막히지 않게)
+      // 같은 물고기(이름·종류·크기)를 두 번 보내면 무시해요 · 최장 기록이면 기록 알림만
+      const cur = this._lg && this._lg.until > now ? this._lg : null;
+      const skip = () => J({ ok: true, lg: this.legendNow(now), skipped: true, note: rec ? { k: 'rec', id, s: sz, n: nm, ts: now, rec: 1 } : null });
+      if (cur && cur.n === nm && cur.id === id && cur.s === sz) return skip();
+      const ipK = 'lgip:' + ipKey, meK = ipKey + '|' + nm;
+      let hist = this.lgByIp.get(ipKey) || (await this.ctx.storage.get(ipK)) || [];
+      if (!Array.isArray(hist)) hist = [Number(hist) || 0];
+      hist = hist.filter(t => now - t < 5 * 60 * 1000);
+      const meLast = this.lgByIp.get(meK) || 0;
+      if (now - meLast < 60 * 1000 || hist.length >= 5) return skip();
+      hist.push(now); this.lgByIp.set(ipKey, hist); this.lgByIp.set(meK, now); await this.ctx.storage.put(ipK, hist);
       const lg = { n: nm, id, s: sz, ts: now, until: now + LEGEND_MS, rec };
       this._lg = lg; await this.ctx.storage.put('legend', lg);
       return J({ ok: true, lg: this.legendNow(now), fan: lg });
