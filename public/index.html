@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-17m">
+<meta name="amollang-build" content="2026-11-17n">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -3000,9 +3000,9 @@ const ANIM_DEFS=[
      ap(p,A_SPH,'#fbf2e2',0,o.hip+o.R*0.62,o.lz+o.R*0.62,0.16,0.14,0.15);ap(p,A_SPH,'#fbf2e2',0,o.hip+o.R*0.45+0.3,o.lz+o.R*0.7,0.14,0.16,0.14);},
    headExtra:(p,H)=>{for(let i=0;i<8;i++){const a=i/8*Math.PI*2;ap(p,A_SPH,'#fffaf0',Math.cos(a)*H*0.35,H*0.95+Math.sin(a*2)*H*0.05,Math.sin(a)*H*0.3,H*0.3,H*0.28,H*0.3);}ap(p,A_SPH,'#fffaf0',0,H*1.15,0,H*0.32,H*0.3,H*0.32);
     for(const s of[-1,1])ap(p,A_SPH,'#ffb3c0',s*H*0.48,-H*0.18,H*0.7,H*0.12,H*0.07,H*0.05);}}},
- {id:'capybara',kind:'capybara',name:'유자',sp:'카피바라',em:'🍊',home:[-23,-66],speed:0.6,scale:1.3,cfg:{eyeP:[0.47,0.3,0.97,0.9],R:.3,L:.52,leg:.14,legR:.07,H:.27,neck:0,snout:{l:.7,r:.78},body:'#a9774e',head:'#b07f55',snoutC:'#9f6e47',legs:'#8d5f3f',paws:'#6b4630',nose:'#3a2618',ear:'round',earS:0.7,earC:'#8d5f3f',earIn:'#6b4630',tail:'stub',tailC:'#a9774e',
-   bodyExtra:(p,o)=>{ap(p,A_SPH,'#a2704a',0,o.hip+o.R*0.1,-o.lz*0.1,o.R*1.1,o.R*1.05,o.L*0.85);},
-   headExtra:(p,H)=>{ap(p,A_SPH,'#b07f55',0,H*0.05,H*0.35,H*0.9,H*0.82,H*0.75);ap(p,A_SPH,'#ffb627',0,H*1.05,-H*0.05,H*0.34,H*0.3,H*0.34);ap(p,A_SPH,'#ffd36b',-H*0.1,H*1.18,H*0.08,H*0.1,H*0.07,H*0.08);ap(p,A_SPH,'#4caf50',H*0.12,H*1.38,-H*0.05,H*0.16,H*0.05,H*0.09,0,0,0.5);}}},
+ {id:'capybara',kind:'capybara',name:'유자',sp:'카피바라',em:'🍊',home:[-23,-66],speed:0.6,scale:1.3,cfg:{eyeP:[0.5,0.3,0.84,1],eyeX:{c:'#2b160c',s:[0.15,0.03,0.07],hi:0.001,ry:0.5,rx:0},R:.31,L:.36,leg:.11,legR:.075,H:.33,neck:.0,snout:{l:.5,r:.7},body:'#bd7a3e',head:'#c2803f',snoutC:'#6a3820',legs:'#b97538',paws:'#5e311c',nose:'#6a3820',ear:'none',tail:'stub',tailC:'#bd7a3e',
+   bodyExtra:(p,o)=>{ap(p,A_SPH,'#bd7a3e',0,o.hip+o.R*0.02,0,o.R*1.16,o.R*1.1,o.L*0.98);ap(p,A_SPH,'#c4843f',0,o.hip-o.R*0.08,o.lz+o.R*0.15,o.R*0.98,o.R*0.98,o.R*0.82);},
+   headExtra:(p,H)=>{ap(p,A_SPH,'#c2803f',0,H*0.08,H*0.18,H*1.0,H*0.92,H*0.86);/* 큰 초콜릿색 주둥이(앞면이 넓고 납작) */ap(p,A_SPH,'#6a3820',0,-H*0.14,H*0.68,H*0.52,H*0.5,H*0.46);ap(p,A_SPH,'#6a3820',0,-H*0.12,H*0.98,H*0.49,H*0.46,H*0.16);/* 작은 둥근 귀 */for(const s2 of[-1,1])ap(p,A_SPH,'#5e311c',s2*H*0.72,H*0.66,-H*0.12,H*0.17,H*0.19,H*0.11,0,s2*0.4,0);/* 콧구멍·입 */for(const s2 of[-1,1])ap(p,A_SPH,'#2e150a',s2*H*0.13,H*0.02,H*1.13,H*0.05,H*0.028,H*0.02);ap(p,A_SPH,'#2e150a',0,-H*0.26,H*1.13,H*0.06,H*0.012,H*0.012);/* 유자 */ap(p,A_SPH,'#ffb627',0,H*1.0,-H*0.05,H*0.32,H*0.28,H*0.32);ap(p,A_SPH,'#ffd36b',-H*0.1,H*1.12,H*0.08,H*0.09,H*0.06,H*0.07);ap(p,A_SPH,'#4caf50',H*0.12,H*1.31,-H*0.05,H*0.15,H*0.05,H*0.09,0,0,0.5);}}},
  {id:'wol',kind:'dog',name:'월이',sp:'흰색 슈나우저',em:'🐶',home:[-1.2,-6.2],roam:7,speed:1.3,scale:1.38,tilt:0.36,cfg:{R:.17,L:.3,leg:.17,legR:.055,H:.26,neck:.05,snout:{l:.3,r:.5},body:'#fbfbf7',head:'#ffffff',snoutC:'#ffffff',legs:'#fbfaf5',paws:'#f6f2ea',nose:'#121216',ear:'none',tail:'tuft',tailC:'#ffffff',
    eyeP:[0.34,0.22,0.8,1.12],eyeX:{c:'#1d1512',s:[0.125,0.135,0.11],hi:0.038,hi2:0.015,ry:0.18,rx:-0.3},
    bodyExtra:(p,o)=>{ap(p,A_SPH,'#ffffff',0,o.hip+o.R*0.1,o.lz+o.R*0.3,o.R*0.9,o.R*1.0,o.R*0.7);
@@ -5070,7 +5070,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-17m';
+const BUILD='2026-11-17n';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
