@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-17f">
+<meta name="amollang-build" content="2026-11-17m">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -5070,7 +5070,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-17f';
+const BUILD='2026-11-17m';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -5409,6 +5409,7 @@ function buildCastleFloat(){const g=new THREE.Group();
  add(geo('csRing',()=>new THREE.TorusGeometry(0.105,0.008,6,24).rotateX(Math.PI/2)),gold,0,0.026,0).scale.set(2.6,1,1.1);
  const tower=(x,z,r,h,mat,roofH)=>{add(geo('csT'+r+h,()=>new THREE.CylinderGeometry(r,r*1.08,h,14)),mat,x,0.025+h/2,z);
   for(let i=0;i<6;i++){const a=i/6*Math.PI*2;add(geo('csBt'+r,()=>new THREE.BoxGeometry(r*0.42,r*0.45,r*0.42)),mat,x+Math.cos(a)*r*0.92,0.025+h+r*0.2,z+Math.sin(a)*r*0.92,0,-a,0);}
+  add(geo('csCore'+r,()=>new THREE.CylinderGeometry(r*0.92,r*0.98,r*0.46,14)),mat,x,0.025+h+r*0.21,z);/* 지붕 받침 */
   add(geo('csRf'+r,()=>new THREE.ConeGeometry(r*1.18,roofH,14)),gold,x,0.025+h+r*0.42+roofH/2,z);
   add(geo('csWin'+r,()=>new THREE.SphereGeometry(r*0.3,10,8)),winM,x,0.025+h*0.62,z+r*0.97).scale.set(0.8,1.15,0.3);
   return 0.025+h+r*0.42+roofH;};
@@ -5420,10 +5421,10 @@ function buildCastleFloat(){const g=new THREE.Group();
  for(const s of[-1,1])for(const[x0,x1,h]of[[0.03,0.068,0.075],[0.08,0.15,0.06],[0.165,0.235,0.055]]){const L=x1-x0,cx=s*(x0+x1)/2;add(geo('csWall'+h+L.toFixed(3),()=>new THREE.BoxGeometry(L,h,0.022)),(h===0.055?s<0:s>0)?sky:pink,cx,0.025+h/2,0.03);
   const n=Math.max(2,Math.round(L/0.016));for(let k=0;k<n;k++){const x=s*(x0+L*(k+0.5)/n);add(geo('csMer',()=>new THREE.BoxGeometry(0.008,0.012,0.024)),(h===0.055?s<0:s>0)?sky:pink,x,0.025+h+0.006,0.03);}
   add(geo('csWin2',()=>new THREE.SphereGeometry(0.008,8,6)),winM,cx,0.025+h*0.5,0.042).scale.set(1,1.3,0.4);}
- for(const s of[-1,1])for(const fx of[0.15,0.235]){const fy=fx>0.2?0.268:0.215;add(geo('csFlagP',()=>new THREE.CylinderGeometry(0.003,0.003,0.05,6)),gold,s*fx,fy,fx>0.2?0.03:0.025);add(geo('csFlag2',()=>new THREE.PlaneGeometry(0.03,0.019)),new THREE.MeshStandardMaterial({color:(fx>0.2?s<0:s>0)?'#5ec8ff':'#ff5e7e',side:THREE.DoubleSide,roughness:0.6}),s*fx+0.016,fy+0.013,fx>0.2?0.03:0.025);}
+ for(const s of[-1,1])for(const fx of[0.15,0.235]){const apex=fx>0.2?0.025+0.13+0.028*0.42+0.07:0.025+0.1+0.025*0.42+0.06,fy=apex+0.019;add(geo('csFlagP',()=>new THREE.CylinderGeometry(0.003,0.003,0.05,6)),gold,s*fx,fy,fx>0.2?0.03:0.025);add(geo('csFlag2',()=>new THREE.PlaneGeometry(0.03,0.019)),new THREE.MeshStandardMaterial({color:(fx>0.2?s<0:s>0)?'#5ec8ff':'#ff5e7e',side:THREE.DoubleSide,roughness:0.6}),s*fx+0.016,fy+0.013,fx>0.2?0.03:0.025);}
  add(geo('csPearl',()=>new THREE.SphereGeometry(0.018,14,10)),pearl,0,top+0.012,0);
- add(geo('csFlagP',()=>new THREE.CylinderGeometry(0.003,0.003,0.05,6)),gold,0.068,0.31,0.02);
- add(geo('csFlag',()=>new THREE.PlaneGeometry(0.035,0.022)),new THREE.MeshStandardMaterial({color:'#ff5e7e',side:THREE.DoubleSide,roughness:0.6}),0.087,0.322,0.02);
+ 
+
  const gate=add(geo('csGate',()=>{const s=new THREE.Shape();s.moveTo(-0.022,0);s.lineTo(-0.022,0.035);s.quadraticCurveTo(0,0.06,0.022,0.035);s.lineTo(0.022,0);s.closePath();return new THREE.ExtrudeGeometry(s,{depth:0.01,bevelEnabled:false});}),gold,0,0.026,0.036);
  for(const[x,z,ry]of[[-0.29,0.03,0.4],[0.29,0.04,-0.5],[-0.06,-0.08,1.2],[0.08,-0.08,-1],[-0.19,-0.07,0.8],[0.2,-0.07,-0.7]]){add(geo('csC1',()=>new THREE.CylinderGeometry(0.005,0.009,0.07,6)),coral,x,0.05,z,0.25,ry,0.2);add(geo('csC2',()=>new THREE.CylinderGeometry(0.004,0.006,0.04,6)),coral,x+0.012,0.07,z,0,ry,-0.7);}
  const glow=glowSprite('#ffe6a0',0.75);glow.position.y=0.2;g.add(glow);
@@ -5436,8 +5437,8 @@ function buildCastleFloat(){const g=new THREE.Group();
   const tailM=new THREE.MeshStandardMaterial({color:'#3fd6c6',roughness:0.35,metalness:0.3,emissive:'#0d6a63',emissiveIntensity:0.35});const topM=new THREE.MeshStandardMaterial({color:'#b98cff',roughness:0.4,emissive:'#4a2a88',emissiveIntensity:0.3});
   const m=(geom,mat,x,y,z,sx=1,sy=1,sz=1)=>{const o=new THREE.Mesh(geom,mat);o.position.set(x,y,z);o.scale.set(sx,sy,sz);mer.add(o);return o;};
   m(geo('mrHead',()=>new THREE.SphereGeometry(0.018,12,10)),skin,0.03,0.006,0);
-  m(geo('mrHair',()=>new THREE.SphereGeometry(0.02,12,10,0,Math.PI*2,0,Math.PI*0.6)),hairM,0.028,0.009,0).rotation.z=0.5;
-  m(geo('mrHairT',()=>new THREE.ConeGeometry(0.012,0.04,8)),hairM,0.008,0.004,0,1,1,1).rotation.z=Math.PI/2+0.3;
+  m(geo('mrHair',()=>new THREE.SphereGeometry(0.02,12,10,0,Math.PI*2,0,Math.PI*0.6)),hairM,0.028,0.009,0,1.08,1.08,1.12).rotation.z=0.55;
+  /* 풍성한 웨이브 긴 머리: 머리 뒤로 한 덩어리로 부풀어 흐르고, 결(웨이브)이 잡힌 채 끝이 물결치며 바깥으로 말려요 */{const HX=0.03,HY=0.006;m(geo('mrMane2',()=>{const gm=new THREE.SphereGeometry(1,48,28);const pa=gm.attributes.position,V=new THREE.Vector3();for(let k=0;k<pa.count;k++){V.fromBufferAttribute(pa,k);const u=Math.max(0,-V.x),ph=Math.atan2(V.z,V.y);const rr=Math.min(1,Math.hypot(V.y,V.z)*1.6);const wide=1+1.05*u*u;const rid=1+0.12*Math.sin(7*ph+u*6)*(0.3+u)*rr;const lobe=1+0.26*Math.sin(5*ph+0.6)*u*u*u*rr;const yy=V.y<0?V.y*0.5:V.y;pa.setXYZ(k,V.x*(V.x<0?0.04*lobe:0.026),yy*0.0148*wide*rid+0.004*u*u+0.0035*Math.sin(u*Math.PI*2.2),V.z*0.019*wide*rid);}gm.computeVertexNormals();return gm;}),hairM,HX-0.02,HY+0.013,0);}
   m(geo('mrBody',()=>new THREE.SphereGeometry(0.014,10,8)),topM,0.008,0,0,1.3,0.9,0.9);
   m(geo('mrTail',()=>new THREE.ConeGeometry(0.013,0.05,10)),tailM,-0.022,0,0).rotation.z=Math.PI/2;
   const fin=m(geo('mrFin',()=>{const sh=new THREE.Shape();sh.moveTo(0,0);sh.quadraticCurveTo(-0.01,0.02,-0.022,0.022);sh.quadraticCurveTo(-0.012,0,-0.022,-0.022);sh.quadraticCurveTo(-0.01,-0.02,0,0);return new THREE.ShapeGeometry(sh);}),new THREE.MeshStandardMaterial({color:'#7af0e0',side:THREE.DoubleSide,roughness:0.3,emissive:'#1a8a80',emissiveIntensity:0.4}),-0.045,0,0);
