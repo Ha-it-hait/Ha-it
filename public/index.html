@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-18f">
+<meta name="amollang-build" content="2026-11-18g">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -2500,14 +2500,15 @@ function updBaitFx(dt){{const bb=myBaitBits();if(bb!==_myBx){_myBx=bb;markPresen
 /* ---------- v82: 저수지 꾸밈 — 연잎·연꽃·부들·개구리·잠자리 (눌러도 반응 없는 장식) ---------- */
 const PDECO={pads:[],perch:[],frogs:[],flies:[],g:null};
 function pondWater(x,z,deep){return terrainH(x,z)<(deep??-0.35)&&resEdge(x,z)<-1&&SEATS.every(S=>Math.hypot(x-S.px,z-S.pz)>7.5);}
-function lotusGeo(){/* 활짝 핀 연꽃: 꽃잎 3겹(바깥은 넓게 눕고 안쪽은 서요) · 끝이 뾰족한 꽃잎 · 가운데 노란 연밥과 꽃술 */const st=[];
+function lotusGeo(){/* 가벼운 연꽃: 모양·색은 그대로, 면 수만 줄임 (꽃잎 8×5 구 · 6각 끝 · 꽃술 얇은 기둥) */const st=[];
+ const PS=geo('lotPS',()=>new THREE.SphereGeometry(1,8,5)),PC=geo('lotPC',()=>new THREE.ConeGeometry(1,1,6)),DS=geo('lotDS',()=>new THREE.SphereGeometry(1,5,3)),ST=geo('lotST',()=>new THREE.CylinderGeometry(0.5,1,1,3));
  const layer=(n,tilt,len,wid,c,off)=>{for(let i=0;i<n;i++){const a=i/n*Math.PI*2+off;const dx=-Math.sin(tilt)*Math.cos(a),dy=Math.cos(tilt),dz=Math.sin(tilt)*Math.sin(a);
-  st.push(part(A_SPH,c,dx*len*0.45,0.025+dy*len*0.45,dz*len*0.45,0,a,tilt,wid,len*0.45,wid*0.3));
-  st.push(part(A_CONE,c,dx*len*0.95,0.025+dy*len*0.95,dz*len*0.95,0,a,tilt,wid*0.62,len*0.2,wid*0.18));}};
+  st.push(part(PS,c,dx*len*0.45,0.025+dy*len*0.45,dz*len*0.45,0,a,tilt,wid,len*0.45,wid*0.3));
+  st.push(part(PC,c,dx*len*0.95,0.025+dy*len*0.95,dz*len*0.95,0,a,tilt,wid*0.62,len*0.2,wid*0.18));}};
  layer(10,1.3,0.16,0.055,'#ffd2e4',0);layer(8,0.95,0.15,0.05,'#ffb3d1',0.33);layer(6,0.55,0.13,0.045,'#ff94bf',0.12);layer(4,0.25,0.1,0.038,'#ff7aae',0.8);
- st.push(part(new THREE.CylinderGeometry(1,0.75,1,14),'#e4e56a',0,0.075,0,0,0,0,0.03,0.028,0.03));
- for(let i=0;i<7;i++){const a=i/7*Math.PI*2;st.push(part(A_SPH,'#a9bf3e',Math.cos(a)*0.016,0.09,Math.sin(a)*0.016,0,0,0,0.005,0.003,0.005));}
- for(let i=0;i<16;i++){const a=i/16*Math.PI*2;st.push(part(aCap(0.003,0.028),'#ffcf3a',Math.cos(a)*0.038,0.078,Math.sin(a)*0.038,Math.sin(a)*0.5,0,-Math.cos(a)*0.5));}
+ st.push(part(new THREE.CylinderGeometry(1,0.75,1,10),'#e4e56a',0,0.075,0,0,0,0,0.03,0.028,0.03));
+ for(let i=0;i<7;i++){const a=i/7*Math.PI*2;st.push(part(DS,'#a9bf3e',Math.cos(a)*0.016,0.09,Math.sin(a)*0.016,0,0,0,0.005,0.003,0.005));}
+ for(let i=0;i<16;i++){const a=i/16*Math.PI*2;st.push(part(ST,'#ffcf3a',Math.cos(a)*0.038,0.078,Math.sin(a)*0.038,Math.sin(a)*0.5,0,-Math.cos(a)*0.5,0.0035,0.034,0.0035));}
  return mergeGeometries(st);}
 function buildPondDeco(){const rng=mulberry32(8282);const R=()=>rng();const st=[];
  const PADC=['#4f9a4a','#5fae55','#47914a','#62b35a'];const lot=[];
@@ -5187,7 +5188,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-18f';
+const BUILD='2026-11-18g';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
