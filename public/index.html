@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-18c">
+<meta name="amollang-build" content="2026-11-18f">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -220,7 +220,7 @@ button{font-family:inherit}
 #pcalc .pco .p{text-align:right;font-weight:900}
 #pcalc .pco .b{grid-column:1/3}#pcalc .pco .b span{display:inline-block;background:#f1ecfb;border-radius:6px;padding:1px 6px;margin:2px 3px 0 0;font-size:10.5px;color:#4a3a6a}
 .btabs .btab{flex:1 1 0;min-width:78px;display:flex;align-items:center;justify-content:center;text-align:center;min-height:40px;padding:7px 8px;letter-spacing:-.2px}
-.btabs .btab.calc{flex:2.7 1 0;font-size:12px}
+.btabs .btab.calc{flex:1.6 1 0}
 #pcalc .pcbt{align-items:stretch;column-gap:0!important}
 #pcalc .pcbt>div.n{padding-left:6px}
 #pcalc .pcbt>div{display:flex;flex-direction:column;justify-content:center;min-height:36px;box-sizing:border-box}
@@ -271,7 +271,7 @@ button{font-family:inherit}
 .card .primary.ghost{background:#e9eef3;color:#2b3b52;box-shadow:0 4px 0 #c9d3dd}
 .tankbtn{position:fixed;left:max(14px,env(safe-area-inset-left));bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 70px);width:64px;height:64px;border-radius:32px;border:3px solid #fff;background:#4fc3e8;color:#fff;font-size:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:0 8px 22px rgba(0,0,0,.22);z-index:4;cursor:pointer}
 .tankbtn span{font-size:11px;font-weight:900;margin-top:2px}
-.tankbox{width:min(1280px,100%);height:min(920px,95vh);background:#fffaf0;color:#3a3326;border-radius:22px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 24px 70px rgba(0,0,0,.35);animation:pop .3s cubic-bezier(.2,1.4,.4,1)}
+.tankbox{width:min(1280px,100%);height:min(920px,95vh);height:min(920px,calc(100dvh - 12px));max-height:calc(100% - 0px);box-sizing:border-box;background:#fffaf0;color:#3a3326;border-radius:22px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 24px 70px rgba(0,0,0,.35);animation:pop .3s cubic-bezier(.2,1.4,.4,1)}
 .thead{display:flex;align-items:center;gap:10px;padding:2px 4px}.thead b{font-size:19px}.thead span{font-size:13px;color:#8a7f6a;font-weight:800}
 .tankwrap{flex:1;position:relative;border-radius:16px;overflow:hidden;border:4px solid #cfe6ee;min-height:200px}
 #tank.overlay{padding:6px}
@@ -285,7 +285,7 @@ body.cine .lgbanner{opacity:0}#prof .card.wide{width:min(1280px,100%);height:min
 @media (max-width:520px){#prof .card.wide{height:94vh}#prof .profrod canvas{width:64px;height:38px}}
 #tankCv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:manipulation;cursor:pointer}
 .tankempty{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);margin:0;background:rgba(255,255,255,.88);color:#3a4a5a;padding:14px 18px;border-radius:14px;text-align:center;font-size:14px;line-height:1.6;width:max-content;max-width:86%}
-.tinfo{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 4px}.tinfo span{flex:1;font-size:14px;font-weight:800}
+.tinfo{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 4px;flex:0 0 auto}.tinfo span{flex:1;min-width:0;font-size:14px;font-weight:800}@media (max-width:520px){.tinfo span{font-size:12.5px;line-height:1.35}.tinfo button{height:36px;padding:0 12px;flex:0 0 auto}.thead b{font-size:17px}}
 .tinfo button{border:0;background:#5aa0e6;color:#fff;font-weight:900;border-radius:12px;height:38px;padding:0 16px;cursor:pointer}
 
 .help{max-width:440px}
@@ -801,7 +801,7 @@ body.cine .lgpop{opacity:0}
       <li><b>기다려요</b><span>찌가 톡톡 흔들리는 건 물고기가 간을 보는 거예요. 이때 누르면 도망가요.</span></li>
       <li><b>챔질!</b><span>방울 소리와 함께 찌가 <em>쑥 들어가고 ❗가 뜨면</em> 바로 탭하세요.</span></li>
       <li><b>끌어올려요</b><span><em>누르고 있으면 감겨요.</em> 줄 장력 막대가 빨개지거나 <em>‘저항!’</em>이 뜨면 잠깐 손을 떼요. 너무 오래 떼면 바늘이 빠져요.</span></li>
-      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (기본 50마리 · 🐉 상점의 <b>🐠 수조</b> 칸에서 3만 몰랑에 10칸씩, 최대 200마리까지 늘릴 수 있어요. 🎫 상점 <b>🎫 복권</b> 칸에서 아몰랑복권(3,000몰랑, 하루 40장 · 특등은 🏰 용궁 산호성 찌)을 긁을 수 있어요. 🧵 상점 <b>🧵 릴</b> 칸의 릴을 달면 줄을 더 빨리, 덜 팽팽하게 감을 수 있어요(🐚 소라 껍데기 릴 · 🐋 황금 고래 릴). 수조 물고기는 <b>구경 전용</b>이라 가방으로 옮기거나 팔 수 없어요) 👑 명예의 전당 <b>도감왕 1등</b>은 머리 위에 빙글빙글 도는 금빛 왕관이 떠요. 🎒 가방은 기본 30마리이고, 🐉 상점의 <b>🎒 가방</b> 칸에서 🦈 아기 상어 가방(+20마리)·👼 아기 천사 날개 가방(+40마리)을 살 수 있어요. 물고기와 <b>3분 넘게</b> 싸우면 물고기가 지쳐서 힘이 빠져요(최대 -30%). 잡은 카드에서 PC는 키보드 <kbd>1</kbd> 놓아주기 · <kbd>2</kbd> 🎒 가방에 · <kbd>3</kbd> 🐠 수조에로도 골라요. 📖 도감에서 생물마다 📏 최소~최대 크기를 볼 수 있어요.</span></li>
+      <li><b>도감에 모으고 키워요</b><span>잡은 물고기는 📖 도감에 기록돼요. <em>놓아주기</em>를 하거나 <em>🐠 수조에 키우기</em>를 누르면 왼쪽 아래 수조에서 헤엄치는 모습을 볼 수 있어요. (기본 50마리 · 🐉 상점의 <b>🐠 수조</b> 칸에서 3만 몰랑에 10칸씩, 최대 200마리까지 늘릴 수 있어요. 🎫 상점 <b>🎫 복권</b> 칸에서 아몰랑복권(3,000몰랑, 하루 40장 · 특등은 🏰 용궁 산호성 찌)을 긁을 수 있어요. 🧵 상점 <b>🧵 릴</b> 칸의 릴을 달면 줄을 더 빨리, 덜 팽팽하게 감을 수 있어요(🐚 소라 껍데기 릴 · 🐋 황금 고래 릴). 수조 물고기는 <b>구경 전용</b>이라 가방으로 옮기거나 팔 수 없어요) 👑 명예의 전당 <b>도감왕 1등</b>은 머리 위에 빙글빙글 도는 <b>금 왕관</b>, <b>2등은 은 왕관</b>, <b>3등은 동 왕관</b>이 떠요. 🎒 가방은 기본 30마리이고, 🐉 상점의 <b>🎒 가방</b> 칸에서 🦈 아기 상어 가방(+20마리)·👼 아기 천사 날개 가방(+40마리)을 살 수 있어요. 물고기와 <b>3분 넘게</b> 싸우면 물고기가 지쳐서 힘이 빠져요(최대 -30%). 잡은 카드에서 PC는 키보드 <kbd>1</kbd> 놓아주기 · <kbd>2</kbd> 🎒 가방에 · <kbd>3</kbd> 🐠 수조에로도 골라요. 📖 도감에서 생물마다 📏 최소~최대 크기를 볼 수 있어요.</span></li>
     </ol>
     <div class="btitle">💡 물고기 찾기 팁</div>
     <ul class="tips">
@@ -862,7 +862,7 @@ body.cine .lgpop{opacity:0}
 <div class="overlay hidden" id="book">
   <div class="card book">
     <div class="bhead"><b>도감</b><span id="bookCount"></span><button class="x" id="bookX">✕</button></div>
-    <div class="btabs"><button class="btab on" data-bt="book">📖 도감</button><button class="btab calc" data-bt="calc">🎲 아몰랑아일랜드 낚시 확률 계산기</button></div>
+    <div class="btabs"><button class="btab on" data-bt="book">📖 도감</button><button class="btab calc" data-bt="calc">🎲 낚시 확률 계산기</button></div>
     <div id="bookMain">
     <p class="bsub">바다·강·저수지마다, 시간대와 던지는 거리마다 나오는 물고기가 달라요. ❓ 도움말에서 시간대를 바꿔볼 수 있어요.</p>
     <div id="legCard"></div>
@@ -1863,7 +1863,9 @@ function buildTank(){const{w,h}=tankDims();$('tankCount').textContent=`${tank.le
   const kind=T_BOTTOM.has(sp.shape)?'bottom':T_FLOAT.has(sp.shape)?'float':'swim';const slow=(sp.shape==='turtle'||sp.shape==='sunfish'||sp.shape==='shark'||sp.shape==='hammer'||sp.shape==='seal'||sp.shape==='orca'||sp.shape==='seaotter')?0.55:1;
   return{key,o,sp,spr,kind,x:rand(spr.w*0.5+4,Math.max(spr.w*0.5+6,w-spr.w*0.5-4)),y:kind==='bottom'?sandY-spr.h*0.3:rand(h*0.2,h*0.7),vx:(kind==='bottom'?rand(8,16):rand(20,42))*slow*(Math.random()<0.5?-1:1),ty:0,ph:rand(0,6)};});
  if(tankSel&&!tankCr.includes(tankSel))tankSel=null;showTinfo();}
-function openTank(){closeEmoPanel();$('tank').classList.remove('hidden');tankOpen=true;tankSel=null;requestAnimationFrame(()=>{buildTank();tankLast=performance.now();cancelAnimationFrame(tankRAF);tankRAF=requestAnimationFrame(tankLoop);});}
+function tankFit(){const b=$('tank').querySelector('.tankbox');if(!b)return;const vv=window.visualViewport;const vh=Math.round(vv?vv.height:innerHeight);b.style.height=Math.max(260,Math.min(920,vh-12))+'px';const o=$('tank');o.style.top=(vv?Math.round(vv.offsetTop):0)+'px';o.style.bottom='auto';o.style.height=vh+'px';}
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>{if(tankOpen){tankFit();buildTank();}});
+function openTank(){closeEmoPanel();$('tank').classList.remove('hidden');tankOpen=true;tankSel=null;tankFit();requestAnimationFrame(()=>{buildTank();tankLast=performance.now();cancelAnimationFrame(tankRAF);tankRAF=requestAnimationFrame(tankLoop);});}
 function closeTank(){$('tank').classList.add('hidden');tankOpen=false;cancelAnimationFrame(tankRAF);}
 function showTinfo(){const tx=$('tinfoTxt'),rb=$('tinfoRel');$('tinfoBag').classList.add('hidden');if(!tankSel){tx.textContent=tank.length?'물고기를 누르면 이름과 크기가 보여요 · 수조 물고기는 구경 전용이에요(가방으로 옮기기·팔기 ✕)':'';rb.classList.add('hidden');return;}
  const sp=tankSel.sp;tx.textContent=`${sp.name} · ${fmtSize(tankSel.o.s)} · ${starStr(starOf(sp))}`;rb.classList.remove('hidden');}
@@ -4332,7 +4334,7 @@ function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.r
 const NEWS_VER='2026-11-17d';
 const NEWS=[
  {d:'11월 17일',t:'🎲 도감에 낚시 확률 계산기가 생겼어요',n:true,i:[
-  '📖 <b>도감</b>을 열면 맨 위에 <b>🎲 아몰랑아일랜드 낚시 확률 계산기</b> 탭이 있어요. 누르면 입질 1번에 어떤 물고기가 몇 % 확률로 걸리는지 보여 줘요.',
+  '📖 <b>도감</b>을 열면 맨 위에 <b>🎲 낚시 확률 계산기</b> 탭이 있어요. 누르면 입질 1번에 어떤 물고기가 몇 % 확률로 걸리는지 보여 줘요.',
   '🎯 처음엔 <b>지금 내 상황</b>(장소·강 구역·시간대·낚싯대·먹은 요리·미끼·찌·무지개 이벤트·해달 버프·보름달·전설 기운)으로 자동으로 맞춰져요.',
   '⚙️ <b>조건 바꾸기</b>를 누르면 장소, 시간대, 던진 거리, 낚싯대, 요리, 미끼, 찌 등을 바꿔 가며 미리 계산해 볼 수 있어요.',
   '🌈 ★7 무지개 전설과 ✨ 희귀종 확률을 <b>몇 번에 1번</b>인지로 보여 주고, 🪱 미끼별로 확률이 얼마나 달라지는지도 한눈에 비교할 수 있어요.',
@@ -5075,26 +5077,34 @@ function drawRbHalo(){}
 // 수조: 반짝이는 물고기 뒤쪽 가장자리에서만 살짝
 function drawRbAuras(c,list,yoff){c.save();c.globalCompositeOperation='lighter';for(const cr of list){if(!cr.sp||!cr.sp.rainbow)continue;const s=cr.spr,tt=tankT,ph=cr.ph||0;
  for(let i=0;i<3;i++){const a=tt*0.8+ph+i*2.094;const tw=0.5+0.5*Math.sin(tt*4+i*1.9+ph);rbSpark(c,cr.x+Math.cos(a)*s.w*0.42,cr.y+(yoff?yoff(cr):0)+Math.sin(a)*s.h*0.36,Math.max(1.2,Math.min(s.w,s.h)*0.045)*(0.6+tw*0.5),`hsla(${(tt*80+i*120)%360},100%,85%,${0.3+tw*0.5})`);}}c.restore();}
-/* ---------- v25: 명예의 전당 도감왕 1등 머리 위 빙글빙글 왕관 ---------- */
-const CROWN={name:'',acc:0};
+/* ---------- v25 → v125: 명예의 전당 도감왕 1·2·3등 머리 위 빙글빙글 금·은·동 왕관 ---------- */
+const CROWN={name:'',acc:0,ranks:new Map()};
 function crownTopName(){const k=(COL.top||[]).find(e=>e&&e.c>0);return k?String(k.n||''):'';}
-function makeCrown(){const g=new THREE.Group();g.userData.crown=1;
- const gold=stdMat('#ffcf3f',0.22,{metalness:0.75,emissive:'#a26b00',emissiveIntensity:0.55});
- const band=new THREE.Mesh(geo('crBand',()=>new THREE.CylinderGeometry(0.17,0.185,0.11,24,1,true)),stdMat('#ffcf3f',0.22,{metalness:0.75,emissive:'#a26b00',emissiveIntensity:0.55,side:'double'}));g.add(band);
- const rim=new THREE.Mesh(geo('crRim',()=>new THREE.TorusGeometry(0.182,0.018,8,28)),gold);rim.rotation.x=Math.PI/2;rim.position.y=-0.05;g.add(rim);
- const gems=['#ff3b6b','#3b8bff','#2fd27a','#b45cff','#ffb02e'];
- for(let i=0;i<5;i++){const a=i/5*Math.PI*2;const sp=new THREE.Mesh(geo('crSpike',()=>new THREE.ConeGeometry(0.045,0.14,8)),gold);sp.position.set(Math.cos(a)*0.17,0.12,Math.sin(a)*0.17);g.add(sp);
-  const ball=new THREE.Mesh(geo('crBall',()=>new THREE.SphereGeometry(0.026,12,10)),gold);ball.position.set(Math.cos(a)*0.17,0.2,Math.sin(a)*0.17);g.add(ball);
-  const gem=new THREE.Mesh(geo('crGem',()=>new THREE.OctahedronGeometry(0.032)),stdMat(gems[i],0.15,{metalness:0.2,emissive:gems[i],emissiveIntensity:0.6}));const b=a+Math.PI/5;gem.position.set(Math.cos(b)*0.183,0,Math.sin(b)*0.183);gem.lookAt(Math.cos(b)*2,0,Math.sin(b)*2);g.add(gem);}
- const sm=[];for(let i=0;i<4;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:sparkTex(),color:'#fff3b0',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));s.scale.set(0.16,0.16,1);g.add(s);sm.push(s);}g.userData.sp=sm;
- const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:sparkTex(),color:'#ffd76a',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.35}));glow.scale.set(0.7,0.7,1);glow.position.y=0.06;g.add(glow);g.userData.glow=glow;
- return g;}
-function setCrown(c,on,hat){if(!c)return;c.crownY=labelH(hat|0)-1.36-0.08;if(on&&!c.crownG){c.crownG=makeCrown();c.head.add(c.crownG);c.crownG.position.y=c.crownY;}else if(!on&&c.crownG){c.head.remove(c.crownG);c.crownG=null;}}
+/* 도감왕 순위표(서버가 종류 수 많은 순 · 같으면 먼저 달성한 순으로 줘요) 앞의 3명 → 이름별 등수 */
+function crownRanks(){const m=new Map();for(const e of (COL.top||[])){if(!e||!(e.c>0))continue;const n=String(e.n||'');if(!n||m.has(n))continue;m.set(n,m.size+1);if(m.size>=3)break;}return m;}
+const CROWN_PAL={1:{c:'#ffcf3f',e:'#a26b00',ei:0.55,sp:'#fff3b0',gl:'#ffd76a',gems:['#ff3b6b','#3b8bff','#2fd27a','#b45cff','#ffb02e'],sc:1},
+ 2:{c:'#e6ecf3',e:'#7a8796',ei:0.5,sp:'#f4f8ff',gl:'#d6e6ff',gems:['#6fb4ff','#e9f3ff','#6fb4ff','#e9f3ff','#6fb4ff'],sc:0.92},
+ 3:{c:'#d98a4c',e:'#7a3a10',ei:0.5,sp:'#ffe0bf',gl:'#ffb47a',gems:['#ff6a4d','#ffd27a','#ff6a4d','#ffd27a','#ff6a4d'],sc:0.86}};
+function makeCrown(rank){const P0=CROWN_PAL[rank]||CROWN_PAL[1];const g=new THREE.Group();g.userData.crown=rank||1;
+ const metal=stdMat(P0.c,0.22,{metalness:0.75,emissive:P0.e,emissiveIntensity:P0.ei});
+ const band=new THREE.Mesh(geo('crBand',()=>new THREE.CylinderGeometry(0.17,0.185,0.11,24,1,true)),stdMat(P0.c,0.22,{metalness:0.75,emissive:P0.e,emissiveIntensity:P0.ei,side:'double'}));g.add(band);
+ const rim=new THREE.Mesh(geo('crRim',()=>new THREE.TorusGeometry(0.182,0.018,8,28)),metal);rim.rotation.x=Math.PI/2;rim.position.y=-0.05;g.add(rim);
+ for(let i=0;i<5;i++){const a=i/5*Math.PI*2;const sp=new THREE.Mesh(geo('crSpike',()=>new THREE.ConeGeometry(0.045,0.14,8)),metal);sp.position.set(Math.cos(a)*0.17,0.12,Math.sin(a)*0.17);g.add(sp);
+  const ball=new THREE.Mesh(geo('crBall',()=>new THREE.SphereGeometry(0.026,12,10)),metal);ball.position.set(Math.cos(a)*0.17,0.2,Math.sin(a)*0.17);g.add(ball);
+  const gc=P0.gems[i];const gem=new THREE.Mesh(geo('crGem',()=>new THREE.OctahedronGeometry(0.032)),stdMat(gc,0.15,{metalness:0.2,emissive:gc,emissiveIntensity:0.6}));const b=a+Math.PI/5;gem.position.set(Math.cos(b)*0.183,0,Math.sin(b)*0.183);gem.lookAt(Math.cos(b)*2,0,Math.sin(b)*2);g.add(gem);}
+ const sm=[];for(let i=0;i<4;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:sparkTex(),color:P0.sp,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));s.scale.set(0.16,0.16,1);g.add(s);sm.push(s);}g.userData.sp=sm;
+ const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:sparkTex(),color:P0.gl,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.35}));glow.scale.set(0.7,0.7,1);glow.position.y=0.06;g.add(glow);g.userData.glow=glow;
+ g.scale.setScalar(P0.sc);return g;}
+/* rank: 0 = 없음 · 1 금 · 2 은 · 3 동 (true는 1등으로) */
+function setCrown(c,rank,hat){if(!c)return;rank=rank===true?1:(rank|0);c.crownY=labelH(hat|0)-1.36-0.08;
+ if(c.crownG&&(c.crownR|0)!==rank){c.head.remove(c.crownG);c.crownG=null;}
+ if(rank&&!c.crownG){c.crownG=makeCrown(rank);c.crownR=rank;c.head.add(c.crownG);c.crownG.position.y=c.crownY;}
+ if(!rank)c.crownR=0;}
 function animCrown(c,dt){const g=c.crownG;if(!g)return;const ph=t+(c.seed||0);g.rotation.y+=dt*1.8;g.position.y=(c.crownY||0.66)+Math.sin(ph*2.2)*0.035;
  const sm=g.userData.sp;for(let i=0;i<sm.length;i++){const k=(ph*0.9+i/sm.length)%1;const a=i*1.57+ph*0.6;sm[i].position.set(Math.cos(a)*0.24,0.05+k*0.25,Math.sin(a)*0.24);sm[i].material.opacity=Math.sin(k*Math.PI)*0.95;sm[i].material.rotation=ph*2+i;}
  g.userData.glow.material.opacity=0.28+0.14*Math.sin(ph*3);}
-function updCrown(dt){const nw=performance.now();if(nw-CROWN.acc>500){CROWN.acc=nw;CROWN.name=crownTopName();
-  setCrown(P.char,!!CROWN.name&&entered&&hofName()===CROWN.name,LOOK.hat);for(const r of remote.values())if(r.char)setCrown(r.char,!!CROWN.name&&!r.leaving&&r.name===CROWN.name,r.look&&r.look.hat);}
+function updCrown(dt){const nw=performance.now();if(nw-CROWN.acc>500){CROWN.acc=nw;CROWN.name=crownTopName();CROWN.ranks=crownRanks();const RK=CROWN.ranks;
+  setCrown(P.char,entered?(RK.get(hofName())||0):0,LOOK.hat);for(const r of remote.values())if(r.char)setCrown(r.char,r.leaving?0:(RK.get(r.name)||0),r.look&&r.look.hat);}
  if(P.char)animCrown(P.char,dt);for(const r of remote.values())if(r.char)animCrown(r.char,dt);}
 /* ---------- v26: 채팅창 밖을 누르면 다시 캐릭터 조작 · C 키로 채팅 ---------- */
 document.addEventListener('pointerdown',e=>{const inp=document.getElementById('chatIn');if(!inp||document.activeElement!==inp)return;const pn=document.getElementById('chatPanel');if(pn&&pn.contains(e.target))return;inp.blur();keys.clear();},true);
@@ -5177,7 +5187,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-18c';
+const BUILD='2026-11-18f';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -6506,7 +6516,7 @@ function pickRare(p,hab){if(window.__pick)return null;const c=rareChance(p,hab);
 /* 반달(보름달이 아닌 밤): 달 그림의 한쪽을 지워요 */
 function moonShade(full){if(full===undefined)full=fullMoonNight();if(full)return;const c=moonCtx,S=256;c.save();c.globalCompositeOperation='destination-out';c.fillStyle='#000';c.beginPath();c.arc(S/2+70,S/2-18,112,0,7);c.fill();c.restore();moonTex.needsUpdate=true;}
 
-/* ---------- v118: 🎲 아몰랑아일랜드 낚시 확률 계산기 (도감 탭) — 게임과 같은 식 · 같은 물고기 데이터 ---------- */
+/* ---------- v118: 🎲 낚시 확률 계산기 (도감 탭) — 게임과 같은 식 · 같은 물고기 데이터 ---------- */
 const PC={tab:'book',s:null,cfg:false,dead:false,q:'',f:''};
 const PC_RZ={fall:'💦 폭포 웅덩이',up:'🏔️ 상류',mid:'🌉 중류',down:'🌊 하류·하구'};
 const PC_PL={shore:'🌊 바다',far:'⛵ 먼 바다',pond:'🪷 저수지',seat:'🪑 저수지 좌대',river:'🏞️ 강'},PC_PH={dawn:'🌅 새벽',day:'☀️ 낮',dusk:'🌇 해질녘',night:'🌙 밤'};
@@ -6948,7 +6958,7 @@ $('tankBtn').addEventListener('click',()=>{initAudio();openTank();});$('tankX').
 $('tank').addEventListener('click',e=>{if(e.target.id==='tank')closeTank();});$('tinfoRel').addEventListener('click',releaseFromTank);
 $('tankCv').addEventListener('pointerdown',e=>{const r=e.currentTarget.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;let hit=null;
  for(const cr of[...tankCr].sort((a,b)=>b.y-a.y)){const s=cr.spr;if(Math.abs(x-cr.x)<s.w*0.45&&Math.abs(y-cr.y)<s.h*0.45){hit=cr;break;}}tankSel=hit;if(hit)sfx.pop();showTinfo();});
-window.addEventListener('resize',()=>{if(tankOpen)buildTank();});
+window.addEventListener('resize',()=>{if(tankOpen){tankFit();buildTank();}});
 
 $('bShare').addEventListener('click',async()=>{const u=location.origin+'/';try{await navigator.clipboard.writeText(u);toast('섬 링크를 복사했어요! 친구에게 보내 주세요');}catch(e){toast(u,6000);}});
 $('bookX').addEventListener('click',()=>$('book').classList.add('hidden'));
