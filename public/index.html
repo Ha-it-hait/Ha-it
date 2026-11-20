@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-20g">
+<meta name="amollang-build" content="2026-11-20i">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -847,7 +847,7 @@ body.cine .lgpop{opacity:0}
     </ul>
     <div class="btitle">🐾 동물 친구들</div>
     <ul class="tips">
-      <li>섬 곳곳에 토끼·강아지(말티즈·퍼그·슈나우저 등)·고양이·아기 코끼리·판다·레서판다·사슴·너구리·다람쥐가, 북쪽 산과 언덕에는 아기 여우·아기 산양·고슴도치·아기 반달가슴곰·알파카·카피바라가, 남서쪽 들판에는 웰시코기가 살아요(모두 26마리). 모두에게 같은 자리에 보여요.</li>
+      <li>섬 곳곳에 토끼·강아지(말티즈·퍼그·슈나우저 등)·고양이·아기 코끼리·판다·레서판다·사슴·너구리·다람쥐가, 북쪽 산과 언덕에는 아기 여우·아기 산양·고슴도치·아기 반달가슴곰·알파카·카피바라가, 남서쪽 들판에는 웰시코기가, 저수지 서쪽에는 시바견이 살아요(모두 27마리). 모두에게 같은 자리에 보여요.</li>
       <li>🦆 저수지와 강에는 <b>흰 오리 가족 · 청둥오리 · 기러기 · 왜가리 · 백로</b>가 살아요. 오리는 헤엄치다 물구나무서서 먹이를 찾고, 왜가리·백로는 얕은 물가에서 물고기를 노려요. 가끔 하늘 위로 기러기 떼가 V자로 날아가요. 바다에는 <b>갈매기</b>가 날고, 물 위에 동동 떠 있거나 모래밭·부두 기둥에서 쉬어요. 가까이 가면 깜짝 놀라 날아올라요. (구경만 할 수 있어요)</li>
       <li>동물을 <b>직접 누르면</b> <em>🤚 쓰다듬기</em>, <em>🤗 껴안기</em> 버튼이 떠요. (몇 초 동안 아무것도 안 하면 버튼이 사라져요) 하트가 나오고, 같은 섬 친구들에게도 보여요.</li>
       <li>교감할 때마다 친밀도 💕+1. <b>친밀도 10 이상</b>이 되면 그 동물이 나를 졸졸 따라다녀요! 같은 동물을 더 아끼는 사람이 있으면 그 사람을 따라가고, 한 사람에게는 가장 친한 동물 1마리만 따라와요. 🎒 가방 → 🐾 동물에서 확인해요. 따라오는 동물은 <b>직접 눌러야</b> 쓰다듬기·껴안기 버튼이 떠요. 그때 <b>🏠 그만 따라오기</b>를 누르면 집으로 돌아가요.</li>
@@ -3011,12 +3011,20 @@ function aEars(pb,c){const H=c.H,col=c.earC||c.head||c.body,inn=c.earIn||'#ffc4c
  if(c.ear==='round')for(const s of[-1,1]){ap(pb,A_SPH,col,s*H*0.62,H*0.74,-H*0.05,H*0.27,H*0.27,H*0.14);if(c.earIn)ap(pb,A_SPH,inn,s*H*0.62,H*0.74,H*0.03,H*0.15,H*0.15,H*0.06);}
  if(c.ear==='big')for(const s of[-1,1]){ap(pb,A_SPH,col,s*H*0.95,H*0.02,-H*0.15,H*0.12,H*0.85,H*0.78,0,s*0.45,0);ap(pb,A_SPH,inn,s*H*1.0,H*0.02,-H*0.08,H*0.06,H*0.62,H*0.56,0,s*0.45,0);}
  if(c.ear==='side')for(const s of[-1,1]){ap(pb,A_SPH,col,s*H*0.85,H*0.3,-H*0.1,H*0.45,H*0.16,H*0.1,0,0,s*0.3);ap(pb,A_SPH,inn,s*H*0.85,H*0.3,-H*0.04,H*0.3,H*0.09,H*0.05,0,0,s*0.3);}}
+function aCurlTail(pb,R,col){const pts=[[0,0.05,0.0],[0,0.45,-0.08],[0,0.9,0.0],[0.05,1.08,0.32],[0.1,0.96,0.62],[0.18,0.8,0.7],[0.25,0.73,0.46]].map(p=>new THREE.Vector3(p[0]*R,p[1]*R,p[2]*R));
+ const cv=new THREE.CatmullRomCurve3(pts),SEG=26,RAD=10;const g=new THREE.TubeGeometry(cv,SEG,1,RAD,false);const P=g.attributes.position,a=new Float32Array(P.count*3);
+ const C0=new THREE.Vector3(0.08*R,0.75*R,0.33*R),c=new THREE.Vector3(),v=new THREE.Vector3(),A=new THREE.Color(col),B=new THREE.Color(col).lerp(new THREE.Color('#ffffff'),0.28),K=new THREE.Color();
+ for(let i=0;i<=SEG;i++){const t=i/SEG;cv.getPointAt(t,c);const r=R*(0.27*(1-t)+0.13*t);const toC=C0.clone().sub(c).normalize();
+  for(let j=0;j<=RAD;j++){const k=i*(RAD+1)+j;v.set(P.getX(k)-c.x,P.getY(k)-c.y,P.getZ(k)-c.z).normalize();P.setXYZ(k,c.x+v.x*r,c.y+v.y*r,c.z+v.z*r);
+   const w=Math.min(1,Math.max(0,(v.dot(toC)-0.15)/0.5));K.copy(A).lerp(B,w*w*(3-2*w));a[k*3]=K.r;a[k*3+1]=K.g;a[k*3+2]=K.b;}}
+ g.computeVertexNormals();g.setAttribute('color',new THREE.BufferAttribute(a,3));let gg=g.toNonIndexed();gg.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(gg.attributes.position.count*2),2));pb.push(gg);
+ const e=cv.getPointAt(1);ap(pb,A_SPH,col,e.x,e.y,e.z,R*0.13,R*0.13,R*0.13);ap(pb,A_SPH,col,0,0.05*R,0,R*0.27,R*0.27,R*0.27);}
 function aTail(pb,c){const R=c.R,col=c.tailC||c.body;switch(c.tail){
  case'stub':ap(pb,A_SPH,col,0,0,0,R*0.3,R*0.3,R*0.3);break;
  case'tuft':ap(pb,aCap(R*0.17,R*0.55),col,0,R*0.32,-R*0.22,1,1,1,-0.55,0,0);ap(pb,A_SPH,col,0,R*0.72,-R*0.52,R*0.34,R*0.36,R*0.34);for(let i=0;i<7;i++){const a=i/7*Math.PI*2;ap(pb,A_SPH,i%2?'#ffffff':'#f6f4ee',Math.cos(a)*R*0.24,R*0.78+Math.sin(a)*R*0.24,-R*0.58-Math.abs(Math.sin(a*1.5))*R*0.08,R*0.17,R*0.2,R*0.17);}ap(pb,A_SPH,col,0,R*1.02,-R*0.62,R*0.2,R*0.22,R*0.2);break;
  case'wag':ap(pb,aCap(R*0.17,R*1.3),col,0,R*0.45,-R*0.55,1,1,1,-0.9,0,0);break;
  case'fluffy':ap(pb,A_SPH,col,0,R*0.35,-R*0.7,R*0.38,R*0.38,R*0.95,-0.5,0,0);if(c.tailTip)ap(pb,A_SPH,c.tailTip,0,R*0.75,-R*1.45,R*0.26,R*0.26,R*0.36,-0.5,0,0);break;
- case'curl':ap(pb,A_TOR,col,0,R*0.75,R*0.1,R*0.55,R*0.55,R*0.55,0,Math.PI/2,-0.4);break;
+ case'curl':aCurlTail(pb,R,col);break;
  case'cat':ap(pb,aCap(R*0.12,R*1.5),col,0,R*0.75,-R*0.45,1,1,1,-0.45,0,0);ap(pb,A_SPH,c.tailTip||col,0,R*1.55,-R*0.85,R*0.14,R*0.14,R*0.14);if(c.tailRings)for(let i=0;i<4;i++)ap(pb,A_SPH,c.tailRings,0,R*(0.35+i*0.3),-R*(0.25+i*0.15),R*0.135,R*0.05,R*0.135,-0.45,0,0);break;
  case'ringed':for(let i=0;i<6;i++)ap(pb,A_SPH,i%2?c.ring2:col,0,R*(0.15+i*0.13),-R*(0.4+i*0.33),R*0.45,R*0.45,R*0.3);break;
  case'squirrel':for(let i=0;i<8;i++){const a=i/7,s=R*(0.7+a*0.5);ap(pb,A_SPH,i%2?col:(c.tailC2||col),0,R*(0.2+a*3.4),-R*(0.6+Math.sin(a*Math.PI)*1.5),s,s,s);}break;
@@ -3109,6 +3117,58 @@ function buildWelsh(){
   const m=bake(ep,g,false);m.userData.sy=1;eyes.push(m);}
  const tail=grp(body,0,hip+0.08,-BZ*0.95);
  return{root,body,head,tail,legs,eyes,trunk:null,hop:false,labelY:hip+0.19+H*2.8,lz:0.21};}
+/* ---------- 🐶 시바견 (한 마리 정성 제작) — 웰시코기에서 만든 공용 도구(wc*)를 씀 ---------- */
+function buildShiba(){
+ const OR='#dc8238',CR='#fff6e8',CR2='#fdebd3';
+ const root=new THREE.Group(),body=grp(root,0,0,0);
+ const hip=0.29,BX=0.14,BY=0.135,BZ=0.24;
+ const pb=[];
+ /* 몸: 단단하고 짧은 몸 — 등은 붉은 갈색, 배·가슴·목은 크림색(우라지로) */
+ wcP(pb,WC_G.bd,wcPaint(OR,[CR,(x,y,z)=>wcSS(-0.18,-0.4,y+0.1*Math.max(0,z))],[CR,(x,y,z)=>wcEl(x,y,z,0,-0.05,1,0.52,0.8,0.55,0.2)]),0,hip,0,BX,BY,BZ);
+ /* 목·가슴 크림 털 */
+ wcP(pb,WC_G.sm,wcPaint(CR),0,hip+0.04,BZ*0.8,0.1,0.1,0.085,-0.2,0,0);
+ bake(pb,body,true);
+ /* 다리: 곧고 탄탄 · 아래쪽은 크림 양말 */
+ const legs=[];const LEG=0.17;
+ for(const[sx,sz]of[[-1,1],[1,1],[-1,-1],[1,-1]]){const front=sz>0;const g=grp(body,sx*0.085,LEG+0.03,sz*(front?0.15:0.16));const lp=[];const r=0.036;
+  ap(lp,wcCap(r,0.1),OR,0,-LEG*0.42,0);
+  ap(lp,wcCap(r*1.02,0.03),CR,0,-LEG*0.78,0);ap(lp,WC_G.ss,CR,0,-LEG+r*0.55,r*0.3,r*1.12,r*0.6,r*1.3);bake(lp,g,false);legs.push(g);}
+ /* 머리: 볼이 통통한 여우형 얼굴 */
+ const H=0.125;const head=grp(body,0,hip+0.155,BZ*0.98);const hp=[];const EH={x:0,y:0,z:0,a:H*1.1,b:H*0.9,c:H*0.95};
+ const skull=wcPaint(OR,
+  [CR,(x,y,z)=>{const X=Math.abs(x);return Math.max(wcEl(X,y,z,0.44,-0.5,0.72,0.4,0.36,0.6,0.16),wcEl(X,y,z,0.24,-0.2,0.95,0.24,0.17,0.5,0.25),wcSS(-0.5,-0.7,y));}]); /* 크림 볼·턱 (눈 밑까지 둥글게) */
+ wcP(hp,WC_G.hd,skull,0,0,0,EH.a,EH.b,EH.c);
+ /* 볼 털: 양옆으로 살짝 부푼 크림 털 */
+ /* 주둥이: 웰시코기보다 짧고 도톰 · 위쪽 콧등은 붉은 갈색 → 끝으로 갈수록 크림 */
+ wcP(hp,wcTaper(0.4),wcPaint(CR,[OR,(x,y,z)=>wcSS(0.25,0.7,y)*wcSS(0.5,-0.3,z)]),0,-H*0.3,H*0.82,H*0.4,H*0.34,H*0.56,0.12,0,0);
+ ap(hp,WC_G.ey,'#1f1715',0,-H*0.3,H*1.36,H*0.12,H*0.09,H*0.08);ap(hp,WC_G.ss,'#ffffff',-H*0.035,-H*0.26,H*1.43,H*0.028,H*0.017,H*0.012);
+ ap(hp,WC_G.ss,'#3a2622',0,-H*0.42,H*1.3,H*0.012,H*0.045,H*0.012,-0.3,0,0);
+ for(const s of[-1,1])ap(hp,WC_G.mt,'#3a2622',s*H*0.06,-H*0.46,H*1.25,H*0.06,H*0.05,H*0.05,-0.5,s*0.45,Math.PI);
+ /* 귀: 작고 도톰한 세모 · 앞으로 살짝 기울어짐 · 안쪽 크림 */
+ const eg=WC_G.cn||(WC_G.cn=new THREE.ConeGeometry(1,1,16));
+ for(const s of[-1,1]){const ex=s*H*0.5,ey=H*0.66,ez=-H*0.02;
+  ap(hp,eg,OR,ex,ey+H*0.3,ez,H*0.34,H*0.68,H*0.15,0.3,-s*0.12,-s*0.28);
+  ap(hp,eg,CR2,ex-s*H*0.005,ey+H*0.26,ez+H*0.075,H*0.21,H*0.48,H*0.05,0.3,-s*0.12,-s*0.28);}
+ for(const s of[-1,1])wcDec(hp,WC_G.ss,'#ffb3bd',EH,s*0.62,-0.3,H*0.12,H*0.07,H*0.03,0,H*0.01);
+ /* 크림색 눈썹 점 (시바의 트레이드마크) */
+ for(const s of[-1,1])wcDec(hp,WC_G.ss,CR,EH,s*0.36,0.4,H*0.1,H*0.07,H*0.025,-s*0.25,H*0.004);
+ bake(hp,head,true);
+ /* 눈: 바깥쪽이 살짝 올라간 아몬드 눈 */
+ const eyes=[];for(const s of[-1,1]){const{p,n}=wcOn(EH,s*0.4,0.1);const g=new THREE.Group();g.position.copy(p);g.quaternion.setFromUnitVectors(WC_T.Z,n);g.rotateZ(s*0.22);head.add(g);const e=H*0.13;const ep=[];
+  ap(ep,WC_G.ey,'#24150f',0,0,0,e*1.08,e*0.86,e*0.4);ap(ep,WC_G.ss,'#ffffff',-e*0.32,e*0.28,e*0.34,e*0.28,e*0.28,e*0.12);ap(ep,WC_G.ss,'#ffffff',e*0.34,-e*0.26,e*0.32,e*0.11,e*0.11,e*0.06);
+  const m=bake(ep,g,false);m.userData.sy=1;eyes.push(m);}
+ /* 꼬리: 엉덩이에서 굵게 솟아 → 등 쪽(앞)으로 넘어가며 말리고 → 가늘어진 끝이 등 위에 살짝 얹힘 · 말린 안쪽은 크림 */
+ const tail=grp(body,0,hip+0.105,-BZ*0.8);tail.scale.setScalar(0.88);const tp=[];
+ {const pts=[[0,-0.02,-0.012],[0,0.045,-0.03],[0,0.105,-0.01],[0.01,0.13,0.045],[0.02,0.1,0.095],[0.035,0.05,0.1],[0.045,0.025,0.065]].map(p=>new THREE.Vector3(...p));
+  const cv=new THREE.CatmullRomCurve3(pts),SEG=28,RAD=10;const g=new THREE.TubeGeometry(cv,SEG,1,RAD,false);const P=g.attributes.position,col=new Float32Array(P.count*3);
+  const C0=new THREE.Vector3(0.015,0.07,0.04),c=new THREE.Vector3(),v=new THREE.Vector3(),A=new THREE.Color(OR),B=new THREE.Color(CR),K=new THREE.Color();
+  for(let a=0;a<=SEG;a++){const t=a/SEG;cv.getPointAt(t,c);const r=0.036*(1-t)+0.017*t;const toC=C0.clone().sub(c).normalize();
+   for(let b=0;b<=RAD;b++){const k=a*(RAD+1)+b;v.set(P.getX(k)-c.x,P.getY(k)-c.y,P.getZ(k)-c.z).normalize();P.setXYZ(k,c.x+v.x*r,c.y+v.y*r,c.z+v.z*r);
+    K.copy(A).lerp(B,Math.max(wcSS(0.15,0.65,v.dot(toC)),wcSS(0.82,0.97,t)));col[k*3]=K.r;col[k*3+1]=K.g;col[k*3+2]=K.b;}}
+  g.computeVertexNormals();g.setAttribute('color',new THREE.BufferAttribute(col,3));let gg=g.toNonIndexed();gg.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(gg.attributes.position.count*2),2));tp.push(gg);
+  const e=cv.getPointAt(1);ap(tp,WC_G.ss,CR,e.x,e.y,e.z,0.017,0.017,0.017);ap(tp,WC_G.ss,OR,0,-0.02,-0.012,0.036,0.036,0.036);}
+ bake(tp,tail,false);
+ return{root,body,head,tail,legs,eyes,trunk:null,hop:false,labelY:hip+0.155+H*2.6,lz:0.16};}
 
 const WHITE='#fff8ef',DARK='#25252b';
 const ANIM_DEFS=[
@@ -3188,6 +3248,8 @@ const ANIM_DEFS=[
      /* 눈썹: 보송하고 순한 눈썹 (눈을 가리지 않게) */for(const s of[-1,1])ap(p,A_SPH,'#ffffff',s*H*0.33,H*0.5,H*0.78,H*0.17,H*0.065,H*0.08,0.15,0,-s*0.14);}}},
  /* 🐶 웰시코기 */
  {id:'welsh',kind:'dog',name:'식빵',sp:'웰시코기',em:'🐶',home:[-52,38],speed:1.3,scale:1.75,build:'welsh',cfg:{}},
+ /* 🐶 시바견 */
+ {id:'shiba',kind:'dog',name:'시바',sp:'시바견',em:'🐶',home:[-104,-26],speed:1.4,scale:1.9,tilt:0.3,build:'shiba',cfg:{}},
 ];
 const HEART_TEX=canvasTex(64,64,(x)=>{x.fillStyle='#ff5b8a';x.beginPath();x.moveTo(32,54);x.bezierCurveTo(4,34,8,10,24,12);x.bezierCurveTo(30,12,32,18,32,20);x.bezierCurveTo(32,18,34,12,40,12);x.bezierCurveTo(56,10,60,34,32,54);x.fill();x.fillStyle='rgba(255,255,255,.75)';x.beginPath();x.ellipse(22,22,5,3,-0.6,0,7);x.fill();});
 const HEARTS=[];
@@ -3198,7 +3260,7 @@ const ANIMS=[];let nearAnimal=null,petCD=0;
 function segOK(ax,az,bx,bz){const L=Math.hypot(bx-ax,bz-az);const n=Math.ceil(L/0.4);for(let k=1;k<=n;k++){const x=ax+(bx-ax)*k/n,z=az+(bz-az)*k/n;if(!walkable(x,z)||terrainH(x,z)<0.35||onDock(x,z)||onBridge(x,z))return false;}return true;}
 function findNear(x,z){for(let r=0;r<14;r+=0.5)for(let a=0;a<16;a++){const px=x+Math.cos(a/16*6.283)*r,pz=z+Math.sin(a/16*6.283)*r;if(walkable(px,pz)&&terrainH(px,pz)>0.35&&!onDock(px,pz)&&!onBridge(px,pz))return[px,pz];}return[x,z];}
 function buildAnimals(){
- ANIM_DEFS.forEach((d,i)=>{const m=d.kind==='rabbit'?buildRabbit(d.cfg):d.build==='welsh'?buildWelsh():buildQuad(d.cfg);const sc=d.scale||1.3;m.root.scale.setScalar(sc);scene.add(m.root);
+ ANIM_DEFS.forEach((d,i)=>{const m=d.kind==='rabbit'?buildRabbit(d.cfg):d.build==='welsh'?buildWelsh():d.build==='shiba'?buildShiba():buildQuad(d.cfg);const sc=d.scale||1.3;m.root.scale.setScalar(sc);scene.add(m.root);
   const rng=mulberry32(4242+i*7919);const home=findNear(d.home[0],d.home[1]);const pts=[home];let cur=home;const hop=d.kind==='rabbit'||d.kind==='squirrel';
   for(let k=0;k<10;k++){let ok=null;for(let tr=0;tr<40;tr++){const a=rng()*Math.PI*2,dist=2.5+rng()*(hop?5:7);const nx=cur[0]+Math.cos(a)*dist,nz=cur[1]+Math.sin(a)*dist;if(Math.hypot(nx-home[0],nz-home[1])>(d.roam||13))continue;if(segOK(cur[0],cur[1],nx,nz)){ok=[nx,nz];break;}}if(!ok)break;pts.push(ok);cur=ok;}
   const route=pts.concat(pts.slice(1,-1).reverse());const tl=[];let tc=0,yaw=rng()*6.28;
@@ -5262,7 +5324,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-20g';
+const BUILD='2026-11-20i';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
