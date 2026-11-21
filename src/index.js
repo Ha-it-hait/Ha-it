@@ -338,6 +338,8 @@ export class Island extends DurableObject {
       if (!a.oh || now - (a.tpT || 0) < 1200) { ws.serializeAttachment(a); return; }
       a.tpT = now;
       const lv = m.lv | 0, x = +m.x, z = +m.z;
+      // 예전 지문(로그인 전 손님 기록 등)으로 남아 있던 내 통발은 지워요
+      if (Array.isArray(m.o)) for (const h of m.o.slice(0, 3)) { if (typeof h !== 'string' || !/^[0-9a-f]{16}$/.test(h) || h === a.oh) continue; const old = this.sql.exec('SELECT k FROM traps WHERE oh = ?', h).toArray()[0]; if (old) { this.sql.exec('DELETE FROM traps WHERE oh = ?', h); this.broadcast({ t: 'tpx', k: old.k }, null); } }
       const row = this.sql.exec('SELECT k FROM traps WHERE oh = ?', a.oh).toArray()[0];
       if (lv === 0) {
         if (row) { this.sql.exec('DELETE FROM traps WHERE oh = ?', a.oh); this.broadcast({ t: 'tpx', k: row.k }, null); }
