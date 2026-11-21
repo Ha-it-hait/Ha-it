@@ -10,6 +10,8 @@ const LEGEND_MS = 3 * 60 * 1000; // ★7을 잡으면 모두에게 축하 알림
 const LEGEND_IDS = new Set(['rainbowwhale', 'auroraray', 'rainbowflyer', 'prismjelly', 'rainbowseahorse', 'chaeunryong', 'chilbokoi', 'rainbowtrout', 'rainbowveil', 'rainbowsturgeon', 'rainbowlenok']);
 const MAX_MSG = 8192;    // 메시지 최대 크기(바이트) — 큰 수조(최대 200마리) 구경 정보까지 들어가게
 const MAX_RATE = 20;     // 접속자 1명당 초당 최대 메시지 수
+const TRAP_KEEP_MS = 14 * 24 * 3600 * 1000; // 🪤 주인이 14일 동안 오지 않은 통발은 정리
+const TRAP_MAX = 80;      // 🪤 한 섬에 보여 줄 통발 수
 const CHAT_KEEP = 100;   // 섬마다 보관하는 최근 채팅 수 (넘으면 오래된 것부터 삭제)
 const CHAT_LEN = 60;     // 채팅 한 줄 최대 글자 수
 const CHAT_GAP = 1000;   // 같은 사람이 채팅을 보낼 수 있는 최소 간격(ms) · 화면은 1.5초 간격이라 전송 지연이 있어도 버려지지 않아요
@@ -178,6 +180,17 @@ export class Island extends DurableObject {
     if (!new Set(this.sql.exec('PRAGMA table_info(chat2)').toArray().map(r => r.name)).has('oh')) this.sql.exec('ALTER TABLE chat2 ADD COLUMN oh TEXT');
     if (!new Set(this.sql.exec('PRAGMA table_info(chat2)').toArray().map(r => r.name)).has('sj')) this.sql.exec('ALTER TABLE chat2 ADD COLUMN sj TEXT');
     this.sql.exec('CREATE TABLE IF NOT EXISTS rw(r INTEGER PRIMARY KEY, s INTEGER, ts INTEGER)');
+    // 🪤 통발: 누가(이름) 어디에(위치) 어떤 통발을 쳤는지만 보관해요 · 안에 든 물고기는 서버에 없어요(주인 화면에서만 계산)
+    // oh(주인 지문)는 밖으로 보내지 않고, 대신 무작위 표시 번호(k)를 보내요
+    this.sql.exec('CREATE TABLE IF NOT EXISTS traps(oh TEXT PRIMARY KEY, k TEXT, lv INTEGER, x REAL, z REAL, a INTEGER, b INTEGER, nk TEXT, op INTEGER, ts INTEGER)');
+    // 미끼 표시(bt): 1=🍯 꿀떡 주머니 · 2=💎 진주 이슬 (부표 효과만 보여 주고, 안에 든 물고기는 여전히 비밀)
+    if (!new Set(this.sql.exec('PRAGMA table_info(traps)').toArray().map(r => r.name)).has('bt')) this.sql.exec('ALTER TABLE traps ADD COLUMN bt INTEGER DEFAULT 0');
+  }
+  // 통발 목록: 14일 넘게 주인이 다시 오지 않은 통발은 정리해요
+  trapList() {
+    this.sql.exec('DELETE FROM traps WHERE ts < ?', Date.now() - TRAP_KEEP_MS);
+    return this.sql.exec('SELECT k, lv, x, z, a, b, nk, op, bt FROM traps ORDER BY ts DESC LIMIT ?', TRAP_MAX).toArray()
+      .map(r => ({ k: r.k, lv: r.lv, x: r.x, z: r.z, n: [r.a, r.b], nk: r.nk || '', op: r.op ? 1 : 0, b: (r.bt | 0) & 3 }));
   }
   // 알림 줄을 채팅 기록에 넣어요 (최근 CHAT_KEEP개 안에서 일반 채팅과 함께 밀려나요)
   addSys(o) {
@@ -259,7 +272,7 @@ export class Island extends DurableObject {
     const peers = [];
     for (const w of live) { const a = w.deserializeAttachment(); if (a && a.p) peers.push({ id: a.id, p: a.p }); }
     const lgLeft = lgNow && lgNow.until > Date.now() ? lgNow.until - Date.now() : 0;
-    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat(), lg: lgLeft ? { n: lgNow.n, id: lgNow.id, s: lgNow.s, left: lgLeft, ts: lgNow.ts || 0, rec: lgNow.rec ? 1 : 0 } : null, rw: this.rwState(live) }));
+    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat(), lg: lgLeft ? { n: lgNow.n, id: lgNow.id, s: lgNow.s, left: lgLeft, ts: lgNow.ts || 0, rec: lgNow.rec ? 1 : 0 } : null, rw: this.rwState(live), tp: this.trapList() }));
     return new Response(null, { status: 101, webSocket: client });
   }
 
@@ -290,6 +303,9 @@ export class Island extends DurableObject {
         if (op && a.oh && (op.n[0] !== p.n[0] || op.n[1] !== p.n[1] || (op.nk || '') !== (p.nk || ''))) {
           const ts = this.sql.exec('SELECT ts FROM chat2 WHERE oh = ?', a.oh).toArray().map(r => r.ts);
           if (ts.length) { this.sql.exec('UPDATE chat2 SET a = ?, b = ?, nk = ? WHERE oh = ?', p.n[0], p.n[1], p.nk || '', a.oh); this.broadcast({ t: 'rn', ts, n: p.n, nk: p.nk || '', op: p.op ? 1 : 0 }, null); }
+          // 통발 이름표도 새 이름으로
+          const tr = this.sql.exec('SELECT k FROM traps WHERE oh = ?', a.oh).toArray()[0];
+          if (tr) { this.sql.exec('UPDATE traps SET a = ?, b = ?, nk = ?, op = ? WHERE oh = ?', p.n[0], p.n[1], p.nk || '', p.op ? 1 : 0, a.oh); this.broadcast({ t: 'tpn', k: tr.k, n: p.n, nk: p.nk || '', op: p.op ? 1 : 0 }, null); }
         }
         this.prune(); return;
       }
@@ -314,6 +330,27 @@ export class Island extends DurableObject {
       return;
     } else if (m.t === 'oh') {
       if (typeof m.h === 'string' && /^[0-9a-f]{16}$/.test(m.h)) { a.oh = m.h; ws.serializeAttachment(a); }
+      return;
+    } else if (m.t === 'tp') {
+      // 🪤 통발 치기(lv 2~6 · 위치) / 걷기(lv 0) · 주인 지문(h)이 있어야 해요
+      if (typeof m.h === 'string' && /^[0-9a-f]{16}$/.test(m.h)) a.oh = m.h;
+      const now = Date.now();
+      if (!a.oh || now - (a.tpT || 0) < 1200) { ws.serializeAttachment(a); return; }
+      a.tpT = now;
+      const lv = m.lv | 0, x = +m.x, z = +m.z;
+      const row = this.sql.exec('SELECT k FROM traps WHERE oh = ?', a.oh).toArray()[0];
+      if (lv === 0) {
+        if (row) { this.sql.exec('DELETE FROM traps WHERE oh = ?', a.oh); this.broadcast({ t: 'tpx', k: row.k }, null); }
+      } else if (lv >= 2 && lv <= 6 && Number.isFinite(x) && Number.isFinite(z) && Math.abs(x) < 400 && Math.abs(z) < 400) {
+        const k = row ? row.k : crypto.randomUUID().replace(/-/g, '').slice(0, 10);
+        const n = a.p && Array.isArray(a.p.n) ? a.p.n : [0, 0], nk = a.p ? a.p.nk || '' : '', op = a.p && a.p.op ? 1 : 0;
+        const rx = Math.round(x * 100) / 100, rz = Math.round(z * 100) / 100;
+        const bt = lv === 6 ? (m.b | 0) & 3 : 0;
+        this.sql.exec('INSERT OR REPLACE INTO traps(oh, k, lv, x, z, a, b, nk, op, ts, bt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', a.oh, k, lv, rx, rz, n[0] | 0, n[1] | 0, nk, op, now, bt);
+        try { ws.send(JSON.stringify({ t: 'tpme', k })); } catch {}
+        this.broadcast({ t: 'tp', k, lv, x: rx, z: rz, n, nk, op, b: bt }, ws);
+      }
+      ws.serializeAttachment(a);
       return;
     } else if (m.t === 'rb') {
       // 룰렛 베팅: 이번 판·베팅 시간·한도를 확인하고 모두에게 알려요
@@ -397,7 +434,7 @@ const LEGACY_NEW_MS = 5 * 60e3;
 // 이 빌드보다 오래된 화면은 저장을 받지 않아요(새로고침 안내). 저장 항목이 바뀌는 업데이트를 할 때마다 올려요.
 // 막힌 화면의 기록은 그 기기에 보관됐다가, 새로고침해서 다시 로그인하면 합쳐져요.
 const MIN_CV = '2026-11-15s';
-const OWNED_LISTS = ['rods', 'packs', 'floats', 'reels', 'hats', 'pets'];  // hats·pets: 출석 보상(꽃게 모자·아기 해달)    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
+const OWNED_LISTS = ['rods', 'packs', 'floats', 'reels', 'hats', 'pets', 'traps'];  // hats·pets: 출석 보상(꽃게 모자·아기 해달)    // 예전 버전 화면에서 온 저장은 최근 5분 안에 새로 잡은 물고기만 더해요
 
 // ---------- 저장 데이터 안전 합치기 (서버) ----------
 // 도감(book)은 늘어나기만 하는 기록이라 서버가 항상 '합집합 + 최댓값'으로 지켜요.
@@ -442,6 +479,7 @@ function legacyMerge(S, D) {
     reels: [...new Set([...(sg.reels || []), ...(dg.reels || [])])],
     hats: [...new Set([...(sg.hats || []), ...(dg.hats || [])])],
     pets: [...new Set([...(sg.pets || []), ...(dg.pets || [])])],
+    traps: [...new Set([...(sg.traps || []), ...(dg.traps || [])])],
     bag: itemsUnion(sg.bag, dg.bag),
   });
   return M;
