@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-21d">
+<meta name="amollang-build" content="2026-11-21g">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -682,7 +682,7 @@ body.cine .lgpop{opacity:0}
 @media (max-width:520px){.newsp{padding:6px 11px 6px 7px}.newsp .n2{font-size:13.5px}.newsp canvas{width:60px;height:32px}}
 
 /* v139 🧺 통발 */
-.lbtn.trap{bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 272px);background:#3a9f86}
+.lbtn.trap{bottom:calc(var(--vvb,0px) + max(14px,env(safe-area-inset-bottom)) + 272px);background:#3a9f86;animation:pop .3s cubic-bezier(.2,1.6,.4,1)}
 .lbtn.trap.idle{background:#7fb8a8}
 .ctxbtn.trap{background:linear-gradient(135deg,#2f9f86,#5cc9a8)}
 .lbtn.trap em.full{background:#ff4d4f;min-width:30px;font-size:10px}
@@ -722,6 +722,18 @@ body.cine .lgpop{opacity:0}
 .baitc .bb button{height:auto;min-height:52px;line-height:1.15;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:7px 4px}
 .baitc .bb button small{white-space:nowrap}
 .baitc .bb button em.dc{font-style:normal;font-size:10.5px;font-weight:900;background:#ffd84d;color:#7a4a00;border-radius:8px;padding:1px 7px;margin-top:2px;white-space:nowrap;line-height:1.3}
+
+/* v142 상점 구매 알림 */
+.buynote{position:fixed;left:50%;top:calc(var(--vvt,0px) + max(14px,env(safe-area-inset-top)) + 10px);transform:translate(-50%,-12px);z-index:60;display:flex;align-items:center;gap:8px;max-width:min(92vw,520px);padding:10px 18px;border-radius:16px;background:#2f9f6a;color:#fff;font-size:14.5px;font-weight:800;line-height:1.35;box-shadow:0 8px 24px rgba(0,0,0,.28);border:2px solid #fff;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+.buynote b{font-size:17px}.buynote.on{opacity:1;transform:translate(-50%,0)}
+.buynote.bump{animation:bnb .35s cubic-bezier(.2,1.6,.4,1)}@keyframes bnb{0%{transform:translate(-50%,0) scale(.86)}100%{transform:translate(-50%,0) scale(1)}}
+
+/* v143 종료 확인 창 */
+#exitM{z-index:9500}
+.exitcard{max-width:320px;width:100%;text-align:center;padding:22px 18px 16px}
+.exitcard .exem{font-size:40px;line-height:1}.exitcard .ext{display:block;font-size:19px;margin-top:8px}
+.exitcard .exs{font-size:13.5px;color:#7a6f5e;margin-top:6px}
+.exitcard .exb{display:flex;gap:8px;margin-top:16px}.exitcard .exb .primary{flex:1;margin:0}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/utils/BufferGeometryUtils.js":"./vendor/BufferGeometryUtils.js"}}</script>
 </head>
@@ -800,6 +812,10 @@ body.cine .lgpop{opacity:0}
   <div class="bsub">“허허, 어서 오게나! 좋은 물고기는 값을 후하게 쳐주지.”</div>
   <div class="tabs"><button data-tab="buy">🎣 낚싯대</button><button data-tab="reel">🧵 릴</button><button data-tab="pack">🎒 가방</button><button data-tab="float">🎯 찌</button><button data-tab="bait">🪱 미끼</button><button data-tab="trap">🧺 통발</button><button data-tab="tank">🐠 수조</button><button data-tab="lotto">🎫 복권</button><button data-tab="sell">💰 팔기</button></div>
   <div id="shopBody"></div></div></div>
+<div class="overlay hidden" id="exitM"><div class="card exitcard">
+  <div class="exem">🏝️</div><b class="ext">게임을 종료할까요?</b>
+  <div class="exs">지금까지의 기록은 저장돼요.</div>
+  <div class="exb"><button class="primary" id="exitStay">계속하기</button><button class="primary ghost" id="exitGo">종료하기</button></div></div></div>
 <div class="overlay hidden" id="trapM"><div class="card wide">
   <div class="mhead"><b>🧺 내 통발</b><span class="money" id="trapMoney"></span><button class="x" id="trapX">✕</button></div>
   <div id="trapBody"></div></div></div>
@@ -897,7 +913,7 @@ body.cine .lgpop{opacity:0}
     <div class="btitle">🪱 미끼</div>
     <ul class="tips"><li>🐉 상점의 <b>🪱 미끼</b> 칸에서 <b>🔮 프리즘 구슬</b>(★7 무지개 전설 2배 · 개당 500몰랑 · ★6 이상 낚싯대)과 <b>🍡 용궁 떡집 경단</b>(희귀종 2배 · 개당 300몰랑 · ★5 이상 낚싯대)을 살 수 있어요. 켜 두면 찌 둘레에 무지개 빛무리(구슬)나 몽글몽글 피어오르는 흰분홍 단내(경단)가 보여요(같은 섬 친구들 화면에도 보여요). 10·50·100개 묶음으로 팔아요.</li><li>미끼를 켜고 <b>멀리 던져서(★7·희귀종이 나올 수 있는 거리)</b> 챔질하면 1개씩 써요. 가까이 던지거나 입질을 놓치면 쓰지 않아요. 두 미끼를 함께 켜면 둘 다 써요.</li><li>미끼 효과는 <b>요리(★7·희귀종 요리)·🌕 보름달·🌈 무지개·찌·아기 해달과 모두 곱해져요</b>. 예: 희귀종 요리 ×2 · 보름달 ×2 · 떡집 경단 ×2 = 희귀종 ×8.</li></ul>
     <div class="btitle">🧺 통발</div>
-    <ul class="tips"><li>🐉 상점의 <b>🧺 통발</b> 칸에서 사요. 물가에서 <b>물 쪽을 보고</b> 서서 왼쪽 <b>🧺 통발</b> 버튼 › <em>여기에 치기</em>를 누르면 쳐져요. <b>접속하지 않아도</b> 정해진 시간마다 물고기가 1마리씩 들어오고, 칸이 가득 차면 더 들어오지 않아요. 통발은 <b>한 번에 1개</b>만 칠 수 있고, 친 자리(바다·강 구역·저수지)와 들어온 시각(새벽·낮·해질녘·밤)에 맞는 물고기가 들어와요.</li>
+    <ul class="tips"><li>🐉 상점의 <b>🧺 통발</b> 칸에서 사요. 물가에서 <b>물 쪽을 보고</b> 서면 왼쪽에 <b>🧺 통발</b> 버튼이 떠요(물가나 내 통발 가까이에서만 보여요). 버튼 › <em>여기에 치기</em>를 누르면 쳐져요. <b>접속하지 않아도</b> 정해진 시간마다 물고기가 1마리씩 들어오고, 칸이 가득 차면 더 들어오지 않아요. 통발은 <b>한 번에 1개</b>만 칠 수 있고, 친 자리(바다·강 구역·저수지)와 들어온 시각(새벽·낮·해질녘·밤)에 맞는 물고기가 들어와요.</li>
       <li>통발 종류(가진 낚싯대 ★ 이하만 살 수 있어요): <b>대나무 바구니</b>(★2까지 · 12칸 · 20분마다 · 9,900몰랑) · <b>산호 그물</b>(★3까지 · 14칸 · 20분 · 19,900) · <b>달빛 은사</b>(★4까지 · 16칸 · 20분 · 44,000) · <b>용궁 자개</b>(★5까지 · 20칸 · 18분 · 99,000) · <b>여의주 황금</b>(★6까지 · 24칸 · 15분 · 199,000).</li>
       <li>물고기는 <b>통발 가까이 가서</b> 🎒 가방에 담아요. 가방이 꽉 차면 남은 물고기는 통발에 그대로 있으니, 상점에서 팔고 다시 와서 꺼내요. <b>통발을 다 비워야</b> 다시 채우기 시작해요.</li>
       <li>★6 여의주 황금 통발에는 <b>통발 미끼</b>를 넣을 수 있어요. 🐉 상점 <b>🪱 미끼</b> 칸 아래에서 사고, 통발을 칠 때 넣을 개수를 골라요(<b>1개 = 1칸</b>, 최대 24개): <b>🍯 용궁 꿀떡 주머니</b>(개당 100몰랑 · 넣은 칸마다 0.25% 희귀종) · <b>💎 칠색 진주 이슬</b>(개당 180몰랑 · 넣은 칸마다 0.12% ★7, 한 번 채울 때 최대 1마리). 둘 다 함께 넣을 수 있고, '자동으로 넣기'를 켜 두면 다시 채울 때 같은 개수가 들어가요. 걷을 때 아직 물고기가 안 들어온 칸의 미끼는 돌려받아요. 미끼를 넣은 통발은 부표에 꿀 거품(🍯)이나 무지개 고리(💎)가 보여요.</li>
@@ -5773,7 +5789,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-21d';
+const BUILD='2026-11-21g';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -7546,14 +7562,14 @@ function hudDay(){const ph=PHASES[phaseOf(hourNow())];const cl=cycleLeft();let s
 function hudRain(){if(!rainbowOn())return'';return(legendOn()?'🎉 축하 무지개':'🌈 무지개')+` · ★7 확률 4배 · ${mmss(rainbowLeftMs())}`;}
 function bagHud(){const n=GS.bag.length,cap=bagCap();return `🎒${n}/${cap}${n>=cap?' 가득!':''}`;}
 function hudEquip(){return [bagHud(),baitHud().replace(/^ · /,'')].filter(Boolean).join(' · ');}
-function modalOpen(){return tankOpen||!!profPeer||mapOpen||['shop','bag','cook','auth','boardM','newsM','hofM','attM','trapM'].some(id=>!$(id).classList.contains('hidden'))||!$('catch').classList.contains('hidden')||!$('book').classList.contains('hidden')||!$('help').classList.contains('hidden');}
+function modalOpen(){return tankOpen||!!profPeer||mapOpen||['shop','bag','cook','auth','boardM','newsM','hofM','attM','trapM','exitM'].some(id=>!$(id).classList.contains('hidden'))||!$('catch').classList.contains('hidden')||!$('book').classList.contains('hidden')||!$('help').classList.contains('hidden');}
 function sendEmote(e,remember=true){if(!EMOJI_SET.has(e))return;initAudio();sfx.pop();showBubble(P.label,e,true,2.8);P.hopT=t;ME.eid++;ME.e=e;markPresence();
  if(remember){recentEmoji=[e,...recentEmoji.filter(x=>x!==e)].slice(0,5);try{localStorage.setItem('monggeul-emoji',JSON.stringify(recentEmoji));}catch(_){}buildEmoteBar();}}
 function buildEmoteBar(){const bar=$('emotes');bar.innerHTML='';recentEmoji.forEach(e=>{const b=document.createElement('button');b.textContent=e;b.addEventListener('click',()=>{if(!entered)return;closeEmoPanel();sendEmote(e,false);});bar.appendChild(b);});
  const m=document.createElement('button');m.className='more';m.id='emoMore';m.textContent='＋';m.addEventListener('click',()=>{if(!entered)return;const pn=$('emoPanel');pn.classList.toggle('hidden');m.textContent=pn.classList.contains('hidden')?'＋':'✕';});bar.appendChild(m);}
 function buildEmoPanel(){const pn=$('emoPanel');pn.innerHTML='';[['🕘 최근 쓴 이모티콘',recentEmoji],...EMOJI_GROUPS].forEach(([label,list])=>{if(!list||!list.length)return;const gl=document.createElement('div');gl.className='gl';gl.textContent=label;const gr=document.createElement('div');gr.className='gr';list.forEach(e=>{const b=document.createElement('button');b.textContent=e;b.addEventListener('click',()=>{sendEmote(e,true);closeEmoPanel();});gr.appendChild(b);});pn.append(gl,gr);});}
 function closeEmoPanel(){const pn=$('emoPanel');if(pn.classList.contains('hidden'))return false;pn.classList.add('hidden');const m=$('emoMore');if(m)m.textContent='＋';$('emoBtn').classList.remove('on');return true;}
-function placeEmoBtn(){const c=$('chatBtn'),b=$('emoBtn');if(!c||!b)return;const hid=c.classList.contains('hidden')||!entered;b.classList.toggle('hidden',hid);if(hid)return;const r=c.getBoundingClientRect();if(!r.width)return;const sz=Math.round(r.width*0.74);b.style.width=b.style.height=sz+'px';b.style.fontSize=Math.round(sz*0.5)+'px';b.style.left=Math.round(r.left+(r.width-sz)/2)+'px';b.style.top=Math.round(r.top-10-sz)+'px';b.style.bottom='auto';}
+function placeEmoBtn(){const c=$('chatBtn'),b=$('emoBtn');if(!c||!b)return;const hid=c.classList.contains('hidden')||!entered;b.classList.toggle('hidden',hid);if(hid)return;const tb=$('trapBtn');const r=(tb&&!tb.classList.contains('hidden')?tb:c).getBoundingClientRect();if(!r.width)return;const sz=Math.round(r.width*0.74);b.style.width=b.style.height=sz+'px';b.style.fontSize=Math.round(sz*0.5)+'px';b.style.left=Math.round(r.left+(r.width-sz)/2)+'px';b.style.top=Math.round(r.top-10-sz)+'px';b.style.bottom='auto';}
 function openEmoPanel(){if(!entered)return;closeChat();const pn=$('emoPanel');buildEmoPanel();const b=$('emoBtn').getBoundingClientRect();const R=document.documentElement.style;if(innerWidth>=640){R.setProperty('--epl',Math.round(b.right+10)+'px');R.setProperty('--ept','none');R.setProperty('--epb',Math.round(clamp(innerHeight-b.bottom-70,8,Math.max(8,innerHeight-Math.min(330,innerHeight*0.5)-8)))+'px');}else{R.setProperty('--epl','50%');R.setProperty('--ept','translateX(-50%)');R.setProperty('--epb',Math.max(8,Math.round(innerHeight-b.top+8))+'px');}pn.classList.remove('hidden');$('emoBtn').classList.add('on');}
 $('emoBtn').addEventListener('click',e=>{e.stopPropagation();initAudio();sfx.pop();if($('emoPanel').classList.contains('hidden'))openEmoPanel();else closeEmoPanel();});
 addEventListener('pointerdown',e=>{const pn=$('emoPanel');if(pn.classList.contains('hidden'))return;if(pn.contains(e.target)||e.target.id==='emoBtn')return;closeEmoPanel();},true);
@@ -7984,10 +8000,11 @@ function tpBaitBox(box,T){const t=document.createElement('div');t.className='bti
 function tpTick(){const el=document.getElementById('tpNext');const T=GS.trap;if(!el||!T)return;const now=tpNow(),c=tpCaught(T,now),cap=tpCap(T);
  el.innerHTML=c>=cap?'🎉 <b>가득 찼어요!</b> 꺼내야 다시 채워요':`다음 물고기 <b>${tpLeft(tpTs(T,c)-now)}</b> 뒤 · 가득 차는 시간 <b>${tpClock(T.t0+cap*tpIv(T))}</b> (${tpLeft(T.t0+cap*tpIv(T)-now)} 뒤)`;}
 /* ---------- 왼쪽 🧺 버튼 · 알림 ---------- */
-function tpHud(force){const b=$('trapBtn');if(!b)return;const show=entered&&(GS.traps||[]).length>0&&mode!=='closet';b.classList.toggle('hidden',!show);if(!show)return;
+/* 평소엔 숨어 있다가 물가(🎣 낚시하기 버튼이 뜨는 자리)나 내 통발 가까이 가면 떠요 */
+function tpHud(force){const b=$('trapBtn');if(!b)return;const show=entered&&(GS.traps||[]).length>0&&mode==='walk'&&!cine&&!BOAT.on&&!SEAT.on&&(canFish||tpNear());b.classList.toggle('hidden',!show);if(!show)return;
  const T=GS.trap,n=tpIn(T),full=!!T&&tpCaught(T)>=tpCap(T);const e=$('trapBadge');const sig=(T?n+'|'+full:'x');if(!force&&sig===TPA.sig)return;TPA.sig=sig;
  e.classList.toggle('hidden',!T||(!n&&!full));e.textContent=full?'가득':String(n);e.classList.toggle('full',full);b.classList.toggle('idle',!T);}
-function updTrap(dt){tpUpd3D(dt);const pn=performance.now();if(pn-(TPA.last||0)<500)return;TPA.last=pn;tpHud(false);
+function updTrap(dt){tpUpd3D(dt);const pn=performance.now();if(pn-(TPA.hl||0)>=150){TPA.hl=pn;tpHud(false);}if(pn-(TPA.last||0)<500)return;TPA.last=pn;
  const T=GS.trap;if(!entered)return;
  if(T&&!TPA.seen){TPA.seen=true;const n=tpIn(T);if(n>0)setTimeout(()=>toast(`🧺 통발에 물고기 ${n}마리가 들어와 있어요${tpCaught(T)>=tpCap(T)?' · 가득 찼어요! 꺼내야 다시 채워요':''}`,4200),5200);if(tpCaught(T)>=tpCap(T))TPA.fullSig=T.t0+'|'+T.seed;}
  if(T&&tpCaught(T)>=tpCap(T)&&TPA.fullSig!==T.t0+'|'+T.seed){TPA.fullSig=T.t0+'|'+T.seed;toast('🧺 통발이 가득 찼어요! 가서 꺼내 주세요 (비워야 다시 채워요)',4200);}
@@ -8042,11 +8059,44 @@ function tpNet(m){if(m.t==='tpme'){TPR.me=String(m.k||'');TPR.list.delete(TPR.me
 $('trapBtn').addEventListener('click',()=>{initAudio();if(TPA.open)closeTrap();else openTrap();});
 $('trapX').addEventListener('click',closeTrap);$('trapM').addEventListener('click',e=>{if(e.target.id==='trapM')closeTrap();});
 
+
+/* ---------- v142: 🛍️ 상점 구매 알림 (상점 창 위 · 5초) ---------- */
+let BUYN_T=0;
+function buyNote(msg){let el=document.getElementById('buyNote');if(!el){el=document.createElement('div');el.id='buyNote';el.className='buynote';document.body.appendChild(el);}
+ el.innerHTML='<b>✅</b><span></span>';el.querySelector('span').textContent=msg;el.classList.remove('on','bump');void el.offsetWidth;el.classList.add('on','bump');
+ clearTimeout(BUYN_T);BUYN_T=setTimeout(()=>el.classList.remove('on'),5000);}
+{const _bait=buyBait;buyBait=function(B,n,dc){const m=GS.money;_bait(B,n,dc);if(GS.money<m)buyNote(`${B.em} ${B.name} ${n}개를 샀어요 · 지금 ${baitCnt(B)}개`);};
+ const _rod=buyRod;buyRod=function(lv){const m=GS.money;_rod(lv);if(GS.money<m){const R=RODS[lv];buyNote(`🎣 ${R.name} 1개를 샀어요 · 바로 들었어요`);}};
+ const _pack=buyPack;buyPack=function(lv){const m=GS.money;_pack(lv);if(GS.money<m){const B=PACKS[lv];buyNote(`${B.em} ${B.name} 1개를 샀어요 · 물고기 ${bagCap()}마리까지`);}};
+ const _flt=buyFloat;buyFloat=function(lv){const m=GS.money;_flt(lv);if(GS.money<m){const F=FLOATS[lv];buyNote(`${F.em} ${F.name} 1개를 샀어요`);}};
+ const _reel=buyReel;buyReel=function(lv){const m=GS.money;_reel(lv);if(GS.money<m){const R=REELS[lv];buyNote(`${R.em} ${R.name} 1개를 샀어요 · 바로 달았어요`);}};
+ const _tank=buyTankUp;buyTankUp=function(){const m=GS.money;_tank();if(GS.money<m)buyNote(`🐠 수조 넓히기를 샀어요 · 이제 ${tankCap()}칸`);};
+ const _lot=buyLotto;buyLotto=function(){const m=GS.money,fl=GS.freeLot|0,had=!!GS.lotPend;_lot();if(!had&&GS.lotPend&&(GS.money<m||(GS.freeLot|0)<fl))buyNote(GS.money<m?'🎫 복권 1장을 샀어요':'🎫 무료 복권 1장을 썼어요');};
+ const _tp=tpBuy;tpBuy=function(lv){const m=GS.money;_tp(lv);if(GS.money<m){const D=TRAPS[lv];buyNote(`🧺 ${D.name} 1개를 샀어요`);}};
+ const _tpb=buyTpBait;buyTpBait=function(k,n,dc){const m=GS.money;_tpb(k,n,dc);if(GS.money<m){const B=TP_BAIT[k];buyNote(`${B.em} ${B.name} ${n}개를 샀어요 · 지금 ${tpOwn(k)}개`);}};}
+
+
+/* ---------- v143: 📱 뒤로가기 → 종료 확인 ---------- */
+const EXQ={pushed:false,leaving:0,open:false};
+function exitTop(){try{return window.top===window&&!!(history&&history.pushState);}catch(e){return false;}}
+function exitPush(){try{history.pushState({amx:1},'');}catch(e){}}
+function exitTick(){if(EXQ.pushed||!entered||!exitTop())return;EXQ.pushed=true;exitPush();}
+function openExit(){EXQ.open=true;try{closeEmoPanel();closeChat();}catch(e){}$('exitM').classList.remove('hidden');try{sfx.pop();}catch(e){}}
+function exitStay(){EXQ.open=false;$('exitM').classList.add('hidden');exitPush();}
+function exitGo(){EXQ.open=false;$('exitM').classList.add('hidden');try{if(saveDirty)doSave(true);}catch(e){}
+ EXQ.leaving=1;setTimeout(()=>{try{history.back();}catch(e){}},120);
+ /* 더 돌아갈 곳이 없으면(게임을 처음 연 화면) 창 닫기를 시도하고, 그래도 남아 있으면 안내해요 */
+ setTimeout(()=>{if(document.hidden)return;try{window.close();}catch(e){}},1200);
+ setTimeout(()=>{if(document.hidden)return;EXQ.leaving=0;toast('📱 뒤로가기 버튼을 한 번 더 누르면 게임이 종료돼요',4200);},1800);}
+addEventListener('popstate',()=>{if(!EXQ.pushed)return;if(EXQ.leaving){if(EXQ.leaving++<12)setTimeout(()=>{try{history.back();}catch(e){}},30);return;}if(EXQ.open)return;openExit();});
+$('exitStay').addEventListener('click',exitStay);$('exitGo').addEventListener('click',exitGo);
+$('exitM').addEventListener('click',e=>{if(e.target.id==='exitM')exitStay();});
+
 /* ---------- loop ---------- */
 let last=performance.now(),hudAcc=0,audAcc=0,uiAcc=0;
 function frame(now){
  const dt=Math.min(0.05,Math.max(0,(now-last)/1000));last=now;t+=dt;
- updatePlayer(dt);updateFishing(dt);updateRemote(dt);updEffects(dt);updateCamera(dt);updFollow(dt);updateAnimals(dt);updHearts(dt);updV2(dt);updateEnv(dt);updV3(dt);updV7(dt);updHof(dt);updTrap(dt);updV13(dt);updCrown(dt);if(entered&&!HOF.started){HOF.started=1;hofLoad().then(()=>setTimeout(()=>colSync(),4000));}if(entered&&HOF.started&&t-COL.lastT>60){COL.lastT=t;colSync();}if(entered&&netMode==='ws'&&HOF.ok&&performance.now()-HOF.lastLoad>180000)hofLoad();
+ updatePlayer(dt);updateFishing(dt);updateRemote(dt);updEffects(dt);updateCamera(dt);updFollow(dt);updateAnimals(dt);updHearts(dt);updV2(dt);updateEnv(dt);updV3(dt);updV7(dt);updHof(dt);updTrap(dt);exitTick();updV13(dt);updCrown(dt);if(entered&&!HOF.started){HOF.started=1;hofLoad().then(()=>setTimeout(()=>colSync(),4000));}if(entered&&HOF.started&&t-COL.lastT>60){COL.lastT=t;colSync();}if(entered&&netMode==='ws'&&HOF.ok&&performance.now()-HOF.lastLoad>180000)hofLoad();
  if(mode==='closet')P.label.el.style.display='none';else placeLabel(P.label,P.pos.x,P.pos.y+P.jy+labelH(LOOK.hat)+(P.char&&P.char.crownG?0.62:0),P.pos.z);
  if(!tankOpen)renderer.render(scene,camera);flushPresence();
  uiAcc+=dt;if(uiAcc>0.15){uiAcc=0;refreshHint();refreshAct();}
