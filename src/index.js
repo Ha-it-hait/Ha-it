@@ -272,7 +272,7 @@ export class Island extends DurableObject {
     const peers = [];
     for (const w of live) { const a = w.deserializeAttachment(); if (a && a.p) peers.push({ id: a.id, p: a.p }); }
     const lgLeft = lgNow && lgNow.until > Date.now() ? lgNow.until - Date.now() : 0;
-    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat(), lg: lgLeft ? { n: lgNow.n, id: lgNow.id, s: lgNow.s, left: lgLeft, ts: lgNow.ts || 0, rec: lgNow.rec ? 1 : 0 } : null, rw: this.rwState(live), tp: this.trapList() }));
+    server.send(JSON.stringify({ t: 'welcome', id, peers, cap: CAP, chat: this.recentChat(), lg: lgLeft ? { n: lgNow.n, id: lgNow.id, s: lgNow.s, left: lgLeft, ts: lgNow.ts || 0, rec: lgNow.rec ? 1 : 0 } : null, rw: this.rwState(live), tp: this.trapList(), lgp: lgNow && lgNow.until > Date.now() - 2 * 3600000 ? { a: lgNow.until - LEGEND_MS - Date.now(), b: lgNow.until - Date.now() } : null }));
     return new Response(null, { status: 101, webSocket: client });
   }
 
