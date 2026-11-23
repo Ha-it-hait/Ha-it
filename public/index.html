@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-23e">
+<meta name="amollang-build" content="2026-11-23g">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -3567,6 +3567,37 @@ function interact(kind){const rt=performance.now()/1000;if(!nearAnimal||rt<petCD
  P.yaw=Math.atan2(A.x-P.pos.x,A.z-P.pos.z);P.char.actT=t;P.char.actK=kind;animalReact(A,kind,true,P.pos.x,P.pos.z);startCine(A,kind);petShown=null;folAcc=9;ME.ai=A.i;ME.ak=kind;ME.an=(ME.an|0)+1;markPresence();}
 
 /* ========== v2-A: 별 · 몰랑 · 낚싯대 · 가방 · 상점 ========== */
+
+/* ---------- v150: 🧺 통발 전용 ★7 6종 · 희귀종 9종 (낚싯대로는 안 잡혀요) ---------- */
+const TP7_HINT='💎 칠색 진주 이슬을 넣은 ★6 여의주 황금 통발에서만';
+[
+ {id:'tpmantis',hab:'sea',grp:'rainbow',name:'무지개 갯가재',w:1,time:['night','dawn'],min:25,max:45,str:0.9,r:7,minP:0,shape:'shrimp',h:0.2,c1:'#20c997',c2:'#ffe066',pat:'none',eye:0.1,rainbow:true,trapOnly:true,
+  flavor:'세상의 모든 색을 보는 눈을 가졌대요. 통발 속 진주 이슬의 일곱 빛깔에 홀려 굴 밖으로 나왔어요.',hint:'🧺 통발 전용 · '+TP7_HINT+' · 바다 · 밤·새벽 · 무지개 전설(★7)'},
+ {id:'tpmitten',hab:'fresh',grp:'rainbow',name:'칠색 털손 참게',w:1,time:['dusk','night'],min:15,max:30,str:0.85,r:7,minP:0,shape:'mitten',h:0.2,c1:'#b9a6e8',c2:'#fbf6ff',pat:'none',eye:0.1,rainbow:true,riverOnly:true,z7:['down'],trapOnly:true,
+  flavor:'가을 강을 따라 내려가던 참게 중에 단 한 마리, 털이 무지개로 물든 녀석이 있대요.',hint:'🧺 통발 전용 · '+TP7_HINT+' · 강 🌊 하류·하구에서만 · 해질녘·밤 · 무지개 전설(★7)'},
+ {id:'tpsala',hab:'fresh',grp:'rainbow',name:'물안개 무지개 도롱뇽',w:1,time:['dusk','night','dawn'],min:20,max:40,str:0.85,r:7,minP:0,shape:'salamander',h:0.2,c1:'#d6c8ff',c2:'#bfe8ff',pat:'none',eye:0.1,rainbow:true,riverOnly:true,z7:['up'],trapOnly:true,
+  flavor:'계곡에 물안개가 피어오르는 새벽, 무지개가 걸리면 바위틈에서 나온대요. 아가미 깃털마다 일곱 빛깔이 반짝여요.',hint:'🧺 통발 전용 · '+TP7_HINT+' · 강 🏔️ 상류에서만 · 해질녘~새벽 · 무지개 전설(★7)'},
+ {id:'tpeel',hab:'fresh',grp:'rainbow',name:'무지개 비단 뱀장어',w:1,time:['dusk','night'],min:60,max:120,str:0.9,r:7,minP:0,shape:'eel',h:0.12,c1:'#da77f2',c2:'#ffe066',pat:'none',eye:0.15,rainbow:true,riverOnly:true,z7:['mid'],trapOnly:true,
+  flavor:'달밤에 강 한가운데를 비단 리본처럼 헤엄쳐요. 지나간 자리엔 한동안 무지개 물결이 남는대요.',hint:'🧺 통발 전용 · '+TP7_HINT+' · 강 🌉 중류에서만 · 해질녘·밤 · 무지개 전설(★7)'},
+ {id:'tpkkeokji',hab:'fresh',grp:'rainbow',name:'용소 무지개 꺽지',w:1,time:['any'],min:25,max:45,str:0.85,r:7,minP:0,shape:'fish',h:0.34,c1:'#3a63b8',c2:'#eef8ff',pat:'none',eye:0.15,rainbow:true,riverOnly:true,z7:['fall'],trapOnly:true,
+  flavor:'폭포 아래 깊은 용소의 바위굴을 지키는 꺽지 대장. 물보라에 비친 무지개를 몸에 새겼대요.',hint:'🧺 통발 전용 · '+TP7_HINT+' · 강 💦 폭포 앞에서만 · 언제나 · 무지개 전설(★7)'},
+ {id:'tpturtle',hab:'fresh',grp:'rainbow',name:'별주부 칠보 자라',w:1,time:['any'],min:40,max:80,str:0.85,r:7,minP:0,shape:'turtle',h:0.2,c1:'#3e8a7a',c2:'#b8dcc0',pat:'none',eye:0.1,rainbow:true,pondOnly:true,trapOnly:true,
+  flavor:'용궁에 돌아갈 길을 잃은 별주부. 용궁 떡집 꿀떡 냄새를 맡고 통발로 들어왔어요.',hint:'🧺 통발 전용 · '+TP7_HINT+' · 저수지에서만 · 언제나 · 무지개 전설(★7)'}
+].forEach(o=>SPECIES.push(o));
+[
+ ['giantoctopus','버블껌 대왕문어','#ff8fc8','#ffe0f0','bubblegum','용궁 문방구 앞에서 풍선껌을 여덟 개나 한꺼번에 씹었어요. 빨판마다 작은 풍선이 볼록!',{},'바다'],
+ ['kingcrab','레몬 머랭 킹크랩','#ffe27a','#fff8d8','meringue','등딱지 가시마다 하얀 머랭 뿔이 솟았어요. 새콤한 레몬 향이 바다 밑까지 퍼진대요.',{},'바다'],
+ ['mutae','흑당 버블티 무태장어','#a8673a','#f2dcc2','boba','깊은 강 웅덩이에서 흑당 시럽 무늬를 몸에 감고 다녀요. 동글동글 펄 무늬는 행운의 표시래요.',{},'강 · 🌊 하류·하구에서 잘 나와요'],
+ ['bagrid','망고 스무디 동자개','#ffb02e','#fff1b8','mango','강가 망고나무 아래 웅덩이에서 자라 몸이 노랗게 익었어요. 빠가빠가 우는 소리까지 달콤해졌대요.',{riverOnly:true},'강 · 🌉 중류에서 잘 나와요'],
+ ['dukjunggae','쿠키앤크림 둑중개','#f3eee6','#ffffff','cookie','차가운 계곡 돌 밑에서 초코 쿠키 부스러기를 이불 삼아 자요. 큰 머리로 돌을 밀면 쿠키가 바스락!',{noFall:true},'강 🏔️ 상류에서만'],
+ ['crayfish','소다 아이스바 가재','#5fc4ee','#e2f7ff','sodaice','얼음장 같은 계곡물 바닥에서 소다 얼음을 껴안고 잤더니 몸이 하늘색이 됐어요. 집게 끝은 아직 꽁꽁!',{rz:'up',rzOnly:true,noFall:true},'강 🏔️ 상류에서만'],
+ ['tunggari','캐러멜 팝콘 퉁가리','#c98a3a','#fff0cc','popcorn','폭포 물보라 속에서 톡톡 튀어 오르다 캐러멜 팝콘 옷을 입었어요. 가시는 조심, 그래도 달콤!',{fallOnly:true},'강 💦 폭포 앞에서만'],
+ ['crucian','복숭아 요거트 붕어','#ffa894','#fff8f2','peachyog','복숭아꽃이 떨어진 저수지에서 자라 분홍빛이 됐어요. 꼬리엔 하얀 요거트 소용돌이!',{pondOnly:true},'저수지에서만'],
+ ['freshshrimp','핑크 레모네이드 새뱅이','#ff9fc0','#fff1f6','lemonade','저수지 물빛이 분홍으로 물든 봄날, 레몬 조각을 안고 톡톡 튀어 다녀요. 몸이 살짝 비쳐요.',{pondOnly:true},'저수지에서만']
+].forEach(([bid,name,c1,c2,top,flavor,opt,where])=>{const b=SPECIES.find(s=>s.id===bid);if(!b||RARE_OF[bid])return;
+ const r=Object.assign({},b,{id:bid+'_r',name,c1,c2,top,flavor,rare:bid,w:0,rw:1,r:6,trapOnly:true},opt);if(top==='cookie'&&b.rf)r.rf=Object.assign({},b.rf,{pat:'none'});
+ Object.defineProperty(r,'hint',{enumerable:true,configurable:true,get(){let known=false;try{known=!!(book&&book[bid]);}catch(e){}return`✨ ${known?b.name:'???'}의 희귀종 · 🧺 통발 전용 · 🍯 용궁 꿀떡 주머니를 넣은 ★6 여의주 황금 통발에서만 · ${where}`;}});
+ SPECIES.push(r);RARE_OF[bid]=r;});
 const SP_IDX=new Map(SPECIES.map((s,i)=>[s.id,i]));const SP_BY=Object.fromEntries(SPECIES.map(s=>[s.id,s]));
 function starOf(sp){return Math.max(1,Math.min(7,sp.r|0));}
 const STAR_PRICE=[0,20,50,120,300,1000,3000,10000];
@@ -4715,8 +4746,15 @@ const HARD_D=0.16;
 function starRangeTxt(){const R=GS.rod;if(R>=7)return`★7 물고기까지 모두`;const hi=Math.min(7,effStar()+1),lo=R+1;return`★${R} 물고기까지 편하게 · ★${lo===hi?lo:lo+'~★'+hi}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),R=GS.rod;return`🔥 ★${st} 물고기가 걸렸어요! 내 낚싯대(★${R})보다 ${st-R>1?'두':'한'} 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.rod>1?'두':'한'} 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-21c';
+const NEWS_VER='2026-11-23a';
 const NEWS=[
+ {d:'11월 23일',t:'🧺 통발로만 잡히는 친구 15종! 🌈 ★7 6종 · ✨ 희귀종 9종',n:true,i:[
+  '🧺 <b>★6 여의주 황금 통발</b>에 통발 미끼를 넣으면 <b>통발로만 잡히는 새 친구</b>가 들어와요. <b>낚싯대로는 절대 안 잡혀요!</b> 💎 <b>칠색 진주 이슬</b>을 넣으면 통발 전용 ★7, 🍯 <b>용궁 꿀떡 주머니</b>를 넣으면 통발 전용 희귀종이 들어올 수 있어요.',
+  '🌈 <b>통발 전용 ★7 무지개 전설 6종</b> — 친 자리와 시간이 맞아야 들어와요<br>🦐 <b>무지개 갯가재</b> 바다 · 밤·새벽<br>💦 <b>용소 무지개 꺽지</b> 강 폭포 앞 · 언제나<br>🏔️ <b>물안개 무지개 도롱뇽</b> 강 상류 · 해질녘~새벽<br>🌉 <b>무지개 비단 뱀장어</b> 강 중류 · 해질녘·밤<br>🌊 <b>칠색 털손 참게</b> 강 하류·하구 · 해질녘·밤<br>🐢 <b>별주부 칠보 자라</b> 저수지 · 언제나',
+  '✨ <b>통발 전용 희귀종 9종</b><br>🌊 바다: <b>버블껌 대왕문어</b> · <b>레몬 머랭 킹크랩</b><br>💦 강 폭포 앞: <b>캐러멜 팝콘 퉁가리</b><br>🏔️ 강 상류: <b>쿠키앤크림 둑중개</b> · <b>소다 아이스바 가재</b><br>🌉 강 중류에서 잘 나와요: <b>망고 스무디 동자개</b><br>🌊 강 하류·하구에서 잘 나와요: <b>흑당 버블티 무태장어</b><br>🏞️ 저수지: <b>복숭아 요거트 붕어</b> · <b>핑크 레모네이드 새뱅이</b>',
+  '🎲 미끼로 ★7이나 희귀종이 들어올 때 <b>절반은 통발 전용 친구</b>, 나머지 절반은 지금까지의 ★7·희귀종이에요. 미끼 확률(💎 칸마다 0.12% · 🍯 칸마다 0.25%)은 그대로예요.',
+  '💰 통발 전용 ★7은 다른 ★7과 같은 값, 통발 전용 희귀종은 다른 희귀종과 같은 값(상점 가격 3배)을 받아요. ★7을 꺼내면 모두에게 🎉 축하 무지개가 뜨고, 처음 잡은 친구는 명예의 전당에 올라가요.',
+  '📖 도감에서 각 친구의 힌트를 보면 어느 구역에 통발을 쳐야 하는지 알 수 있어요. 강은 💦 폭포 앞 · 🏔️ 상류 · 🌉 중류 · 🌊 하류·하구마다 사는 친구가 달라요!']},
  {d:'11월 21일',t:'🧺 통발이 생겼어요! 접속하지 않아도 물고기가 들어와요',n:true,i:[
   '🐉 상점에 <b>🧺 통발</b> 칸이 생겼어요. 물가에서 <b>물 쪽을 보고</b> 서면 오른쪽에 <b>🧺 통발 치기</b> 버튼이 떠요(PC는 T 키). 버튼 › <em>여기에 치기</em>를 누르면 쳐져요. <b>접속하지 않아도</b> 정해진 시간마다 물고기가 1마리씩 들어와요!',
   '🧺 통발 5종 (가진 낚싯대 ★ 이하만 살 수 있어요): <b>대나무 바구니</b> ★2까지 · 12칸 · 20분마다 · 9,900몰랑 / <b>산호 그물</b> ★3까지 · 14칸 · 20분 · 19,900 / <b>달빛 은사</b> ★4까지 · 16칸 · 20분 · 44,000 / <b>용궁 자개</b> ★5까지 · 20칸 · 18분 · 99,000 / <b>여의주 황금</b> ★6까지 · 24칸 · 15분 · 199,000',
@@ -5232,7 +5270,7 @@ function legBase(p,hab){if(hab==='sea'){if(p<0.8)return 0;return LEG_BASE*(BOAT.
 function pickFish7(p,hab){if(window.__pick)return null;const b=legBase(p,hab);if(!b)return null;const E=effStar();const rf=E>=7?1:0.4;if(E>=6){LEG.n++;saveLeg();}
  if(Math.random()>=b*legMult()*rf*(floatOn()?floatOn().leg:1)*petLeg()*food7()*bait7())return null;
  const ph=phaseOf(hourNow()),fresh=hab!=='sea',cand=[];let tot=0;
- for(const sp of SPECIES){if(starOf(sp)!==7)continue;if((sp.hab==='fresh')!==fresh)continue;if(sp.pondOnly&&hab!=='pond')continue;if(sp.riverOnly&&hab!=='river')continue;if(sp.eventOnly&&!rainbowOn())continue;if(hab==='river'&&sp.z7&&!sp.z7.includes(RZONE||'mid'))continue;
+ for(const sp of SPECIES){if(starOf(sp)!==7||sp.trapOnly)continue;if((sp.hab==='fresh')!==fresh)continue;if(sp.pondOnly&&hab!=='pond')continue;if(sp.riverOnly&&hab!=='river')continue;if(sp.eventOnly&&!rainbowOn())continue;if(hab==='river'&&sp.z7&&!sp.z7.includes(RZONE||'mid'))continue;
   let w=sp.w;if(!sp.time.includes('any'))w*=sp.time.includes(ph)?2.4:0.3;if(hab==='river'&&RZONE==='fall'&&sp.fallB)w*=1.5;cand.push([sp,w]);tot+=w;}
  if(!tot)return null;let r=Math.random()*tot,sp=cand[0][0];for(const[s,w]of cand){if(r<w){sp=s;break;}r-=w;}
  const frac=Math.pow(Math.random(),0.9);return{sp,size:Math.round((sp.min+(sp.max-sp.min)*frac)*10)/10,s:clamp(sp.str*(0.7+0.6*frac),0,1),frac,leg:true};}
@@ -5461,6 +5499,200 @@ rainbowlenok(c,L){
  c.strokeStyle='#7a3028';c.lineWidth=L*0.005;c.beginPath();c.moveTo(-0.3*L,-0.1*L);c.quadraticCurveTo(-0.26*L,-0.02*L,-0.3*L,0.07*L);c.stroke();
  eye7(c,-0.35*L,-0.035*L,0.027*L,'#c0503a');spark7(c,0.2*L,-0.24*L,0.016*L,'#fff');}
 };
+/* ---------- v150: 🧺 통발 전용 ★7 6종 그림 ---------- */
+/* 🦐 무지개 갯가재 — 옆모습 · 머리 왼쪽 · 마디마다 일곱 색 띠 · 눈자루 · 접힌 앞다리 · 공작 꼬리부채 */
+ART7.tpmantis=function(c,L){c.save();c.lineCap='round';c.lineJoin='round';
+ const segX=i=>-0.22*L+i*0.068*L, segTop=i=>-0.095*L+Math.pow((i-2.5)/4,2)*0.012*L+i*0.004*L, segBot=i=>0.062*L-i*0.003*L;
+ /* 더듬이 */
+ c.strokeStyle='#ff9a5a';c.lineWidth=L*0.006;c.beginPath();c.moveTo(-0.4*L,-0.06*L);c.quadraticCurveTo(-0.49*L,-0.13*L,-0.54*L,-0.22*L);c.stroke();
+ c.beginPath();c.moveTo(-0.41*L,-0.05*L);c.quadraticCurveTo(-0.51*L,-0.07*L,-0.56*L,-0.13*L);c.stroke();
+ /* 더듬이 비늘(주황 노) */
+ c.fillStyle=lg7(c,-0.5*L,0,-0.42*L,0,[[0,'#ffb35c'],[1,'#ff7a59']]);c.beginPath();c.ellipse(-0.47*L,-0.035*L,0.045*L,0.016*L,-0.35,0,7);c.fill();
+ c.strokeStyle='rgba(255,255,255,.7)';c.lineWidth=L*0.003;c.beginPath();c.moveTo(-0.5*L,-0.025*L);c.lineTo(-0.44*L,-0.045*L);c.stroke();
+ /* 헤엄다리(배 밑 깃털) */
+ for(let i=0;i<7;i++){const x=segX(i)+0.03*L,y=segBot(i)+0.005*L;c.strokeStyle=r7a(R7[i],0.85);c.lineWidth=L*0.008;c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x+0.012*L,y+0.04*L,x-0.005*L,y+0.065*L);c.stroke();
+  c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=L*0.003;c.beginPath();c.moveTo(x+0.004*L,y+0.02*L);c.lineTo(x+0.016*L,y+0.03*L);c.moveTo(x+0.003*L,y+0.04*L);c.lineTo(x+0.014*L,y+0.05*L);c.stroke();}
+ /* 걷는 다리 3쌍 */
+ c.strokeStyle='#e86a8a';c.lineWidth=L*0.008;for(let i=0;i<3;i++){const x=-0.25*L+i*0.035*L;c.beginPath();c.moveTo(x,0.05*L);c.lineTo(x-0.01*L,0.1*L);c.lineTo(x+0.006*L,0.13*L);c.stroke();}
+ /* 꼬리부채: 가운데 꼬리판 + 양쪽 꼬리날개 (공작 눈무늬) */
+ const tx=0.255*L;
+ const fan=(ang,len,wid,col)=>{const p=new Path2D();p.moveTo(tx,-0.01*L);p.quadraticCurveTo(tx+Math.cos(ang-0.35)*len*0.6,Math.sin(ang-0.35)*len*0.6-0.01*L,tx+Math.cos(ang)*len,Math.sin(ang)*len);p.quadraticCurveTo(tx+Math.cos(ang+0.35)*len*0.6,Math.sin(ang+0.35)*len*0.6+0.01*L,tx,0.02*L);p.closePath();c.fillStyle=col;c.fill(p);return p;};
+ const f1=fan(-0.55,0.2*L,0,lg7(c,tx,0,tx+0.2*L,-0.1*L,[[0,'#4dabf7'],[1,'#748ffc']]));
+ const f2=fan(0.55,0.2*L,0,lg7(c,tx,0,tx+0.2*L,0.1*L,[[0,'#748ffc'],[1,'#da77f2']]));
+ const tel=new Path2D();tel.moveTo(tx,-0.04*L);tel.quadraticCurveTo(tx+0.14*L,-0.05*L,tx+0.19*L,0.0);tel.quadraticCurveTo(tx+0.14*L,0.05*L,tx,0.045*L);tel.closePath();
+ c.fillStyle=lg7(c,tx,0,tx+0.19*L,0,[[0,'#3bc9db'],[1,'#4dabf7']]);c.fill(tel);
+ for(const[ex,ey,col]of[[tx+0.13*L,-0.085*L,'#ffe066'],[tx+0.13*L,0.09*L,'#ffe066'],[tx+0.11*L,0.0,'#ff6b81']]){c.fillStyle=col;c.beginPath();c.arc(ex,ey,0.018*L,0,7);c.fill();c.fillStyle='#2b2f5a';c.beginPath();c.arc(ex,ey,0.008*L,0,7);c.fill();}
+ c.strokeStyle='rgba(255,255,255,.75)';c.lineWidth=L*0.004;c.beginPath();c.moveTo(tx+0.02*L,0);c.lineTo(tx+0.17*L,0);c.stroke();
+ /* 몸 마디 (뒤→앞) */
+ for(let i=6;i>=0;i--){const x0=segX(i),x1=x0+0.078*L,t=segTop(i),b=segBot(i);const p=new Path2D();p.moveTo(x0,t+0.01*L);p.quadraticCurveTo(x0+0.005*L,t,x0+0.02*L,t);p.lineTo(x1-0.014*L,t+0.004*L);p.quadraticCurveTo(x1+0.006*L,t+0.01*L,x1,t+0.03*L);p.lineTo(x1,b-0.01*L);p.quadraticCurveTo(x1,b,x1-0.016*L,b);p.lineTo(x0+0.012*L,b);p.quadraticCurveTo(x0,b,x0,b-0.012*L);p.closePath();
+  c.fillStyle=lg7(c,0,t,0,b,[[0,mixHex(R7[i],'#ffffff',0.35)],[0.45,R7[i]],[1,mixHex(R7[i],'#3a2050',0.25)]]);c.fill(p);
+  c.strokeStyle='rgba(60,30,80,.28)';c.lineWidth=L*0.004;c.stroke(p);
+  c.fillStyle='rgba(255,255,255,.55)';c.beginPath();c.ellipse(x0+0.035*L,t+0.02*L,0.022*L,0.007*L,0,0,7);c.fill();
+  c.fillStyle='rgba(255,255,255,.8)';c.beginPath();c.arc(x0+0.04*L,b-0.03*L,0.006*L,0,7);c.fill();}
+ /* 머리가슴 (청록 등딱지) */
+ const hd=new Path2D();hd.moveTo(-0.43*L,-0.03*L);hd.quadraticCurveTo(-0.42*L,-0.1*L,-0.34*L,-0.105*L);hd.lineTo(-0.21*L,-0.1*L);hd.quadraticCurveTo(-0.2*L,-0.02*L,-0.21*L,0.06*L);hd.lineTo(-0.36*L,0.06*L);hd.quadraticCurveTo(-0.43*L,0.05*L,-0.43*L,-0.03*L);hd.closePath();
+ c.fillStyle=lg7(c,0,-0.1*L,0,0.06*L,[[0,'#7ef0c8'],[0.5,'#20c997'],[1,'#0f8f7a']]);c.fill(hd);
+ sheen7(c,hd,-0.4*L,-0.11*L,-0.3*L,0.0,0.55);
+ c.strokeStyle='rgba(10,70,60,.35)';c.lineWidth=L*0.004;c.beginPath();c.moveTo(-0.3*L,-0.1*L);c.quadraticCurveTo(-0.29*L,-0.02*L,-0.3*L,0.06*L);c.stroke();
+ /* 접힌 사냥 앞다리 (분홍 · 끝에 동그란 망치) */
+ c.strokeStyle='#ff6b9a';c.lineWidth=L*0.03;c.beginPath();c.moveTo(-0.37*L,0.04*L);c.quadraticCurveTo(-0.38*L,0.12*L,-0.34*L,0.15*L);c.stroke();
+ c.strokeStyle='#ff9ec0';c.lineWidth=L*0.022;c.beginPath();c.moveTo(-0.34*L,0.15*L);c.quadraticCurveTo(-0.41*L,0.15*L,-0.45*L,0.09*L);c.stroke();
+ c.fillStyle=lg7(c,-0.36*L,0.12*L,-0.32*L,0.18*L,[[0,'#fff0a0'],[1,'#ffa94d']]);c.beginPath();c.arc(-0.34*L,0.15*L,0.025*L,0,7);c.fill();
+ c.fillStyle='rgba(255,255,255,.8)';c.beginPath();c.arc(-0.347*L,0.142*L,0.008*L,0,7);c.fill();
+ /* 눈자루 + 무지개 눈 */
+ c.strokeStyle='#20c997';c.lineWidth=L*0.014;c.beginPath();c.moveTo(-0.41*L,-0.07*L);c.quadraticCurveTo(-0.43*L,-0.13*L,-0.44*L,-0.17*L);c.stroke();
+ c.beginPath();c.moveTo(-0.38*L,-0.085*L);c.quadraticCurveTo(-0.37*L,-0.14*L,-0.375*L,-0.18*L);c.stroke();
+ for(const[ex,ey]of[[-0.445*L,-0.19*L],[-0.375*L,-0.2*L]]){eye7(c,ex,ey,0.03*L,'#3bc9db');c.save();c.beginPath();c.arc(ex,ey,0.0355*L,0,7);c.clip();c.fillStyle=g7(c,ex-0.035*L,0,ex+0.035*L,0,0.55);c.fillRect(ex-0.04*L,ey-0.004*L,0.08*L,0.008*L);c.restore();}
+ blush7(c,-0.35*L,0.0,0.028*L);
+ c.strokeStyle='rgba(10,60,50,.6)';c.lineWidth=L*0.005;c.beginPath();c.arc(-0.395*L,0.005*L,0.014*L,0.2,Math.PI-0.4);c.stroke();
+ spark7(c,0.12*L,-0.2*L,0.018*L,'#fff');spark7(c,-0.1*L,0.2*L,0.014*L,'#fffbe0');spark7(c,0.42*L,0.14*L,0.012*L,'#fff');
+ c.restore();};
+/* 🦀 칠색 털손 참게 — 정면 위 · 진주빛 등딱지에 무지개 결 · 일곱 색 털 집게 */
+ART7.tpmitten=function(c,L){c.save();c.lineCap='round';c.lineJoin='round';const legC='#8f7fb8';
+ /* 다리 4쌍 */
+ for(const s of[-1,1])for(let i=0;i<4;i++){const bx=s*0.17*L,by=0.0+i*0.045*L,kx=s*(0.32+i*0.01)*L,ky=by-0.05*L+i*0.02*L,ex=s*(0.41+i*0.01)*L,ey=by+0.1*L+i*0.03*L;
+  c.strokeStyle=legC;c.lineWidth=L*0.026;c.beginPath();c.moveTo(bx,by);c.lineTo(kx,ky);c.lineTo(ex,ey);c.stroke();
+  c.strokeStyle=r7a(R7[(i*2+(s>0?1:0))%7],0.9);c.lineWidth=L*0.008;c.beginPath();c.moveTo(kx,ky);c.lineTo(ex,ey);c.stroke();
+  c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=L*0.005;c.beginPath();c.moveTo(bx+s*0.02*L,by-0.006*L);c.lineTo(kx-s*0.02*L,ky+0.004*L);c.stroke();}
+ /* 집게 팔 */
+ for(const s of[-1,1]){c.strokeStyle=legC;c.lineWidth=L*0.04;c.beginPath();c.moveTo(s*0.14*L,-0.06*L);c.lineTo(s*0.25*L,-0.17*L);c.stroke();
+  const cx=s*0.29*L,cy=-0.25*L;
+  /* 털장갑: 일곱 색 털 */
+  for(let k=0;k<70;k++){const a=k/70*Math.PI*2,r0=0.05*L,r1=r0+(0.025+0.012*h7(k*3.1))*L;c.strokeStyle=R7[k%7];c.lineWidth=L*0.0065;c.beginPath();c.moveTo(cx+Math.cos(a)*r0*1.1,cy+Math.sin(a)*r0*0.85+0.02*L);c.quadraticCurveTo(cx+Math.cos(a+0.15)*r1*1.15,cy+Math.sin(a+0.15)*r1*0.95+0.02*L,cx+Math.cos(a+0.25)*r1*1.2,cy+Math.sin(a+0.25)*r1+0.02*L);c.stroke();}
+  /* 집게 손 */
+  const hp=new Path2D();hp.ellipse(cx,cy,0.07*L,0.052*L,s*0.5,0,7);c.fillStyle=lg7(c,cx,cy-0.05*L,cx,cy+0.05*L,[[0,'#f3eaff'],[1,'#b9a6e8']]);c.fill(hp);sheen7(c,hp,cx-0.06*L,cy-0.06*L,cx,cy,0.6);
+  c.fillStyle=lg7(c,cx,cy-0.1*L,cx,cy,[[0,'#ffd6e8'],[1,'#ff8fb8']]);c.beginPath();c.moveTo(s*0.32*L,-0.28*L);c.quadraticCurveTo(s*0.4*L,-0.36*L,s*0.42*L,-0.31*L);c.quadraticCurveTo(s*0.38*L,-0.27*L,s*0.345*L,-0.24*L);c.closePath();c.fill();
+  /* 눈자루 */c.strokeStyle=legC;c.lineWidth=L*0.014;c.beginPath();c.moveTo(s*0.055*L,-0.1*L);c.lineTo(s*0.07*L,-0.17*L);c.stroke();eye7(c,s*0.072*L,-0.185*L,0.024*L,'#7b5cd6');}
+ /* 등딱지: 네모둥근 진주빛 + 무지개 결 */
+ const sh=new Path2D();sh.moveTo(-0.2*L,-0.08*L);sh.quadraticCurveTo(-0.21*L,-0.12*L,-0.15*L,-0.125*L);sh.lineTo(0.15*L,-0.125*L);sh.quadraticCurveTo(0.21*L,-0.12*L,0.2*L,-0.08*L);sh.quadraticCurveTo(0.24*L,0.05*L,0.16*L,0.14*L);sh.quadraticCurveTo(0,0.19*L,-0.16*L,0.14*L);sh.quadraticCurveTo(-0.24*L,0.05*L,-0.2*L,-0.08*L);sh.closePath();
+ c.fillStyle=lg7(c,0,-0.13*L,0,0.18*L,[[0,'#fbf6ff'],[1,'#cfc0f2']]);c.fill(sh);
+ c.save();c.clip(sh);for(let k=0;k<9;k++){c.strokeStyle=r7a(R7[k%7],0.55);c.lineWidth=L*0.022;c.beginPath();const y=-0.13*L+k*0.04*L;c.moveTo(-0.26*L,y+0.05*L);c.bezierCurveTo(-0.1*L,y-0.03*L,0.08*L,y+0.07*L,0.26*L,y-0.01*L);c.stroke();}
+ c.fillStyle='rgba(255,255,255,.35)';c.beginPath();c.ellipse(-0.07*L,-0.06*L,0.1*L,0.035*L,-0.2,0,7);c.fill();c.restore();
+ /* 이마 톱니 4개 */c.fillStyle='#e9ddff';for(let k=0;k<4;k++){const x=-0.075*L+k*0.05*L;c.beginPath();c.moveTo(x-0.018*L,-0.124*L);c.lineTo(x,-0.15*L);c.lineTo(x+0.018*L,-0.124*L);c.closePath();c.fill();}
+ c.strokeStyle='rgba(90,60,140,.55)';c.lineWidth=L*0.007;c.beginPath();c.arc(0,0.06*L,0.034*L,0.3,Math.PI-0.3);c.stroke();
+ blush7(c,-0.1*L,0.07*L,0.032*L);blush7(c,0.1*L,0.07*L,0.032*L);
+ spark7(c,-0.42*L,-0.05*L,0.016*L,'#fff');spark7(c,0.44*L,-0.02*L,0.013*L,'#fffbe0');spark7(c,0.02*L,0.24*L,0.012*L,'#fff');
+ c.restore();};
+/* 🦎 물안개 무지개 도롱뇽 — 위에서 · 머리 왼쪽 · 계곡 물안개빛 몸 · 무지개 깃털 아가미 · 지느러미 꼬리 */
+ART7.tpsala=function(c,L){c.save();c.lineCap='round';c.lineJoin='round';
+ /* 다리 4개: 팔꿈치·무릎을 굽혀 몸을 받치는 자세 (앞다리는 손이 앞으로, 뒷다리는 발이 뒤로) · 손바닥을 펴고 동글한 손가락 4개 */
+ for(const[bx,s,f]of[[-0.1,-1,-1],[-0.1,1,-1],[0.09,-1,1],[0.09,1,1]]){
+  const x0=L*bx,y0=s*L*0.04,ex=L*(bx-0.028*f),ey=s*L*0.1,hx=L*(bx+0.012*f),hy=s*L*0.14;
+  const leg=()=>{c.beginPath();c.moveTo(x0,y0);c.lineTo(ex,ey);c.lineTo(hx,hy);};
+  c.strokeStyle='#a996e0';c.lineWidth=L*0.034;leg();c.stroke();
+  c.strokeStyle='#ddd2ff';c.lineWidth=L*0.024;leg();c.stroke();
+  const ang=Math.atan2(hy-ey,hx-ex);
+  for(let k=0;k<4;k++){const a=ang+(k-1.5)*0.55,fx=hx+Math.cos(a)*L*0.028,fy=hy+Math.sin(a)*L*0.028;c.strokeStyle='#a996e0';c.lineWidth=L*0.014;c.beginPath();c.moveTo(hx,hy);c.lineTo(fx,fy);c.stroke();c.strokeStyle='#e6dcff';c.lineWidth=L*0.008;c.beginPath();c.moveTo(hx,hy);c.lineTo(fx,fy);c.stroke();c.fillStyle='#fff0f8';c.beginPath();c.arc(fx,fy,L*0.008,0,7);c.fill();}
+  c.fillStyle='#a996e0';c.beginPath();c.arc(hx,hy,L*0.02,0,7);c.fill();c.fillStyle='#e6dcff';c.beginPath();c.arc(hx,hy,L*0.015,0,7);c.fill();}
+ /* 꼬리: 길고 납작 · 무지개 지느러미 테 */
+ const tf=new Path2D();tf.moveTo(L*0.1,-L*0.07);tf.bezierCurveTo(L*0.26,-L*0.1,L*0.38,L*0.02,L*0.53,-L*0.035);tf.bezierCurveTo(L*0.4,L*0.1,L*0.26,L*0.02,L*0.1,L*0.07);tf.closePath();
+ c.fillStyle=g7(c,L*0.1,0,L*0.53,0,0.7);c.fill(tf);
+ const tail=new Path2D();tail.moveTo(L*0.08,-L*0.05);tail.bezierCurveTo(L*0.25,-L*0.07,L*0.36,L*0.025,L*0.49,-L*0.025);tail.bezierCurveTo(L*0.36,L*0.06,L*0.25,0,L*0.08,L*0.05);tail.closePath();
+ c.fillStyle=lg7(c,L*0.08,0,L*0.49,0,[[0,'#d8ccff'],[1,'#a8e6ff']]);c.fill(tail);
+ /* 몸 */
+ const body=new Path2D();body.ellipse(-L*0.04,0,L*0.17,L*0.068,0,0,7);
+ c.fillStyle=lg7(c,0,-L*0.07,0,L*0.07,[[0,'#efe8ff'],[0.5,'#d6c8ff'],[1,'#bfe8ff']]);c.fill(body);
+ /* 물안개 무지개 결 */
+ c.save();c.clip(body);for(let k=0;k<7;k++){c.strokeStyle=r7a(R7[k],0.42);c.lineWidth=L*0.016;c.beginPath();const x=-L*0.19+k*L*0.05;c.moveTo(x,-L*0.08);c.quadraticCurveTo(x+L*0.025,0,x,L*0.08);c.stroke();}
+ c.fillStyle='rgba(255,255,255,.55)';c.beginPath();c.ellipse(-L*0.07,-L*0.03,L*0.1,L*0.015,0,0,7);c.fill();c.restore();
+ c.save();c.clip(tail);for(let i=0;i<9;i++){c.fillStyle='rgba(255,255,255,.75)';c.beginPath();c.arc(L*(0.14+i*0.038),(h7(i+3)-0.5)*L*0.05,L*(0.005+h7(i)*0.005),0,7);c.fill();}c.restore();
+ /* 무지개 깃털 아가미 (양쪽 3가닥 · 머리 옆에서 바깥·뒤로 뻗어요) */
+ for(const s of[-1,1])for(let k=0;k<3;k++){const bx=-L*(0.25-k*0.022),by=s*L*0.06,ang=s*(2.25-k*0.4),len=L*(0.105+k*0.012);const ex=bx+Math.cos(ang)*len,ey=by+Math.sin(ang)*len;
+  c.strokeStyle='#e6dcff';c.lineWidth=L*0.012;c.beginPath();c.moveTo(bx,by);c.lineTo(ex,ey);c.stroke();
+  for(let j=1;j<=6;j++){const t=j/7,px=bx+(ex-bx)*t,py=by+(ey-by)*t;c.strokeStyle=R7[(j+k*2)%7];c.lineWidth=L*0.0075;for(const d of[-1,1]){const a2=ang+d*0.9;c.beginPath();c.moveTo(px,py);c.lineTo(px+Math.cos(a2)*L*0.02,py+Math.sin(a2)*L*0.02);c.stroke();}}
+  c.fillStyle=R7[(k*2+3)%7];c.beginPath();c.arc(ex,ey,L*0.008,0,7);c.fill();}
+ /* 머리 */
+ const head=new Path2D();head.ellipse(-L*0.27,0,L*0.1,L*0.085,0,0,7);c.fillStyle=lg7(c,0,-L*0.085,0,L*0.085,[[0,'#f6f0ff'],[1,'#c9e6ff']]);c.fill(head);sheen7(c,head,-L*0.34,-L*0.08,-L*0.26,0,0.6);
+ eye7(c,-L*0.3,-L*0.045,L*0.022,'#6a5ad6');eye7(c,-L*0.3,L*0.045,L*0.022,'#6a5ad6');
+ blush7(c,-L*0.25,-L*0.06,L*0.022);blush7(c,-L*0.25,L*0.06,L*0.022);
+ c.strokeStyle='rgba(90,70,150,.55)';c.lineWidth=L*0.005;c.beginPath();c.arc(-L*0.28,0,L*0.07,Math.PI*0.84,Math.PI*1.16);c.stroke();
+ /* 물방울 */for(const[x,y,r]of[[-0.42,-0.16,0.012],[0.3,-0.16,0.01],[0.42,0.13,0.009]]){c.fillStyle='rgba(160,220,255,.8)';c.beginPath();c.arc(x*L,y*L,r*L,0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc((x-0.004)*L,(y-0.004)*L,r*L*0.35,0,7);c.fill();}
+ spark7(c,-L*0.08,L*0.2,L*0.015,'#fff');spark7(c,L*0.18,-L*0.19,L*0.013,'#fffbe0');
+ c.restore();};
+/* 🎀 무지개 비단 뱀장어 — 옆모습 · 머리 왼쪽 · 비단 리본 같은 몸에 무지개 광택 · 등·배 지느러미가 꼬리까지 이어져요 */
+ART7.tpeel=function(c,L){c.save();c.lineCap='round';c.lineJoin='round';
+ const N=60,X0=-0.42,X1=0.5;const cy=u=>Math.sin(u*Math.PI*2.1+0.4)*0.1*L*(0.3+0.7*u);const hw=u=>L*(0.066*(1-Math.pow(u,1.7))+0.007)*(u<0.09?0.42+0.58*Math.sin(u/0.09*Math.PI/2):1);
+ const P=[];for(let i=0;i<=N;i++){const u=i/N,x=(X0+(X1-X0)*u)*L;const dx=0.0001;const y=cy(u),y2=cy(u+dx);const a=Math.atan2((y2-y)/((X1-X0)*L*dx),1);P.push([x,y,a,u]);}
+ /* 지느러미 리본 (등·배) */
+ const fin=(side)=>{const p=new Path2D();P.forEach(([x,y,a,u],i)=>{if(u<0.22)return;const w=hw(u)+L*0.042*(u<0.3?(u-0.22)/0.08:1)*(1-u*0.3);const px=x-Math.sin(a)*w*side,py=y+Math.cos(a)*w*side;i&&p.lineTo?p.lineTo(px,py):p.moveTo(px,py);});for(let i=N;i>=0;i--){const[x,y,a,u]=P[i];if(u<0.22)continue;const w=hw(u);p.lineTo(x-Math.sin(a)*w*side,y+Math.cos(a)*w*side);}p.closePath();return p;};
+ for(const sd of[-1,1]){const fp=fin(sd);c.fillStyle=g7(c,-0.2*L,0,0.5*L,0,0.55);c.fill(fp);c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=L*0.003;c.stroke(fp);}
+ /* 몸 */
+ const b=new Path2D();P.forEach(([x,y,a],i)=>{const w=hw(P[i][3]);const px=x+Math.sin(a)*w,py=y-Math.cos(a)*w;i?b.lineTo(px,py):b.moveTo(px,py);});
+ for(let i=N;i>=0;i--){const[x,y,a,u]=P[i];const w=hw(u);b.lineTo(x-Math.sin(a)*w,y+Math.cos(a)*w);}
+ b.bezierCurveTo((X0-0.025)*L,cy(0)+hw(0)*1.1,(X0-0.025)*L,cy(0)-hw(0)*1.1,P[0][0]+Math.sin(P[0][2])*hw(0),P[0][1]-Math.cos(P[0][2])*hw(0));b.closePath();
+ c.fillStyle=g7(c,(X0+0.04)*L,0,X1*L,0);c.fill(b);
+ c.save();c.clip(b);
+ /* 비단 광택 줄 */for(let k=0;k<2;k++){c.strokeStyle=k?'rgba(255,255,255,.35)':'rgba(255,255,255,.7)';c.lineWidth=L*(k?0.018:0.008);c.beginPath();P.forEach(([x,y,a,u],i)=>{const w=hw(u)*(k?0.25:0.45);const px=x+Math.sin(a)*w,py=y-Math.cos(a)*w;i?c.lineTo(px,py):c.moveTo(px,py);});c.stroke();}
+ /* 배 쪽 진주빛 */c.strokeStyle='rgba(255,250,240,.45)';c.lineWidth=L*0.02;c.beginPath();P.forEach(([x,y,a,u],i)=>{const w=hw(u)*0.6;const px=x-Math.sin(a)*w,py=y+Math.cos(a)*w;i?c.lineTo(px,py):c.moveTo(px,py);});c.stroke();
+ /* 비단 무늬 점 */for(let i=6;i<N-4;i+=4){const[x,y]=P[i];c.fillStyle='rgba(255,255,255,.6)';c.beginPath();c.arc(x,y,L*0.005,0,7);c.fill();}
+ c.restore();
+ /* 얼굴: 눈은 위쪽 앞 · 입은 주둥이 끝에서 뒤로 · 아가미 구멍 · 가슴지느러미 */
+ {const[x2,y2,a2]=P[2],[x6,y6,a6,u6]=P[6],[x9,y9,a9,u9]=P[9];
+  fin7(c,[[x9,y9+hw(u9)*0.2],[x9+0.06*L,y9+0.055*L],[x9+0.015*L,y9+hw(u9)*0.95]],'rgba(255,214,235,.9)','rgba(255,255,255,.75)',L*0.003);
+  c.strokeStyle='rgba(120,30,50,.45)';c.lineWidth=L*0.004;c.beginPath();c.moveTo(x9-0.004*L,y9-hw(u9)*0.15);c.quadraticCurveTo(x9-0.012*L,y9+hw(u9)*0.3,x9-0.002*L,y9+hw(u9)*0.6);c.stroke();
+  eye7(c,x2+0.006*L,y2-hw(P[2][3])*0.35,0.021*L,'#d6336c');
+  c.strokeStyle='rgba(110,20,50,.6)';c.lineWidth=L*0.005;c.beginPath();c.moveTo((X0-0.006)*L,cy(0)+hw(0)*0.3);c.quadraticCurveTo((X0+0.01)*L,cy(0.02)+hw(0.03)*0.55,P[4][0],P[4][1]+hw(P[4][3])*0.38);c.stroke();
+  blush7(c,x6,y6+hw(u6)*0.25,0.02*L);}
+ /* 리본 반짝이 */spark7(c,-0.15*L,-0.18*L,0.016*L,'#fff');spark7(c,0.25*L,0.17*L,0.014*L,'#fffbe0');spark7(c,0.42*L,-0.14*L,0.011*L,'#fff');
+ c.restore();};
+/* 🐟 용소 무지개 꺽지 — 옆모습 · 폭포 아래 용소의 남빛 몸 · 일곱 색 세로 띠 · 아가미 뚜껑 진주 무늬 · 가시 등지느러미 */
+ART7.tpkkeokji=function(c,L){c.save();c.lineCap='round';c.lineJoin='round';
+ /* 꼬리 (둥근 부채) */
+ const tl=new Path2D();tl.moveTo(0.28*L,-0.045*L);tl.quadraticCurveTo(0.42*L,-0.17*L,0.49*L,-0.1*L);tl.quadraticCurveTo(0.52*L,0,0.49*L,0.1*L);tl.quadraticCurveTo(0.42*L,0.17*L,0.28*L,0.045*L);tl.closePath();
+ c.fillStyle=g7(c,0.28*L,-0.15*L,0.28*L,0.15*L,0.8);c.fill(tl);rays7(c,0.29*L,0,[[0.48*L,-0.12*L],[0.5*L,-0.06*L],[0.51*L,0],[0.5*L,0.06*L],[0.48*L,0.12*L]],'rgba(255,255,255,.55)',L*0.004);
+ /* 등지느러미: 앞은 가시, 뒤는 부드럽게 */
+ const df=new Path2D();df.moveTo(-0.16*L,-0.15*L);for(let i=0;i<8;i++){const x=-0.15*L+i*0.032*L;df.lineTo(x+0.008*L,-0.26*L+Math.abs(i-2)*0.006*L);df.lineTo(x+0.02*L,-0.185*L);}df.quadraticCurveTo(0.2*L,-0.28*L,0.27*L,-0.08*L);df.lineTo(0.1*L,-0.14*L);df.closePath();
+ c.fillStyle=lg7(c,0,-0.27*L,0,-0.14*L,[[0,'rgba(120,160,255,.95)'],[1,'#2c3f8a']]);c.fill(df);
+ for(let i=0;i<8;i++){const x=-0.15*L+i*0.032*L+0.008*L,y=-0.26*L+Math.abs(i-2)*0.006*L;c.fillStyle=R7[i%7];c.beginPath();c.arc(x,y,0.009*L,0,7);c.fill();}
+ /* 뒷지느러미 */fin7(c,[[0.06*L,0.13*L],[0.16*L,0.24*L],[0.25*L,0.08*L]],lg7(c,0,0.1*L,0,0.22*L,[[0,'#2c3f8a'],[1,'rgba(160,140,255,.9)']]));
+ /* 몸 */
+ const b=body7(L,-0.45,0.175,0.155,0.3,0.05,-0.3);
+ c.fillStyle=lg7(c,0,-0.18*L,0,0.16*L,[[0,'#1f2d6e'],[0.45,'#3a63b8'],[0.75,'#9fd0f0'],[1,'#eef8ff']]);c.fill(b);
+ c.save();c.clip(b);for(let i=0;i<7;i++){const x=-0.2*L+i*0.07*L;c.fillStyle=r7a(R7[i],0.6);c.beginPath();c.moveTo(x,-0.2*L);c.quadraticCurveTo(x+0.03*L,0,x-0.005*L,0.18*L);c.lineTo(x+0.03*L,0.18*L);c.quadraticCurveTo(x+0.06*L,0,x+0.03*L,-0.2*L);c.closePath();c.fill();}
+ scales7(c,b,L,-0.25*L,0.3*L,-0.15*L,0.13*L,0.035*L,'rgba(255,255,255,.18)',L*0.003);
+ c.fillStyle='rgba(255,255,255,.25)';c.beginPath();c.ellipse(-0.1*L,-0.1*L,0.2*L,0.025*L,-0.05,0,7);c.fill();c.restore();
+ /* 아가미 뚜껑 선 + 진주 무늬 (원래 꺽지의 푸른 점) */
+ c.strokeStyle='rgba(20,30,80,.5)';c.lineWidth=L*0.005;c.beginPath();c.moveTo(-0.25*L,-0.13*L);c.quadraticCurveTo(-0.2*L,-0.02*L,-0.26*L,0.11*L);c.stroke();
+ const gx=-0.235*L,gy=-0.005*L;c.fillStyle=g7(c,gx-0.03*L,gy,gx+0.03*L,gy);c.beginPath();c.arc(gx,gy,0.03*L,0,7);c.fill();
+ c.fillStyle='#16205a';c.beginPath();c.arc(gx,gy,0.02*L,0,7);c.fill();const pr=c.createRadialGradient(gx-0.004*L,gy-0.004*L,0,gx,gy,0.014*L);pr.addColorStop(0,'#ffffff');pr.addColorStop(1,'#bde6ff');c.fillStyle=pr;c.beginPath();c.arc(gx,gy,0.013*L,0,7);c.fill();
+ /* 가슴지느러미 */fin7(c,[[-0.17*L,0.03*L],[-0.07*L,0.04*L],[-0.08*L,0.11*L]],'rgba(200,190,255,.75)','rgba(255,255,255,.6)',L*0.003);
+ /* 큰 입 · 눈 */
+ c.strokeStyle='rgba(15,20,60,.7)';c.lineWidth=L*0.006;c.beginPath();c.moveTo(-0.445*L,0.01*L);c.quadraticCurveTo(-0.4*L,0.04*L,-0.36*L,0.03*L);c.stroke();
+ eye7(c,-0.345*L,-0.055*L,0.033*L,'#3bc9db');blush7(c,-0.31*L,0.03*L,0.026*L);
+ /* 물보라 방울 */for(const[x,y,r]of[[0.05,-0.33,0.012],[0.32,-0.24,0.01],[-0.4,-0.24,0.011],[0.38,0.22,0.009]]){c.fillStyle='rgba(160,220,255,.85)';c.beginPath();c.arc(x*L,y*L,r*L,0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc((x-0.004)*L,(y-0.004)*L,r*L*0.35,0,7);c.fill();}
+ spark7(c,-0.05*L,0.26*L,0.015*L,'#fff');spark7(c,0.43*L,-0.22*L,0.012*L,'#fffbe0');
+ c.restore();};
+/* 🐢 별주부 칠보 자라 — 위에서 · 머리 왼쪽 · 말랑한 둥근 등딱지에 금선 칠보 무늬 · 뾰족 코끝 진주 · 목에 금빛 띠 */
+ART7.tpturtle=function(c,L){c.save();c.lineCap='round';c.lineJoin='round';const sk='#8fbf9a',skD='#5f9a72';
+ /* 발 4개 (물갈퀴 + 발톱) */
+ const foot=(x,y,a,len)=>{c.save();c.translate(x,y);c.rotate(a);const p=new Path2D();p.moveTo(0,-0.03*L);p.quadraticCurveTo(len*0.6,-0.05*L,len,-0.03*L);p.quadraticCurveTo(len*1.08,0,len,0.03*L);p.quadraticCurveTo(len*0.6,0.05*L,0,0.03*L);p.closePath();c.fillStyle=lg7(c,0,-0.04*L,0,0.04*L,[[0,'#a9d8b0'],[1,skD]]);c.fill(p);
+  c.fillStyle='#fff6d8';for(let k=-1;k<=1;k++){c.beginPath();c.ellipse(len+0.005*L,k*0.018*L,0.009*L,0.005*L,0,0,7);c.fill();}c.restore();};
+ foot(-0.12*L,-0.15*L,-2.2,0.12*L);foot(-0.12*L,0.15*L,2.2,0.12*L);foot(0.16*L,-0.14*L,-0.85,0.1*L);foot(0.16*L,0.14*L,0.85,0.1*L);
+ /* 꼬리 */c.fillStyle=sk;c.beginPath();c.moveTo(0.26*L,-0.02*L);c.quadraticCurveTo(0.34*L,0,0.26*L,0.02*L);c.closePath();c.fill();
+ /* 목 + 머리 */
+ c.fillStyle=lg7(c,0,-0.04*L,0,0.04*L,[[0,'#b6e2bc'],[1,skD]]);c.beginPath();c.moveTo(-0.22*L,-0.04*L);c.quadraticCurveTo(-0.3*L,-0.035*L,-0.33*L,-0.04*L);c.lineTo(-0.33*L,0.04*L);c.quadraticCurveTo(-0.3*L,0.035*L,-0.22*L,0.04*L);c.closePath();c.fill();
+ /* 금빛 띠 */c.fillStyle=lg7(c,0,-0.04*L,0,0.04*L,[[0,'#fff0a0'],[1,'#e0a93a']]);c.beginPath();c.roundRect(-0.305*L,-0.042*L,0.026*L,0.084*L,0.008*L);c.fill();
+ c.fillStyle='#e8435a';c.beginPath();c.arc(-0.292*L,0,0.008*L,0,7);c.fill();
+ const hd=new Path2D();hd.moveTo(-0.32*L,-0.06*L);hd.quadraticCurveTo(-0.4*L,-0.075*L,-0.43*L,-0.03*L);hd.quadraticCurveTo(-0.46*L,-0.012*L,-0.475*L,0);hd.quadraticCurveTo(-0.46*L,0.012*L,-0.43*L,0.03*L);hd.quadraticCurveTo(-0.4*L,0.075*L,-0.32*L,0.06*L);hd.closePath();
+ c.fillStyle=lg7(c,0,-0.055*L,0,0.055*L,[[0,'#c4ecc9'],[1,'#6fae80']]);c.fill(hd);sheen7(c,hd,-0.42*L,-0.06*L,-0.36*L,0,0.5);
+ /* 코끝 진주 */const pr=c.createRadialGradient(-0.484*L,-0.004*L,0,-0.481*L,0,0.014*L);pr.addColorStop(0,'#ffffff');pr.addColorStop(0.6,'#f3ecff');pr.addColorStop(1,'#c9b8ff');c.fillStyle=pr;c.beginPath();c.arc(-0.482*L,0,0.014*L,0,7);c.fill();
+ c.save();c.globalAlpha=0.45;c.fillStyle=g7(c,-0.49*L,0,-0.463*L,0);c.beginPath();c.arc(-0.476*L,0,0.013*L,0.2,2.6);c.fill();c.restore();
+ eye7(c,-0.395*L,-0.036*L,0.02*L,'#2f8a5a');eye7(c,-0.395*L,0.036*L,0.02*L,'#2f8a5a');blush7(c,-0.37*L,-0.05*L,0.016*L);blush7(c,-0.37*L,0.05*L,0.016*L);
+ /* 등딱지: 말랑한 테두리 + 칠보 무늬 */
+ const rim=new Path2D();rim.ellipse(0.03*L,0,0.27*L,0.215*L,0,0,7);c.fillStyle=lg7(c,0,-0.22*L,0,0.22*L,[[0,'#b8dcc0'],[1,'#7fb08d']]);c.fill(rim);
+ const sh=new Path2D();sh.ellipse(0.03*L,0,0.225*L,0.175*L,0,0,7);c.fillStyle=lg7(c,0,-0.18*L,0,0.18*L,[[0,'#3e8a7a'],[1,'#25615a']]);c.fill(sh);
+ c.save();c.clip(sh);const gold='#f2cc5c',cx=0.03*L;
+ /* 칠보: 가운데 꽃 + 둘레 일곱 꽃잎 칸 (에나멜) */
+ for(let i=0;i<7;i++){const a=i/7*Math.PI*2-Math.PI/2,x=cx+Math.cos(a)*0.12*L,y=Math.sin(a)*0.095*L;c.fillStyle=R7[i];c.beginPath();c.ellipse(x,y,0.05*L,0.036*L,a,0,7);c.fill();
+  c.fillStyle='rgba(255,255,255,.45)';c.beginPath();c.ellipse(x-0.012*L,y-0.01*L,0.018*L,0.008*L,a,0,7);c.fill();c.strokeStyle=gold;c.lineWidth=L*0.007;c.beginPath();c.ellipse(x,y,0.05*L,0.036*L,a,0,7);c.stroke();}
+ c.fillStyle='#fff3c4';c.beginPath();c.arc(cx,0,0.045*L,0,7);c.fill();c.strokeStyle=gold;c.lineWidth=L*0.008;c.stroke();
+ for(let i=0;i<6;i++){const a=i/6*Math.PI*2;c.fillStyle=R7[i];c.beginPath();c.ellipse(cx+Math.cos(a)*0.022*L,Math.sin(a)*0.022*L,0.014*L,0.009*L,a,0,7);c.fill();}
+ c.fillStyle='#e8435a';c.beginPath();c.arc(cx,0,0.01*L,0,7);c.fill();
+ c.strokeStyle=gold;c.lineWidth=L*0.006;c.beginPath();c.ellipse(cx,0,0.205*L,0.158*L,0,0,7);c.stroke();
+ c.fillStyle='rgba(255,255,255,.18)';c.beginPath();c.ellipse(cx-0.06*L,-0.08*L,0.12*L,0.045*L,-0.25,0,7);c.fill();c.restore();
+ c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=L*0.005;c.beginPath();c.ellipse(0.03*L,0,0.25*L,0.197*L,0,3.6,5.6);c.stroke();
+ spark7(c,0.3*L,-0.2*L,0.016*L,'#fff');spark7(c,-0.2*L,0.21*L,0.013*L,'#fffbe0');spark7(c,0.34*L,0.18*L,0.011*L,'#fff');
+ c.restore();};
 /* 그리기 연결: 무지갯빛 오라(rbOverlay)는 그대로, 몸 그림만 새로 · 실루엣(아직 못 잡음)은 같은 모양의 검은 그림자 */
 function art7Draw(c,sp,x,y,L,sil){const f=ART7[sp.id];if(!f)return false;
  if(!sil){c.save();c.translate(x,y);f(c,L);c.restore();return true;}
@@ -5839,7 +6071,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-23e';
+const BUILD='2026-11-23g';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -6612,6 +6844,31 @@ function rareTop(c,sp,L){const sd=sp.id.length*31+sp.name.length*7;const R=i=>ha
   case'honeymochi':{edge('rgba(200,120,20,.45)');dots(90,'rgba(255,255,255,.55)',0.003,0.007,13);
    c.fillStyle='rgba(230,150,30,.55)';for(let i=0;i<7;i++){const x=-L*0.32+i*L*0.1,y=-L*0.12+R(i+90)*L*0.05;c.beginPath();c.moveTo(x-L*0.02,y-L*0.1);c.quadraticCurveTo(x-L*0.02,y+L*0.05*(1+R(i)),x,y+L*0.06*(1+R(i)));c.quadraticCurveTo(x+L*0.02,y+L*0.05*(1+R(i)),x+L*0.02,y-L*0.1);c.fill();}
    dots(14,'rgba(255,215,90,.95)',0.004,0.008,330);sheen(.5);break;}
+  case'bubblegum':{const bub=(x,y,r,col)=>{c.fillStyle=col;c.beginPath();c.arc(x,y,r,0,7);c.fill();c.fillStyle='rgba(255,255,255,.85)';c.beginPath();c.arc(x-r*0.35,y-r*0.35,r*0.3,0,7);c.fill();c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=Math.max(0.6,r*0.12);c.beginPath();c.arc(x,y,r*0.95,3.6,5.2);c.stroke();};sheen(.55);c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=L*0.012;for(let i=0;i<5;i++){const[x,y]=P(i+30);c.beginPath();c.arc(x,y,L*0.05,0.4,3.6);c.stroke();}
+   for(let i=0;i<34;i++){const[x,y]=P(i+60);bub(x,y,L*(0.008+R(i+5)*0.014),'rgba(255,170,215,.75)');}break;}
+  case'meringue':{for(let i=0;i<24;i++){const[x,y]=P(i+10);const s=L*(0.028+R(i+7)*0.02);c.fillStyle='rgba(255,255,255,.95)';c.beginPath();c.moveTo(x-s,y+s*0.5);c.quadraticCurveTo(x-s*0.9,y-s*0.4,x-s*0.1,y-s*1.4);c.quadraticCurveTo(x+s*0.1,y-s*0.5,x+s,y+s*0.5);c.closePath();c.fill();
+    c.fillStyle='rgba(232,176,92,.75)';c.beginPath();c.arc(x-s*0.1,y-s*1.3,s*0.22,0,7);c.fill();c.fillStyle='rgba(225,215,190,.6)';c.beginPath();c.ellipse(x+s*0.3,y+s*0.2,s*0.4,s*0.18,0,0,7);c.fill();}
+   c.fillStyle='rgba(150,190,40,.8)';for(let i=0;i<26;i++){const[x,y]=P(i+200);c.beginPath();c.ellipse(x,y,L*0.006,L*0.0025,R(i)*6,0,7);c.fill();}sheen(.35);break;}
+  case'boba':{c.strokeStyle='rgba(80,40,15,.55)';for(let i=0;i<9;i++){const x=-L*0.45+i*L*0.11;c.lineWidth=L*(0.012+R(i+3)*0.012);c.beginPath();c.moveTo(x,-L*0.3);c.bezierCurveTo(x+L*0.05,-L*0.1,x-L*0.04,L*0.05,x+L*0.03,L*0.3);c.stroke();}
+   for(let i=0;i<22;i++){const[x,y]=P(i+40);const r=L*(0.016+R(i+9)*0.008);c.fillStyle='#2a1a12';c.beginPath();c.arc(x,y,r,0,7);c.fill();c.fillStyle='rgba(255,255,255,.7)';c.beginPath();c.arc(x-r*0.35,y-r*0.35,r*0.32,0,7);c.fill();}sheen(.3);break;}
+  case'mango':{const g=c.createLinearGradient(0,-L*0.2,0,L*0.18);g.addColorStop(0,'rgba(255,120,20,.55)');g.addColorStop(0.5,'rgba(255,160,40,0)');g.addColorStop(1,'rgba(255,250,220,.35)');c.fillStyle=g;c.fillRect(-L*0.6,-L*0.5,L*1.2,L);
+   for(let i=0;i<16;i++){const[x,y]=P(i+50);const s=L*(0.016+R(i+8)*0.01);c.save();c.translate(x,y);c.rotate(R(i+30)*1.2-0.6);c.fillStyle='rgba(255,150,30,.9)';c.beginPath();c.roundRect(-s/2,-s/2,s,s,s*0.3);c.fill();c.fillStyle='rgba(255,230,140,.85)';c.beginPath();c.roundRect(-s/2+s*0.12,-s/2+s*0.12,s*0.45,s*0.3,s*0.12);c.fill();c.restore();}
+   c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=L*0.012;c.beginPath();for(let k=0;k<=40;k++){const x=-L*0.42+k*L*0.021,y=-L*0.075+Math.sin(k*0.9)*L*0.012;k?c.lineTo(x,y):c.moveTo(x,y);}c.stroke();
+   c.fillStyle='rgba(120,190,70,.85)';c.beginPath();c.ellipse(L*0.05,-L*0.1,L*0.03,L*0.012,-0.5,0,7);c.fill();sheen(.45);break;}
+  case'cookie':{for(let i=0;i<40;i++){const[x,y]=P(i+70);const s=L*(0.014+R(i+3)*0.018);c.fillStyle=i%4?'rgba(38,26,22,.92)':'rgba(70,48,38,.9)';c.beginPath();for(let k=0;k<6;k++){const a=k/6*6.28+R(i+k)*0.5,rr=s*(0.6+R(i*7+k)*0.5);k?c.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr):c.moveTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}c.closePath();c.fill();}
+   c.fillStyle='rgba(40,28,22,.7)';for(let i=0;i<70;i++){const[x,y]=P(i+200);c.beginPath();c.arc(x,y,L*(0.002+R(i+1)*0.003),0,7);c.fill();}sheen(.35);break;}
+  case'popcorn':{const g=c.createLinearGradient(0,-L*0.2,0,L*0.15);g.addColorStop(0,'rgba(150,80,20,.6)');g.addColorStop(0.5,'rgba(200,120,40,.1)');g.addColorStop(1,'rgba(255,240,200,.3)');c.fillStyle=g;c.fillRect(-L*0.6,-L*0.5,L*1.2,L);
+   for(let i=0;i<34;i++){const[x,y]=P(i+40);const s=L*(0.012+R(i+2)*0.009);c.fillStyle='rgba(255,250,235,.95)';for(let k=0;k<4;k++){c.beginPath();c.arc(x+Math.cos(k*1.7+i)*s*0.6,y+Math.sin(k*1.7+i)*s*0.5,s*0.55,0,7);c.fill();}c.fillStyle='rgba(205,130,40,.8)';c.beginPath();c.arc(x+s*0.2,y+s*0.3,s*0.3,0,7);c.fill();}
+   c.strokeStyle='rgba(150,80,20,.55)';c.lineWidth=L*0.008;for(let i=0;i<5;i++){const x=-L*0.35+i*L*0.16;c.beginPath();c.moveTo(x,-L*0.2);c.quadraticCurveTo(x+L*0.02,-L*0.08,x-L*0.01,L*0.0);c.stroke();}sheen(.5);break;}
+  case'lemonade':{const g=c.createRadialGradient(0,0,L*0.02,0,0,L*0.4);g.addColorStop(0,'rgba(255,255,255,.35)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(-L*0.6,-L*0.5,L*1.2,L);
+   for(let i=0;i<16;i++){const[x,y]=P(i+20);const r=L*(0.018+R(i+6)*0.008);c.fillStyle='rgba(255,236,110,.95)';c.beginPath();c.arc(x,y,r,0,7);c.fill();c.strokeStyle='rgba(255,255,255,.95)';c.lineWidth=L*0.004;c.beginPath();c.arc(x,y,r*0.82,0,7);c.stroke();for(let k=0;k<6;k++){const a=k/6*6.28;c.beginPath();c.moveTo(x,y);c.lineTo(x+Math.cos(a)*r*0.8,y+Math.sin(a)*r*0.8);c.stroke();}}
+   for(let i=0;i<26;i++){const[x,y]=P(i+120);const r=L*(0.004+R(i)*0.006);c.strokeStyle='rgba(255,255,255,.85)';c.lineWidth=L*0.003;c.beginPath();c.arc(x,y,r,0,7);c.stroke();}sheen(.55);break;}
+  case'peachyog':{const g=c.createLinearGradient(-L*0.3,0,L*0.45,0);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(0.55,'rgba(255,255,255,.15)');g.addColorStop(1,'rgba(255,255,255,.9)');c.fillStyle=g;c.fillRect(-L*0.6,-L*0.5,L*1.2,L);
+   c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=L*0.008;for(const[x,y,r]of[[L*0.42,-L*0.1,0.04],[L*0.43,L*0.11,0.035],[-L*0.05,-L*0.13,0.03],[L*0.12,L*0.08,0.028]]){c.beginPath();for(let k=0;k<=36;k++){const a=k/36*Math.PI*3.2,rr=L*r*(1-k/44);k?c.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr):c.moveTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}c.stroke();}
+   c.fillStyle='rgba(255,120,140,.35)';for(let i=0;i<40;i++){const[x,y]=P(i+300);c.beginPath();c.arc(x,y,L*0.004,0,7);c.fill();}sheen(.4);break;}
+  case'sodaice':{edge('rgba(255,255,255,.75)');c.fillStyle='rgba(255,255,255,.9)';for(let i=0;i<90;i++){const[x,y]=P(i+20);c.beginPath();c.arc(x,y,L*(0.002+R(i+4)*0.004),0,7);c.fill();}
+   c.strokeStyle='rgba(255,255,255,.8)';c.lineWidth=L*0.004;for(let i=0;i<10;i++){const[x,y]=P(i+400);const s=L*0.012;c.beginPath();c.moveTo(x-s,y);c.lineTo(x+s,y);c.moveTo(x,y-s);c.lineTo(x,y+s);c.moveTo(x-s*0.7,y-s*0.7);c.lineTo(x+s*0.7,y+s*0.7);c.moveTo(x+s*0.7,y-s*0.7);c.lineTo(x-s*0.7,y+s*0.7);c.stroke();}
+   sheen(.6);break;}
   case'dust':dots(150,'rgba(255,246,205,.85)',0.003,0.007,1);dots(70,'rgba(150,108,48,.45)',0.003,0.006,400);sheen(.2);break;
   case'milk':sheen(.4);dots(34,'rgba(255,236,140,.9)',0.004,0.006,2);c.strokeStyle='rgba(255,255,255,.55)';lw(0.006);for(let i=0;i<3;i++){c.beginPath();c.arc(-L*0.1+i*L*0.12,L*0.02,L*0.06,3.4,6);c.stroke();}break;
   case'chips':c.fillStyle='#3a2116';for(let i=0;i<30;i++){const[x,y]=P(i+5);const s=L*(0.009+R(i+60)*0.012);c.beginPath();c.moveTo(x-s,y);c.lineTo(x,y-s*0.9);c.lineTo(x+s*1.1,y+s*0.2);c.lineTo(x-s*0.2,y+s);c.closePath();c.fill();}sheen(.25);break;
@@ -7230,7 +7487,7 @@ function fullMoonLeft(){const now=Date.now()/1000,d=moonDay();const nightStart=k
 function rareChance(p,hab){const b=legBase(p,hab);if(!b)return 0;const rf=GS.rod>=7?1:0.4;return RARE_K*b*rf*(fullMoonNow()?2:1)*foodRare()*baitR();}
 function pickRare(p,hab){if(window.__pick)return null;const c=rareChance(p,hab);if(!c)return null;
  const ph=phaseOf(hourNow()),fresh=hab!=='sea',cand=[];let tot=0,tot0=0;
- for(const r of Object.values(RARE_OF)){const b=SPECIES.find(s=>s.id===r.rare);if(!b)continue;if((b.hab==='fresh')!==fresh)continue;if(b.pondOnly&&hab!=='pond')continue;if(b.riverOnly&&hab!=='river')continue;
+ for(const r of Object.values(RARE_OF)){if(r.trapOnly)continue;const b=SPECIES.find(s=>s.id===r.rare);if(!b)continue;if((b.hab==='fresh')!==fresh)continue;if(b.pondOnly&&hab!=='pond')continue;if(b.riverOnly&&hab!=='river')continue;
   if(r.fallOnly&&hab!=='river')continue;let w=r.rw!=null?r.rw:b.w;if(hab==='river'){const zm=rzMul(r);if(!zm)continue;w*=zm;}if(b.riverPref&&hab==='pond')w*=0.3;if(!b.time.includes('any'))w*=b.time.includes(ph)?2.4:0.3;tot0+=w;w*=(RARE_WK[r.id]||1);cand.push([r,w]);tot+=w;}
  if(!tot||Math.random()>=Math.min(1,c*tot/tot0))return null;let x=Math.random()*tot,sp=cand[0][0];for(const[s,w]of cand){if(x<w){sp=s;break;}x-=w;}
  const frac=Math.pow(Math.random(),2.2-1.4*p);return{sp,size:Math.round((sp.min+(sp.max-sp.min)*frac)*10)/10,s:clamp(sp.str*(0.7+0.6*frac),0,1),frac};}
@@ -7252,12 +7509,12 @@ function pcCalc(o){const hab=(o.place==='pond'||o.place==='seat')?'pond':o.place
  let fa=1,fc=1;if(fs>=1&&fs<=6){let W=0;SPECIES.forEach((sp,i)=>{if(ws[i]&&!sp.rare&&starOf(sp)===fs)W+=ws[i];});if(W>0&&W<tot){const s1=W/tot,s2=Math.min(1,FOOD_X*s1),a=s2/s1,c=(1-s2)/(1-s1);SPECIES.forEach((sp,i)=>{if(ws[i])ws[i]*=starOf(sp)===fs?a:c;});fa=a;fc=c;tot=W*a+(tot-W)*c;}}
  let base=0;if(hab==='sea'){if(o.p>=0.8)base=LEG_BASE*(far?1:0.5);}else if(o.p>=0.85)base=LEG_BASE*0.5;
  const mult=o.rainbow?4:1+2*(o.pity||0);const rf=E>=7?1:0.4;
- const c7=[];let t7=0;for(const sp of SPECIES){if(starOf(sp)!==7)continue;if((sp.hab==='fresh')!==fresh)continue;if(sp.pondOnly&&hab!=='pond')continue;if(sp.riverOnly&&hab!=='river')continue;if(sp.eventOnly&&!o.rainbow)continue;if(hab==='river'&&sp.z7&&!sp.z7.includes(RZ))continue;
+ const c7=[];let t7=0;for(const sp of SPECIES){if(starOf(sp)!==7||sp.trapOnly)continue;if((sp.hab==='fresh')!==fresh)continue;if(sp.pondOnly&&hab!=='pond')continue;if(sp.riverOnly&&hab!=='river')continue;if(sp.eventOnly&&!o.rainbow)continue;if(hab==='river'&&sp.z7&&!sp.z7.includes(RZ))continue;
   let w=sp.w;if(!sp.time.includes('any'))w*=sp.time.includes(o.ph)?2.4:0.3;if(hab==='river'&&RZ==='fall'&&sp.fallB)w*=1.5;c7.push([sp,w]);t7+=w;}
  const b7=(o.bait==='7'||o.bait==='b')&&E>=BAITS.b7.minE?2:1,bR=(o.bait==='r'||o.bait==='b')&&E>=BAITS.br.minE?2:1;
  const P7=t7?Math.min(1,base*mult*rf*(F?F.leg:1)*(o.otter?1.5:1)*(fs===7?FOOD_X:1)*b7):0;
  const moon=!!o.moon&&o.ph==='night';const cr=[];let tr=0,tr0=0;
- for(const r of Object.values(RARE_OF)){const b=SP_BY[r.rare];if(!b)continue;if((b.hab==='fresh')!==fresh)continue;if(b.pondOnly&&hab!=='pond')continue;if(b.riverOnly&&hab!=='river')continue;
+ for(const r of Object.values(RARE_OF)){if(r.trapOnly)continue;const b=SP_BY[r.rare];if(!b)continue;if((b.hab==='fresh')!==fresh)continue;if(b.pondOnly&&hab!=='pond')continue;if(b.riverOnly&&hab!=='river')continue;
   if(r.fallOnly&&hab!=='river')continue;let w=r.rw!=null?r.rw:b.w;if(hab==='river'){const zm=pcRz(r,RZ);if(!zm)continue;w*=zm;}if(b.riverPref&&hab==='pond')w*=0.3;if(!b.time.includes('any'))w*=b.time.includes(o.ph)?2.4:0.3;tr0+=w;w*=(RARE_WK[r.id]||1);cr.push([r,w]);tr+=w;}
  const rfR=o.rod>=7?1:0.4,cR=tr&&base?Math.min(1,RARE_K*base*rfR*(moon?2:1)*(fr?FOOD_X:1)*bR*tr/tr0):0,PR=(1-P7)*cR;
  const out=[],seen=new Set();
@@ -7265,7 +7522,7 @@ function pcCalc(o){const hab=(o.place==='pond'||o.place==='seat')?'pond':o.place
  for(const[sp,w]of c7)out.push({sp,p:P7*w/t7});for(const[sp,w]of cr)out.push({sp,p:PR*w/tr});
  out.sort((a,b)=>b.p-a.p);for(const x of out)seen.add(x.sp.id);
  for(const sp of SPECIES){if(seen.has(sp.id))continue;const b=sp.rare?SP_BY[sp.rare]:sp;if(!b)continue;const z=sp.rare?sp:b;const st=starOf(sp);let why='';
-  if((b.hab==='fresh')!==fresh)why=b.hab==='fresh'?(b.pondOnly?'저수지에서만':(b.riverOnly||z.fallOnly)?'강에서만':'민물(저수지·강)에서'):'바다에서만';
+  if(sp.trapOnly)why='🧺 통발 전용 (낚싯대로는 안 잡혀요)';else if((b.hab==='fresh')!==fresh)why=b.hab==='fresh'?(b.pondOnly?'저수지에서만':(b.riverOnly||z.fallOnly)?'강에서만':'민물(저수지·강)에서'):'바다에서만';
   else if(b.pondOnly&&hab!=='pond')why='저수지에서만';else if((b.riverOnly||z.fallOnly)&&hab!=='river')why=z.fallOnly?'강 💦 폭포 웅덩이에서만':'강에서만';
   else if(hab==='river'&&z.fallOnly&&RZ!=='fall')why='💦 폭포 웅덩이에서만';
   else if(hab==='river'&&st===7&&sp.z7&&!sp.z7.includes(RZ))why=sp.z7.map(k=>PC_RZ[k]).join('·')+'에서만';
@@ -7283,7 +7540,7 @@ function pcFmt(p){if(!(p>0))return'0%';const x=p*100;return x>=10?x.toFixed(1)+'
 function pcEvery(p){if(!(p>0))return'—';const n=1/p;return n<1.05?'매번':n<10?n.toFixed(1)+'번에 1번':Math.round(n).toLocaleString('ko-KR')+'번에 1번';}
 function pcChips(k,items,dis){const S=PC.s;return`<div class="pcrow">${items.map(([v,l])=>`<button class="pcc${String(S[k])===String(v)?' on':''}" data-k="${k}" data-v="${v}"${dis&&dis(v)?' disabled':''}>${l}</button>`).join('')}</div>`;}
 function pcName(sp){return(PC_OP||book[sp.id])?sp.name:'???';}
-function pcTags(sp){return(sp.rare?'<span class="tg rr">✨희귀</span>':'')+(starOf(sp)===7?'<span class="tg s7">🌈전설</span>':'')+(sp.eventOnly?'<span class="tg ev">이벤트</span>':'');}
+function pcTags(sp){return(sp.rare?'<span class="tg rr">✨희귀</span>':'')+(starOf(sp)===7?'<span class="tg s7">🌈전설</span>':'')+(sp.eventOnly?'<span class="tg ev">이벤트</span>':'')+(sp.trapOnly?'<span class="tg ev">🧺통발</span>':'');}
 function renderPC(){const el=$('pcalc');if(!el||!PC.s)return;const S=PC.s;if(S.float&&S.rod<FLOATS[S.float].minRod)S.float=0;
  const sum=[PC_PL[S.place]+(S.place==='river'?' '+PC_RZ[S.rz]:''),PC_PH[S.ph],'거리 '+Math.round(S.p*100)+'%','🎣 ★'+S.rod+' 낚싯대',S.food?'🍳 '+(S.food==='r'?'✨희귀종':'★'+S.food)+' 요리':null,S.bait!=='0'?{'7':'🔮 구슬','r':'🍡 경단','b':'🔮🍡 미끼 둘 다'}[S.bait]:null,S.float?FLOATS[S.float].em+' '+FLOATS[S.float].name:null,S.rainbow?'🌈 무지개 이벤트':null,S.otter?'🦦 해달 버프':null,S.moon&&S.ph==='night'?'🌕 보름달 밤':null,!S.rainbow&&S.pity>0?'전설 게이지 ×'+(1+2*S.pity).toFixed(1):null].filter(Boolean);
  let h=`<div class="pcnote">상황을 고르면 <b>입질 1번에 어떤 물고기가 걸리는지</b> 확률을 게임과 똑같은 식으로 계산해요. 처음엔 <b>지금 내 상황</b>으로 맞춰져 있어요.</div>
@@ -7885,8 +8142,8 @@ const TRAPS=[null,null,
  {lv:4,name:'달빛 은사 통발',price:44000,cap:16,iv:20,p:[10,35,37,18],kind:'moon',body:'#c9d6e8',dark:'#6f86a8',lite:'#f4f8ff',buoy:['#7fb6ff','#eaf3ff'],flag:'#4d8ef0',desc:'달빛을 뽑아 만든 은실 등불 통발. 물속에서 은은하게 빛나요.'},
  {lv:5,name:'용궁 자개 통발',price:99000,cap:20,iv:18,p:[0,25,40,27,8],kind:'nacre',body:'#2c3f6e',dark:'#1a2648',lite:'#9ff0e0',buoy:['#3fd0b0','#e8fff8'],flag:'#1fae8f',desc:'용궁 장인이 자개를 박아 만든 보물 상자. ★1은 들어오지 않아요.'},
  {lv:6,name:'여의주 황금 통발',price:199000,cap:24,iv:15,p:[0,20,35,28,14,3],kind:'gold',body:'#f2c14e',dark:'#a8761a',lite:'#fff3c4',buoy:['#ffcf4d','#fff8dc'],flag:'#e8364a',desc:'여의주를 문 황금 용 통발. 전용 미끼(🍡 경단 · 🔮 프리즘)를 넣을 수 있어요.'}];
-const TP_BAIT={r:{k:'r',em:'🍯',name:'용궁 꿀떡 주머니',price:100,ch:0.0025,fx:'honey',col:'#ffc2d6',what:'넣은 칸마다 0.25% 확률로 희귀종이 들어와요',desc:'용궁 떡집이 통발용으로 빚은 끈적한 꿀떡 3알을 금실 망사 주머니에 담았어요. 단내가 물속에 오래 퍼져서 희귀종이 냄새를 따라 들어와요.'},
- p:{k:'p',em:'💎',name:'칠색 진주 이슬',price:180,ch:0.0012,fx:'pearl',col:'#d6c8ff',what:'넣은 칸마다 0.12% 확률로 ★7 무지개 전설이 들어와요 (한 번 채울 때 최대 1마리 · 친 자리·시간이 맞아야 해요)',desc:'무지개가 바다에 닿은 자리에서만 맺히는 일곱 빛깔 진주 이슬. 무지개 전설들이 자기 빛깔을 찾아 다가와요.'}};
+const TP_BAIT={r:{k:'r',em:'🍯',name:'용궁 꿀떡 주머니',price:100,ch:0.0025,fx:'honey',col:'#ffc2d6',what:'넣은 칸마다 0.25% 확률로 희귀종이 들어와요 (🧺 통발 전용 희귀종 9종은 여기서만!)',desc:'용궁 떡집이 통발용으로 빚은 끈적한 꿀떡 3알을 금실 망사 주머니에 담았어요. 단내가 물속에 오래 퍼져서 희귀종이 냄새를 따라 들어와요.'},
+ p:{k:'p',em:'💎',name:'칠색 진주 이슬',price:180,ch:0.0012,fx:'pearl',col:'#d6c8ff',what:'넣은 칸마다 0.12% 확률로 ★7 무지개 전설이 들어와요 (한 번 채울 때 최대 1마리 · 친 자리·시간이 맞아야 해요 · 🧺 통발 전용 ★7 6종은 여기서만!)',desc:'무지개가 바다에 닿은 자리에서만 맺히는 일곱 빛깔 진주 이슬. 무지개 전설들이 자기 빛깔을 찾아 다가와요.'}};
 const TP_NEAR=6;
 const TPA={open:false,acc:0,sig:'',fullSig:'',arm:0,seen:false,busy:false};
 const TPR={list:new Map(),me:''};
@@ -7907,7 +8164,7 @@ function tpCaught(T,now){return clamp(Math.floor(((now==null?tpNow():now)-T.t0)/
 function tpIn(T){return T?Math.max(0,tpCaught(T)-T.tk):0;}
 function tpTs(T,k){return T.t0+(k+1)*tpIv(T);}
 function tpPhase(ts){const s=((ts/1000)%DAY_LEN+DAY_LEN)%DAY_LEN,H2=DAY_LEN/2;let h=s<H2?5.5+s/H2*13.5:19+(s-H2)/H2*10.5;if(h>=24)h-=24;return phaseOf(h);}
-function tpRz(sp,zone){if(sp.fallOnly&&zone!=='fall')return 0;if(!sp.rz)return 1;const z=zone==='fall'?'up':(zone||'mid');if(sp.rzOnly&&z!==sp.rz)return 0;let k=RZ_ADJ[sp.rz][z];if(zone==='fall'&&sp.fallB)k*=1.5;return k;}
+function tpRz(sp,zone){if(sp.fallOnly&&zone!=='fall')return 0;if(sp.noFall&&zone==='fall')return 0;if(!sp.rz)return 1;const z=zone==='fall'?'up':(zone||'mid');if(sp.rzOnly&&z!==sp.rz)return 0;let k=RZ_ADJ[sp.rz][z];if(zone==='fall'&&sp.fallB)k*=1.5;return k;}
 function tpCands(st,hab,zone,ph){const fresh=hab!=='sea',out=[];let tot=0;
  for(const sp of SPECIES){if(starOf(sp)!==st||sp.rare||sp.rainbow||sp.eventOnly)continue;if((sp.hab==='fresh')!==fresh)continue;if(sp.pondOnly&&hab!=='pond')continue;if(sp.riverOnly&&hab!=='river')continue;
   let w=sp.w;if(hab==='river'){const zm=tpRz(sp,zone);if(!zm)continue;w*=zm;}else if(sp.fallOnly)continue;
@@ -7918,12 +8175,14 @@ function tpCands7(hab,zone,ph){const fresh=hab!=='sea',out=[];let tot=0;
  for(const sp of SPECIES){if(starOf(sp)!==7||!sp.rainbow||sp.eventOnly)continue;if((sp.hab==='fresh')!==fresh)continue;if(sp.pondOnly&&hab!=='pond')continue;if(sp.riverOnly&&hab!=='river')continue;
   if(hab==='river'){if(sp.z7&&!sp.z7.includes(zone||'mid'))continue;if(sp.rzOnly&&!tpRz(sp,zone))continue;}
   if(!sp.time.includes('any')&&!sp.time.includes(ph))continue;let w=sp.w;if(hab==='river'&&zone==='fall'&&sp.fallB)w*=1.5;out.push([sp,w]);tot+=w;}
- return{out,tot};}
+ return tpHalf({out,tot});}
 /* 🍡 경단 미끼: 희귀종 후보 (친 자리·시간에 맞게, 직접 낚시와 같은 가중치) */
+/* 통발 전용 생물이 후보의 절반을 차지하게 무게를 맞춰요 */
+function tpHalf(c){let a=0,t=0;for(const[sp,w]of c.out)sp.trapOnly?t+=w:a+=w;if(a>0&&t>0){const k=a/t;c.out=c.out.map(([sp,w])=>[sp,sp.trapOnly?w*k:w]);c.tot=a*2;}return c;}
 function tpCandsR(hab,zone,ph){const fresh=hab!=='sea',out=[];let tot=0;
- for(const r of Object.values(RARE_OF)){const b=SP_BY[r.rare];if(!b)continue;if((b.hab==='fresh')!==fresh)continue;if(b.pondOnly&&hab!=='pond')continue;if(b.riverOnly&&hab!=='river')continue;if(r.fallOnly&&hab!=='river')continue;
+ for(const r of Object.values(RARE_OF)){const b=SP_BY[r.rare];if(!b)continue;if((b.hab==='fresh')!==fresh)continue;if((b.pondOnly||r.pondOnly)&&hab!=='pond')continue;if((b.riverOnly||r.riverOnly)&&hab!=='river')continue;if(r.fallOnly&&hab!=='river')continue;
   let w=r.rw!=null?r.rw:b.w;if(hab==='river'){const zm=tpRz(r,zone);if(!zm)continue;w*=zm;}if(b.riverPref&&hab==='pond')w*=0.3;if(!b.time.includes('any'))w*=b.time.includes(ph)?2.4:0.3;w*=((typeof RARE_WK!=='undefined'&&RARE_WK[r.id])||1);if(w>0){out.push([r,w]);tot+=w;}}
- return{out,tot};}
+ return tpHalf({out,tot});}
 function tpPick(c,u){let r=u*c.tot;for(const[sp,w]of c.out){if(r<w)return sp;r-=w;}return c.out[c.out.length-1][0];}
 function tpSize(sp,u){const frac=0.9*Math.pow(u,1.5);return Math.round((sp.min+(sp.max-sp.min)*frac)*10)/10;}
 /* 프리즘 미끼: 이번 채움에서 ★7이 들어오는 칸 (없으면 -1) */
