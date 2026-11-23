@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-23d">
+<meta name="amollang-build" content="2026-11-23e">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -5692,6 +5692,8 @@ function buildPack(lv){const g=new THREE.Group();const fx={lv};g.userData.fx=fx;
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:sparkTex(),color:'#fff4c8',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.0}));sp.scale.set(0.16,0.16,1);g.add(sp);fx.spark=sp;}
  return g;}
 let _sparkTex=null;
+/* 십자 줄 없는 둥근 빛 (크게 키워도 십자가가 안 생겨요) */
+let _softGlowTex=null;function softGlowTex(){if(_softGlowTex)return _softGlowTex;const cv=document.createElement('canvas');cv.width=cv.height=64;const x=cv.getContext('2d');const gr=x.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(0.3,'rgba(255,240,200,.8)');gr.addColorStop(1,'rgba(255,240,200,0)');x.fillStyle=gr;x.fillRect(0,0,64,64);_softGlowTex=new THREE.CanvasTexture(cv);return _softGlowTex;}
 function sparkTex(){if(_sparkTex)return _sparkTex;const cv=document.createElement('canvas');cv.width=cv.height=64;const x=cv.getContext('2d');const gr=x.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(0.3,'rgba(255,240,200,.8)');gr.addColorStop(1,'rgba(255,240,200,0)');x.fillStyle=gr;x.fillRect(0,0,64,64);x.fillStyle='#fff';x.fillRect(30,6,4,52);x.fillRect(6,30,52,4);_sparkTex=new THREE.CanvasTexture(cv);return _sparkTex;}
 function animPack(c,dt,speed){const g=c.packG;if(!g)return;const fx=g.userData.fx;const mv=clamp(speed/4,0,1);const ph=t+c.seed;
  g.rotation.x=lerp(g.rotation.x,-0.05*mv,0.2);
@@ -5743,7 +5745,7 @@ function makeCrown(rank){const P0=CROWN_PAL[rank]||CROWN_PAL[1];const g=new THRE
   const ball=new THREE.Mesh(geo('crBall',()=>new THREE.SphereGeometry(0.026,12,10)),metal);ball.position.set(Math.cos(a)*0.17,0.2,Math.sin(a)*0.17);g.add(ball);
   const gc=P0.gems[i];const gem=new THREE.Mesh(geo('crGem',()=>new THREE.OctahedronGeometry(0.032)),stdMat(gc,0.15,{metalness:0.2,emissive:gc,emissiveIntensity:0.6}));const b=a+Math.PI/5;gem.position.set(Math.cos(b)*0.183,0,Math.sin(b)*0.183);gem.lookAt(Math.cos(b)*2,0,Math.sin(b)*2);g.add(gem);}
  const sm=[];for(let i=0;i<4;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:sparkTex(),color:P0.sp,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));s.scale.set(0.16,0.16,1);g.add(s);sm.push(s);}g.userData.sp=sm;
- const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:sparkTex(),color:P0.gl,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.35}));glow.scale.set(0.7,0.7,1);glow.position.y=0.06;g.add(glow);g.userData.glow=glow;
+ const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:softGlowTex(),color:P0.gl,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.35}));glow.scale.set(0.7,0.7,1);glow.position.y=0.06;g.add(glow);g.userData.glow=glow;
  g.scale.setScalar(P0.sc);return g;}
 /* rank: 0 = 없음 · 1 금 · 2 은 · 3 동 (true는 1등으로) */
 function setCrown(c,rank,hat){if(!c)return;rank=rank===true?1:(rank|0);c.crownY=labelH(hat|0)-1.36-0.08;
@@ -5837,7 +5839,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-23d';
+const BUILD='2026-11-23e';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
