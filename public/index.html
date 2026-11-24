@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-24u">
+<meta name="amollang-build" content="2026-11-24v">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -2304,6 +2304,17 @@ function buildXmasTreeT(T){const SC=T.s||1;
  P_(new THREE.CylinderGeometry(1.5,1.9,4.2,14),'#6e4529',0,2.1,0);
  P_(new THREE.CylinderGeometry(3.2,2.7,1.8,20),'#c8322f',0,0.9,0);P_(new THREE.CylinderGeometry(3.3,3.3,0.3,20),'#f2c14e',0,1.75,0);P_(new THREE.CylinderGeometry(3.3,3.3,0.22,20),'#f2c14e',0,0.2,0);
  for(let i=0;i<10;i++){const a=i/10*Math.PI*2;P_(new THREE.SphereGeometry(0.2,8,6),'#ffe08a',Math.cos(a)*3.05,0.95,Math.sin(a)*3.05);}
+ /* v163: 화분 둘레 불빛 — 바닥 등불 10개(밤에 켜짐) · 화분 감는 전구 두 줄(아래 전구들과 함께 반짝) · 바닥 따뜻한 빛 */
+ const lgl=[];for(let i=0;i<10;i++){const a=i/10*Math.PI*2+0.31,R4=4.45,x=Math.cos(a)*R4,z=Math.sin(a)*R4,gy0=gH(x*SC,z*SC)/SC;
+  P_(new THREE.BoxGeometry(0.62,0.08,0.62),'#3a2e28',x,gy0+0.04,z,0,a,0);P_(new THREE.ConeGeometry(0.47,0.32,4),'#3a2e28',x,gy0+0.98,z,0,a+Math.PI/4,0);
+  P_(new THREE.TorusGeometry(0.11,0.025,5,10),'#c9a24a',x,gy0+1.2,z,0,a,0);
+  for(const[dx,dz]of[[-1,-1],[1,-1],[1,1],[-1,1]]){const ca=Math.cos(a),sa=Math.sin(a),lx=dx*0.27,lz=dz*0.27;P_(new THREE.BoxGeometry(0.05,0.76,0.05),'#3a2e28',x+lx*ca-lz*sa,gy0+0.46,z+lx*sa+lz*ca,0,a,0);}
+  lgl.push(part(new THREE.BoxGeometry(0.48,0.7,0.48),'#ffd98a',x,gy0+0.46,z,0,a,0,1,1,1,0));lgl.push(part(new THREE.CylinderGeometry(0.07,0.08,0.26,8),'#fff4d6',x,gy0+0.3,z));
+  const sp=glowSprite('#ffc76a',2.6);sp.position.set(x,gy0+0.5,z);g.add(sp);GLOWS.push([sp,0.85]);}
+ {const lm=new THREE.MeshStandardMaterial({vertexColors:true,emissive:'#ffb347',emissiveIntensity:0.3,roughness:0.5,transparent:true,opacity:0.92});NIGHT_EMISSIVE.push([lm,1.6]);const lmesh=new THREE.Mesh(mergeGeometries(lgl),lm);g.add(lmesh);}
+ /* 바닥 따뜻한 빛 (밤에만) */
+ {const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const gr=x.createRadialGradient(64,64,10,64,64,64);gr.addColorStop(0,'rgba(255,200,110,0.9)');gr.addColorStop(0.45,'rgba(255,170,80,0.45)');gr.addColorStop(1,'rgba(255,150,60,0)');x.fillStyle=gr;x.fillRect(0,0,128,128);
+  const tx=new THREE.CanvasTexture(c);const gm=new THREE.MeshBasicMaterial({map:tx,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false});const gg=new THREE.Mesh(new THREE.PlaneGeometry(13,13),gm);gg.rotation.x=-Math.PI/2;gg.position.set(0,0.42,0);gg.renderOrder=2;g.add(gg);T.gglow=gg;}
  /* 10단 잎 · 위에 눈 */
  /* 가장자리가 뾰족뾰족한 가지 모양 원뿔 */
  const branchCone=(r,h,seg,jag)=>{const geo=new THREE.ConeGeometry(r,h,seg,2);const p=geo.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i);if(y<-h/2+0.01){const a=Math.atan2(p.getZ(i),p.getX(i));const k=Math.round(((a+Math.PI)/(Math.PI*2))*seg)%2;const s=k?1:1-jag;p.setX(i,p.getX(i)*s);p.setZ(i,p.getZ(i)*s);p.setY(i,y+(k?-h*0.05:h*0.08));}}geo.computeVertexNormals();return geo;};
@@ -2366,6 +2377,7 @@ function buildXmasTreeT(T){const SC=T.s||1;
   v.y+=s*1.02;sc.setScalar(s);m4.compose(v,q,sc);cap.setMatrixAt(n,m4);n++;}
  om.count=n;cap.count=n;om.instanceMatrix.needsUpdate=true;om.instanceColor.needsUpdate=true;cap.instanceMatrix.needsUpdate=true;om.castShadow=true;g.add(om);g.add(cap);
  /* 전구 + 빛 번짐 (밤에 반짝반짝) */
+ for(const[yy,rb,nn]of[[1.38,3.27,40],[0.62,3.0,36]])for(let i=0;i<nn;i++){const a=i/nn*Math.PI*2,sag=0.16*Math.abs(Math.sin(a*nn/4));bulbs.push([Math.cos(a)*(rb+0.06),yy-sag,Math.sin(a)*(rb+0.06)]);}
  const BN=bulbs.length;const bm=new THREE.InstancedMesh(new THREE.SphereGeometry(0.2,8,6),new THREE.MeshBasicMaterial({color:'#ffffff',fog:false}),BN);
  const hp=new Float32Array(BN*3),hc=new Float32Array(BN*3);
  bulbs.forEach(([x,y,z],i)=>{v.set(x,y,z);sc.setScalar(1);m4.compose(v,q,sc);bm.setMatrixAt(i,m4);bm.setColorAt(i,cc.set('#4a4a40'));T.bc.push(i%5);hp[i*3]=x;hp[i*3+1]=y;hp[i*3+2]=z;});
@@ -2433,7 +2445,7 @@ function xmasUpdT(T,dt,night){if(!T.g)return;if(T.fairy){const u=T.fairy.materia
  T.acc+=dt;if(T.acc<0.07)return;T.acc=0;const nk=smooth(0.12,0.55,night),w=0.3+0.7*nk;const tt=t;const hc=T.halo.geometry.attributes.color;
  for(let i=0;i<T.bn;i++){const ch=Math.floor(tt*4)-Math.floor(i/3);const lit=((ch%5)+5)%5!==0;const tw=0.65+0.35*Math.sin(tt*6.5+i*2.3);const k=lit?tw:0.25;
   _xc.copy(XMAS_COL[T.bc[i]]).multiplyScalar(k);hc.setXYZ(i,_xc.r*nk*1.35,_xc.g*nk*1.35,_xc.b*nk*1.35);_xc.multiplyScalar(1+0.45*nk).lerp(XMAS_OFF,1-w);T.bulbs.setColorAt(i,_xc);}
- T.bulbs.instanceColor.needsUpdate=true;hc.needsUpdate=true;T.halo.material.opacity=0.95*nk;}
+ T.bulbs.instanceColor.needsUpdate=true;hc.needsUpdate=true;T.halo.material.opacity=0.95*nk;if(T.gglow)T.gglow.material.opacity=0.6*nk;}
 
 function xmasUpd(dt,night){xmasUpdT(XMAS,dt,night);xmasUpdT(XMAS2,dt,night);}
 /* ========== v161: 👣 눈길 발자국 — 걸으면 찍히고 5초 뒤 스르르 사라짐 (나·다른 사람 모두) ========== */
@@ -6338,7 +6350,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-24u';
+const BUILD='2026-11-24v';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
