@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-24t">
+<meta name="amollang-build" content="2026-11-24u">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -589,6 +589,19 @@ button,input,textarea,select{font-family:inherit}
 #hint:empty{display:none!important}
 .cbar::after{content:'';position:absolute;left:0;right:0;top:0;height:10%;background:rgba(255,215,64,.3);border-bottom:2px solid #ffd54a;pointer-events:none}
 .charge.ok .cbar{box-shadow:0 0 12px 3px rgba(255,213,74,.95);border-color:#ffe27a}
+.cbar{transition:transform .09s ease-out}.charge.ok .cbar{transform:scale(1.15)}
+.charge.ok #chargeFill{height:100%!important;background:linear-gradient(0deg,#ffc928,#ffe46b 45%,#fff6c2)}
+.charge.ok .cbar::after{opacity:0}
+.cbar::before{content:'';position:absolute;left:-4px;right:-4px;height:38%;bottom:-40%;background:linear-gradient(0deg,rgba(255,255,255,0),rgba(255,255,255,.95) 50%,rgba(255,255,255,0));opacity:0;z-index:2;pointer-events:none}
+.charge.shine .cbar::before{animation:cshine .42s ease-out 1}
+@keyframes cshine{0%{bottom:-40%;opacity:1}100%{bottom:105%;opacity:.9}}
+#chargeNice{font-weight:900;font-size:17px;color:#ffe46b;text-shadow:0 0 8px rgba(255,200,40,.9),0 2px 3px rgba(0,0,0,.55);letter-spacing:.3px;visibility:hidden;transform:scale(.6);transition:transform .12s ease-out}
+.charge.ok #chargeNice{visibility:visible;transform:scale(1)}
+#castRes{position:fixed;right:max(14px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);z-index:4;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:64px;padding:8px 10px;border-radius:14px;background:rgba(30,40,60,.62);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.45);animation:crIn .16s ease-out}
+#castRes.hidden{display:none}#castRes.out{opacity:0;transition:opacity .35s}
+#castRes b{font-size:22px;font-weight:900;line-height:1.1}#castRes.good b{color:#ffe46b}#castRes span{font-size:13px;font-weight:900;color:#ffe46b}#castRes span:empty{display:none}
+#castRes i{font-style:normal;font-size:11.5px;font-weight:800;opacity:.92;white-space:nowrap}#castRes i:empty{display:none}
+@keyframes crIn{0%{transform:translateY(-50%) scale(.75)}100%{transform:translateY(-50%) scale(1)}}
 #comboTxt{font-weight:900;font-size:12px;color:#ffe27a;text-shadow:0 1px 3px rgba(0,0,0,.55);white-space:nowrap}
 #comboTxt:empty{display:none}
 #hudF:empty{display:none}
@@ -781,7 +794,8 @@ body.cine .lgpop{opacity:0}
 <button id="actBtn" class="actbtn hidden"></button>
 <div class="petbox hidden" id="petBox"><div class="pn" id="petName"></div><div class="pb"><button id="petBtn"><b>🤚</b>쓰다듬기</button><button id="hugBtn" class="hug"><b>🤗</b>껴안기</button></div><button id="folBtn" class="fol hidden"></button></div>
 <div id="joy" class="joy hidden"><div id="knob" class="knob"></div></div>
-<div id="charge" class="charge hidden"><div class="cbar"><div id="chargeFill"></div></div><div id="chargeTxt"></div><div id="comboTxt"></div></div>
+<div id="charge" class="charge hidden"><div id="chargeNice">Nice!</div><div class="cbar"><div id="chargeFill"></div></div><div id="chargeTxt"></div><div id="comboTxt"></div></div>
+<div id="castRes" class="hidden"><b id="crPct"></b><span id="crNice"></span><i id="crCombo"></i></div>
 <div id="tension" class="tension hidden"><div id="tHard" class="hidden"></div><div class="trow"><span>줄 장력</span><span id="tDist"></span></div><div class="tbar"><div class="tdanger"></div><div id="tFill"></div></div><div id="tMsg"></div><div id="tTire" class="hidden"></div></div>
 <div id="bang" class="bang hidden">!</div>
 <div class="toast" id="toast"></div>
@@ -3127,7 +3141,14 @@ function comboJudge(p){if(COMBO.n&&t-COMBO.last>180)COMBO.n=0;COMBO.last=t;COMBO
 function comboHook(f){if(!COMBO.acc||!f)return;COMBO.acc=false;const b4=comboTier(COMBO.n);COMBO.n++;COMBO.best=Math.max(COMBO.best,COMBO.n);const tr=comboTier(COMBO.n);
  if(tr&&tr!==b4)toast(`${tr[2]}! ${COMBO.n}연속 정확 던지기 · 대물 찬스 ${Math.round(tr[1]*100)}%`,2800);
  const q=comboChance(COMBO.n);if(q&&Math.random()<q){const sp=f.sp;const fr=Math.max(f.frac||0,0.5+0.5*Math.random());f.frac=fr;f.size=Math.round((sp.min+(sp.max-sp.min)*fr)*10)/10;f.s=clamp(sp.str*(0.7+0.6*fr),0,1);f.bigC=true;}}
-function comboShow(p){$('charge').classList.toggle('ok',p>=0.9);const n=COMBO.n,q=comboChance(n);$('comboTxt').textContent=n?`🎯 ×${n}${q?' · 대물 '+Math.round(q*100)+'%':''}`:'';}
+let CHG_OK=false;
+let CR_T1=0,CR_T2=0;
+function castResShow(p,pn){const el=$('castRes');if(!el)return;const pct=Math.floor(clamp(p,0,1)*100+1e-6),good=p>=0.9;
+ $('crPct').textContent=pct+'%';$('crNice').textContent=good?'Nice!':'';
+ $('crCombo').textContent=good?`🎯 콤보 ×${pn} · 걸면 ×${pn+1}`:(pn>0?`콤보 끊김 (×${pn})`:'🎯 콤보 ×0');
+ el.classList.toggle('good',good);el.classList.remove('hidden','out');el.style.animation='none';void el.offsetWidth;el.style.animation='';
+ clearTimeout(CR_T1);clearTimeout(CR_T2);CR_T1=setTimeout(()=>el.classList.add('out'),1500);CR_T2=setTimeout(()=>{el.classList.add('hidden');el.classList.remove('out');},1900);}
+function comboShow(p){const ok=p>=0.9,el=$('charge');el.classList.toggle('ok',ok);if(ok&&!CHG_OK){el.classList.remove('shine');void el.offsetWidth;el.classList.add('shine');}if(!ok)el.classList.remove('shine');CHG_OK=ok;const n=COMBO.n,q=comboChance(n);$('comboTxt').textContent=n?`🎯 ×${n}${q?' · 대물 '+Math.round(q*100)+'%':''}`:'';}
 
 function buildWorld(){
  buildTerrain();
@@ -6317,7 +6338,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-24t';
+const BUILD='2026-11-24u';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -7972,7 +7993,7 @@ function exitFish(){mode='walk';P.char.rodPivot.visible=false;myFloat.visible=fa
 function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=false;
  for(;dd>=1.5;dd-=0.4){const x=P.pos.x+_f.x*dd,z=P.pos.z+_f.z*dd;if(isWater(x,z)){ok=true;break;}}
  if(!ok){toast('여기선 던질 수 없어요. 물 쪽을 바라봐요');setF('idle');return;}
- const ddEdge=dd;if(dd<want-0.01){let k=0;while(k<6&&dd>2.2&&terrainH(P.pos.x+_f.x*dd,P.pos.z+_f.z*dd)>-0.5&&isWater(P.pos.x+_f.x*(dd-0.3),P.pos.z+_f.z*(dd-0.3))){dd-=0.3;k++;}}comboJudge(p);castTgt.set(P.pos.x+_f.x*dd,0,P.pos.z+_f.z*dd);habitat=habitatAt(castTgt.x,castTgt.z);RZONE=habitat==='river'?riverZone(castTgt.x,castTgt.z):'';castDist=dd;castMeters=Math.round(dd);power=clamp((dd-minD)/(maxD-minD),0,1);if(habitat!=='sea'){let B=ddEdge;while(B+0.4<=maxD&&isWater(P.pos.x+_f.x*(B+0.4),P.pos.z+_f.z*(B+0.4)))B+=0.4;if(B<maxD-0.01){const r=clamp((ddEdge-minD)/Math.max(2.5,Math.min(maxD,B+0.4)-minD),0,1);power=Math.max(power,Math.min(p,r));}}
+ const ddEdge=dd;if(dd<want-0.01){let k=0;while(k<6&&dd>2.2&&terrainH(P.pos.x+_f.x*dd,P.pos.z+_f.z*dd)>-0.5&&isWater(P.pos.x+_f.x*(dd-0.3),P.pos.z+_f.z*(dd-0.3))){dd-=0.3;k++;}}{const pn=COMBO.n;comboJudge(p);castResShow(p,pn);}castTgt.set(P.pos.x+_f.x*dd,0,P.pos.z+_f.z*dd);habitat=habitatAt(castTgt.x,castTgt.z);RZONE=habitat==='river'?riverZone(castTgt.x,castTgt.z):'';castDist=dd;castMeters=Math.round(dd);power=clamp((dd-minD)/(maxD-minD),0,1);if(habitat!=='sea'){let B=ddEdge;while(B+0.4<=maxD&&isWater(P.pos.x+_f.x*(B+0.4),P.pos.z+_f.z*(B+0.4)))B+=0.4;if(B<maxD-0.01){const r=clamp((ddEdge-minD)/Math.max(2.5,Math.min(maxD,B+0.4)-minD),0,1);power=Math.max(power,Math.min(p,r));}}
  rodTipWorld(P.char,castFrom);castDur=0.5+0.45*p;castT0=t;rbCastStart();sfx.whoosh(p);setF('casting');}
 function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(habitat==='sea')toast(farZoneTxt(fishFar())+(BOAT.on&&BOAT.far?' · 🌊 선상 보너스 ★4↑ 2배':''),2000);else if(habitat==='river'&&RZONE)toast(RZ_TXT[RZONE],1800);biteAt=t+rand(3.2,9.5)*floatSlow();nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
 function startBite(){setF('bite');biteT0=t;sfx.bell();buzz([200,90,200]);ripple(castTgt.x,castTgt.z,1.3);}
