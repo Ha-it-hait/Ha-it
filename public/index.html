@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-24v">
+<meta name="amollang-build" content="2026-11-24w">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -935,7 +935,7 @@ body.cine .lgpop{opacity:0}
       <li>낚싯대 ★가 물고기보다 높으면 훨씬 쉽게 끌려와요. 📖 도감에서 물고기별 ★와 필요한 낚싯대를 볼 수 있어요.</li>
     </ul>
     <div class="btitle">🌈 ★7 무지개 전설</div>
-    <ul class="tips"><li><b>럭키비키 무지개 낚싯대</b>(177,777몰랑)를 들면 무지개 꼬리가 따라오고, 던지면 찌를 따라 무지개다리가 놓여요.</li><li>★7 생물은 배 타고 먼 바다(강·저수지는 끝까지 멀리)에서만 아주 드물게 나와요. <b>30분마다 3분 동안 무지개가 뜨면 4배</b>로 잘 나오고, <b>누군가 ★7을 잡으면 모두에게 3분 동안 축하 무지개</b>가 떠요. 또 오래 못 만나면 <b>전설의 기운</b>이 쌓여 최대 3배까지 올라가요(무지개가 뜬 동안에는 기운 대신 딱 4배). 🎯 찌를 끼우면 ★7 확률이 올라가요(🦈 상어 지느러미찌 1.2배 · 💡 꼬마 등대찌 1.5배. 예: 해안 먼 바다 0.1% → 등대찌 0.15% → 무지개 0.6%). ★6 낚싯대로도 도전할 수 있지만 훨씬 어렵고 덜 나와요.</li></ul>
+    <ul class="tips"><li><b>럭키비키 무지개 낚싯대</b>(177,777몰랑)를 들면 무지개 꼬리가 따라오고, 던지면 찌를 따라 무지개다리가 놓여요.</li><li>★7 생물은 배 타고 먼 바다(빨간 부표 밖 · 강·저수지는 끝까지 멀리)에서만 아주 드물게 나와요. 바다에서는 찌가 빨간 부표 밖에 떨어져야 해서 부두에서는 나오지 않아요. <b>30분마다 3분 동안 무지개가 뜨면 4배</b>로 잘 나오고, <b>누군가 ★7을 잡으면 모두에게 3분 동안 축하 무지개</b>가 떠요. 또 오래 못 만나면 <b>전설의 기운</b>이 쌓여 최대 3배까지 올라가요(무지개가 뜬 동안에는 기운 대신 딱 4배). 🎯 찌를 끼우면 ★7 확률이 올라가요(🦈 상어 지느러미찌 1.2배 · 💡 꼬마 등대찌 1.5배. 예: 강·저수지 끝 0.1% → 등대찌 0.15% → 무지개 0.6%). ★6 낚싯대로도 도전할 수 있지만 훨씬 어렵고 덜 나와요.</li></ul>
     <div class="btitle">🏆 명예의 전당</div>
     <ul class="tips"><li>모닥불 옆 <b>금빛 비석</b>이 명예의 전당이에요. 생물마다 <b>가장 큰 크기를 잡은 사람</b>의 이름이 새겨지고, 더 큰 걸 잡으면 내 이름으로 바뀌어요. 아직 아무도 못 잡은 생물도 모두 볼 수 있어요.</li></ul>
     <div class="btitle">🪱 미끼</div>
@@ -1241,7 +1241,7 @@ function rareTimeTxt(b){const t=b.time||[];if(t.includes('any'))return'언제든
 for(const[bid,name,c1,c2,top,flavor]of RARE_DEF){const b=SPECIES.find(s=>s.id===bid);if(!b)continue;
  const r=Object.assign({},b,{id:bid+'_r',name,c1,c2,top,flavor,rare:bid,w:0});
  /* 기본형을 아직 못 잡았으면 기본형 이름을 감춰요 (???의 희귀종) */
- Object.defineProperty(r,'hint',{enumerable:true,configurable:true,get(){let known=false;try{known=!!(book&&book[bid]);}catch(e){}const bn=known?b.name:'???';return`✨ ${bn}의 희귀종 · 멀리 던졌을 때 아주 가끔 · ${rareBaseHint(r,b)}`;}});
+ Object.defineProperty(r,'hint',{enumerable:true,configurable:true,get(){let known=false;try{known=!!(book&&book[bid]);}catch(e){}const bn=known?b.name:'???';return`✨ ${bn}의 희귀종 · ${b.hab==='sea'?'⛵ 배 타고 먼 바다(빨간 부표 밖)에서':'멀리 던졌을 때'} 아주 가끔 · ${rareBaseHint(r,b)}`;}});
  SPECIES.push(r);RARE_OF[bid]=r;}
 
 /* ---------- v95: 강 구역(폭포·상류/중류/하류·하구) + 새 친구 18종 + 희귀종 4종 ---------- */
@@ -5307,7 +5307,7 @@ function openNews(){closeEmoPanel();closeChat();$('newsList').innerHTML=newsHTML
 function closeNews(){$('newsM').classList.add('hidden');}
 
 /* ---------- v7: 선상낚시 · 거리별 물고기 ---------- */
-const BOAT_R=114,FAR_R=90,BOAT_OFF=56,FAR_OFF=32,BOAT_MIN_ROD=5,BOAT_FARE=3000,BOAT_SEAT_Z=-0.35,BOAT_CHAR_DY=-0.2;
+const BOAT_R=114,FAR_R=90,BOAT_OFF=86,FAR_OFF=62,BOAT_MIN_ROD=5,BOAT_FARE=3000,BOAT_SEAT_Z=-0.35,BOAT_CHAR_DY=-0.2;
 const BOAT={on:false,vx:0,vz:0,far:false,mesh:null,warnT:0,wakeT:0,cd:0,farT:0,armT:0};
 // 이 화면(페이지) 고유 번호: 다시 연결돼도 같아서, 예전 연결이 남긴 '내 유령'을 알아볼 수 있어요
 const MY_SID=(()=>{let s='';const a='abcdefghijklmnopqrstuvwxyz0123456789';for(let i=0;i<10;i++)s+=a[Math.floor(Math.random()*36)];return s;})();
@@ -5318,7 +5318,7 @@ function starW(st,p){const a=STAR_W[st]||STAR_W[1];return Math.max(0.05,a[0]+a[1
 // 바다: 해안선에서 찌까지의 거리(m)로 '먼 정도'를 정해요. 해안 30m ≈ 0.6, 부두 끝에서 가장 멀리 ≈ 1
 function offshoreM(x,z){return Math.hypot(x,z)-islandR(Math.atan2(z,x));}
 function fishFar(){if(habitat!=='sea')return power;return clamp(offshoreM(castTgt.x,castTgt.z)/48,0,1);}
-function farZoneTxt(p){return p<0.3?'🐟 가까운 물가 · 작고 흔한 물고기가 많아요':p<0.75?'🐠 조금 먼 바다 · 중간 크기 물고기':'🐋 먼 바다 · 크고 ★ 높은 물고기 기회!';}
+function farZoneTxt(p){let fz=false;try{fz=habitat==='sea'&&castFarSea();}catch(e){}if(fz)return'🐋 먼 바다(빨간 부표 밖) · 크고 ★ 높은 물고기 기회!';if(p>=0.75)return'🐠 아주 멀리 · 큰 물고기 기회 (빨간 부표 밖 먼 바다는 배를 타야 닿아요)';return p<0.3?'🐟 가까운 물가 · 작고 흔한 물고기가 많아요':p<0.75?'🐠 조금 먼 바다 · 중간 크기 물고기':'🐋 먼 바다 · 크고 ★ 높은 물고기 기회!';}
 /* 배 모양 */
 function hullShape(w,l,b){const s=new THREE.Shape();s.moveTo(-w,l);s.lineTo(w,l);s.lineTo(w*1.05,-l*0.2);s.quadraticCurveTo(w*0.95,-l*0.85,0,-b);s.quadraticCurveTo(-w*0.95,-l*0.85,-w*1.05,-l*0.2);s.closePath();return s;}
 const BOAT_GEO={};
@@ -5395,8 +5395,8 @@ function buildBoatDockOne(D){
  const[lx,lz]=dockPt(D,D.s1-0.6,D.hw+0.2);buildLamp(lx,lz);}
 function buildBuoys(){
  const bm=(cA,cB)=>{const b=new THREE.Group();addMesh(new THREE.CylinderGeometry(0.3,0.36,0.5,10),stdMat(cA,0.5),0,0.05,0,b);addMesh(new THREE.CylinderGeometry(0.2,0.3,0.32,10),stdMat(cB,0.5),0,0.45,0,b);addMesh(new THREE.SphereGeometry(0.12,8,6),stdMat(cA,0.4,{emissive:cA,emissiveIntensity:0.4}),0,0.72,0,b);return b;};
- for(let k=0;k<44;k++){const a=k/44*Math.PI*2;const RR=islandR(a)+FAR_OFF;const x=Math.cos(a)*RR,z=Math.sin(a)*RR;if(inDockZone(x,z,3)||terrainH(x,z)>-0.5)continue;const b=bm('#ff4a4a','#ffffff');b.position.set(x,0,z);scene.add(b);BUOYS.push({b,x,z,p:k});}
- for(let k=0;k<60;k++){const a=k/60*Math.PI*2;const RR=islandR(a)+BOAT_OFF+1;const x=Math.cos(a)*RR,z=Math.sin(a)*RR;const b=bm('#ff9a1f','#ffe14a');b.scale.setScalar(1.3);b.position.set(x,0,z);scene.add(b);BUOYS.push({b,x,z,p:k*1.7});}}
+ for(let k=0;k<58;k++){const a=k/58*Math.PI*2;const RR=islandR(a)+FAR_OFF;const x=Math.cos(a)*RR,z=Math.sin(a)*RR;if(inDockZone(x,z,3)||terrainH(x,z)>-0.5)continue;const b=bm('#ff4a4a','#ffffff');b.position.set(x,0,z);scene.add(b);BUOYS.push({b,x,z,p:k});}
+ for(let k=0;k<78;k++){const a=k/78*Math.PI*2;const RR=islandR(a)+BOAT_OFF+1;const x=Math.cos(a)*RR,z=Math.sin(a)*RR;const b=bm('#ff9a1f','#ffe14a');b.scale.setScalar(1.3);b.position.set(x,0,z);scene.add(b);BUOYS.push({b,x,z,p:k*1.7});}}
 function initV7(){buildBoatDock();}
 function updV7(dt){if(BOAT.armT&&t>BOAT.armT){BOAT.armT=0;ctxKind='';}
  for(const M of MOORS)syncBoat(M.m,M.x,M.z,M.yaw,t,Math.sin(t*0.8+M.x)*0.02);
@@ -5529,7 +5529,8 @@ function saveLeg(){try{localStorage.setItem('monggeul-leg',String(LEG.n));}catch
 function legPity(){return 1+Math.min(2,LEG.n/LEG_PITY);}
 function legMult(){return rainbowOn()?4:legPity();}
 function legGauge(){return Math.min(100,Math.round(LEG.n/(LEG_PITY*2)*100));}
-function legBase(p,hab){if(hab==='sea'){if(p<0.8)return 0;return LEG_BASE*(BOAT.on&&BOAT.far?1:0.5);}if(p<0.85)return 0;return LEG_BASE*0.5;}
+function castFarSea(){return offshoreM(castTgt.x,castTgt.z)>FAR_OFF;}
+function legBase(p,hab){if(hab==='sea'){if(p<0.8||!castFarSea())return 0;return LEG_BASE*(BOAT.on&&BOAT.far?1:0.5);}if(p<0.85)return 0;return LEG_BASE*0.5;}
 function pickFish7(p,hab){if(window.__pick)return null;const b=legBase(p,hab);if(!b)return null;const E=effStar();const rf=E>=7?1:0.4;if(E>=6){LEG.n++;saveLeg();}
  if(Math.random()>=b*legMult()*rf*(floatOn()?floatOn().leg:1)*petLeg()*food7()*bait7())return null;
  const ph=phaseOf(hourNow()),fresh=hab!=='sea',cand=[];let tot=0;
@@ -6350,7 +6351,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,20);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-24v';
+const BUILD='2026-11-24w';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -6760,8 +6761,8 @@ function legCardHTML(){const g=legGauge(),pm=legPity(),E=effStar(),F=floatOn(),r
  return`<div class="lgc"><div class="lgh"><span>💫 전설의 기운</span><b>${g}%</b><em>기운 효과 ★7 ×${pm.toFixed(1)}${rb?' (무지개 끝나면)':''}${F?` · 🎯찌 ×${F.leg}`:''}${petLeg()>1?' · 🦦해달 ×1.5':''}${food7()>1?` · 🍳★7 요리 ×${FOOD_X}`:''}</em></div>
  <div class="lgbar"><i style="width:${Math.max(2,g)}%"></i><s style="left:50%"></s><u style="left:50%">×2</u><u style="left:100%">×3</u></div>
  <div class="lgs">${st}</div>
- <div class="lgs">🎣 지금 ★7 확률(물고기가 걸릴 때마다): 배 타고 먼 바다 <b>${pc(boat)}</b> · 해안 먼 바다·강·저수지 끝 <b>${pc(shore)}</b></div>
- <div class="lgs">✨ 희귀종 확률${foodRare()>1?` (🍳 희귀종 요리 ×${FOOD_X})`:''}: 배 타고 먼 바다 <b>${pc(RARE_K*LEG_BASE*rfR*(fullMoonNow()?2:1))}</b> · 해안 먼 바다·강·저수지 끝 <b>${pc(RARE_K*LEG_BASE*0.5*rfR*(fullMoonNow()?2:1))}</b> ${fullMoonNow()?'<b class="lgon">🌕 보름달 밤 · 2배!</b>':`· 🌕 다음 보름달 밤까지 ${mmss(fullMoonLeft()*1000)} (뜨면 2배)`}</div>
+ <div class="lgs">🎣 지금 ★7 확률(물고기가 걸릴 때마다): ⛵ 배 타고 먼 바다(빨간 부표 밖) <b>${pc(boat)}</b> · 강·저수지 끝 <b>${pc(shore)}</b></div>
+ <div class="lgs">✨ 희귀종 확률${foodRare()>1?` (🍳 희귀종 요리 ×${FOOD_X})`:''}: ⛵ 배 타고 먼 바다(빨간 부표 밖) <b>${pc(RARE_K*LEG_BASE*rfR*(fullMoonNow()?2:1))}</b> · 강·저수지 끝 <b>${pc(RARE_K*LEG_BASE*0.5*rfR*(fullMoonNow()?2:1))}</b> ${fullMoonNow()?'<b class="lgon">🌕 보름달 밤 · 2배!</b>':`· 🌕 다음 보름달 밤까지 ${mmss(fullMoonLeft()*1000)} (뜨면 2배)`}</div>
  <div class="lgs dim">★6 이상 낚싯대로 <b>멀리 던져 물고기가 걸릴 때마다</b> 쌓여요 (${fmtM(Math.min(casts,full))} / ${fmtM(full)}번 · 최대 ×3). ★7을 낚으면 0으로 돌아가요.${E<6?'<br><span class="lgw">⚠ 지금 낚싯대로는 기운이 쌓이지 않아요 (★6 이상 필요)</span>':''}${E<7?' ★6 낚싯대는 ★7 확률이 0.4배예요.':''}</div></div>`;}
 function renderLegCard(){const el=$('legCard');if(el)el.innerHTML=legCardHTML();}
 setInterval(()=>{if(!$('book').classList.contains('hidden'))renderLegCard();},1000);
@@ -7786,7 +7787,7 @@ function pcCalc(o){const hab=(o.place==='pond'||o.place==='seat')?'pond':o.place
   const st=starOf(sp);if(sp.rare||st>=7)return 0;if(st<=blk)return 0;w*=starW(st,o.p);if(far&&!fresh&&st>=4)w*=2;if(seat&&st>=4)w*=2;if(st>E)w*=0.4;tot+=w;return w;});return{ws,tot};};
  let blk=F?F.block:0;let{ws,tot}=weights(blk);if(!tot&&blk){blk=0;({ws,tot}=weights(0));}
  let fa=1,fc=1;if(fs>=1&&fs<=6){let W=0;SPECIES.forEach((sp,i)=>{if(ws[i]&&!sp.rare&&starOf(sp)===fs)W+=ws[i];});if(W>0&&W<tot){const s1=W/tot,s2=Math.min(1,FOOD_X*s1),a=s2/s1,c=(1-s2)/(1-s1);SPECIES.forEach((sp,i)=>{if(ws[i])ws[i]*=starOf(sp)===fs?a:c;});fa=a;fc=c;tot=W*a+(tot-W)*c;}}
- let base=0;if(hab==='sea'){if(o.p>=0.8)base=LEG_BASE*(far?1:0.5);}else if(o.p>=0.85)base=LEG_BASE*0.5;
+ let base=0;if(hab==='sea'){if(o.p>=0.8&&far)base=LEG_BASE;}else if(o.p>=0.85)base=LEG_BASE*0.5;
  const mult=o.rainbow?4:1+2*(o.pity||0);const rf=E>=7?1:0.4;
  const c7=[];let t7=0;for(const sp of SPECIES){if(starOf(sp)!==7||sp.trapOnly)continue;if((sp.hab==='fresh')!==fresh)continue;if(sp.pondOnly&&hab!=='pond')continue;if(sp.riverOnly&&hab!=='river')continue;if(sp.eventOnly&&!o.rainbow)continue;if(hab==='river'&&sp.z7&&!sp.z7.includes(RZ))continue;
   let w=sp.w;if(!sp.time.includes('any'))w*=sp.time.includes(o.ph)?2.4:0.3;if(hab==='river'&&RZ==='fall'&&sp.fallB)w*=1.5;c7.push([sp,w]);t7+=w;}
@@ -7807,7 +7808,7 @@ function pcCalc(o){const hab=(o.place==='pond'||o.place==='seat')?'pond':o.place
   else if(hab==='river'&&st===7&&sp.z7&&!sp.z7.includes(RZ))why=sp.z7.map(k=>PC_RZ[k]).join('·')+'에서만';
   else if(hab==='river'&&z.rzOnly&&pcRz(z,RZ)===0)why=PC_RZ[z.rz]+'에서만';
   else if(sp.eventOnly&&!o.rainbow)why='🌈 무지개 이벤트 때만';
-  else if((st===7||sp.rare)&&!base)why=hab==='sea'?'거리 80%↑로 멀리 던져야':'힘 85%↑로 던져야';
+  else if((st===7||sp.rare)&&!base)why=hab==='sea'?(far?'거리 80%↑로 멀리 던져야':'⛵ 배 타고 빨간 부표 밖 먼 바다에서만'):'힘 85%↑로 던져야';
   else if(st<=blk)why='찌 때문에 안 걸려요';else why='이 조건에선 안 나와요';
   out.push({sp,p:0,why});}
  const P7t=t7?P7:0;return{list:out,P7:P7t,PR,blocked:blk,E,F,base,b7,bR,hab,far,seat,RZ,mult,rf,rfR,fs,fr,moon,cR,tr,tr0,t7,fa,fc};}
@@ -7916,7 +7917,7 @@ function pcOpHTML(){const o=PC.op;let h=`<div class="pcbox op"><button class="pc
  return h+'</div>';}
 function pcOpConst(){const F=FLOATS,b7=BAITS.b7,br=BAITS.br;const T=(title,rows)=>`<div class="pcl">${title}</div><div class="pcw op">${rows.map(([l,v])=>String(v).length>16?`<div class="l full">${l}</div><div class="v full">${v}</div>`:`<div class="l">${l}</div><div class="v">${v}</div>`).join('')}</div>`;
  const wk=Object.entries(RARE_WK).map(([id,k])=>`${(SP_BY[id]||{}).name||id} ×${k}`).join(' · ');
- return T('① 🌈 ★7 무지개 전설',[['기본 확률 · ⛵ 먼 바다 (거리 80%↑)',pcFmt(LEG_BASE)],['기본 확률 · 🌊 해안 (거리 80%↑)',pcFmt(LEG_BASE*0.5)],['기본 확률 · 저수지·강 (힘 85%↑)',pcFmt(LEG_BASE*0.5)],['🌈 무지개 이벤트','×4'],[`전설 게이지 (던질 때마다 +1 · ${LEG_PITY}번마다 +1배)`,'×1 ~ ×3'],['🎣 적용 낚싯대 ★7 미만','×0.4'],...[1,2,3].map(k=>[`${F[k].em} ${F[k].name} (★${F[k].minRod}↑)`,'×'+F[k].leg]),['🦦 아기 해달 버프','×1.5'],['🍳 ★7 요리','×'+FOOD_X],[`🔮 프리즘 구슬 (★${b7.minE}↑)`,'×2']])
+ return T('① 🌈 ★7 무지개 전설',[['기본 확률 · ⛵ 먼 바다 (거리 80%↑)',pcFmt(LEG_BASE)],['🌊 해안·부두 (빨간 부표 안)','안 나와요'],['기본 확률 · 저수지·강 (힘 85%↑)',pcFmt(LEG_BASE*0.5)],['🌈 무지개 이벤트','×4'],[`전설 게이지 (던질 때마다 +1 · ${LEG_PITY}번마다 +1배)`,'×1 ~ ×3'],['🎣 적용 낚싯대 ★7 미만','×0.4'],...[1,2,3].map(k=>[`${F[k].em} ${F[k].name} (★${F[k].minRod}↑)`,'×'+F[k].leg]),['🦦 아기 해달 버프','×1.5'],['🍳 ★7 요리','×'+FOOD_X],[`🔮 프리즘 구슬 (★${b7.minE}↑)`,'×2']])
  +T('② ✨ 희귀종',[['기본 배수 (★7 기본 확률 ×)','×'+RARE_K],['🎣 실제 낚싯대 ★7 미만 (요리 ★+1 제외)','×0.4'],['🌕 보름달 밤','×2'],['🍳 희귀종 요리','×'+FOOD_X],[`🍡 떡집 경단 (★${br.minE}↑)`,'×2'],['희귀종별 배수 (그중 뽑힐 비중)',wk||'없음'],['구성 보정','배수 합 ÷ 원래 합']])
  +T('③ 🐟 일반 물고기 비중 배수',[['좋아하는 시간대 / 다른 시간대','×2.4 / ×0.3'],...Object.keys(STAR_W).filter(k=>+k>=1).map(k=>{const a=STAR_W[k];return[`★${k} 별 가중치 = ${a[0]} ${a[1]<0?'−':'+'} ${Math.abs(a[1])}×거리`,`${pcX(starW(+k,0).toFixed(2))} ~ ${pcX(starW(+k,1).toFixed(2))}`];}),['⛵ 먼 바다 · 🪑 좌대의 ★4↑','×2'],['적용 낚싯대보다 ★ 높음','×0.4'],['🐚 가까운 물가 물고기','×(1.6 − 1.2×거리)'],['먼 곳 좋아하는 물고기, 거리 미달','×0.1'],['강 좋아하는 물고기 · 저수지','×0.3'],['🍳 ★1~6 요리','같은 ★ 비율 ×2 (최대 100%)'],...['up','mid','down'].map(z=>[`강 ${PC_RZ[z]} 물고기 (상류·중류·하류에서)`,['up','mid','down'].map(k=>'×'+RZ_ADJ[z][k]).join(' / ')]),['💦 폭포 웅덩이','상류로 계산 · 폭포 좋아하는 종 ×1.5']]);}
 function renderPCOp(){const el=$('pcOpList');if(!el)return;const o=PC.op,R=PC.R;const pm={};if(R)for(const x of R.list)pm[x.sp.id]=x.p;const q=o.q.trim().toLowerCase();
