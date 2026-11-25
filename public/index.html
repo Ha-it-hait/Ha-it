@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-25e">
+<meta name="amollang-build" content="2026-11-25g">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -4985,7 +4985,7 @@ function computeFollow(){
   else if(now&&!now.me){const L=leaderPos(now);if(L)A.label.nm.textContent=`${A.d.em} ${A.d.name} 🐾${L.name}`;}
   if(now&&now.me)mine=A.i;}
  if(mine!==folMine){if(mine>=0&&entered){const A=ANIMS[mine];toast(`🐾 ${A.d.name}${josa(A.d.name,'이','가')} 나를 졸졸 따라와요! (친밀도 💕${loveOf(A.d.id)})`,3200);showBubble(A.label,'💕',true,2);}folMine=mine;}}
-function followStep(A,dt){const L=leaderPos(A.fol);if(!L)return null;const fx=Math.sin(L.yaw),fz=Math.cos(L.yaw);const side=(A.i%2?1:-1)*0.7;
+function followStep(A,dt){const L=leaderPos(A.fol);if(!L)return null;const fx=Math.sin(L.yaw),fz=Math.cos(L.yaw);const side=(A.i%2?1:-1)*0.95;
  let tx=L.x-fx*1.5+fz*side,tz=L.z-fz*1.5-fx*side;if(!walkable(tx,tz)){tx=L.x-fx*1.2;tz=L.z-fz*1.2;}
  let dx=tx-A.x,dz=tz-A.z,d=Math.hypot(dx,dz);
  if(d>18){for(let k=0;k<12;k++){const a=k/12*6.283;const x=L.x+Math.cos(a)*1.6,z=L.z+Math.sin(a)*1.6;if(walkable(x,z)){A.x=x;A.z=z;break;}}dx=tx-A.x;dz=tz-A.z;d=Math.hypot(dx,dz);}
@@ -6358,7 +6358,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,28);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-25e';
+const BUILD='2026-11-25g';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -7548,7 +7548,7 @@ function attShowGot(res){const g=$('attGot');g.innerHTML=res.got.map(o=>`<div cl
 function closeAtt(){const el=$('attM');if(el)el.classList.add('hidden');ATT.open=false;}
 /* ---- 옷장: 꽃게 모자 잠금 · 동물 친구 ---- */
 function attHatChips(){const el=$('hatChips');el.innerHTML='';HAT_NAMES.forEach((n,i)=>{const own=i<7||(GS.hats||[]).includes(i);if(!own)return;const b=document.createElement('button');
- b.textContent=own?(i===7?'🦀 ':'')+n:'🔒 '+n;if(LOOK.hat===i)b.classList.add('on');if(!own)b.classList.add('lock');
+ b.textContent=n;if(LOOK.hat===i)b.classList.add('on');if(!own)b.classList.add('lock');
  b.addEventListener('click',()=>{if(!own){toast('🦀 꽃게 모자는 📅 7일 연속 출석 보상이에요',2400);return;}LOOK.hat=i;saveMe();rebuildMe();buildCloset();markPresence();sfx.pop();});el.appendChild(b);});}
 function attPetChips(){const el=$('petChips');if(!el)return;el.innerHTML='';{const o=el.closest('.opt');if(o)o.style.display='none';}return;const has=(GS.pets||[]).includes(1);
  const mk=(txt,on,fn,lock)=>{const b=document.createElement('button');b.textContent=txt;if(on)b.classList.add('on');if(lock)b.classList.add('lock');b.addEventListener('click',fn);el.appendChild(b);};
