@@ -13,7 +13,8 @@ const LEGEND_IDS = new Set(['rainbowwhale', 'auroraray', 'rainbowflyer', 'prismj
 const MAX_MSG = 8192;    // 메시지 최대 크기(바이트) — 큰 수조(최대 200마리) 구경 정보까지 들어가게
 const MAX_RATE = 20;     // 접속자 1명당 초당 최대 메시지 수
 const TRAP_KEEP_MS = 14 * 24 * 3600 * 1000; // 🪤 주인이 14일 동안 오지 않은 통발은 정리
-const TRAP_MAX = 80;      // 🪤 한 섬에 보여 줄 통발 수
+const TRAP_MAX = 80;
+const TRAP_AUTO_MS = 7 * 24 * 3600 * 1000; // 🪤 친 뒤 7일 동안 주인이 걷지 않으면 자동 회수(물에서 사라짐)      // 🪤 한 섬에 보여 줄 통발 수
 const CHAT_KEEP = 100;   // 섬마다 보관하는 최근 채팅 수 (넘으면 오래된 것부터 삭제)
 const CHAT_LEN = 60;     // 채팅 한 줄 최대 글자 수
 const CHAT_GAP = 1000;   // 같은 사람이 채팅을 보낼 수 있는 최소 간격(ms) · 화면은 1.5초 간격이라 전송 지연이 있어도 버려지지 않아요
@@ -189,10 +190,19 @@ export class Island extends DurableObject {
     this.sql.exec('CREATE TABLE IF NOT EXISTS traps(oh TEXT PRIMARY KEY, k TEXT, lv INTEGER, x REAL, z REAL, a INTEGER, b INTEGER, nk TEXT, op INTEGER, ts INTEGER)');
     // 미끼 표시(bt): 1=🍯 꿀떡 주머니 · 2=💎 진주 이슬 (부표 효과만 보여 주고, 안에 든 물고기는 여전히 비밀)
     if (!new Set(this.sql.exec('PRAGMA table_info(traps)').toArray().map(r => r.name)).has('bt')) this.sql.exec('ALTER TABLE traps ADD COLUMN bt INTEGER DEFAULT 0');
+    if (!new Set(this.sql.exec('PRAGMA table_info(traps)').toArray().map(r => r.name)).has('pt')) this.sql.exec('ALTER TABLE traps ADD COLUMN pt INTEGER DEFAULT 0');
   }
   // 통발 목록: 14일 넘게 주인이 다시 오지 않은 통발은 정리해요
+  // 🪤 친 지 7일 지난 통발(친 시각을 모르는 예전 통발은 주인이 마지막으로 보낸 시각 기준)과 14일 동안 주인이 안 온 통발을 정리하고, 섬에 있는 사람들에게 알려요
+  trapExpire(bc) {
+    const now = Date.now();
+    const old = this.sql.exec('SELECT k FROM traps WHERE ts < ? OR (CASE WHEN pt > 0 THEN pt ELSE ts END) < ?', now - TRAP_KEEP_MS, now - TRAP_AUTO_MS).toArray();
+    if (!old.length) return;
+    this.sql.exec('DELETE FROM traps WHERE ts < ? OR (CASE WHEN pt > 0 THEN pt ELSE ts END) < ?', now - TRAP_KEEP_MS, now - TRAP_AUTO_MS);
+    if (bc) for (const r of old) this.broadcast({ t: 'tpx', k: r.k }, null);
+  }
   trapList() {
-    this.sql.exec('DELETE FROM traps WHERE ts < ?', Date.now() - TRAP_KEEP_MS);
+    this.trapExpire(true);
     return this.sql.exec('SELECT k, lv, x, z, a, b, nk, op, bt FROM traps ORDER BY ts DESC LIMIT ?', TRAP_MAX).toArray()
       .map(r => ({ k: r.k, lv: r.lv, x: r.x, z: r.z, n: [r.a, r.b], nk: r.nk || '', op: r.op ? 1 : 0, b: (r.bt | 0) & 3 }));
   }
@@ -348,7 +358,7 @@ export class Island extends DurableObject {
       const lv = m.lv | 0, x = +m.x, z = +m.z;
       // 예전 지문(로그인 전 손님 기록 등)으로 남아 있던 내 통발은 지워요
       if (Array.isArray(m.o)) for (const h of m.o.slice(0, 3)) { if (typeof h !== 'string' || !/^[0-9a-f]{16}$/.test(h) || h === a.oh) continue; const old = this.sql.exec('SELECT k FROM traps WHERE oh = ?', h).toArray()[0]; if (old) { this.sql.exec('DELETE FROM traps WHERE oh = ?', h); this.broadcast({ t: 'tpx', k: old.k }, null); } }
-      const row = this.sql.exec('SELECT k FROM traps WHERE oh = ?', a.oh).toArray()[0];
+      const row = this.sql.exec('SELECT k, pt FROM traps WHERE oh = ?', a.oh).toArray()[0];
       if (lv === 0) {
         if (row) { this.sql.exec('DELETE FROM traps WHERE oh = ?', a.oh); this.broadcast({ t: 'tpx', k: row.k }, null); }
       } else if (lv >= 2 && lv <= 6 && Number.isFinite(x) && Number.isFinite(z) && Math.abs(x) < 400 && Math.abs(z) < 400) {
@@ -356,7 +366,11 @@ export class Island extends DurableObject {
         const n = a.p && Array.isArray(a.p.n) ? a.p.n : [0, 0], nk = a.p ? a.p.nk || '' : '', op = a.p && a.p.op ? 1 : 0;
         const rx = Math.round(x * 100) / 100, rz = Math.round(z * 100) / 100;
         const bt = lv === 6 ? (m.b | 0) & 3 : 0;
-        this.sql.exec('INSERT OR REPLACE INTO traps(oh, k, lv, x, z, a, b, nk, op, ts, bt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', a.oh, k, lv, rx, rz, n[0] | 0, n[1] | 0, nk, op, now, bt);
+        // 친 시각: 이미 있으면 그대로 · 처음이면 화면이 보낸 친 시각(최근 30일 안) · 없으면 지금
+        const cpt = Number.isFinite(+m.pt) && +m.pt <= now + 60000 && +m.pt >= now - 30 * 24 * 3600 * 1000 ? Math.round(+m.pt) : now;
+        const pt = row && row.pt > 0 ? row.pt : cpt;
+        if (now - pt >= TRAP_AUTO_MS) { if (row) { this.sql.exec('DELETE FROM traps WHERE oh = ?', a.oh); this.broadcast({ t: 'tpx', k: row.k }, null); } ws.serializeAttachment(a); return; }
+        this.sql.exec('INSERT OR REPLACE INTO traps(oh, k, lv, x, z, a, b, nk, op, ts, bt, pt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', a.oh, k, lv, rx, rz, n[0] | 0, n[1] | 0, nk, op, now, bt, pt);
         try { ws.send(JSON.stringify({ t: 'tpme', k })); } catch {}
         this.broadcast({ t: 'tp', k, lv, x: rx, z: rz, n, nk, op, b: bt }, ws);
       }
@@ -403,6 +417,7 @@ export class Island extends DurableObject {
 
   // 응답이 끊긴 지 오래된 연결(앱 전환·네트워크 끊김으로 닫힘 신호를 못 받은 경우)을 정리
   prune() {
+    try { const n0 = Date.now(); if (n0 - (this.lastTpx || 0) > 60000) { this.lastTpx = n0; this.trapExpire(true); } } catch {}
     if (typeof this.ctx.getWebSocketAutoResponseTimestamp !== 'function') return; // 지원 안 되면 정리하지 않음(안전)
     const now = Date.now();
     if (now - (this.lastPrune || 0) < 20000) return;
