@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-25b">
+<meta name="amollang-build" content="2026-11-25e">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -602,6 +602,9 @@ button,input,textarea,select{font-family:inherit}
 #castRes b{font-size:22px;font-weight:900;line-height:1.1}#castRes.good b{color:#ffe46b}#castRes span{font-size:13px;font-weight:900;color:#ffe46b}#castRes span:empty{display:none}
 #castRes i{font-style:normal;font-size:11.5px;font-weight:800;opacity:.92;white-space:nowrap}#castRes i:empty{display:none}
 @keyframes crIn{0%{transform:translateY(-50%) scale(.75)}100%{transform:translateY(-50%) scale(1)}}
+@keyframes crInT{0%{transform:scale(.75)}100%{transform:scale(1)}}
+@media (pointer:coarse){.charge{top:calc(env(safe-area-inset-top,0px) + 112px);transform:none}#castRes{top:calc(env(safe-area-inset-top,0px) + 132px);transform:none;animation-name:crInT}}
+@media (pointer:coarse) and (max-height:520px){.charge{top:calc(env(safe-area-inset-top,0px) + 58px)}.charge .cbar{height:120px}#castRes{top:calc(env(safe-area-inset-top,0px) + 70px)}}
 #comboTxt{font-weight:900;font-size:12px;color:#ffe27a;text-shadow:0 1px 3px rgba(0,0,0,.55);white-space:nowrap}
 #comboTxt:empty{display:none}
 #hudF:empty{display:none}
@@ -6355,7 +6358,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,28);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-25b';
+const BUILD='2026-11-25e';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -7991,7 +7994,9 @@ let biteAt=0,nibbles=[],biteT0=0;const BITE_WIN=1.2;
 let fish=null,d=1,tension=0,slackT=0,nextSurge=0,surgeUntil=0,holding=false,tickAcc=0,rippleAcc=0,fightPresAcc=0;
 const retrieveFrom=new THREE.Vector3();let rT0=0;
 let myFloat,myLine;
-function setF(s){fstate=s;markPresence();refreshHint();acStateHook(s);$('bang').classList.toggle('hidden',s!=='bite');}
+function chgPlace(){const ch=$('charge');if(!ch)return;if(!(isTouch&&H>W)){ch.style.top='';return;}const sb=document.querySelector('.actbtn.stand:not(.hidden) span');if(!sb){ch.style.top='';return;}const r=sb.getBoundingClientRect();if(!(r.height>0)){ch.style.top='';return;}
+ const bar=ch.querySelector('.cbar');const off=bar&&bar.offsetTop>0?bar.offsetTop:26;ch.style.top=Math.round(Math.max(60,r.top-off+25))+'px';}
+function setF(s){fstate=s;if(s==='charging')try{chgPlace();}catch(e){}markPresence();refreshHint();acStateHook(s);$('bang').classList.toggle('hidden',s!=='bite');}
 function refreshHint(){const h=$('hint');let txt='';
  if(!entered||mode==='closet')txt='';else if(mode==='fish')txt=HINTS[fstate]||'';else if(mode==='cook')txt='🍳 요리하는 중이에요… 잠깐만 기다려요';
  else if(nearAnimal)txt=isTouch?`🐾 ${nearAnimal.d.name}${josa(nearAnimal.d.name,'이랑','랑')} 놀아줘요`:`🐾 ${nearAnimal.d.name} · 🤚 쓰다듬기 · 🤗 껴안기 버튼을 눌러요`+(canFish?' · F 낚시':'');
