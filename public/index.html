@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-26e">
+<meta name="amollang-build" content="2026-11-26g">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -2058,7 +2058,7 @@ const COLORS=['#ff8a65','#ef5350','#ffca28','#9ccc65','#4fc3f7','#5c6bc0','#ba68
 let LOOK={hat:Math.floor(Math.random()*6),hc:Math.floor(Math.random()*COLORS.length),cloth:Math.floor(Math.random()*CLOTH_NAMES.length),cc:Math.floor(Math.random()*COLORS.length)};
 let NAME={a:Math.floor(Math.random()*ADJ.length),b:Math.floor(Math.random()*NOUN.length)};
 try{const s=JSON.parse(localStorage.getItem('monggeul-me')||'null');if(s&&s.look&&s.name){const L=s.look;if([L.hat,L.hc,L.cloth,L.cc].every(Number.isInteger))LOOK=L;if(Number.isInteger(s.name.a)&&Number.isInteger(s.name.b))NAME={a:s.name.a,b:s.name.b,nk:typeof s.name.nk==='string'?s.name.nk.slice(0,10):''};}}catch(e){}
-function saveMe(){try{localStorage.setItem('monggeul-me',JSON.stringify({look:LOOK,name:NAME}));}catch(e){}markSave();}
+function saveMe(){try{localStorage.setItem('monggeul-me',JSON.stringify({look:LOOK,name:NAME}));}catch(e){}markSave();try{if(GS.trap)tpSend();}catch(e){}}
 function nameOf(n){if(n&&typeof n.nk==='string'&&n.nk)return n.nk;return`${ADJ[Math.abs(n.a|0)%ADJ.length]} ${NOUN[Math.abs(n.b|0)%NOUN.length]}`;}
 
 /* ---------- renderer ---------- */
@@ -6397,7 +6397,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,28);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-26e';
+const BUILD='2026-11-26g';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -7998,7 +7998,14 @@ document.querySelectorAll('#book .btab').forEach(b=>b.addEventListener('click',(
  el.addEventListener('change',e=>{if(e.target.dataset.r)renderPC();});}
 /* ---------- player ---------- */
 const P={pos:new THREE.Vector3(),yaw:0,vy:0,jy:0,speed:0,char:null,label:null,hopT:-9};
-function spawn(){for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
+const LASTPOS_KEY='amollang-lastpos';
+function lpOk(x,z){try{if(!Number.isFinite(x)||!Number.isFinite(z)||!walkable(x,z))return false;if(lhR(x,z)<LH.R+LH.SW+2.5)return false;return true;}catch(e){return false;}}
+/* 배를 타는 중 · 옷장 · 등대 근처 · 점프 중에는 저장하지 않아요 (배를 타기 전 마지막 땅 위치가 남아요) */
+function lpSave(){try{if(!P.char||BOAT.on||mode==='closet')return;const x=P.pos.x,z=P.pos.z;if(!lpOk(x,z))return;if(Math.abs(P.pos.y-groundY(x,z))>0.6)return;
+ localStorage.setItem(LASTPOS_KEY,JSON.stringify({x:Math.round(x*100)/100,z:Math.round(z*100)/100,r:Math.round(P.yaw*100)/100,t:Date.now()}));}catch(e){}}
+function lpLoad(){try{const o=JSON.parse(localStorage.getItem(LASTPOS_KEY)||'null');if(!o||Date.now()-(+o.t||0)>60*86400000)return null;const x=+o.x,z=+o.z;return lpOk(x,z)?{x,z,r:+o.r||0}:null;}catch(e){return null;}}
+setInterval(lpSave,3000);addEventListener('pagehide',lpSave);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')lpSave();});
+function spawn(){{const L=lpLoad();if(L){P.pos.set(L.x,groundY(L.x,L.z),L.z);P.yaw=L.r;window.__lpYaw=L.r;return;}}for(let i=0;i<60;i++){const x=rand(-4,4),z=rand(PLAZA.z+4,PLAZA.z+7);if(walkable(x,z)){P.pos.set(x,groundY(x,z),z);return;}}P.pos.set(0,groundY(0,12),12);}
 function rebuildMe(){if(P.char)scene.remove(P.char.root);P.char=makeCharacter(LOOK);P.char.reelLv=GS.reel|0;setCharRod(P.char,GS.rod);setCharPack(P.char,GS.pack|0);if(cookSt&&cookSt.stage===1)P.char.cooking=true;scene.add(P.char.root);P.label.nm.textContent=nameOf(NAME);}
 let mode='closet',entered=false;
 let camYaw=Math.PI,camPitch=0.62,camDist=innerHeight>innerWidth?13:10.5;
@@ -8274,7 +8281,7 @@ function saveNick(){const ck=checkNick($('nickIn').value,opMine());if(!ck.ok){ni
  NAME={a:NAME.a,b:NAME.b,nk:ck.nick};saveMe();$('myName').textContent=nameOf(NAME);P.label.nm.textContent=nameOf(NAME);markPresence();nmMine();sfx.pop();$('nickIn').value='';$('nickIn').blur();nickMsg(`‘${ck.nick}’(으)로 정했어요! 머리 위와 채팅에 이 이름이 보여요`,'good');}
 $('nickSave').addEventListener('click',saveNick);$('nickIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveNick();}});
 $('reroll').addEventListener('click',()=>{nickMsg('랜덤 이름으로 바꿨어요. 직접 정하려면 위 칸에 입력해요','');NAME={a:Math.floor(Math.random()*ADJ.length),b:Math.floor(Math.random()*NOUN.length)};saveMe();$('myName').textContent=nameOf(NAME);P.label.nm.textContent=nameOf(NAME);markPresence();nmMine();sfx.pop();});
-$('go').addEventListener('click',()=>{const first=!entered;entered=true;initAudio();applySound();$('tankBtn').classList.remove('hidden');$('bagBtn').classList.remove('hidden');$('chatBtn').classList.remove('hidden');closeCloset();if(first){sendEmote('👋',false);let seen=false;try{seen=localStorage.getItem('monggeul-guided')==='1';localStorage.setItem('monggeul-guided','1');}catch(e){}if(!seen)setTimeout(openHelp,700);else toast('어서 와요! ❓를 누르면 낚시하는 법이 나와요');}markPresence();});
+$('go').addEventListener('click',()=>{const first=!entered;entered=true;initAudio();applySound();$('tankBtn').classList.remove('hidden');$('bagBtn').classList.remove('hidden');$('chatBtn').classList.remove('hidden');closeCloset();if(first&&Number.isFinite(window.__lpYaw)){P.yaw=window.__lpYaw;window.__lpYaw=null;}if(first){sendEmote('👋',false);let seen=false;try{seen=localStorage.getItem('monggeul-guided')==='1';localStorage.setItem('monggeul-guided','1');}catch(e){}if(!seen)setTimeout(openHelp,700);else toast('어서 와요! ❓를 누르면 낚시하는 법이 나와요');}markPresence();});
 $('bCloset').addEventListener('click',()=>{if(!entered)return;if(BOAT.on){toast('⛵ 배 위에서는 옷을 갈아입을 수 없어요. 배 부두에 내린 뒤 갈아입어요',2800);return;}openCloset(false);});
 $('actBtn').addEventListener('click',()=>{initAudio();if(mode==='fish')exitFish();else if(canFish)enterFish();});
 $('release').addEventListener('click',()=>{$('catch').classList.add('hidden');fwdOf(P.yaw,_f);splash(P.pos.x+_f.x*2,P.pos.z+_f.z*2,0.7);sfx.splash(0.2);fish=null;setF('idle');});
@@ -8770,13 +8777,15 @@ function updTrap(dt){tpUpd3D(dt);const pn=performance.now();if(pn-(TPA.hl||0)>=1
 /* ---------- 3D 부표 ---------- */
 const TPG={};function tpGeo(){if(TPG.b)return TPG;TPG.b=new THREE.SphereGeometry(0.3,16,12);TPG.band=new THREE.CylinderGeometry(0.31,0.31,0.11,18,1,true);TPG.pole=new THREE.CylinderGeometry(0.022,0.022,0.95,6);TPG.top=new THREE.SphereGeometry(0.06,10,8);
  const sh=new THREE.Shape();sh.moveTo(0,0);sh.lineTo(0.46,-0.13);sh.lineTo(0,-0.3);sh.closePath();TPG.flag=new THREE.ShapeGeometry(sh);TPG.rope=new THREE.CylinderGeometry(0.012,0.012,1,4);TPG.cage=new THREE.CylinderGeometry(0.34,0.34,0.95,12,1);TPG.ring=new THREE.TorusGeometry(0.34,0.035,6,16);return TPG;}
-function tpMesh(lv){const D=TRAPS[lv],G=tpGeo();const g=new THREE.Group();const m=(col,o)=>new THREE.MeshStandardMaterial(Object.assign({color:col,roughness:0.5},o||{}));
+function tpFcOk(c){return typeof c==='string'&&/^#[0-9a-fA-F]{6}$/.test(c)?c.toLowerCase():'';}
+function tpMyFC(){return LOOK.hat===6?'':tpFcOk(COLORS[LOOK.hc%COLORS.length]);}
+function tpMesh(lv,fc){const D=TRAPS[lv],G=tpGeo();const FC=tpFcOk(fc)||D.flag;const g=new THREE.Group();const m=(col,o)=>new THREE.MeshStandardMaterial(Object.assign({color:col,roughness:0.5},o||{}));
  const G6=lv===6;const bob=new THREE.Group();g.add(bob);const b=new THREE.Mesh(G.b,G6?m('#f2c14e',{metalness:0.85,roughness:0.28,emissive:'#5a3a00',emissiveIntensity:0.25}):m(D.buoy[0]));b.scale.set(1,0.8,1);bob.add(b);
  const bd=new THREE.Mesh(G.band,G6?m('#a8142a',{side:THREE.DoubleSide,roughness:0.3,metalness:0.2}):m(D.buoy[1],{side:THREE.DoubleSide}));bd.position.y=0.03;bob.add(bd);
  if(G6){for(const yy of[-0.03,0.09]){const rr=new THREE.Mesh(G.ring6||(G.ring6=new THREE.TorusGeometry(0.312,0.014,6,24)),m('#ffe08a',{metalness:0.9,roughness:0.25}));rr.rotation.x=Math.PI/2;rr.position.y=yy;bob.add(rr);}const cr=new THREE.Mesh(G.crown||(G.crown=new THREE.TorusGeometry(0.085,0.016,6,16)),m('#ffe08a',{metalness:0.9,roughness:0.25}));cr.rotation.x=Math.PI/2;cr.position.y=1.08;bob.add(cr);}
  const pole=new THREE.Mesh(G.pole,lv===6?m('#d9a83a',{metalness:0.9,roughness:0.3}):m('#5a5a5a'));pole.position.y=0.66;bob.add(pole);
  const tp=new THREE.Mesh(G.top,m(lv===6?'#ff8fd0':D.lite,{emissive:lv>=5?(lv===6?'#ff6fa8':'#7fffe0'):'#000000',emissiveIntensity:lv>=5?0.8:0}));tp.position.y=1.15;bob.add(tp);
- const fl=new THREE.Mesh(G.flag,m(D.flag,{side:THREE.DoubleSide,emissive:D.flag,emissiveIntensity:0.18}));fl.position.set(0.01,1.1,0);bob.add(fl);
+ const fl=new THREE.Mesh(G.flag,m(FC,{side:THREE.DoubleSide,emissive:FC,emissiveIntensity:0.42}));fl.position.set(0.01,1.1,0);bob.add(fl);
  const rope=new THREE.Mesh(G.rope,m('#efe6cf'));rope.position.y=-0.62;rope.scale.y=0.9;bob.add(rope);
  const cage=new THREE.Mesh(G.cage,m(D.body,lv===6?{transparent:true,opacity:0.7,metalness:0.8,roughness:0.3}:{transparent:true,opacity:0.6}));cage.rotation.z=Math.PI/2;cage.position.y=-1.15;g.add(cage);
  for(const s of[-1,1]){const r=new THREE.Mesh(G.ring,m(D.dark));r.rotation.y=Math.PI/2;r.position.set(s*0.4,-1.15,0);g.add(r);}
@@ -8791,26 +8800,26 @@ function tpFx(M,b){const u=M.g.userData;if(!u.fxR)return;u.fxR.visible=!!(b&1);u
 function tpLabel(txt,me){const L=makeLabel(!!me);L.el.classList.add('tplbl');L.nm.textContent=txt;return L;}
 function tpDrop(o){if(!o)return;try{scene.remove(o.g);o.g.traverse(x=>{if(x.material)x.material.dispose();});}catch(e){}try{o.L.el.remove();}catch(e){}}
 function tpSync3D(){if(typeof scene==='undefined'||!scene)return;const T=GS.trap;
- if(!T||(TPM.me&&TPM.me.lv!==T.lv)){tpDrop(TPM.me);TPM.me=null;}
- if(T&&!TPM.me){const g=tpMesh(T.lv);scene.add(g);TPM.me={g,L:tpLabel('🧺 내 통발',true),lv:T.lv};}
+ if(!T||(TPM.me&&(TPM.me.lv!==T.lv||TPM.me.fc!==tpMyFC()))){tpDrop(TPM.me);TPM.me=null;}
+ if(T&&!TPM.me){const fc=tpMyFC();const g=tpMesh(T.lv,fc);scene.add(g);TPM.me={g,L:tpLabel('🧺 내 통발',true),lv:T.lv,fc};}
  const myN=nameOf(NAME);const keep=new Set();const tpNm=o=>nameOf({a:(o.n||[])[0]|0,b:(o.n||[])[1]|0,nk:o.nk||''});
  /* 같은 사람 통발이 예전 기록으로 여러 개 남아 있으면 가장 최근 것 하나만 */const best=new Map();for(const[k,o]of TPR.list){if(k===TPR.me)continue;const nn=tpNm(o),b=best.get(nn);if(!b||(o.t||0)>b.t)best.set(nn,{k,t:o.t||0});}
  for(const[k,o]of TPR.list){if(k===TPR.me)continue;if(T&&Math.abs(o.x-T.x)<0.06&&Math.abs(o.z-T.z)<0.06)continue;const nn=tpNm(o);if(nn===myN)continue;if(best.get(nn).k!==k)continue;keep.add(k);let M=TPM.r.get(k);
-  if(M&&M.lv!==o.lv){tpDrop(M);TPM.r.delete(k);M=null;}
+  if(M&&(M.lv!==o.lv||M.fc!==(o.fc||''))){tpDrop(M);TPM.r.delete(k);M=null;}
   const nm='🧺 '+nameOf({a:(o.n||[])[0]|0,b:(o.n||[])[1]|0,nk:o.nk||''});
-  if(!M){const g=tpMesh(o.lv);scene.add(g);M={g,L:tpLabel(nm,false),lv:o.lv,x:+o.x,z:+o.z};TPM.r.set(k,M);}
+  if(!M){const g=tpMesh(o.lv,o.fc);scene.add(g);M={g,L:tpLabel(nm,false),lv:o.lv,fc:o.fc||'',x:+o.x,z:+o.z};TPM.r.set(k,M);}
   M.x=+o.x;M.z=+o.z;if(M.L.nm.textContent!==nm)M.L.nm.textContent=nm;}
  for(const[k,M]of TPM.r)if(!keep.has(k)){tpDrop(M);TPM.r.delete(k);}}
 function tpPose(M,x,z){const g=M.g,y=waveH(x,z,t);g.position.set(x,y-0.02,z);const u=g.userData;u.bob.rotation.z=Math.sin(t*1.3+x)*0.09;u.bob.rotation.x=Math.sin(t*1.1+z)*0.07;u.fl.rotation.y=Math.sin(t*3.1+z*0.7)*0.35;
  if(mode==='closet'){M.L.el.style.display='none';return;}placeLabel(M.L,x,y+1.75,z);}
-function tpUpd3D(dt){const T=GS.trap;if(!!T!==!!TPM.me||(T&&TPM.me&&TPM.me.lv!==T.lv))tpSync3D();
+function tpUpd3D(dt){const T=GS.trap;if(!!T!==!!TPM.me||(T&&TPM.me&&(TPM.me.lv!==T.lv||TPM.me.fc!==tpMyFC())))tpSync3D();
  if(TPM.me&&T){const n=tpIn(T),full=tpCaught(T)>=tpCap(T);const tx=full?`🧺 내 통발 · 가득!`:`🧺 내 통발 · ${n}/${tpCap(T)}`;if(TPM.me.L.nm.textContent!==tx)TPM.me.L.nm.textContent=tx;tpPose(TPM.me,T.x,T.z);tpFx(TPM.me,tpBaitBits(T));if(tpDist()<4.2&&!BOAT.on)TPM.me.L.el.style.display='none';}
  for(const[k,M]of TPM.r){tpPose(M,M.x,M.z);const o=TPR.list.get(k);tpFx(M,o?o.b|0:0);}}
 /* ---------- 섬 서버: 내 통발 위치 알리기 · 다른 사람 통발 받기 ---------- */
 async function tpOldOh(){try{if(!(acct&&acct.id)||!(crypto&&crypto.subtle))return[];const g=localStorage.getItem('monggeul-pkey');if(!g||!/^g_[a-z0-9]{12,20}$/.test(g))return[];if(!TPA.ohG){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('amollang-chat|'+g));TPA.ohG=[...new Uint8Array(buf)].slice(0,8).map(b=>b.toString(16).padStart(2,'0')).join('');}return TPA.ohG!==NMR.oh?[TPA.ohG]:[];}catch(e){return[];}}
 async function tpSend(){try{if(netMode!=='ws'||!ws||ws.readyState!==1)return;const now=performance.now(),gap=now-(TPA.sent||0);if(gap<1400){clearTimeout(TPA.sendT);TPA.sendT=setTimeout(tpSend,1450-gap);return;}TPA.sent=now;
  if(!tpLoginOk())return;if(!NMR.oh||NMR.ohk!==colKey())await nmSendOh();if(!NMR.oh||NMR.ohk!==colKey()||!ws||ws.readyState!==1)return;const T=GS.trap,o=await tpOldOh();
- ws.send(JSON.stringify(T?{t:'tp',h:NMR.oh,lv:T.lv,x:Math.round(T.x*100)/100,z:Math.round(T.z*100)/100,b:tpBaitBits(T),pt:Math.round(T.pt||T.t0),o}:{t:'tp',h:NMR.oh,lv:0,o}));}catch(e){}}
+ ws.send(JSON.stringify(T?{t:'tp',h:NMR.oh,lv:T.lv,x:Math.round(T.x*100)/100,z:Math.round(T.z*100)/100,b:tpBaitBits(T),pt:Math.round(T.pt||T.t0),fc:tpMyFC(),o}:{t:'tp',h:NMR.oh,lv:0,o}));}catch(e){}}
 const TP_AUTO_MS=7*24*3600*1000;
 function tpAutoLeft(T){return T?(T.pt||T.t0)+TP_AUTO_MS-tpNow():0;}
 function tpAutoExpire(){const T=GS.trap;if(!T||tpAutoLeft(T)>0)return false;
@@ -8819,10 +8828,10 @@ function tpAutoExpire(){const T=GS.trap;if(!T||tpAutoLeft(T)>0)return false;
  TPA.autoMsg=msg;if(entered)tpAutoNote();return true;}
 function tpAutoNote(){if(!TPA.autoMsg||!entered)return;const m=TPA.autoMsg;TPA.autoMsg='';setTimeout(()=>toast(m,7000),1200);}
 setInterval(()=>{try{tpAutoExpire();tpAutoNote();}catch(e){}},30000);
-function tpWelcome(a){try{tpAutoExpire();}catch(e){}TPR.list.clear();TPR.me='';let _i=0;if(Array.isArray(a))for(const o of a)if(o&&typeof o.k==='string'&&(o.lv|0)>=2&&(o.lv|0)<=6&&Number.isFinite(+o.x)&&Number.isFinite(+o.z))TPR.list.set(o.k,{k:o.k,lv:o.lv|0,x:+o.x,z:+o.z,n:Array.isArray(o.n)?o.n:[0,0],nk:String(o.nk||''),b:(o.b|0)&3,t:-(_i++)});
+function tpWelcome(a){try{tpAutoExpire();}catch(e){}TPR.list.clear();TPR.me='';let _i=0;if(Array.isArray(a))for(const o of a)if(o&&typeof o.k==='string'&&(o.lv|0)>=2&&(o.lv|0)<=6&&Number.isFinite(+o.x)&&Number.isFinite(+o.z))TPR.list.set(o.k,{k:o.k,lv:o.lv|0,x:+o.x,z:+o.z,n:Array.isArray(o.n)?o.n:[0,0],nk:String(o.nk||''),b:(o.b|0)&3,fc:tpFcOk(o.fc),t:-(_i++)});
  tpSync3D();setTimeout(tpSend,1600);}
 function tpNet(m){if(m.t==='tpme'){TPR.me=String(m.k||'');TPR.list.delete(TPR.me);}
- else if(m.t==='tp'){if(typeof m.k!=='string'||m.k===TPR.me)return;const lv=m.lv|0;if(lv<2||lv>6||!Number.isFinite(+m.x)||!Number.isFinite(+m.z))return;TPR.list.set(m.k,{k:m.k,lv,x:+m.x,z:+m.z,n:Array.isArray(m.n)?m.n:[0,0],nk:String(m.nk||''),b:(m.b|0)&3,t:Date.now()});}
+ else if(m.t==='tp'){if(typeof m.k!=='string'||m.k===TPR.me)return;const lv=m.lv|0;if(lv<2||lv>6||!Number.isFinite(+m.x)||!Number.isFinite(+m.z))return;TPR.list.set(m.k,{k:m.k,lv,x:+m.x,z:+m.z,n:Array.isArray(m.n)?m.n:[0,0],nk:String(m.nk||''),b:(m.b|0)&3,fc:tpFcOk(m.fc),t:Date.now()});}
  else if(m.t==='tpx')TPR.list.delete(String(m.k||''));
  else if(m.t==='tpn'){const o=TPR.list.get(String(m.k||''));if(o){o.n=Array.isArray(m.n)?m.n:o.n;o.nk=String(m.nk||'');}}
  tpSync3D();}

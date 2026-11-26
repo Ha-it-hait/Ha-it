@@ -191,6 +191,8 @@ export class Island extends DurableObject {
     // 미끼 표시(bt): 1=🍯 꿀떡 주머니 · 2=💎 진주 이슬 (부표 효과만 보여 주고, 안에 든 물고기는 여전히 비밀)
     if (!new Set(this.sql.exec('PRAGMA table_info(traps)').toArray().map(r => r.name)).has('bt')) this.sql.exec('ALTER TABLE traps ADD COLUMN bt INTEGER DEFAULT 0');
     if (!new Set(this.sql.exec('PRAGMA table_info(traps)').toArray().map(r => r.name)).has('pt')) this.sql.exec('ALTER TABLE traps ADD COLUMN pt INTEGER DEFAULT 0');
+    // 깃발 색(fc): 주인 캐릭터의 모자 색 (#rrggbb · 모자가 없으면 빈 값 → 통발 기본 깃발 색)
+    if (!new Set(this.sql.exec('PRAGMA table_info(traps)').toArray().map(r => r.name)).has('fc')) this.sql.exec("ALTER TABLE traps ADD COLUMN fc TEXT DEFAULT ''");
   }
   // 통발 목록: 14일 넘게 주인이 다시 오지 않은 통발은 정리해요
   // 🪤 친 지 7일 지난 통발(친 시각을 모르는 예전 통발은 주인이 마지막으로 보낸 시각 기준)과 14일 동안 주인이 안 온 통발을 정리하고, 섬에 있는 사람들에게 알려요
@@ -203,8 +205,8 @@ export class Island extends DurableObject {
   }
   trapList() {
     this.trapExpire(true);
-    return this.sql.exec('SELECT k, lv, x, z, a, b, nk, op, bt FROM traps ORDER BY ts DESC LIMIT ?', TRAP_MAX).toArray()
-      .map(r => ({ k: r.k, lv: r.lv, x: r.x, z: r.z, n: [r.a, r.b], nk: r.nk || '', op: r.op ? 1 : 0, b: (r.bt | 0) & 3 }));
+    return this.sql.exec('SELECT k, lv, x, z, a, b, nk, op, bt, fc FROM traps ORDER BY ts DESC LIMIT ?', TRAP_MAX).toArray()
+      .map(r => ({ k: r.k, lv: r.lv, x: r.x, z: r.z, n: [r.a, r.b], nk: r.nk || '', op: r.op ? 1 : 0, b: (r.bt | 0) & 3, fc: r.fc || '' }));
   }
   // 알림 줄을 채팅 기록에 넣어요 (최근 CHAT_KEEP개 안에서 일반 채팅과 함께 밀려나요)
   addSys(o) {
@@ -366,13 +368,14 @@ export class Island extends DurableObject {
         const n = a.p && Array.isArray(a.p.n) ? a.p.n : [0, 0], nk = a.p ? a.p.nk || '' : '', op = a.p && a.p.op ? 1 : 0;
         const rx = Math.round(x * 100) / 100, rz = Math.round(z * 100) / 100;
         const bt = lv === 6 ? (m.b | 0) & 3 : 0;
+        const fc = typeof m.fc === 'string' && /^#[0-9a-fA-F]{6}$/.test(m.fc) ? m.fc.toLowerCase() : '';
         // 친 시각: 이미 있으면 그대로 · 처음이면 화면이 보낸 친 시각(최근 30일 안) · 없으면 지금
         const cpt = Number.isFinite(+m.pt) && +m.pt <= now + 60000 && +m.pt >= now - 30 * 24 * 3600 * 1000 ? Math.round(+m.pt) : now;
         const pt = row && row.pt > 0 ? row.pt : cpt;
         if (now - pt >= TRAP_AUTO_MS) { if (row) { this.sql.exec('DELETE FROM traps WHERE oh = ?', a.oh); this.broadcast({ t: 'tpx', k: row.k }, null); } ws.serializeAttachment(a); return; }
-        this.sql.exec('INSERT OR REPLACE INTO traps(oh, k, lv, x, z, a, b, nk, op, ts, bt, pt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', a.oh, k, lv, rx, rz, n[0] | 0, n[1] | 0, nk, op, now, bt, pt);
+        this.sql.exec('INSERT OR REPLACE INTO traps(oh, k, lv, x, z, a, b, nk, op, ts, bt, pt, fc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', a.oh, k, lv, rx, rz, n[0] | 0, n[1] | 0, nk, op, now, bt, pt, fc);
         try { ws.send(JSON.stringify({ t: 'tpme', k })); } catch {}
-        this.broadcast({ t: 'tp', k, lv, x: rx, z: rz, n, nk, op, b: bt }, ws);
+        this.broadcast({ t: 'tp', k, lv, x: rx, z: rz, n, nk, op, b: bt, fc }, ws);
       }
       ws.serializeAttachment(a);
       return;
