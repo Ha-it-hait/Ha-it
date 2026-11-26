@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-25j">
+<meta name="amollang-build" content="2026-11-26d">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드(낚시게임)</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -4938,12 +4938,40 @@ const LEAF_COLS=['#e2412b','#f06a24','#c92f2b','#f28f2b','#d9502a'],GINKGO_COLS=
 function snowGeo(s){const ps=[];const bar=(len,w,ang,ox,oy)=>{const g=new THREE.PlaneGeometry(w,len);g.translate(0,len/2,0);g.rotateZ(ang);g.translate(ox,oy,0);ps.push(g);};
  for(let i=0;i<6;i++){const a=i/6*Math.PI*2;bar(s,s*0.16,a,0,0);const bx=-Math.sin(a)*s*0.55,by=Math.cos(a)*s*0.55;bar(s*0.34,s*0.12,a+0.75,bx,by);bar(s*0.34,s*0.12,a-0.75,bx,by);}
  ps.push(new THREE.CircleGeometry(s*0.2,6));const g=mergeGeometries(ps);g.rotateX(-Math.PI/2);return g;}
-const SNOW_COLS=['#ffffff','#f2f8ff','#e6f2ff','#ffffff','#dcecff'];
-function buildSnow(){const mat=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,roughness:0.6,emissive:'#a9c4e6',emissiveIntensity:0.35,transparent:true,opacity:0.95});const c=new THREE.Color();
+const SNOW_COLS=['#ffffff','#f8fbff','#f2f8ff','#ffffff','#eef6ff'];
+function buildSnow(){const mat=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,roughness:0.6,emissive:'#dfeaf7',emissiveIntensity:0.5,transparent:true,opacity:0.97});const c=new THREE.Color();
  fallMaple=new THREE.InstancedMesh(snowGeo(0.15),mat,120);fallGinkgo=new THREE.InstancedMesh(snowGeo(0.1),mat,110);for(const im of[fallMaple,fallGinkgo]){im.frustumCulled=false;im.castShadow=false;scene.add(im);}
  for(let i=0;i<230;i++){const sm=i>=120;const im=sm?fallGinkgo:fallMaple,idx=sm?i-120:i;im.setColorAt(idx,c.set(SNOW_COLS[i%5]));FALL.push({im,idx,x:0,y:-99,z:0,vy:0,ph:Math.random()*9,sw:rand(0.3,0.8),rx:rand(-0.4,0.4),ry:rand(0,6),rz:rand(-0.4,0.4),sp:rand(0.2,0.7),land:0,snow:1});}
  fallMaple.instanceColor.needsUpdate=true;fallGinkgo.instanceColor.needsUpdate=true;
- groundLv=new THREE.InstancedMesh(snowGeo(0.1),mat,1);groundLv.count=0;scene.add(groundLv);}
+ groundLv=new THREE.InstancedMesh(snowGeo(0.1),mat,1);groundLv.count=0;scene.add(groundLv);try{buildSnowSpark();}catch(e){console.error(e);SNSP=null;}}
+/* v173: ❄️ 눈꽃 반짝임 · 눈송이마다 반짝임 4개가 번갈아 생겨요. 한 번 반짝일 때마다 눈송이 위 아무 곳(가지·가지 끝·곁가지·가운데)으로 자리를 옮기고, 크기·각도·길이도 매번 달라요 */
+let SNSP=null;const SN_K=4;const _snv=new THREE.Vector3();
+function snSpot(sz,o){const a=Math.floor(Math.random()*6)/6*Math.PI*2,r=Math.random();let x,y;
+ if(r<0.1){x=(Math.random()-0.5)*0.12*sz;y=(Math.random()-0.5)*0.12*sz;}
+ else if(r<0.58){const u=(0.3+0.72*Math.random())*sz;x=-Math.sin(a)*u;y=Math.cos(a)*u;}
+ else{const b=a+(Math.random()<0.5?0.75:-0.75),u=(0.35+0.65*Math.random())*0.34*sz;x=-Math.sin(a)*0.55*sz-Math.sin(b)*u;y=Math.cos(a)*0.55*sz+Math.cos(b)*u;}
+ o.set(x,0,-y);return o;}
+function snNext(f,j,first){const L=f.sl[j];L.t0=t+(first?Math.random()*1.9:rand(0.6,1.9));L.d=rand(0.3,0.55);L.z=rand(0.75,1.3);L.r=Math.random()*1.57;snSpot(f.sz,L.p);}
+function buildSnowSpark(){
+ const NF=FALL.length,N=NF*SN_K,pos=new Float32Array(N*3),aA=new Float32Array(N),aZ=new Float32Array(N),aR=new Float32Array(N),aS=new Float32Array(N);
+ for(let i=0;i<NF;i++){const f=FALL[i];f.si=i;f.sz=f.im===fallMaple?0.15:0.1;f.sl=[];for(let j=0;j<SN_K;j++){f.sl.push({p:new THREE.Vector3()});snNext(f,j,true);pos[(i*SN_K+j)*3+1]=-99;}}
+ const g=new THREE.BufferGeometry(),D=(n,a)=>new THREE.BufferAttribute(a,n).setUsage(THREE.DynamicDrawUsage);
+ g.setAttribute('position',D(3,pos));g.setAttribute('aA',D(1,aA));g.setAttribute('aZ',D(1,aZ));g.setAttribute('aR',D(1,aR));g.setAttribute('aS',D(1,aS));
+ const m=new THREE.ShaderMaterial({uniforms:{uPx:{value:500}},
+  vertexShader:'uniform float uPx;attribute float aA;attribute float aZ;attribute float aR;attribute float aS;varying float vA;varying float vR;varying float vPx;'+
+   'void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);mv.xyz-=normalize(mv.xyz)*0.04;gl_Position=projectionMatrix*mv;vA=aA;vR=aR;'+
+   'float px=clamp(uPx*aZ/max(0.5,-mv.z),11.0,34.0)*aS*(0.45+0.55*aA);vPx=px;gl_PointSize=aA>0.02?px:0.0;}',
+  fragmentShader:'varying float vA;varying float vR;varying float vPx;void main(){vec2 p=(gl_PointCoord-0.5)*2.0;float c=cos(vR),s=sin(vR);p=mat2(c,-s,s,c)*p;float d=length(p);float W=vPx*0.5/1.1;float core=exp(-d*d*30.0)+0.3*exp(-d*d*7.0);float rx=max(0.0,1.0-abs(p.x))*exp(-abs(p.y)*W);float ry=max(0.0,1.0-abs(p.y))*exp(-abs(p.x)*W);vec2 q=mat2(0.7071,-0.7071,0.7071,0.7071)*p;float rd=max(0.0,1.0-abs(q.x)*2.2)*exp(-abs(q.y)*W*1.3)+max(0.0,1.0-abs(q.y)*2.2)*exp(-abs(q.x)*W*1.3);float a=clamp(core+0.85*(rx*rx+ry*ry)+0.4*rd,0.0,1.0)*vA;if(a<0.01)discard;gl_FragColor=vec4(vec3(0.96,0.98,1.0)*a,a);}',
+  transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
+ const pts=new THREE.Points(g,m);pts.frustumCulled=false;pts.renderOrder=3;scene.add(pts);SNSP={g,pos,aA,aZ,aR,aS,m};}
+function snowSpUpd(f,sc){const i=f.si;if(i===undefined)return;const on=f.y>-50?sc:0;
+ for(let j=0;j<SN_K;j++){const q=i*SN_K+j,L=f.sl[j];let k=0;
+  if(t>L.t0+L.d)snNext(f,j,false);
+  if(on&&t>=L.t0){const u=(t-L.t0)/L.d;k=Math.pow(Math.sin(Math.PI*u),1.6)*on;}
+  SNSP.aA[q]=k;if(k<=0)continue;SNSP.aZ[q]=f.sz*0.85;SNSP.aS[q]=L.z;SNSP.aR[q]=L.r;_snv.copy(L.p).applyMatrix4(_lm);SNSP.pos[q*3]=_snv.x;SNSP.pos[q*3+1]=_snv.y;SNSP.pos[q*3+2]=_snv.z;}}
+function snowSpFlush(){const A=SNSP.g.attributes;A.position.needsUpdate=true;A.aA.needsUpdate=true;A.aZ.needsUpdate=true;A.aR.needsUpdate=true;A.aS.needsUpdate=true;
+ SNSP.m.uniforms.uPx.value=renderer.domElement.height/(2*Math.tan(camera.fov*Math.PI/360));}
+
 function buildLeaves(){if(SEASON_WINTER){buildSnow();return;}const mat=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,roughness:0.8});const c=new THREE.Color();
  fallMaple=new THREE.InstancedMesh(mapleGeo(0.16),mat,70);fallGinkgo=new THREE.InstancedMesh(ginkgoGeo(0.14),mat,50);for(const im of[fallMaple,fallGinkgo]){im.frustumCulled=false;im.castShadow=false;scene.add(im);}
  for(let i=0;i<120;i++){const gk=i>=70;const im=gk?fallGinkgo:fallMaple,idx=gk?i-70:i;im.setColorAt(idx,c.set((gk?GINKGO_COLS:LEAF_COLS)[i%(gk?4:5)]));FALL.push({im,idx,x:0,y:-99,z:0,vy:0,ph:Math.random()*9,sw:rand(0.4,1),rx:rand(0,6),ry:rand(0,6),rz:rand(0,6),sp:rand(1.5,3.5),land:0});}
@@ -4957,8 +4985,8 @@ function setGround(L){_le.set(L.rx,L.ry,L.lift>0?Math.sin(L.spin)*0.8:0);_lq.set
 function updLeaves(dt){const cx=camLook.x,cz=camLook.z;
  for(const f of FALL){if(f.y<-50||f.land>2.2){const a=Math.random()*6.28,r=Math.sqrt(Math.random())*24;f.x=cx+Math.cos(a)*r;f.z=cz+Math.sin(a)*r;f.y=groundY(f.x,f.z)+rand(6,13);f.vy=f.snow?rand(0.55,0.95):rand(0.55,0.95);f.land=0;}
   const gy=groundY(f.x,f.z)+0.04;if(f.y>gy){f.y-=f.vy*dt;f.x+=Math.sin(t*f.sw+f.ph)*dt*0.9+dt*0.25;f.z+=Math.cos(t*f.sw*0.8+f.ph)*dt*0.6;f.rx+=dt*f.sp;f.rz+=dt*f.sp*0.7;}else{f.y=gy;f.land+=dt;f.rx*=0.9;f.rz*=0.9;}
-  _le.set(f.rx,f.ry,f.rz);_lq.setFromEuler(_le);const s=f.land>1.6?Math.max(0.01,1-(f.land-1.6)/0.6):1;_ls.set(s,s,s);_lp.set(f.x,f.y,f.z);_lm.compose(_lp,_lq,_ls);f.im.setMatrixAt(f.idx,_lm);}
- fallMaple.instanceMatrix.needsUpdate=true;fallGinkgo.instanceMatrix.needsUpdate=true;
+  _le.set(f.rx,f.ry,f.rz);_lq.setFromEuler(_le);const s=f.land>1.6?Math.max(0.01,1-(f.land-1.6)/0.6):1;_ls.set(s,s,s);_lp.set(f.x,f.y,f.z);_lm.compose(_lp,_lq,_ls);f.im.setMatrixAt(f.idx,_lm);if(SNSP)snowSpUpd(f,s,dt);}
+ fallMaple.instanceMatrix.needsUpdate=true;fallGinkgo.instanceMatrix.needsUpdate=true;if(SNSP)snowSpFlush();
  // 밟으면 날리는 바닥 낙엽
  const walkers=[[P.pos.x,P.pos.z,P.speed]];for(const r of remote.values())if(!r.leaving&&r.speed>0.6)walkers.push([r.pos.x,r.pos.z,r.speed]);
  for(const[wx,wz,sp]of walkers){if(sp<0.6)continue;for(const L of GROUND){const dx=L.x-wx,dz=L.z-wz;if(Math.abs(dx)>0.8||Math.abs(dz)>0.8)continue;const d=Math.hypot(dx,dz);if(d<0.62&&L.lift<=0.001&&Math.hypot(L.vx,L.vz)<0.4){const k=(0.8+sp*0.35)*(1.1-d);const nx=d>0.01?dx/d:Math.random()-0.5,nz=d>0.01?dz/d:Math.random()-0.5;L.vx=nx*k+rand(-0.3,0.3);L.vz=nz*k+rand(-0.3,0.3);L.vy=rand(0.9,1.8)*(0.6+sp*0.12);L.lift=0.002;L.spin=0;GMOVE.add(L);}}}
@@ -6364,7 +6392,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,28);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-25j';
+const BUILD='2026-11-26d';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
