@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-26g">
+<meta name="amollang-build" content="2026-11-26j">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -3663,10 +3663,10 @@ const ANIM_DEFS=[
     ap(p,A_SPH,'#ff7eb3',-H*0.2,H*1.02,0,H*0.2,H*0.12,H*0.09,0,0,0.5);ap(p,A_SPH,'#ff7eb3',H*0.2,H*1.02,0,H*0.2,H*0.12,H*0.09,0,0,-0.5);ap(p,A_SPH,'#ff4f97',0,H*1.0,0,H*0.08,H*0.08,H*0.08);ap(p,A_SPH,'#ffffff',0,H*0.86,0,H*0.18,H*0.22,H*0.18);maltEars(p,H,'#fff4e6');}}},
  {id:'dachshund',kind:'dog',name:'소시지',sp:'닥스훈트',em:'🐶',home:[-7,18],speed:1.2,cfg:{R:.17,L:.72,leg:.11,legR:.05,H:.2,neck:.04,snout:{l:.7,r:.45},body:'#7b4526',belly:'#9a5a33',ear:'floppy',earS:1.15,tail:'wag'}},
  {id:'retriever',kind:'dog',name:'골디',sp:'골든 리트리버',em:'🐶',home:[3,30],speed:1.5,cfg:{R:.27,L:.66,leg:.36,legR:.08,H:.27,neck:.08,snout:{l:.55,r:.5},body:'#e2b264',belly:'#ecc47e',snoutC:'#ecc47e',ear:'floppy',tail:'fluffy'}},
- {id:'samoyed',kind:'dog',name:'구름이',sp:'사모예드',em:'🐶',home:[12,-14],speed:1.4,cfg:{R:.3,L:.6,leg:.3,legR:.085,H:.28,neck:.06,snout:{l:.4,r:.5},body:'#fcfcf8',ear:'pointy',earS:.75,earIn:'#f5d7dc',tail:'curl',bodyExtra:(p,o)=>{ap(p,A_SPH,'#ffffff',0,o.hip+o.R*0.35,o.lz+o.R*0.15,o.R*1.08,o.R*1.0,o.R*0.8);for(let i=0;i<5;i++)ap(p,A_SPH,'#ffffff',0,o.hip+o.R*0.75,-o.lz+i*o.lz*0.45,o.R*0.5,o.R*0.4,o.R*0.5);}}},
+ {id:'samoyed',kind:'dog',name:'구름이',sp:'사모예드',em:'🐶',home:[12,-14],speed:1.4,cfg:{R:.3,L:.6,leg:.3,legR:.072,H:.28,neck:.06,snout:{l:.4,r:.5},body:'#fcfcf8',ear:'pointy',earS:1.4,earW:1.45,earIn:'#f5d7dc',tail:'curl',bodyExtra:(p,o)=>{ap(p,A_SPH,'#ffffff',0,o.hip+o.R*0.35,o.lz+o.R*0.15,o.R*1.08,o.R*1.0,o.R*0.8);}}},
  {id:'jindo',kind:'dog',name:'백구',sp:'진돗개',em:'🐶',home:[-12,-9],speed:1.5,cfg:{R:.25,L:.62,leg:.36,legR:.075,H:.25,neck:.07,snout:{l:.5,r:.48},body:'#efe3cb',head:'#f3e9d6',snoutC:'#f6efe2',ear:'pointy',earS:.9,tail:'curl'}},
  {id:'catBrown',kind:'cat',name:'초코',sp:'갈색 고양이',em:'🐱',home:[-14,3],speed:0.9,cfg:{R:.17,L:.45,leg:.22,legR:.05,H:.2,snout:{l:.25,r:.55},body:'#a8714a',belly:'#e8c9a8',snoutC:'#e8c9a8',nose:'#e88a8a',ear:'pointy',earS:.7,earW:.9,tail:'cat'}},
- {id:'catTabby',kind:'cat',name:'먹구름',sp:'회색 줄무늬 고양이',em:'🐱',home:[16,-1],speed:0.9,cfg:{R:.17,L:.45,leg:.22,legR:.05,H:.2,snout:{l:.25,r:.55},body:'#9a9ea6',snoutC:'#c9ccd2',nose:'#e88a8a',ear:'pointy',earS:.7,earW:.9,tail:'cat',tailRings:'#3a3a40',tailTip:'#3a3a40',
+ {id:'catTabby',kind:'cat',name:'먼지',sp:'회색 줄무늬 고양이',em:'🐱',home:[16,-1],speed:0.9,cfg:{R:.17,L:.45,leg:.22,legR:.05,H:.2,snout:{l:.25,r:.55},body:'#9a9ea6',snoutC:'#c9ccd2',nose:'#e88a8a',ear:'pointy',earS:.7,earW:.9,tail:'cat',tailRings:'#3a3a40',tailTip:'#3a3a40',
    bodyExtra:(p,o)=>{for(let i=0;i<5;i++)ap(p,A_HTOR,'#3a3a40',0,o.hip,-o.lz*0.9+i*o.lz*0.42,o.R*1.02,o.R*1.02,o.R*1.02);},headExtra:(p,H)=>{for(const x of[-0.18,0,0.18])ap(p,A_SPH,'#3a3a40',H*x,H*0.62,H*0.55,H*0.05,H*0.22,H*0.05,0.4,0,0);}}},
  {id:'catTux',kind:'cat',name:'턱시',sp:'턱시도 고양이',em:'🐱',home:[-5,-13],speed:0.9,cfg:{R:.17,L:.45,leg:.22,legR:.05,H:.2,snout:{l:.25,r:.55},body:'#26262c',belly:'#ffffff',chest:'#ffffff',paws:'#ffffff',snoutC:'#ffffff',nose:'#e88a8a',ear:'pointy',earS:.7,earW:.9,tail:'cat',headExtra:(p,H)=>ap(p,A_SPH,'#ffffff',0,H*0.2,H*0.75,H*0.12,H*0.35,H*0.12)}},
  {id:'babyElephant',kind:'elephant',name:'뿌우',sp:'아기 코끼리',em:'🐘',home:[52,-24],speed:0.8,scale:1.2,cfg:{R:.42,L:.7,leg:.32,legR:.13,H:.36,neck:.05,snout:{l:.25,r:.8},body:'#a9b0bb',nose:'#9aa1ac',paws:'#e9e4da',ear:'big',earIn:'#e8b4bd',tail:'thin',trunk:true}},
@@ -5044,8 +5044,13 @@ const HARD_D=0.16;
 function starRangeTxt(){const R=GS.rod;if(R>=7)return`★7 물고기까지 모두`;const hi=Math.min(7,effStar()+1),lo=R+1;return`★${R} 물고기까지 편하게 · ★${lo===hi?lo:lo+'~★'+hi}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),R=GS.rod;return`🔥 ★${st} 물고기가 걸렸어요! 내 낚싯대(★${R})보다 ${st-R>1?'두':'한'} 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.rod>1?'두':'한'} 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-24a';
+const NEWS_VER='2026-11-26a';
 const NEWS=[
+ {d:'11월 26일',t:'🍣 싱싱 활어회 효과 시간이 20분 → 15분으로 바뀌었어요',n:true,i:[
+  '🍣 <b>싱싱 활어회</b>를 먹었을 때 효과가 이어지는 시간이 <b>20분에서 15분</b>으로 줄었어요. (11월 25일 업데이트부터 적용)',
+  '🍳 다른 요리는 그대로예요. 효과 시간은 <b>🐟 담백 소금구이 5분 · 🍲 얼큰 매운탕 10분 · 🍣 싱싱 활어회 15분</b>이에요. 낚시가 쉬워지는 정도(구이 -30% · 탕 -20% · 회 -40%)와 같은 ★ 물고기 2배 효과도 그대로예요.',
+  '⏱ 업데이트 전에 이미 먹은 활어회는 그때 정해진 시간까지 그대로 이어져요. 새로 먹는 활어회부터 15분이 적용돼요.',
+  '❓ <b>도움말</b>의 <b>🏆 명예의 전당</b> 아래에 <b>🍳 요리</b> 안내가 새로 생겼어요. 요리 시간, 효과, 가방에 담아 두는 방법까지 한눈에 볼 수 있어요.']},
  {d:'11월 24일',t:'🙈 보기 싫은 채팅은 숨길 수 있어요 · 다시 접속해도 계속 숨겨져요',n:true,i:[
   '💬 <b>채팅창에서 이름 눌러 숨기기 (새 기능)</b><br>채팅창을 열고(PC는 C 키) 다른 사람 <b>이름</b>을 누르세요. 이름 밑의 <b>점선</b>이 누를 수 있다는 표시예요. <em>○○ 님의 채팅을 숨길까요?</em> 창에서 <b>🙈 숨기기</b>를 누르면 끝!',
   '🐾 <b>캐릭터 눌러 숨기기 (원래 있던 기능)</b><br>섬에서 그 사람 <b>캐릭터를 누르면</b> 수조 구경 창이 열려요. 아래의 <b>🙈 이 사람 채팅 숨기기</b> 버튼을 누르면 돼요.',
@@ -6397,7 +6402,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,28);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-26g';
+const BUILD='2026-11-26j';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
