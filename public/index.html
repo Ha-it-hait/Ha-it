@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-27j">
+<meta name="amollang-build" content="2026-11-27l">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -3746,16 +3746,32 @@ function updHearts(dt){for(const h of HEARTS){if(h.life<=0)continue;h.life-=dt;h
 const ANIMS=[];let nearAnimal=null,petCD=0;
 function segOK(ax,az,bx,bz){const L=Math.hypot(bx-ax,bz-az);const n=Math.ceil(L/0.4);for(let k=1;k<=n;k++){const x=ax+(bx-ax)*k/n,z=az+(bz-az)*k/n;if(!walkable(x,z)||terrainH(x,z)<0.35||onDock(x,z)||onBridge(x,z))return false;}return true;}
 function findNear(x,z){for(let r=0;r<14;r+=0.5)for(let a=0;a<16;a++){const px=x+Math.cos(a/16*6.283)*r,pz=z+Math.sin(a/16*6.283)*r;if(walkable(px,pz)&&terrainH(px,pz)>0.35&&!onDock(px,pz)&&!onBridge(px,pz))return[px,pz];}return[x,z];}
+const ANI_PAD=0.15;
+function aniGround(x,z){return walkable(x,z)&&terrainH(x,z)>=0.35&&!onDock(x,z)&&!onBridge(x,z)&&lhR(x,z)>LH.R+LH.SW+0.4;}
+function aniVtxOK(x,z,E){const R=Math.max(E.f,E.b)+ANI_PAD;for(const o of OBST){if(o.pass)continue;const dx=x-o.x,dz=z-o.z,q=o.r+R;if(dx*dx+dz*dz<q*q)return false;}
+ if(!aniGround(x,z))return false;for(let k=0;k<8;k++){const a=k/8*6.283;if(!aniGround(x+Math.cos(a)*E.w,z+Math.sin(a)*E.w))return false;}return true;}
+function aniSegOK(ax,az,bx,bz,E){const L=Math.hypot(bx-ax,bz-az);if(L<0.01)return true;const ux=(bx-ax)/L,uz=(bz-az)/L;
+ for(const o of OBST){if(o.pass)continue;const cx=o.x-ax,cz=o.z-az;const sp=cx*ux+cz*uz,lt=Math.abs(cx*uz-cz*ux);const ds=Math.max(-E.b-sp,0,sp-(L+E.f)),dl=Math.max(lt-E.w,0),q=o.r+ANI_PAD;if(ds*ds+dl*dl<q*q)return false;}
+ const T=L+E.f+E.b,n=Math.ceil(T/0.35);for(let k=0;k<=n;k++){const sp=-E.b+T*k/n;for(const lq of[-E.w,0,E.w]){if(!aniGround(ax+ux*sp+uz*lq,az+uz*sp-ux*lq))return false;}}
+ return aniVtxOK(bx,bz,E);}
+function aniFindNear(x,z,E){for(let r=0;r<14;r+=0.5)for(let a=0;a<16;a++){const px=x+Math.cos(a/16*6.283)*r,pz=z+Math.sin(a/16*6.283)*r;if(aniVtxOK(px,pz,E))return[px,pz];}return findNear(x,z);}
+function aniExt(root){root.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(root);return{f:Math.max(0.2,b.max.z),b:Math.max(0.2,-b.min.z),w:Math.max(0.15,-b.min.x,b.max.x)};}
+function solidFix(){
+ {const fwx=Math.sin(SHOP.yaw),fwz=Math.cos(SHOP.yaw),rtx=Math.cos(SHOP.yaw),rtz=-Math.sin(SHOP.yaw);
+  const C=[[0,2.85,0.8]];for(const k of[-1,1])C.push([k*3.0,2.1,0.95],[k*3.0,-2.1,0.95],[k*3.1,0.8,0.8],[k*2.0,-2.25,0.8],[k*2.05,2.2,0.8],[k*1.0,2.85,0.8]);
+  for(const[lx,lz,r]of C)OBST.push({x:SHOP.x+rtx*lx+fwx*lz,z:SHOP.z+rtz*lx+fwz*lz,r,shopEdge:1});}
+ {const F=WFALL;for(let k=0;k<9;k++){const sz=1.1+(k%3)*0.5;const x=F.x+(k<3?(k-1)*2.2:(k%2?1:-1)*(F.w*0.55+2.0+(k%4)*0.4));const z=k<3?F.src-0.8:F.z-1-(k%3)*2.2;OBST.push({x,z,r:sz*0.95+0.25,fallRock:1});}}
+}
 function buildAnimals(){
- ANIM_DEFS.forEach((d,i)=>{const m=d.kind==='rabbit'?buildRabbit(d.cfg):d.build==='welsh'?buildWelsh():d.build==='shiba'?buildShiba():d.build==='camel'?buildCamel():buildQuad(d.cfg);const sc=d.scale||1.3;m.root.scale.setScalar(sc);scene.add(m.root);
-  const rng=mulberry32(4242+i*7919);const home=findNear(d.home[0],d.home[1]);const pts=[home];let cur=home;const hop=d.kind==='rabbit'||d.kind==='squirrel';
-  for(let k=0;k<10;k++){let ok=null;for(let tr=0;tr<40;tr++){const a=rng()*Math.PI*2,dist=2.5+rng()*(hop?5:7);const nx=cur[0]+Math.cos(a)*dist,nz=cur[1]+Math.sin(a)*dist;if(Math.hypot(nx-home[0],nz-home[1])>(d.roam||13))continue;if(segOK(cur[0],cur[1],nx,nz)){ok=[nx,nz];break;}}if(!ok)break;pts.push(ok);cur=ok;}
+ ANIM_DEFS.forEach((d,i)=>{const m=d.kind==='rabbit'?buildRabbit(d.cfg):d.build==='welsh'?buildWelsh():d.build==='shiba'?buildShiba():d.build==='camel'?buildCamel():buildQuad(d.cfg);const sc=d.scale||1.3;m.root.scale.setScalar(sc);const E=aniExt(m.root);scene.add(m.root);
+  const rng=mulberry32(4242+i*7919);const home=aniFindNear(d.home[0],d.home[1],E);const pts=[home];let cur=home;const hop=d.kind==='rabbit'||d.kind==='squirrel';
+  for(let k=0;k<10;k++){let ok=null;for(let tr=0;tr<40;tr++){const a=rng()*Math.PI*2,dist=2.5+rng()*(hop?5:7);const nx=cur[0]+Math.cos(a)*dist,nz=cur[1]+Math.sin(a)*dist;if(Math.hypot(nx-home[0],nz-home[1])>(d.roam||13))continue;if(aniSegOK(cur[0],cur[1],nx,nz,E)){ok=[nx,nz];break;}}if(!ok)break;pts.push(ok);cur=ok;}
   const route=pts.concat(pts.slice(1,-1).reverse());const tl=[];let tc=0,yaw=rng()*6.28;
   for(let k=0;k<route.length;k++){const a=route[k],b=route[(k+1)%route.length];const idle=(hop?2:4)+rng()*(hop?5:10);tl.push({t0:tc,dur:idle,walk:false,a,yaw});tc+=idle;
    const L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L>0.01){yaw=Math.atan2(b[0]-a[0],b[1]-a[1]);const dur=L/d.speed;tl.push({t0:tc,dur,walk:true,a,b,yaw});tc+=dur;}}
   if(!tl.length)tl.push({t0:0,dur:10,walk:false,a:home,yaw:0});
   const label=makeLabel(false);label.el.classList.add('ani');label.nm.textContent=`${d.em} ${d.name}`;
-  ANIMS.push({i,d,m,label,tl,period:Math.max(tc,1),offset:rng()*1000,yaw:tl[0].yaw,x:home[0],z:home[1],ph:0,happyUntil:0,holdUntil:0,fx:0,fz:0,catchUp:false,labelY:m.labelY*sc,lz:(m.lz||0.3)});});
+  ANIMS.push({i,d,m,label,tl,E,np:pts.length,period:Math.max(tc,1),offset:rng()*1000,yaw:tl[0].yaw,x:home[0],z:home[1],ph:0,happyUntil:0,holdUntil:0,fx:0,fz:0,catchUp:false,labelY:m.labelY*sc,lz:(m.lz||0.3)});});
 }
 function animalAt(A,now){const T=((now+A.offset)%A.period+A.period)%A.period;let e=A.tl[A.tl.length-1];for(const s of A.tl){if(T<s.t0+s.dur){e=s;break;}}
  if(!e.walk)return{x:e.a[0],z:e.a[1],yaw:e.yaw,moving:false};const k=clamp((T-e.t0)/e.dur,0,1);return{x:lerp(e.a[0],e.b[0],k),z:lerp(e.a[1],e.b[1],k),yaw:e.yaw,moving:true};}
@@ -6426,7 +6442,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,28);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-27j';
+const BUILD='2026-11-27l';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -8967,7 +8983,7 @@ cv.addEventListener('pointerup',e=>{const d0=tapD;tapD=null;if(!d0||d0.id!==e.po
 async function boot(){{const ck=checkNick(NAME.nk||'',!!OPR.k);NAME.nk=ck.ok?ck.nick:'';}loadLocalGS();setCharRod(P.char,GS.rod);await detectNet();if(netMode==='ws'){showAuth();}else{openCloset(true);initCloud();}connectRoom();}
 /* ---------- start ---------- */
 $('petBtn').addEventListener('click',()=>interact(0));$('folBtn').addEventListener('click',()=>toggleFollow(petShown));$('hugBtn').addEventListener('click',()=>interact(1));
-buildWorld();buildShop();initV3();initV7();buildHof();buildRw();initV13();initHearts();buildAnimals();buildWater();skyMesh=buildSky();initRipples();initDrops();
+buildWorld();buildShop();initV3();initV7();buildHof();buildRw();initV13();initHearts();solidFix();buildAnimals();buildWater();skyMesh=buildSky();initRipples();initDrops();
 myFloat=makeFloat('#ff4d4d');myLine=makeLine();
 P.label=makeLabel(true);spawn();rebuildMe();
 S=skyAt(hourNow());updateEnv(0);
