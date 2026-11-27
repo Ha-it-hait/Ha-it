@@ -152,18 +152,22 @@ function fishList(){const out=[],bad=[];[...$('gFish').children].forEach((r,i)=>
 $('gFishAdd').onclick=addFishRow;addFishRow();
 $('gSend').onclick=sendGift;$('gHist').onclick=giftHist;
 /* 🔐 관리자 키 → 맞으면 관리자 화면 */
-let ULIST=[],UBT=0;
+let ULIST=[],UBT=0,UOLD=false;
+/* 서버가 예전 버전이면 닉네임이 {"a":..,"b":..,"nk":..} 묶음 그대로 와요 → 게임과 같은 규칙으로 닉네임 글자로 바꿔요 */
+const N_ADJ=['졸린','느긋한','수줍은','배고픈','행복한','조용한','용감한','꼼꼼한','엉뚱한','다정한','새벽의','반짝이는','동글동글한','씩씩한','몽글몽글한','하품하는','기다리는','낭만적인','차분한','깜찍한','부지런한','느릿느릿한','콧노래하는','멍때리는','설레는','포근한','잔잔한','노을빛','별빛','따끈한','말랑한','성실한','수상한','신난','꿈꾸는','해맑은','소심한','당당한','폭신한','산책하는'],N_NOUN=['망둥어','갈매기','고등어','볼락','우럭','광어','문어','해파리','소라','조개','꽃게','전갱이','붕어','잉어','메기','낚시꾼','선장','등대지기','파도','물결','돌고래','해달','펭귄','수달','불가사리','오징어','새우','미역','거북이','물개','복어','고래','해마','다람쥐','너구리','토끼','고양이','강아지','부엉이','반딧불이'];
+function nickTxt(v){if(typeof v!=='string')return '';const t=v.trim();if(t[0]!=='{')return t;try{const o=JSON.parse(t);if(typeof o.nk==='string'&&o.nk.trim())return o.nk.trim();if(Number.isInteger(o.a)&&Number.isInteger(o.b))return N_ADJ[Math.abs(o.a)%N_ADJ.length]+' '+N_NOUN[Math.abs(o.b)%N_NOUN.length];}catch(e){}return '';}
+function uSet(j){UOLD=!(j&&typeof j.bookTotal==='number');UBT=(j&&j.bookTotal)||0;ULIST=((j&&j.list)||[]).map(x=>({...x,nick:nickTxt(x.nick)}));uShow();}
 async function gate(e){e&&e.preventDefault();const key=$('gk').value;if(!key){$('gErr').textContent='관리자 키를 입력해 주세요';return;}$('gGo').disabled=true;$('gErr').textContent='';
  try{const r=await fetch('/api/acct/admin-users',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({admin:key})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||('오류 '+r.status));
-  $('k').value=key;$('gk').value='';$('gate').remove();$('main').hidden=false;ULIST=j.list||[];UBT=j.bookTotal||0;uShow();}catch(err){$('gErr').textContent=err.message;$('gGo').disabled=false;$('gk').select();}}
+  $('k').value=key;$('gk').value='';$('gate').remove();$('main').hidden=false;uSet(j);}catch(err){$('gErr').textContent=err.message;$('gGo').disabled=false;$('gk').select();}}
 $('gateF').onsubmit=gate;
-function uShow(){const q=$('uQ').value.trim().toLowerCase(),srt=$('uSort').value;let L=ULIST.slice();if(q)L=L.filter(x=>x.id.includes(q)||(x.nick||'').toLowerCase().includes(q));
+function uShow(){const q=$('uQ').value.trim().toLowerCase(),srt=$('uSort').value;let L=ULIST.slice();if(q)L=L.filter(x=>x.id.toLowerCase().includes(q)||(x.nick||'').toLowerCase().includes(q));
  if(srt==='new')L.reverse();else if(srt==='seen')L.sort((a,b)=>(b.seen||0)-(a.seen||0));else if(srt==='book')L.sort((a,b)=>(b.book||0)-(a.book||0)||a.no-b.no);
  const d=ts=>ts?new Date(ts).toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-';
  $('uSum').textContent=`· 전체 ${ULIST.length}명${q?` · 찾은 ${L.length}명`:''}`;
- $('uOut').innerHTML='<table class="ulist"><tr><th style="text-align:right">순서</th><th>가입한 날</th><th>아이디</th><th>닉네임</th><th style="text-align:right">도감</th><th>마지막 접속</th></tr>'+(L.length?L.map(x=>`<tr><td class="no">${x.no}번째</td><td>${d(x.created)}</td><td><a data-u="${hEsc(x.id)}">${hEsc(x.id)}</a></td><td>${x.nick?hEsc(x.nick):'<span class="est">(아직 기록 없음)</span>'}</td><td class="bk">${x.book||0} / ${UBT}${UBT?` <span class="est">(${Math.round((x.book||0)/UBT*100)}%)</span>`:''}</td><td>${d(x.seen)}${x.est?' <span class="est">(추정)</span>':''}</td></tr>`).join(''):'<tr><td colspan="6">맞는 유저가 없어요</td></tr>')+'</table>'+(ULIST.some(x=>x.est)?'<p class="note" style="margin-top:6px">(추정) = 이번 업데이트 전부터 접속하지 않은 계정이에요. 마지막 정기 저장·로그인 기록으로 계산했어요. 다음 접속부터는 정확히 기록돼요.</p>':'');
+ $('uOut').innerHTML=(UOLD?'<p class="err" style="margin:0 0 8px">⚠️ 게임 서버(src/index.js)가 아직 예전 버전이라 도감 수를 받아오지 못했어요. zip의 src/index.js를 올려 배포하면 도감 수가 나와요.</p>':'')+'<table class="ulist"><tr><th style="text-align:right">순서</th><th>가입한 날</th><th>아이디</th><th>닉네임</th><th style="text-align:right">도감</th><th>마지막 접속</th></tr>'+(L.length?L.map(x=>`<tr><td class="no">${x.no}번째</td><td>${d(x.created)}</td><td><a data-u="${hEsc(x.id)}">${hEsc(x.id)}</a></td><td>${x.nick?hEsc(x.nick):'<span class="est">(아직 기록 없음)</span>'}</td><td class="bk">${UOLD?'<span class="est">서버 업데이트 필요</span>':`${x.book||0} / ${UBT} <span class="est">(${Math.round((x.book||0)/UBT*100)}%)</span>`}</td><td>${d(x.seen)}${x.est?' <span class="est">(추정)</span>':''}</td></tr>`).join(''):'<tr><td colspan="6">맞는 유저가 없어요</td></tr>')+'</table>'+(ULIST.some(x=>x.est)?'<p class="note" style="margin-top:6px">(추정) = 이번 업데이트 전부터 접속하지 않은 계정이에요. 마지막 정기 저장·로그인 기록으로 계산했어요. 다음 접속부터는 정확히 기록돼요.</p>':'');
  $('uOut').querySelectorAll('[data-u]').forEach(a=>a.onclick=()=>{$('u').value=a.dataset.u;load();$('u').scrollIntoView({behavior:'smooth',block:'center'});});}
-async function uLoad(){try{const j=await call('admin-users',{});ULIST=j.list||[];UBT=j.bookTotal||0;uShow();}catch(e){$('uOut').innerHTML=`<p class="err">${hEsc(e.message)}</p>`;}}
+async function uLoad(){try{const j=await call('admin-users',{});uSet(j);}catch(e){$('uOut').innerHTML=`<p class="err">${hEsc(e.message)}</p>`;}}
 $('uQ').oninput=uShow;$('uSort').onchange=uShow;$('uLoad').onclick=uLoad;
 $('go').onclick=load;$('u').addEventListener('keydown',e=>{if(e.key==='Enter')load();});
 /* 🏆 명예의 전당 이름 정리 */
