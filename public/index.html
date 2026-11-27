@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-26j">
+<meta name="amollang-build" content="2026-11-27b">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -768,6 +768,7 @@ body.cine .lgpop{opacity:0}
 .rws u,.rws i{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.25}
 #rwLast{min-height:40px}
 @media (max-width:520px){#rwLast{min-height:56px}}
+@media (pointer:coarse){.actbtn.stand{height:40px;min-width:40px;border-radius:20px;font-size:12.5px;gap:4px;padding:0 12px}.actbtn.stand b{font-size:15px}.boatbadge{left:var(--bdL,14px);top:var(--bdT,130px);transform:translateY(-50%);max-width:calc(100vw - var(--bdL,14px) - 10px);white-space:normal;border-radius:14px;line-height:1.3;font-size:11.5px;padding:5px 10px;text-align:left}}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/utils/BufferGeometryUtils.js":"./vendor/BufferGeometryUtils.js"}}</script>
 </head>
@@ -829,6 +830,7 @@ body.cine .lgpop{opacity:0}
 <button id="bagBtn" class="lbtn bag hidden" title="가방 (B)">🎒<span>가방</span><i class="hk">B</i></button>
 <button id="ctxBtn" class="ctxbtn hidden"></button>
 <div id="boatBadge" class="boatbadge hidden"></div>
+<div id="zoneBadge" class="boatbadge zone hidden"></div>
 <div id="rbBadge" class="rbbadge hidden"></div>
 <div id="chatPanel" class="chatpanel hidden">
   <div class="ch"><b>💬 채팅</b><small id="chatHint"></small><button id="chatX">✕</button></div>
@@ -2703,7 +2705,7 @@ function sitSeat(S){if(!S||SEAT.on)return;if(seatTaken(S.i)){toast('🪑 이 좌
  SEAT.on=true;SEAT.i=S.i;P.pos.set(S.cx,SEAT_Y,S.cz);P.yaw=S.yaw;P.jy=0;P.vy=0;P.char.sit=true;camYaw=P.yaw+Math.PI;markPresence();refreshAct();updSeatBadge();ctxKind='x';refreshCtx();sfx.pop();
  toast(`🪑 좌대에 앉았어요! (남은 돈 ${fmtM(GS.money)}몰랑) 🎣 낚시하기로 저수지 낚시를 해요 · ★4 이상 물고기가 2배 · 일어날 때까지 계속 쓸 수 있어요`,5200);}
 function leaveSeat(quiet){if(!SEAT.on)return;if(mode==='fish')exitFish();const S=SEATS[SEAT.i-1];SEAT.on=false;SEAT.i=0;P.char.sit=false;if(S){P.pos.set(S.px+S.nx*0.8,SEAT_Y,S.pz+S.nz*0.8);P.yaw=Math.atan2(S.nx,S.nz);}markPresence();refreshAct();updSeatBadge();ctxKind='x';refreshCtx();if(!quiet){sfx.pop();toast('🪑 좌대에서 일어났어요. 다시 앉으려면 이용료를 또 내야 해요',2800);}}
-function updSeatBadge(){const b=$('boatBadge');if(!b||BOAT.on)return;b.classList.toggle('hidden',!SEAT.on||!entered);if(!SEAT.on)return;b.className='boatbadge far';b.innerHTML=`🪑 저수지 좌대 · ★4↑ 출현 2배`;}
+function updSeatBadge(){try{updZoneBadge();}catch(e){}const b=$('boatBadge');if(!b||BOAT.on)return;b.classList.toggle('hidden',!SEAT.on||!entered);if(!SEAT.on)return;b.className='boatbadge far';b.innerHTML=`🪑 저수지 좌대 · ★4↑ 출현 2배`;}
 function updSeat(dt){if(SEAT.armT&&t>SEAT.armT){SEAT.armT=0;ctxKind='';}
  if(SEAT.on){const S=SEATS[SEAT.i-1];P.char.sit=true;if(S&&Math.hypot(P.pos.x-S.cx,P.pos.z-S.cz)>0.05){P.pos.x=S.cx;P.pos.z=S.cz;}
   /* 같은 좌대를 동시에 잡았다면: 늦게 앉은 쪽이 비켜요(이름순) */}
@@ -3171,7 +3173,7 @@ let CHG_OK=false;
 let CR_T1=0,CR_T2=0;
 function castResShow(p,pn){const el=$('castRes');if(!el)return;const pct=Math.floor(clamp(p,0,1)*100+1e-6),good=p>=0.9;
  $('crPct').textContent=pct+'%';$('crNice').textContent=good?'Nice!':'';
- $('crCombo').textContent=good?`🎯 콤보 ×${pn} · 걸면 ×${pn+1}`:(pn>0?`콤보 끊김 (×${pn})`:'🎯 콤보 ×0');
+ $('crCombo').textContent=good?`🎯 콤보 ×${pn}`:(pn>0?`콤보 끊김 (×${pn})`:'🎯 콤보 ×0');
  el.classList.toggle('good',good);el.classList.remove('hidden','out');el.style.animation='none';void el.offsetWidth;el.style.animation='';
  clearTimeout(CR_T1);clearTimeout(CR_T2);CR_T1=setTimeout(()=>el.classList.add('out'),1500);CR_T2=setTimeout(()=>{el.classList.add('hidden');el.classList.remove('out');},1900);}
 function comboShow(p){const ok=p>=0.9,el=$('charge');el.classList.toggle('ok',ok);if(ok&&!CHG_OK){el.classList.remove('shine');void el.offsetWidth;el.classList.add('shine');}if(!ok)el.classList.remove('shine');CHG_OK=ok;const n=COMBO.n,q=comboChance(n);$('comboTxt').textContent=n?`🎯 ×${n}${q?' · 대물 '+Math.round(q*100)+'%':''}`:'';}
@@ -5424,7 +5426,7 @@ function boardBoat(){if(BOAT.on||!BOAT_DOCK||!entered)return;
 function leaveBoat(){if(!BOAT.on)return;if(mode==='fish')exitFish();const D=nearestBoatDock();BOAT_DOCK=D;const[x,z]=dockPt(D,D.s1-2.6,0);
  BOAT.on=false;BOAT.far=false;if(BOAT.mesh)BOAT.mesh.visible=false;P.char.sit=false;P.pos.set(x,groundY(x,z),z);P.yaw=Math.atan2(-D.ux,-D.uz);
  camDist=BOAT.cd||camDist;camYaw=P.yaw+Math.PI;splash(x,z,0.8);sfx.pop();markPresence();refreshAct();updBoatBadge();toast('🛬 배에서 내렸어요. 수고했어요!',2400);}
-function updBoatBadge(){const b=$('boatBadge');if(!b)return;b.classList.toggle('hidden',!BOAT.on||!entered);if(!BOAT.on)return;
+function updBoatBadge(){try{updZoneBadge();}catch(e){}const b=$('boatBadge');if(!b)return;b.classList.toggle('hidden',!BOAT.on||!entered);if(!BOAT.on)return;
  b.className='boatbadge'+(BOAT.far?' far':'');b.innerHTML=BOAT.far?'⛵ 선상낚시 · <b>🌊 먼 바다</b> ★4↑ 출현 2배':`⛵ 선상낚시 · 섬 근처 바다 <small>(빨간 부표 밖이 먼 바다)</small>`;}
 /* 다른 사람의 배 */
 function remoteBoat(r,s){const c=r.char;if(c)c.sit=r.bt===1||(r.zs|0)>0;
@@ -6402,7 +6404,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,28);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-26j';
+const BUILD='2026-11-27b';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -8058,8 +8060,15 @@ let biteAt=0,nibbles=[],biteT0=0;const BITE_WIN=1.2;
 let fish=null,d=1,tension=0,slackT=0,nextSurge=0,surgeUntil=0,holding=false,tickAcc=0,rippleAcc=0,fightPresAcc=0;
 const retrieveFrom=new THREE.Vector3();let rT0=0;
 let myFloat,myLine;
+/* 📱 배지 자리: '일어나기' 버튼 오른쪽 옆 (버튼이 없으면 그 자리 왼쪽) */
+let BD_T=0;
+function badgePlace(){if(!isTouch)return;const R=document.documentElement.style;const sb=document.querySelector('.actbtn.stand:not(.hidden)');let L=14,T=0;
+ if(sb){const r=sb.getBoundingClientRect();if(r.width>0&&r.height>0){L=Math.round(r.right+8);T=Math.round(r.top+r.height/2);BD_T=T;}}
+ if(!T){const hb=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hudB'))||0;T=BD_T||Math.round(Math.max(12+50,hb)+20);L=14;}
+ R.setProperty('--bdL',L+'px');R.setProperty('--bdT',T+'px');}
+if(isTouch)setInterval(()=>{try{badgePlace();}catch(e){}},200);
 function chgPlace(){const ch=$('charge');if(!ch)return;if(!(isTouch&&H>W)){ch.style.top='';return;}const sb=document.querySelector('.actbtn.stand:not(.hidden) span');if(!sb){ch.style.top='';return;}const r=sb.getBoundingClientRect();if(!(r.height>0)){ch.style.top='';return;}
- const bar=ch.querySelector('.cbar');const off=bar&&bar.offsetTop>0?bar.offsetTop:26;ch.style.top=Math.round(Math.max(60,r.top-off+25))+'px';}
+ const bar=ch.querySelector('.cbar');const off=bar&&bar.offsetTop>0?bar.offsetTop:26;ch.style.top=Math.round(Math.max(60,r.top-off+32))+'px';}
 function setF(s){fstate=s;if(s==='charging')try{chgPlace();}catch(e){}markPresence();refreshHint();acStateHook(s);$('bang').classList.toggle('hidden',s!=='bite');}
 function refreshHint(){const h=$('hint');let txt='';
  if(!entered||mode==='closet')txt='';else if(mode==='fish')txt=HINTS[fstate]||'';else if(mode==='cook')txt='🍳 요리하는 중이에요… 잠깐만 기다려요';
@@ -8072,16 +8081,22 @@ function refreshAct(){const b=$('actBtn');let want='';if(entered&&mode==='fish')
  if(b.dataset.m===sig)return;b.dataset.m=sig;if(!want){b.classList.add('hidden');return;}b.classList.remove('hidden');const kb=key?` <kbd>${key}</kbd>`:'';
  if(want==='fish'){b.className='actbtn';b.innerHTML=`<b>🎣</b><span>낚시하기${kb}</span>`;}else{b.className='actbtn stand';b.innerHTML=`<b>↩</b><span>일어나기${kb}</span>`;}}
 function chargePower(){const k=(t-chargeT0)/CHG_UP;return 1-Math.abs((k%2)-1);}
+let ZB_TXT='';
+function zbHabTxt(){return habitat==='sea'?'🌊 바다 낚시':habitat==='river'?(RZONE==='fall'?'💦 폭포 낚시':'🏞️ 강 낚시'):'🪷 저수지 낚시';}
+function updZoneBadge(){try{badgePlace();}catch(e){}const b=$('zoneBadge');if(!b)return;const on=mode==='fish'&&entered&&!BOAT.on&&!SEAT.on&&!!ZB_TXT;b.classList.toggle('hidden',!on);if(on&&b.innerHTML!==ZB_TXT)b.innerHTML=ZB_TXT;}
+function zbSet(sub){ZB_TXT=zbHabTxt()+(sub?' · '+sub:'');updZoneBadge();}
 function enterFish(){if(!canFish)return;mode='fish';fwdOf(P.yaw,_f);const q=[P.pos.x+_f.x*1.7,P.pos.z+_f.z*1.7];habitat=habitatAt(q[0],q[1]);
  minD=habitat==='sea'?6:3;maxD=habitat==='sea'?30:habitat==='pond'?24:12;P.char.rodPivot.visible=true;closeEmoPanel();setF('idle');refreshAct();
- toast(habitat==='sea'?'🌊 바다 낚시':habitat==='river'?'🏞️ 강 낚시':'🪷 저수지 낚시',1600);ctxKind='x';refreshCtx();}
-function exitFish(){mode='walk';P.char.rodPivot.visible=false;myFloat.visible=false;myLine.visible=false;holding=false;fish=null;fstate='idle';$('charge').classList.add('hidden');$('tension').classList.add('hidden');$('bang').classList.add('hidden');camYaw=P.yaw+Math.PI;markPresence();refreshHint();refreshAct();ctxKind='x';refreshCtx();acOnce=null;acOpen=false;acBanner();}
+ /* 안내는 위쪽 배지로 (강은 던질 방향 가운데쯤의 구역을 미리 보여줘요) */
+ {let sub='';if(habitat==='river'){const dm=(minD+maxD)/2,x2=P.pos.x+_f.x*dm,z2=P.pos.z+_f.z*dm;const z=habitatAt(x2,z2)==='river'?riverZone(x2,z2):riverZone(q[0],q[1]);RZONE=z;sub=RZ_TXT[z]||'';}else if(habitat==='sea')sub='멀리 던질수록 크고 ★ 높은 물고기';zbSet(sub);}
+ ctxKind='x';refreshCtx();}
+function exitFish(){mode='walk';P.char.rodPivot.visible=false;myFloat.visible=false;myLine.visible=false;holding=false;fish=null;fstate='idle';$('charge').classList.add('hidden');$('tension').classList.add('hidden');$('bang').classList.add('hidden');camYaw=P.yaw+Math.PI;markPresence();refreshHint();refreshAct();ctxKind='x';refreshCtx();acOnce=null;acOpen=false;acBanner();try{updZoneBadge();}catch(e){}}
 function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=false;
  for(;dd>=1.5;dd-=0.4){const x=P.pos.x+_f.x*dd,z=P.pos.z+_f.z*dd;if(isWater(x,z)){ok=true;break;}}
  if(!ok){toast('여기선 던질 수 없어요. 물 쪽을 바라봐요');setF('idle');return;}
  const ddEdge=dd;if(dd<want-0.01){let k=0;while(k<6&&dd>2.2&&terrainH(P.pos.x+_f.x*dd,P.pos.z+_f.z*dd)>-0.5&&isWater(P.pos.x+_f.x*(dd-0.3),P.pos.z+_f.z*(dd-0.3))){dd-=0.3;k++;}}{const pn=COMBO.n;comboJudge(p);castResShow(p,pn);}castP=p;castTgt.set(P.pos.x+_f.x*dd,0,P.pos.z+_f.z*dd);habitat=habitatAt(castTgt.x,castTgt.z);RZONE=habitat==='river'?riverZone(castTgt.x,castTgt.z):'';castDist=dd;castMeters=Math.round(dd);power=clamp((dd-minD)/(maxD-minD),0,1);if(habitat!=='sea'){let B=ddEdge;while(B+0.4<=maxD&&isWater(P.pos.x+_f.x*(B+0.4),P.pos.z+_f.z*(B+0.4)))B+=0.4;if(B<maxD-0.01){const r=clamp((ddEdge-minD)/Math.max(2.5,Math.min(maxD,B+0.4)-minD),0,1);power=Math.max(power,Math.min(p,r));}}
  rodTipWorld(P.char,castFrom);castDur=0.5+0.45*p;castT0=t;rbCastStart();sfx.whoosh(p);setF('casting');}
-function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(habitat==='sea')toast(farZoneTxt(fishFar())+(BOAT.on&&BOAT.far?' · 🌊 선상 보너스 ★4↑ 2배':''),2000);else if(habitat==='river'&&RZONE)toast(RZ_TXT[RZONE],1800);biteAt=t+rand(3.2,9.5)*floatSlow();nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
+function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(!BOAT.on&&!SEAT.on){if(habitat==='sea')zbSet(farZoneTxt(fishFar()));else if(habitat==='river'&&RZONE)zbSet(RZ_TXT[RZONE]);}biteAt=t+rand(3.2,9.5)*floatSlow();nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
 function startBite(){setF('bite');biteT0=t;sfx.bell();buzz([200,90,200]);ripple(castTgt.x,castTgt.z,1.3);}
 function hook(){fish=pickFish7(fishFar(),habitat)||pickRare(fishFar(),habitat)||pickFish(fishFar(),habitat);useBaits(fishFar(),habitat);comboHook(fish);fish.D=fightD(fish.sp,fish.frac);fish.ease=easeFor(fish.sp);if(fish.ease>0)fish.D=Math.max(0.04,fish.D*(1-fish.ease));fish.over=starOf(fish.sp)>effStar()+1;fish.hard=!fish.over&&starOf(fish.sp)>GS.rod;$('tHard').textContent=fish.hard?hardTag(fish.sp):'';$('tHard').classList.toggle('hidden',!fish.hard);fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);if(fish.hard){toast(hardTxt(fish.sp)+'. 줄이 빨개지면 잠깐 손을 떼요!',4200);sfx.splash(0.25);}else toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
 function startRetrieve(from){retrieveFrom.copy(from);rT0=t;setF('retrieve');}
