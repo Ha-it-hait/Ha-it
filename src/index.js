@@ -918,12 +918,16 @@ export class Vault extends DurableObject {
       const okKey = this.env.ADMIN_KEY && typeof body.admin === 'string' && sameStr(body.admin, String(this.env.ADMIN_KEY));
       if (!okKey) { fails.push(now); this.adminFail.set(ipKey, fails); return J({ error: this.env.ADMIN_KEY ? '관리자 키가 맞지 않아요' : '서버에 ADMIN_KEY가 설정되어 있지 않아요' }, 403); }
       if (op === 'admin-users') {
+        // 저장 기록의 name은 {nk(직접 정한 닉네임), a·b(랜덤 이름 번호)} 묶음이라, 게임 화면과 같은 규칙으로 실제 닉네임 글자로 바꿔요
+        // 도감: 게임 도감 화면과 같은 기준(전체 생물 목록 중 기록이 있는 종류 수)
+        const bookOfRow = (t) => { const o = pj(t); if (!o || typeof o !== 'object') return 0; let n = 0; for (const [id, v] of Object.entries(o)) if (v && SPECIES.has(id)) n++; return n; };
+        const nickOfRow = (t) => { const o = pj(t); if (!o || typeof o !== 'object') return ''; return nameStr(o) || (typeof o.nk === 'string' ? cleanNickOp(o.nk) || '' : ''); };
         // 가입 순서대로 · 닉네임은 저장된 기록의 이름 · 마지막 접속은 seen (예전 계정은 마지막 정기 저장본·로그인 시각으로 추정)
-        const rows = this.sql.exec("SELECT id, created, seen, updated, json_extract(data, '$.name') AS nm FROM users ORDER BY created ASC, id ASC").toArray();
+        const rows = this.sql.exec("SELECT id, created, seen, updated, json_extract(data, '$.name') AS nm, json_extract(data, '$.book') AS bk FROM users ORDER BY created ASC, id ASC").toArray();
         const bk = new Map(this.sql.exec("SELECT id, MAX(ts) AS t FROM baks WHERE why IN ('save','drop','legacy') GROUP BY id").toArray().map(r => [r.id, r.t]));
         const ss = new Map(this.sql.exec('SELECT id, MAX(exp) AS e FROM sessions GROUP BY id').toArray().map(r => [r.id, r.e - SESSION_DAYS * 864e5]));
-        const list = rows.map((r, i) => { const est = !(r.seen > 0); return { no: i + 1, id: r.id, nick: typeof r.nm === 'string' ? r.nm : '', created: r.created, seen: est ? Math.max(bk.get(r.id) || 0, ss.get(r.id) || 0, r.created || 0) : r.seen, est }; });
-        return J({ ok: true, total: list.length, list });
+        const list = rows.map((r, i) => { const est = !(r.seen > 0); return { no: i + 1, id: r.id, nick: nickOfRow(r.nm), book: bookOfRow(r.bk), created: r.created, seen: est ? Math.max(bk.get(r.id) || 0, ss.get(r.id) || 0, r.created || 0) : r.seen, est }; });
+        return J({ ok: true, total: list.length, bookTotal: SPECIES.size, list });
       }
       if (op === 'admin-opls') {
         return J({ ok: true, list: this.sql.exec('SELECT id, ts FROM ops ORDER BY ts').toArray() });

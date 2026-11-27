@@ -20,7 +20,7 @@
  th{font-size:12px;color:#56637a}td.n{text-align:right}.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.row>div{flex:1;min-width:180px}
  #msg{font-weight:700;margin:8px 0}.err{color:#c0392b}.ok{color:#1e8449}
  #gate{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#f3f6fb;padding:16px}.gcard{background:#fff;border-radius:18px;padding:26px 22px;box-shadow:0 6px 24px rgba(0,0,0,.1);width:min(380px,100%);display:flex;flex-direction:column;gap:12px;text-align:center}.gem{font-size:38px}.gt{font-size:17px}#gErr{color:#c0392b;font-weight:700;font-size:13.5px;min-height:18px}
- .ulist td.no{color:#56637a;text-align:right}.ulist td a{color:#2f6bd8;cursor:pointer;font-weight:700;text-decoration:underline}.ulist .est{color:#9aa4b5;font-size:11.5px}
+ .ulist td.no{color:#56637a;text-align:right}.ulist td.bk{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.ulist td a{color:#2f6bd8;cursor:pointer;font-weight:700;text-decoration:underline}.ulist .est{color:#9aa4b5;font-size:11.5px}
  pre{white-space:pre-wrap;word-break:break-all;background:#0f1726;color:#cfe3ff;border-radius:10px;padding:10px;font-size:12px;max-height:320px;overflow:auto}
 </style>
 </head>
@@ -31,8 +31,8 @@
  <p class="note">저장본 목록의 <b>장비</b> 칸에서 시점별로 가진 낚싯대(★)·가방·찌·릴·수조·무료 복권을 볼 수 있어요(굵은 숫자 = 그때 끼운 것). [보기]를 누르면 이름까지 자세히 나와요. 서버는 계정마다 예전 저장본을 최근 40개까지 남겨 둬요(약 20분 간격, 물고기가 크게 줄면 바로). 유저가 “물고기가 사라졌다”고 하면 아이디를 넣고, 사라지기 전 저장본을 골라 <b>합쳐 넣기</b>를 누르세요. “내가 잡지 않은 물고기가 생겼다”면 <b>현재 기록 › 보기</b>에서 그 물고기를 골라 지우거나, 생기기 전 저장본에서 <b>이 상태로 되돌리기</b>를 누르세요. 그 저장본에 있던 물고기·도감·장비가 <b>지금 기록에 다시 더해져요</b> (지금 있는 물고기는 그대로, 몰랑은 둘 중 큰 값). 합치기 직전 상태도 따로 저장본으로 남아요.</p>
  <div class="card" id="uCard">
   <b style="font-size:16px">👥 회원 목록</b> <span class="note" id="uSum"></span>
-  <p class="note" style="margin-top:4px">가입한 순서대로 보여요. <b>순서</b> = 몇 번째로 가입했는지 · <b>마지막 접속</b> = 마지막으로 게임에 들어오거나 저장한 때. 아이디를 누르면 아래 기록 복구에서 그 유저를 불러와요.</p>
-  <div class="row"><div><input id="uQ" placeholder="아이디·닉네임으로 찾기" autocomplete="off"></div><div style="flex:0"><select id="uSort" style="padding:9px;border-radius:10px;border:1px solid #c9d3e2"><option value="new">최근 가입 순</option><option value="old">처음 가입 순</option><option value="seen">최근 접속 순</option></select></div><div style="flex:0"><button class="ghost" id="uLoad">새로고침</button></div></div>
+  <p class="note" style="margin-top:4px">가입한 순서대로 보여요. <b>순서</b> = 몇 번째로 가입했는지 · <b>마지막 접속</b> = 마지막으로 게임에 들어오거나 저장한 때. <b>도감</b> = 게임 도감과 같은 기준으로 한 번이라도 잡은 생물 종류 수 / 전체 종류. 아이디를 누르면 아래 기록 복구에서 그 유저를 불러와요.</p>
+  <div class="row"><div><input id="uQ" placeholder="아이디·닉네임으로 찾기" autocomplete="off"></div><div style="flex:0"><select id="uSort" style="padding:9px;border-radius:10px;border:1px solid #c9d3e2"><option value="new">최근 가입 순</option><option value="old">처음 가입 순</option><option value="seen">최근 접속 순</option><option value="book">도감 많은 순</option></select></div><div style="flex:0"><button class="ghost" id="uLoad">새로고침</button></div></div>
   <div id="uOut" style="margin-top:8px;max-height:460px;overflow:auto"></div>
  </div>
  <div class="card">
@@ -152,18 +152,18 @@ function fishList(){const out=[],bad=[];[...$('gFish').children].forEach((r,i)=>
 $('gFishAdd').onclick=addFishRow;addFishRow();
 $('gSend').onclick=sendGift;$('gHist').onclick=giftHist;
 /* 🔐 관리자 키 → 맞으면 관리자 화면 */
-let ULIST=[];
+let ULIST=[],UBT=0;
 async function gate(e){e&&e.preventDefault();const key=$('gk').value;if(!key){$('gErr').textContent='관리자 키를 입력해 주세요';return;}$('gGo').disabled=true;$('gErr').textContent='';
  try{const r=await fetch('/api/acct/admin-users',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({admin:key})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||('오류 '+r.status));
-  $('k').value=key;$('gk').value='';$('gate').remove();$('main').hidden=false;ULIST=j.list||[];uShow();}catch(err){$('gErr').textContent=err.message;$('gGo').disabled=false;$('gk').select();}}
+  $('k').value=key;$('gk').value='';$('gate').remove();$('main').hidden=false;ULIST=j.list||[];UBT=j.bookTotal||0;uShow();}catch(err){$('gErr').textContent=err.message;$('gGo').disabled=false;$('gk').select();}}
 $('gateF').onsubmit=gate;
 function uShow(){const q=$('uQ').value.trim().toLowerCase(),srt=$('uSort').value;let L=ULIST.slice();if(q)L=L.filter(x=>x.id.includes(q)||(x.nick||'').toLowerCase().includes(q));
- if(srt==='new')L.reverse();else if(srt==='seen')L.sort((a,b)=>(b.seen||0)-(a.seen||0));
+ if(srt==='new')L.reverse();else if(srt==='seen')L.sort((a,b)=>(b.seen||0)-(a.seen||0));else if(srt==='book')L.sort((a,b)=>(b.book||0)-(a.book||0)||a.no-b.no);
  const d=ts=>ts?new Date(ts).toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-';
  $('uSum').textContent=`· 전체 ${ULIST.length}명${q?` · 찾은 ${L.length}명`:''}`;
- $('uOut').innerHTML='<table class="ulist"><tr><th style="text-align:right">순서</th><th>가입한 날</th><th>아이디</th><th>닉네임</th><th>마지막 접속</th></tr>'+(L.length?L.map(x=>`<tr><td class="no">${x.no}번째</td><td>${d(x.created)}</td><td><a data-u="${hEsc(x.id)}">${hEsc(x.id)}</a></td><td>${x.nick?hEsc(x.nick):'<span class="est">(아직 기록 없음)</span>'}</td><td>${d(x.seen)}${x.est?' <span class="est">(추정)</span>':''}</td></tr>`).join(''):'<tr><td colspan="5">맞는 유저가 없어요</td></tr>')+'</table>'+(ULIST.some(x=>x.est)?'<p class="note" style="margin-top:6px">(추정) = 이번 업데이트 전부터 접속하지 않은 계정이에요. 마지막 정기 저장·로그인 기록으로 계산했어요. 다음 접속부터는 정확히 기록돼요.</p>':'');
+ $('uOut').innerHTML='<table class="ulist"><tr><th style="text-align:right">순서</th><th>가입한 날</th><th>아이디</th><th>닉네임</th><th style="text-align:right">도감</th><th>마지막 접속</th></tr>'+(L.length?L.map(x=>`<tr><td class="no">${x.no}번째</td><td>${d(x.created)}</td><td><a data-u="${hEsc(x.id)}">${hEsc(x.id)}</a></td><td>${x.nick?hEsc(x.nick):'<span class="est">(아직 기록 없음)</span>'}</td><td class="bk">${x.book||0} / ${UBT}${UBT?` <span class="est">(${Math.round((x.book||0)/UBT*100)}%)</span>`:''}</td><td>${d(x.seen)}${x.est?' <span class="est">(추정)</span>':''}</td></tr>`).join(''):'<tr><td colspan="6">맞는 유저가 없어요</td></tr>')+'</table>'+(ULIST.some(x=>x.est)?'<p class="note" style="margin-top:6px">(추정) = 이번 업데이트 전부터 접속하지 않은 계정이에요. 마지막 정기 저장·로그인 기록으로 계산했어요. 다음 접속부터는 정확히 기록돼요.</p>':'');
  $('uOut').querySelectorAll('[data-u]').forEach(a=>a.onclick=()=>{$('u').value=a.dataset.u;load();$('u').scrollIntoView({behavior:'smooth',block:'center'});});}
-async function uLoad(){try{const j=await call('admin-users',{});ULIST=j.list||[];uShow();}catch(e){$('uOut').innerHTML=`<p class="err">${hEsc(e.message)}</p>`;}}
+async function uLoad(){try{const j=await call('admin-users',{});ULIST=j.list||[];UBT=j.bookTotal||0;uShow();}catch(e){$('uOut').innerHTML=`<p class="err">${hEsc(e.message)}</p>`;}}
 $('uQ').oninput=uShow;$('uSort').onchange=uShow;$('uLoad').onclick=uLoad;
 $('go').onclick=load;$('u').addEventListener('keydown',e=>{if(e.key==='Enter')load();});
 /* 🏆 명예의 전당 이름 정리 */
