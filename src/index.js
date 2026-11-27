@@ -516,7 +516,7 @@ function saveSum(d) {
   if (!d) return null; const g = d.gs || {};
   const L = k => (Array.isArray(g[k]) ? g[k] : []).map(x => x | 0).filter(x => x > 0).sort((x, y) => x - y);
   return { book: d.book ? Object.keys(d.book).length : 0, tank: Array.isArray(d.tank) ? d.tank.length : 0, bag: Array.isArray(g.bag) ? g.bag.length : 0, food: Array.isArray(g.food) ? g.food.length : 0, money: +g.money || 0, at: +d.at || 0,
-    gear: { rods: L('rods'), rod: g.rod | 0, packs: L('packs'), pack: g.pack | 0, floats: L('floats'), float: g.float | 0, reels: L('reels'), reel: g.reel | 0, tankUp: g.tankUp | 0, freeLot: g.freeLot | 0, lotPend: !!g.lotPend } };
+    gear: { rods: L('rods'), rod: g.rod | 0, packs: L('packs'), pack: g.pack | 0, floats: L('floats'), float: g.float | 0, reels: L('reels'), reel: g.reel | 0, tankUp: g.tankUp | 0, freeLot: g.freeLot | 0, lotPend: !!g.lotPend, traps: L('traps'), bt7: g.bt7 | 0, btR: g.btR | 0, tbr: g.tbr | 0, tbp: g.tbp | 0 } };
 }
 const dsidOut = t => { const o = pj(t) || {}, r = {}; for (const k in o) r[k] = o[k].s; return r; };
 // 산 물건(낚싯대·가방·찌·릴·수조 크기)은 어떤 저장으로도 줄어들지 않게 지켜요.
@@ -541,20 +541,22 @@ function mergeMail(a, b) {
   }
   return [...m.values()].sort((p, q) => (p.ts || 0) - (q.ts || 0)).slice(-40);
 }
-const GIFT_LIM = { money: 1000000, lot: 100, tank: 15 };
+const GIFT_LIM = { money: 1000000, lot: 100, tank: 15, bait: 10000 };
 function cleanGift(b) {
   const ints = (a, lo, hi) => [...new Set((Array.isArray(a) ? a : []).map(x => x | 0).filter(x => x >= lo && x <= hi))].sort((x, y) => x - y);
   const it = {
     money: Math.max(0, Math.min(GIFT_LIM.money, Math.floor(Number(b.money) || 0))),
     lot: Math.max(0, Math.min(GIFT_LIM.lot, Math.floor(Number(b.lot) || 0))),
     tank: Math.max(0, Math.min(GIFT_LIM.tank, Math.floor(Number(b.tank) || 0))),
-    floats: ints(b.floats, 1, 3), reels: ints(b.reels, 1, 2), rods: ints(b.rods, 1, 7),
+    floats: ints(b.floats, 1, 3), reels: ints(b.reels, 1, 2), rods: ints(b.rods, 1, 7), traps: ints(b.traps, 2, 6),
+    bt7: Math.max(0, Math.min(GIFT_LIM.bait, Math.floor(Number(b.bt7) || 0))), btR: Math.max(0, Math.min(GIFT_LIM.bait, Math.floor(Number(b.btR) || 0))),
+    tbr: Math.max(0, Math.min(GIFT_LIM.bait, Math.floor(Number(b.tbr) || 0))), tbp: Math.max(0, Math.min(GIFT_LIM.bait, Math.floor(Number(b.tbp) || 0))),
     // 잃어버린 물고기 되찾아 주기: [{id, s(cm), to:'bag'|'tank'}] 최대 30마리
     fish: (Array.isArray(b.fish) ? b.fish : []).slice(0, 30).map(f => ({ id: String((f && f.id) || ''), s: Math.round((Number(f && f.s) || 0) * 10) / 10, to: f && f.to === 'tank' ? 'tank' : 'bag' }))
       .filter(f => /^[a-z0-9_]{1,32}$/.test(f.id) && f.s >= 1 && f.s <= 2000),
   };
   const msg = String(b.msg || '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 200);
-  const any = it.money || it.lot || it.tank || it.floats.length || it.reels.length || it.rods.length || it.fish.length;
+  const any = it.money || it.lot || it.tank || it.floats.length || it.reels.length || it.rods.length || it.traps.length || it.bt7 || it.btR || it.tbr || it.tbp || it.fish.length;
   return any || msg ? { it, msg } : null;
 }
 function applyGift(d, gift, now, gid) {
@@ -562,7 +564,8 @@ function applyGift(d, gift, now, gid) {
   g.money = Math.max(0, (+g.money || 0) + it.money);
   g.freeLot = Math.max(0, (g.freeLot | 0) + it.lot);
   g.tankUp = Math.min(GIFT_LIM.tank, (g.tankUp | 0) + it.tank);
-  for (const [k, add] of [['floats', it.floats], ['reels', it.reels], ['rods', it.rods]]) if (add.length) g[k] = [...new Set([...(Array.isArray(g[k]) ? g[k] : []), ...add])].sort((a, b) => a - b);
+  for (const [k, add] of [['floats', it.floats], ['reels', it.reels], ['rods', it.rods], ['traps', it.traps || []]]) if (add.length) g[k] = [...new Set([...(Array.isArray(g[k]) ? g[k] : []), ...add])].sort((a, b) => a - b);
+  for (const k of ['bt7', 'btR', 'tbr', 'tbp']) if (it[k]) g[k] = Math.max(0, (g[k] | 0) + it[k]);
   if (it.fish && it.fish.length) {
     // 새 물고기는 시각(t)을 겹치지 않게 붙여서, 게임 화면의 3-way 합치기에서 '새로 생긴 물고기'로 그대로 들어가요
     const bag = g.bag = Array.isArray(g.bag) ? g.bag.slice() : [], tank = d.tank = Array.isArray(d.tank) ? d.tank.slice() : [];
@@ -600,6 +603,8 @@ export class Vault extends DurableObject {
     if (!cols.has('rev')) this.sql.exec('ALTER TABLE users ADD COLUMN rev INTEGER DEFAULT 0');
     if (!cols.has('sids')) this.sql.exec('ALTER TABLE users ADD COLUMN sids TEXT');
     if (!cols.has('dsid')) this.sql.exec('ALTER TABLE users ADD COLUMN dsid TEXT');
+    // 마지막 접속(seen): 로그인·기록 불러오기·저장 때 갱신 (관리자 선물·복구는 바꾸지 않아요)
+    if (!cols.has('seen')) this.sql.exec('ALTER TABLE users ADD COLUMN seen INTEGER DEFAULT 0');
     this.sql.exec('CREATE TABLE IF NOT EXISTS baks(id TEXT, ts INTEGER, why TEXT, data TEXT, PRIMARY KEY(id, ts))');
     this.sql.exec('CREATE TABLE IF NOT EXISTS ops(id TEXT PRIMARY KEY, ts INTEGER)');
     this.sql.exec('CREATE TABLE IF NOT EXISTS gifts(gid TEXT PRIMARY KEY, ts INTEGER, target TEXT, n INTEGER, items TEXT, msg TEXT)');
@@ -860,7 +865,7 @@ export class Vault extends DurableObject {
         if (list.length >= 5) return J({ error: '같은 곳에서 계정을 너무 많이 만들었어요. 1시간 뒤에 다시 해 주세요' }, 429);
         list.push(now); this.regByIp.set(ip, list);
         const salt = randHex(16), hash = await hashPw(pw, salt);
-        this.sql.exec('INSERT INTO users(id, salt, hash, data, created, updated) VALUES (?, ?, ?, NULL, ?, ?)', id, salt, hash, now, now);
+        this.sql.exec('INSERT INTO users(id, salt, hash, data, created, updated, seen) VALUES (?, ?, ?, NULL, ?, ?, ?)', id, salt, hash, now, now, now);
         return J({ ok: true, id, token: this.newSession(id), data: null });
       }
       if (!row) return J({ error: '아이디 또는 비밀번호가 맞지 않아요' }, 401);
@@ -871,7 +876,7 @@ export class Vault extends DurableObject {
         this.sql.exec('UPDATE users SET fails = ?, lock_until = ? WHERE id = ?', fails >= 5 ? 0 : fails, fails >= 5 ? now + 5 * 60e3 : 0, id);
         return J({ error: '아이디 또는 비밀번호가 맞지 않아요' }, 401);
       }
-      this.sql.exec('UPDATE users SET fails = 0, lock_until = 0 WHERE id = ?', id);
+      this.sql.exec('UPDATE users SET fails = 0, lock_until = 0, seen = ? WHERE id = ?', now, id);
       if (Math.random() < 0.05) this.sql.exec('DELETE FROM sessions WHERE exp < ?', now);
       let data = null; try { data = row.data ? JSON.parse(row.data) : null; } catch { data = null; }
       return J({ ok: true, id, token: this.newSession(id), data, rev: row.rev | 0, sids: (pj(row.sids) || []).map(x => x.s), dsid: dsidOut(row.dsid) });
@@ -912,6 +917,14 @@ export class Vault extends DurableObject {
       if (fails.length >= 10) return J({ error: '관리자 키를 너무 많이 틀렸어요. 1시간 뒤에 다시 해 주세요' }, 429);
       const okKey = this.env.ADMIN_KEY && typeof body.admin === 'string' && sameStr(body.admin, String(this.env.ADMIN_KEY));
       if (!okKey) { fails.push(now); this.adminFail.set(ipKey, fails); return J({ error: this.env.ADMIN_KEY ? '관리자 키가 맞지 않아요' : '서버에 ADMIN_KEY가 설정되어 있지 않아요' }, 403); }
+      if (op === 'admin-users') {
+        // 가입 순서대로 · 닉네임은 저장된 기록의 이름 · 마지막 접속은 seen (예전 계정은 마지막 정기 저장본·로그인 시각으로 추정)
+        const rows = this.sql.exec("SELECT id, created, seen, updated, json_extract(data, '$.name') AS nm FROM users ORDER BY created ASC, id ASC").toArray();
+        const bk = new Map(this.sql.exec("SELECT id, MAX(ts) AS t FROM baks WHERE why IN ('save','drop','legacy') GROUP BY id").toArray().map(r => [r.id, r.t]));
+        const ss = new Map(this.sql.exec('SELECT id, MAX(exp) AS e FROM sessions GROUP BY id').toArray().map(r => [r.id, r.e - SESSION_DAYS * 864e5]));
+        const list = rows.map((r, i) => { const est = !(r.seen > 0); return { no: i + 1, id: r.id, nick: typeof r.nm === 'string' ? r.nm : '', created: r.created, seen: est ? Math.max(bk.get(r.id) || 0, ss.get(r.id) || 0, r.created || 0) : r.seen, est }; });
+        return J({ ok: true, total: list.length, list });
+      }
       if (op === 'admin-opls') {
         return J({ ok: true, list: this.sql.exec('SELECT id, ts FROM ops ORDER BY ts').toArray() });
       }
@@ -1020,6 +1033,7 @@ export class Vault extends DurableObject {
     const id = this.who(body.token);
     if (!id) return J({ error: '다시 로그인해 주세요' }, 401);
     if (op === 'load') {
+      this.sql.exec('UPDATE users SET seen = ? WHERE id = ?', now, id);
       const row = this.sql.exec('SELECT data, rev, sids, dsid FROM users WHERE id = ?', id).toArray()[0];
       const rev = row ? row.rev | 0 : 0;
       if (Number.isInteger(body.have) && body.have === rev) return J({ ok: true, id, same: true, rev });
@@ -1050,7 +1064,7 @@ export class Vault extends DurableObject {
       sids.push({ s: sid || 'L' + now, r: nrev }); while (sids.length > SID_KEEP) sids.shift();
       let ds = pj(row.dsid) || {};
       if (tab && sid) { ds[tab] = { s: sid, ts: now }; const ks = Object.keys(ds); if (ks.length > DSID_KEEP) { ks.sort((a, b) => ds[a].ts - ds[b].ts); for (const k of ks.slice(0, ks.length - DSID_KEEP)) delete ds[k]; } }
-      this.sql.exec('UPDATE users SET data = ?, updated = ?, rev = ?, sids = ?, dsid = ? WHERE id = ?', s, now, nrev, JSON.stringify(sids), JSON.stringify(ds), id);
+      this.sql.exec('UPDATE users SET data = ?, updated = ?, rev = ?, sids = ?, dsid = ?, seen = ? WHERE id = ?', s, now, nrev, JSON.stringify(sids), JSON.stringify(ds), now, id);
       return J({ ok: true, at: now, rev: nrev, merged: why === 'legacy' || undefined });
     }
     if (op === 'logout') { this.sql.exec('DELETE FROM sessions WHERE token = ?', body.token); return J({ ok: true }); }
@@ -1068,7 +1082,7 @@ export default {
     if (url.pathname.startsWith('/api/acct/') || url.pathname.startsWith('/api/board/') || url.pathname.startsWith('/api/hof/')) {
       const isBoard = url.pathname.startsWith('/api/board/'), isHof = url.pathname.startsWith('/api/hof/');
       const op = isBoard ? 'board-' + url.pathname.slice('/api/board/'.length) : isHof ? 'hof-' + url.pathname.slice('/api/hof/'.length) : url.pathname.slice('/api/acct/'.length);
-      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-rename', 'hof-legend', 'hof-rare', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear', 'admin-gift', 'admin-gifts', 'admin-hofls', 'admin-hofset', 'admin-hoffix', 'admin-opls', 'admin-opadd', 'admin-opdel', 'opt'].includes(op)) return J({ error: 'not found' }, 404);
+      if (![ 'register', 'login', 'load', 'save', 'logout', 'board-list', 'board-post', 'board-del', 'hof-list', 'hof-submit', 'hof-collect', 'hof-rename', 'hof-legend', 'hof-rare', 'hof-sync', 'admin-user', 'admin-bak', 'admin-restore', 'admin-edit', 'admin-gear', 'admin-gift', 'admin-gifts', 'admin-hofls', 'admin-hofset', 'admin-hoffix', 'admin-opls', 'admin-opadd', 'admin-opdel', 'admin-users', 'opt'].includes(op)) return J({ error: 'not found' }, 404);
       if (op !== 'board-list' && op !== 'hof-list' && request.method !== 'POST') return J({ error: 'POST only' }, 405);
       if (!env.VAULT) return J({ error: '서버 설정 파일(wrangler.jsonc)에 계정 저장소(VAULT)가 없어요. 새 wrangler.jsonc를 올려 주세요' }, 500);
       try {

@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="amollang-build" content="2026-11-27e">
+<meta name="amollang-build" content="2026-11-27j">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>아몰랑아일랜드</title>
 <meta name="naver-site-verification" content="4400c7990b732252af5aeda7ebbd118948a6596c" />
@@ -768,7 +768,7 @@ body.cine .lgpop{opacity:0}
 .rws u,.rws i{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.25}
 #rwLast{min-height:40px}
 @media (max-width:520px){#rwLast{min-height:56px}}
-@media (pointer:coarse){.actbtn.stand{height:40px;min-width:40px;border-radius:20px;font-size:12.5px;gap:4px;padding:0 12px}.actbtn.stand b{font-size:15px}.boatbadge{left:var(--bdL,14px);top:var(--bdT,130px);transform:translateY(-50%);max-width:calc(100vw - var(--bdL,14px) - 10px);white-space:normal;border-radius:14px;line-height:1.3;font-size:11.5px;padding:5px 10px;text-align:left}}
+@media (pointer:coarse){.actbtn.stand{height:40px;min-width:40px;border-radius:20px;font-size:12.5px;gap:4px;padding:0 12px}.actbtn.stand b{font-size:15px}.boatbadge{left:var(--bdL,14px);top:var(--bdT,130px);transform:translateY(-50%);max-width:calc(100vw - var(--bdL,14px) - 10px);white-space:normal;border-radius:14px;line-height:1.3;font-size:11.5px;padding:5px 10px;text-align:left}.boatbadge.zone b{color:#fff;font-weight:900}.boatbadge.zone small{display:block;font-size:10.5px;opacity:.9;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/utils/BufferGeometryUtils.js":"./vendor/BufferGeometryUtils.js"}}</script>
 </head>
@@ -5046,11 +5046,14 @@ const HARD_D=0.16;
 function starRangeTxt(){const R=GS.rod;if(R>=7)return`★7 물고기까지 모두`;const hi=Math.min(7,effStar()+1),lo=R+1;return`★${R} 물고기까지 편하게 · ★${lo===hi?lo:lo+'~★'+hi}는 어렵지만 도전 가능`;}
 function hardTxt(sp){const st=starOf(sp),R=GS.rod;return`🔥 ★${st} 물고기가 걸렸어요! 내 낚싯대(★${R})보다 ${st-R>1?'두':'한'} 단계 위라 난이도가 높아요${st<7?' · 잡으면 몰랑 3배':''}`;}
 function hardTag(sp){return`🔥 ★${starOf(sp)} 물고기 · ${starOf(sp)-GS.rod>1?'두':'한'} 단계 위${starOf(sp)<7?' · 잡으면 몰랑 3배':' · 난이도 최고'}`;}
-const NEWS_VER='2026-11-27a';
+const NEWS_VER='2026-11-27b';
 const NEWS=[
+ {d:'11월 27일',t:'📱 휴대폰 화면을 조금 더 다듬었어요',n:true,i:[
+  '🔁 왼쪽 위 버튼 순서가 위에서부터 <b>자동 처리 → 🐠 수조 → 🎒 가방 → 💬 채팅 → 😊 이모티콘</b>으로 바뀌었어요.',
+  '🎣 낚시 중 <b>일어나기</b> 옆 안내는 던진 곳의 <b>구역 이름</b>(예: 🐠 부두 끝 먼 바다)만 굵게 보여 주고, 설명은 아래 줄에 작게 나와요. 던질 때마다 화면 가운데에 뜨던 안내는 없앴어요.']},
  {d:'11월 27일',t:'📱 휴대폰 버튼 자리가 바뀌었어요 · 왼손 엄지로 편하게 이동',n:true,i:[
   '👆 왼쪽 아래에 있던 <b>😊 이모티콘 · 💬 채팅 · 🎒 가방 · 🐠 수조</b> 버튼(통발·자동 처리 버튼 포함)이 <b>화면 왼쪽 위</b>로 올라갔어요. 왼손 엄지로 캐릭터를 움직일 때 버튼에 걸리지 않아요.',
-  '📍 평소에는 왼쪽 위 정보 바로 아래에, 낚시할 때는 <b>↩ 일어나기</b> 버튼 바로 아래에 차례로 놓여요. 버튼 순서는 그대로예요.',
+  '📍 평소에는 왼쪽 위 정보 바로 아래에, 낚시할 때는 <b>↩ 일어나기</b> 버튼 바로 아래에 차례로 놓여요.',
   '↩ 낚시할 때 <b>일어나기</b> 버튼이 작아졌고, 선상낚시·좌대·낚시 구역 안내는 그 <b>오른쪽 옆</b>에 나와요. 화면 가운데를 덜 가려요.',
   '💻 PC 화면의 버튼 자리는 그대로예요.']},
  {d:'11월 26일',t:'🍣 싱싱 활어회 효과 시간이 20분 → 15분으로 바뀌었어요',n:true,i:[
@@ -6345,18 +6348,20 @@ function layoutTopStack(){{const h=document.querySelector('.hud');if(h){const r=
  let v=y?Math.round(y+GAP+2):0;const te=document.getElementById('toast');
  if(te&&te.classList.contains('on')){document.documentElement.style.setProperty('--toastPush','0px');TOP_PUSH=0;const r=te.getBoundingClientRect();let top=Math.max(r.top,v);
   for(let k=0;k<3;k++)for(const o of obs){if(r.left<o.right&&o.left<r.right&&top<o.bottom&&top+r.height>o.top)top=o.bottom+GAP;}v=top>r.top+0.5?Math.round(top):0;}if(v!==TOP_PUSH){TOP_PUSH=v;document.documentElement.style.setProperty('--toastPush',v+'px');}try{lcolTouch();}catch(e){}}
-let LCOL_UP=false;
-function lcolTouch(){if(!isTouch)return;const R=document.documentElement;const ids=['trapBtn','chatBtn','bagBtn','tankBtn'];
+let LCOL_UP=false,LCOL_EMO=null;
+/* v187: 위에서부터 자동 처리 → 수조 → 가방 → 채팅 → (통발) → 이모티콘 순서 */
+function lcolTouch(){if(!isTouch)return;const R=document.documentElement;const ids=['tankBtn','bagBtn','chatBtn','trapBtn'];
  const els=ids.map(i=>$(i)).filter(e=>e&&!e.classList.contains('hidden')&&e.getBoundingClientRect().height>0);const ab=$('acBar'),abOn=!!ab&&ab.classList.contains('on');
- const reset=()=>{if(!LCOL_UP)return;for(const i of ids){const e=$(i);if(e){e.style.top='';e.style.bottom='';}}LCOL_UP=false;};
+ const reset=()=>{LCOL_EMO=null;if(!LCOL_UP)return;for(const i of ids){const e=$(i);if(e){e.style.top='';e.style.bottom='';}}LCOL_UP=false;try{placeEmoBtn();}catch(e){}};
  if(!els.length||!entered){reset();return;}
  const GAP=10;let y0=parseFloat(R.style.getPropertyValue('--hudB'))||0;const st=document.querySelector('.actbtn.stand:not(.hidden)');if(st){const r=st.getBoundingClientRect();if(r.height>0)y0=Math.max(y0,r.bottom+GAP);}
- y0=Math.max(y0,60);const sz=Math.round(els[0].offsetWidth*0.74);let y=y0+sz+GAP;   /* 맨 위는 이모티콘 버튼 자리 (placeEmoBtn이 첫 버튼 위에 놓아요) */
- let need=y;for(const e of els)need+=e.offsetHeight+GAP;if(abOn){const hd=ab.querySelector('.achead');need+=(hd?hd.offsetHeight:56)+GAP;}
+ y0=Math.max(y0,60);const cb=$('chatBtn'),cw=(cb&&cb.offsetWidth)||els[els.length-1].offsetWidth||42,sz=Math.round(cw*0.74);const hd=abOn?ab.querySelector('.achead'):null,hh=abOn?((hd&&hd.offsetHeight)||56):0;
+ let need=y0+(abOn?hh+GAP:0);for(const e of els)need+=e.offsetHeight+GAP;need+=sz;
  const vv=window.visualViewport;const vh=vv?vv.height:innerHeight;if(need>vh-8){reset();return;}   /* 다 안 들어가면 원래 자리 */
  if(R.style.getPropertyValue('--lcol')!=='0px')R.style.setProperty('--lcol','0px');
+ let y=y0;if(abOn){ab.style.top=Math.round(y)+'px';y+=hh+GAP;}
  for(const e of els){const v=Math.round(y)+'px';if(e.style.top!==v)e.style.top=v;if(e.style.bottom!=='auto')e.style.bottom='auto';y+=e.offsetHeight+GAP;}
- if(abOn){ab.style.top=Math.round(y)+'px';}LCOL_UP=true;try{placeEmoBtn();}catch(e){}}
+ const left=(cb&&cb.offsetWidth?cb:els[els.length-1]).getBoundingClientRect().left;LCOL_EMO={top:Math.round(y),left:Math.round(left+(cw-sz)/2),sz};LCOL_UP=true;try{placeEmoBtn();}catch(e){}}
 setInterval(layoutTopStack,200);
 /* v78: 자동 처리 버튼 자리 · 낚시 시작·끝에 맞춰 보였다 숨겼다 · 아래 이모티콘 줄과 겹치면 왼쪽 버튼들을 조금 위로 */
 function hudFit(){const B=document.body,t=document.querySelector('.hud .t'),bt=document.querySelector('.btns');if(!t||!bt)return;B.classList.remove('hudt1','hudt2');
@@ -6375,7 +6380,7 @@ function acLayout(){hudFit();let ab=document.getElementById('acBar');const R=doc
  const pop=ab.querySelector('.acpop');if(pop){pop.style.bottom='0px';const ob=[];for(const q of['.emotes','.hint','.tension','.petbox','.cookbar']){const e=document.querySelector(q);if(e&&!e.classList.contains('hidden')&&+getComputedStyle(e).opacity>0.05){const r=e.getBoundingClientRect();if(r.height>0)ob.push(r);}}
   let up=0;for(let k=0;k<3;k++){const pr=pop.getBoundingClientRect();let mv=0;for(const r of ob){if(pr.left<r.right&&r.left<pr.right&&pr.top<r.bottom&&pr.bottom>r.top)mv=Math.max(mv,pr.bottom-r.top+GAP);}if(!mv)break;up+=mv;pop.style.bottom=up+'px';}}
  const cur=parseFloat(R.style.getPropertyValue('--lcol'))||0;const tb=tk.offsetTop+tk.offsetHeight;   /* 밀기 전 수조 버튼 아래 끝 (translate는 빼고) */
- const need=Math.max(0,Math.ceil(tb-(top-GAP)));if(need!==cur)R.style.setProperty('--lcol',need+'px');}
+ const need=Math.max(0,Math.ceil(tb-(top-GAP)));if(need!==cur)R.style.setProperty('--lcol',need+'px');try{if(isTouch)lcolTouch();}catch(e){}}
 /* ---------- v29: 누군가 ★7을 잡으면 모두에게 10분 축하 알림 + 축하 무지개 이벤트 ---------- */
 const LEGEND_MS=3*60*1000;
 var LGEV={key:'',n:'',id:'',s:0,until:0,ts:0};
@@ -6421,7 +6426,7 @@ renderer.domElement.addEventListener('pointermove',e=>{const p=PINCH.pts.get(e.p
  if(PINCH.on&&PINCH.pts.size>=2&&mode==='walk'){const nd=pinchDist();if(PINCH.d>10&&nd>10){camDist=clamp(camDist*PINCH.d/nd,4,28);}PINCH.d=nd;drag.id=null;}});
 const pinchEnd=e=>{PINCH.pts.delete(e.pointerId);if(PINCH.pts.size<2){PINCH.on=false;}};
 renderer.domElement.addEventListener('pointerup',pinchEnd);renderer.domElement.addEventListener('pointercancel',pinchEnd);
-const BUILD='2026-11-27e';
+const BUILD='2026-11-27j';
 /* ---------- v34: 기록 지키기 (여러 기기·창 저장 합치기 · 예전 버전 보호 · 명예의 전당 자동 복구) ---------- */
 var SYNC={rev:null,base:null,baseSid:'',own:'',pend:[],busy:false,again:false,frozen:false,conflicts:0,lastPull:0,pullWant:false};
 var UNK={book:{},tank:[],bag:[],food:[],gs:{},top:{}};   // 이 화면이 아직 모르는 생물(새 버전에서 추가된 것) — 지우지 않고 그대로 보관
@@ -6463,6 +6468,7 @@ function merge3(B,L,S){B=B&&typeof B==='object'?B:null;L=L||{};S=S||{};
  const bg=B?(B.gs||{}):null,lg=L.gs||{},sg=S.gs||{};const g=Object.assign({},sg);
  g.money=nm(bg&&bg.money,lg.money,sg.money);
  g.rods=[...new Set([...(sg.rods||[]),...(lg.rods||[])])].sort((a,b)=>a-b);g.packs=[...new Set([...(sg.packs||[]),...(lg.packs||[])])].sort((a,b)=>a-b);g.floats=[...new Set([...(sg.floats||[]),...(lg.floats||[])])].sort((a,b)=>a-b);g.tankUp=Math.max(sg.tankUp|0,lg.tankUp|0);g.reels=[...new Set([...(sg.reels||[]),...(lg.reels||[])])].sort((a,b)=>a-b);g.reel=pk(bg&&bg.reel,lg.reel,sg.reel);{const a=+sg.petT||0,b=+lg.petT||0;g.petT=a&&b?Math.min(a,b):(a||b);}g.lotPend=pk(bg&&bg.lotPend,lg.lotPend,sg.lotPend);g.rwPend=pk(bg&&bg.rwPend,lg.rwPend,sg.rwPend);g.rwDay=rwDayMerge(lg.rwDay,sg.rwDay);g.freeLot=nm(bg&&bg.freeLot,lg.freeLot,sg.freeLot);g.att=attMerge(lg.att,sg.att);g.hats=[...new Set([...(sg.hats||[]),...(lg.hats||[])])];g.pets=[...new Set([...(sg.pets||[]),...(lg.pets||[])])];g.pet=pk(bg&&bg.pet,lg.pet,sg.pet);g.float=pk(bg&&bg.float,lg.float,sg.float);g.bt7=nm(bg&&bg.bt7,lg.bt7,sg.bt7);g.btR=nm(bg&&bg.btR,lg.btR,sg.btR);g.bo=pk(bg&&bg.bo,lg.bo,sg.bo)|0;
+ g.traps=[...new Set([...(sg.traps||[]),...(lg.traps||[])])].sort((a,b)=>a-b);g.tbr=nm(bg&&bg.tbr,lg.tbr,sg.tbr);g.tbp=nm(bg&&bg.tbp,lg.tbp,sg.tbp);g.trap=pk(bg&&bg.trap,lg.trap,sg.trap);g.tpq=pk(bg&&bg.tpq,lg.tpq,sg.tpq);
  g.rod=pk(bg&&bg.rod,lg.rod,sg.rod);g.pack=pk(bg&&bg.pack,lg.pack,sg.pack);
  g.bag=mergeItems(bg&&bg.bag,lg.bag,sg.bag);g.food=mergeFood(bg&&bg.food,lg.food,sg.food);
  g.buffUntil=Math.max(+sg.buffUntil||0,+lg.buffUntil||0);
@@ -7130,6 +7136,9 @@ function giftItems(it){it=it||{};const out=[];
  for(const lv of it.floats||[])if(FLOATS[lv])out.push(`${FLOATS[lv].em} ${FLOATS[lv].name}`);
  for(const lv of it.reels||[])if(REELS[lv])out.push(`${REELS[lv].em} ${REELS[lv].name}`);
  for(const lv of it.rods||[])if(RODS[lv])out.push(`🎣 ${RODS[lv].name}`);
+  for(const lv of it.traps||[])if(TRAPS[lv])out.push(`🧺 ${TRAPS[lv].name}`);
+  if(it.bt7>0)out.push(`${BAITS.b7.em} ${BAITS.b7.name} ${it.bt7}개`);if(it.btR>0)out.push(`${BAITS.br.em} ${BAITS.br.name} ${it.btR}개`);
+  if(it.tbr>0)out.push(`${TP_BAIT.r.em} ${TP_BAIT.r.name} ${it.tbr}개`);if(it.tbp>0)out.push(`${TP_BAIT.p.em} ${TP_BAIT.p.name} ${it.tbp}개`);
  if(it.tank>0)out.push(`🐠 수조 +${it.tank*TANK_STEP}칸`);
  for(const f of Array.isArray(it.fish)?it.fish:[]){const sp=SP_BY[f.id];if(sp)out.push(`🐟 ${sp.name} ${(+f.s).toFixed(1)}cm → ${f.to==='tank'?'수조':'가방'}`);}return out;}
 function giftUnseen(){return MAIL.filter(m=>!(m.seen|0));}
@@ -8101,7 +8110,8 @@ function chargePower(){const k=(t-chargeT0)/CHG_UP;return 1-Math.abs((k%2)-1);}
 let ZB_TXT='';
 function zbHabTxt(){return habitat==='sea'?'🌊 바다 낚시':habitat==='river'?(RZONE==='fall'?'💦 폭포 낚시':'🏞️ 강 낚시'):'🪷 저수지 낚시';}
 function updZoneBadge(){try{badgePlace();}catch(e){}const b=$('zoneBadge');if(!b)return;const on=mode==='fish'&&entered&&!BOAT.on&&!SEAT.on&&!!ZB_TXT;b.classList.toggle('hidden',!on);if(on&&b.innerHTML!==ZB_TXT)b.innerHTML=ZB_TXT;}
-function zbSet(sub){ZB_TXT=zbHabTxt()+(sub?' · '+sub:'');updZoneBadge();}
+function zbFmt(t){const i=t.indexOf(' · ');if(i<0)return'<b>'+t+'</b>';const a=t.slice(0,i),b=t.slice(i+3);return'<b>'+a+'</b>'+(isTouch?'<br><small>'+b+'</small>':' · '+b);}
+function zbSet(sub,only){ZB_TXT=only&&sub?zbFmt(sub):zbFmt(zbHabTxt()+(sub?' · '+sub:''));updZoneBadge();}
 function enterFish(){if(!canFish)return;mode='fish';fwdOf(P.yaw,_f);const q=[P.pos.x+_f.x*1.7,P.pos.z+_f.z*1.7];habitat=habitatAt(q[0],q[1]);
  minD=habitat==='sea'?6:3;maxD=habitat==='sea'?30:habitat==='pond'?24:12;P.char.rodPivot.visible=true;closeEmoPanel();setF('idle');refreshAct();
  /* 안내는 위쪽 배지로 (강은 던질 방향 가운데쯤의 구역을 미리 보여줘요) */
@@ -8113,7 +8123,7 @@ function cast(p){fwdOf(P.yaw,_f);const want=minD+p*(maxD-minD);let dd=want,ok=fa
  if(!ok){toast('여기선 던질 수 없어요. 물 쪽을 바라봐요');setF('idle');return;}
  const ddEdge=dd;if(dd<want-0.01){let k=0;while(k<6&&dd>2.2&&terrainH(P.pos.x+_f.x*dd,P.pos.z+_f.z*dd)>-0.5&&isWater(P.pos.x+_f.x*(dd-0.3),P.pos.z+_f.z*(dd-0.3))){dd-=0.3;k++;}}{const pn=COMBO.n;comboJudge(p);castResShow(p,pn);}castP=p;castTgt.set(P.pos.x+_f.x*dd,0,P.pos.z+_f.z*dd);habitat=habitatAt(castTgt.x,castTgt.z);RZONE=habitat==='river'?riverZone(castTgt.x,castTgt.z):'';castDist=dd;castMeters=Math.round(dd);power=clamp((dd-minD)/(maxD-minD),0,1);if(habitat!=='sea'){let B=ddEdge;while(B+0.4<=maxD&&isWater(P.pos.x+_f.x*(B+0.4),P.pos.z+_f.z*(B+0.4)))B+=0.4;if(B<maxD-0.01){const r=clamp((ddEdge-minD)/Math.max(2.5,Math.min(maxD,B+0.4)-minD),0,1);power=Math.max(power,Math.min(p,r));}}
  rodTipWorld(P.char,castFrom);castDur=0.5+0.45*p;castT0=t;rbCastStart();sfx.whoosh(p);setF('casting');}
-function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(!BOAT.on&&!SEAT.on){if(habitat==='sea')zbSet(farZoneTxt(fishFar()));else if(habitat==='river'&&RZONE)zbSet(RZ_TXT[RZONE]);}biteAt=t+rand(3.2,9.5)*floatSlow();nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
+function land(){splash(castTgt.x,castTgt.z,1);sfx.splash(0.3);setF('waiting');if(!BOAT.on&&!SEAT.on){if(habitat==='sea')zbSet(farZoneTxt(fishFar()),true);else if(habitat==='river'&&RZONE)zbSet(RZ_TXT[RZONE],true);}biteAt=t+rand(3.2,9.5)*floatSlow();nibbles=[];const n=Math.floor(rand(0,3.99));for(let i=0;i<n;i++)nibbles.push({t:rand(t+1.4,biteAt-0.7),played:false});nibbles.sort((a,b)=>a.t-b.t);}
 function startBite(){setF('bite');biteT0=t;sfx.bell();buzz([200,90,200]);ripple(castTgt.x,castTgt.z,1.3);}
 function hook(){fish=pickFish7(fishFar(),habitat)||pickRare(fishFar(),habitat)||pickFish(fishFar(),habitat);useBaits(fishFar(),habitat);comboHook(fish);fish.D=fightD(fish.sp,fish.frac);fish.ease=easeFor(fish.sp);if(fish.ease>0)fish.D=Math.max(0.04,fish.D*(1-fish.ease));fish.over=starOf(fish.sp)>effStar()+1;fish.hard=!fish.over&&starOf(fish.sp)>GS.rod;$('tHard').textContent=fish.hard?hardTag(fish.sp):'';$('tHard').classList.toggle('hidden',!fish.hard);fish.s=fish.D;fish.t0=t;overT=0;setF('fight');d=1;tension=0.3;slackT=0;holding=true;nextSurge=t+rand(1.2,2.4);surgeUntil=0;splash(castTgt.x,castTgt.z,0.9);sfx.splash(0.3);if(fish.hard){toast(hardTxt(fish.sp)+'. 줄이 빨개지면 잠깐 손을 떼요!',4200);sfx.splash(0.25);}else toast(fish.over?'으악, 엄청난 힘이에요…!':fish.D>0.4?'걸렸다! 묵직한데…?':'걸렸다! 누른 채로 감아요');}
 function startRetrieve(from){retrieveFrom.copy(from);rT0=t;setF('retrieve');}
@@ -8294,7 +8304,8 @@ function buildEmoteBar(){const bar=$('emotes');bar.innerHTML='';recentEmoji.forE
  const m=document.createElement('button');m.className='more';m.id='emoMore';m.textContent='＋';m.addEventListener('click',()=>{if(!entered)return;const pn=$('emoPanel');pn.classList.toggle('hidden');m.textContent=pn.classList.contains('hidden')?'＋':'✕';});bar.appendChild(m);}
 function buildEmoPanel(){const pn=$('emoPanel');pn.innerHTML='';[['🕘 최근 쓴 이모티콘',recentEmoji],...EMOJI_GROUPS].forEach(([label,list])=>{if(!list||!list.length)return;const gl=document.createElement('div');gl.className='gl';gl.textContent=label;const gr=document.createElement('div');gr.className='gr';list.forEach(e=>{const b=document.createElement('button');b.textContent=e;b.addEventListener('click',()=>{sendEmote(e,true);closeEmoPanel();});gr.appendChild(b);});pn.append(gl,gr);});}
 function closeEmoPanel(){const pn=$('emoPanel');if(pn.classList.contains('hidden'))return false;pn.classList.add('hidden');const m=$('emoMore');if(m)m.textContent='＋';$('emoBtn').classList.remove('on');return true;}
-function placeEmoBtn(){const c=$('chatBtn'),b=$('emoBtn');if(!c||!b)return;const hid=c.classList.contains('hidden')||!entered;b.classList.toggle('hidden',hid);if(hid)return;const tb=$('trapBtn');const r=(tb&&!tb.classList.contains('hidden')?tb:c).getBoundingClientRect();if(!r.width)return;const sz=Math.round(r.width*0.74);b.style.width=b.style.height=sz+'px';b.style.fontSize=Math.round(sz*0.5)+'px';b.style.left=Math.round(r.left+(r.width-sz)/2)+'px';b.style.top=Math.round(r.top-10-sz)+'px';b.style.bottom='auto';}
+function placeEmoBtn(){const c=$('chatBtn'),b=$('emoBtn');if(!c||!b)return;const hid=c.classList.contains('hidden')||!entered;b.classList.toggle('hidden',hid);if(hid)return;if(isTouch&&LCOL_UP&&LCOL_EMO){const E=LCOL_EMO;b.style.width=b.style.height=E.sz+'px';b.style.fontSize=Math.round(E.sz*0.5)+'px';b.style.left=E.left+'px';b.style.top=E.top+'px';b.style.bottom='auto';return;}
+ const tb=$('trapBtn');const r=(tb&&!tb.classList.contains('hidden')?tb:c).getBoundingClientRect();if(!r.width)return;const sz=Math.round(r.width*0.74);b.style.width=b.style.height=sz+'px';b.style.fontSize=Math.round(sz*0.5)+'px';b.style.left=Math.round(r.left+(r.width-sz)/2)+'px';b.style.top=Math.round(r.top-10-sz)+'px';b.style.bottom='auto';}
 function openEmoPanel(){if(!entered)return;closeChat();const pn=$('emoPanel');buildEmoPanel();const b=$('emoBtn').getBoundingClientRect();const R=document.documentElement.style;if(innerWidth>=640){R.setProperty('--epl',Math.round(b.right+10)+'px');R.setProperty('--ept','none');R.setProperty('--epb',Math.round(clamp(innerHeight-b.bottom-70,8,Math.max(8,innerHeight-Math.min(330,innerHeight*0.5)-8)))+'px');}else{R.setProperty('--epl','50%');R.setProperty('--ept','translateX(-50%)');R.setProperty('--epb',(b.top<innerHeight*0.5?Math.max(8,Math.round(innerHeight-b.bottom-8-Math.min(330,innerHeight*0.5))):Math.max(8,Math.round(innerHeight-b.top+8)))+'px');}pn.classList.remove('hidden');$('emoBtn').classList.add('on');}
 $('emoBtn').addEventListener('click',e=>{e.stopPropagation();initAudio();sfx.pop();if($('emoPanel').classList.contains('hidden'))openEmoPanel();else closeEmoPanel();});
 addEventListener('pointerdown',e=>{const pn=$('emoPanel');if(pn.classList.contains('hidden'))return;if(pn.contains(e.target)||e.target.id==='emoBtn')return;closeEmoPanel();},true);

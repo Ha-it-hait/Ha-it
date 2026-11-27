@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>아몰랑아일랜드 · 기록 복구 (관리자)</title>
+<title>아몰랑아일랜드 · 관리자</title>
 <style>
  body{font:15px/1.55 system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;margin:0;background:#f3f6fb;color:#1f2a3a}
  main{max-width:1040px;margin:0 auto;padding:20px 16px 60px}
@@ -19,16 +19,25 @@
  table{width:100%;border-collapse:collapse;font-size:13.5px}td.gear{font-size:12.5px;white-space:normal;min-width:150px;color:#34405a}td.gear b{color:#c2384d}th,td{padding:7px 6px;border-bottom:1px solid #e6ebf3;text-align:left;white-space:nowrap}
  th{font-size:12px;color:#56637a}td.n{text-align:right}.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.row>div{flex:1;min-width:180px}
  #msg{font-weight:700;margin:8px 0}.err{color:#c0392b}.ok{color:#1e8449}
+ #gate{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#f3f6fb;padding:16px}.gcard{background:#fff;border-radius:18px;padding:26px 22px;box-shadow:0 6px 24px rgba(0,0,0,.1);width:min(380px,100%);display:flex;flex-direction:column;gap:12px;text-align:center}.gem{font-size:38px}.gt{font-size:17px}#gErr{color:#c0392b;font-weight:700;font-size:13.5px;min-height:18px}
+ .ulist td.no{color:#56637a;text-align:right}.ulist td a{color:#2f6bd8;cursor:pointer;font-weight:700;text-decoration:underline}.ulist .est{color:#9aa4b5;font-size:11.5px}
  pre{white-space:pre-wrap;word-break:break-all;background:#0f1726;color:#cfe3ff;border-radius:10px;padding:10px;font-size:12px;max-height:320px;overflow:auto}
 </style>
 </head>
 <body>
-<main>
+<div id="gate"><form class="gcard" id="gateF" autocomplete="off"><div class="gem">🔐</div><b class="gt">아몰랑아일랜드 관리자 키를 입력하세요</b><input id="gk" type="password" autocomplete="off" placeholder="관리자 키" autofocus><button id="gGo" type="submit">확인</button><div id="gErr"></div></form></div>
+<main id="main" hidden>
  <h1>🛟 계정 기록 복구 (관리자 전용)</h1>
  <p class="note">저장본 목록의 <b>장비</b> 칸에서 시점별로 가진 낚싯대(★)·가방·찌·릴·수조·무료 복권을 볼 수 있어요(굵은 숫자 = 그때 끼운 것). [보기]를 누르면 이름까지 자세히 나와요. 서버는 계정마다 예전 저장본을 최근 40개까지 남겨 둬요(약 20분 간격, 물고기가 크게 줄면 바로). 유저가 “물고기가 사라졌다”고 하면 아이디를 넣고, 사라지기 전 저장본을 골라 <b>합쳐 넣기</b>를 누르세요. “내가 잡지 않은 물고기가 생겼다”면 <b>현재 기록 › 보기</b>에서 그 물고기를 골라 지우거나, 생기기 전 저장본에서 <b>이 상태로 되돌리기</b>를 누르세요. 그 저장본에 있던 물고기·도감·장비가 <b>지금 기록에 다시 더해져요</b> (지금 있는 물고기는 그대로, 몰랑은 둘 중 큰 값). 합치기 직전 상태도 따로 저장본으로 남아요.</p>
+ <div class="card" id="uCard">
+  <b style="font-size:16px">👥 회원 목록</b> <span class="note" id="uSum"></span>
+  <p class="note" style="margin-top:4px">가입한 순서대로 보여요. <b>순서</b> = 몇 번째로 가입했는지 · <b>마지막 접속</b> = 마지막으로 게임에 들어오거나 저장한 때. 아이디를 누르면 아래 기록 복구에서 그 유저를 불러와요.</p>
+  <div class="row"><div><input id="uQ" placeholder="아이디·닉네임으로 찾기" autocomplete="off"></div><div style="flex:0"><select id="uSort" style="padding:9px;border-radius:10px;border:1px solid #c9d3e2"><option value="new">최근 가입 순</option><option value="old">처음 가입 순</option><option value="seen">최근 접속 순</option></select></div><div style="flex:0"><button class="ghost" id="uLoad">새로고침</button></div></div>
+  <div id="uOut" style="margin-top:8px;max-height:460px;overflow:auto"></div>
+ </div>
  <div class="card">
   <div class="row">
-   <div><label>관리자 키 (Cloudflare의 ADMIN_KEY)</label><input id="k" type="password" autocomplete="off"></div>
+   <input id="k" type="hidden">
    <div><label>유저 아이디</label><input id="u" autocomplete="off"></div>
    <div style="flex:0"><button id="go">불러오기</button></div>
   </div>
@@ -44,6 +53,9 @@
   <label>🎯 찌</label><div class="chips" data-k="floats"><label><input type="checkbox" value="1"> 🦈 상어 지느러미찌</label><label><input type="checkbox" value="2"> 💡 꼬마 등대찌</label><label><input type="checkbox" value="3"> 🏰 용궁 산호성 찌</label></div>
   <label>🧵 릴</label><div class="chips" data-k="reels"><label><input type="checkbox" value="1"> 🐚 소라 껍데기 릴</label><label><input type="checkbox" value="2"> 🐋 황금 고래 릴</label></div>
   <label>🎣 낚싯대</label><div class="chips" data-k="rods"><label><input type="checkbox" value="2"> ★2</label><label><input type="checkbox" value="3"> ★3</label><label><input type="checkbox" value="4"> ★4</label><label><input type="checkbox" value="5"> ★5</label><label><input type="checkbox" value="6"> ★6</label><label><input type="checkbox" value="7"> ★7</label></div>
+  <label>🧺 통발</label><div class="chips" data-k="traps"><label><input type="checkbox" value="2"> 대나무 바구니 통발</label><label><input type="checkbox" value="3"> 산호 그물 통발</label><label><input type="checkbox" value="4"> 달빛 은사 통발</label><label><input type="checkbox" value="5"> 용궁 자개 통발</label><label><input type="checkbox" value="6"> 여의주 황금 통발</label></div>
+  <div class="row"><div><label>🪱 낚시 미끼 · 🔮 프리즘 구슬 (개)</label><input id="gBt7" type="number" min="0" max="10000" placeholder="0"></div><div><label>🪱 낚시 미끼 · 🍡 용궁 떡집 경단 (개)</label><input id="gBtR" type="number" min="0" max="10000" placeholder="0"></div></div>
+  <div class="row"><div><label>🧺 통발 미끼 · 🍯 용궁 꿀떡 주머니 (개)</label><input id="gTbr" type="number" min="0" max="10000" placeholder="0"></div><div><label>🧺 통발 미끼 · 💎 칠색 진주 이슬 (개)</label><input id="gTbp" type="number" min="0" max="10000" placeholder="0"></div></div>
   <label>🐟 물고기 되찾아 주기 <span class="note">(목록에서 물고기를 고르고 크기(cm)를 적어 주세요 · 한 번에 30마리까지)</span></label>
   <div id="gFish"></div>
   <p style="margin:6px 0 4px"><button class="ghost" id="gFishAdd" type="button">➕ 물고기 한 마리 더</button></p>
@@ -70,14 +82,16 @@
 <script>
 const $=id=>document.getElementById(id);
 const NM={"goby": ["망둥어", 1], "halfbeak": ["학꽁치", 1], "jack": ["전갱이", 1], "mackerel": ["고등어", 2], "rockfish": ["볼락", 2], "greenling": ["노래미", 2], "schlegeli": ["우럭", 3], "porgy": ["감성돔", 4], "bass": ["농어", 4], "flounder": ["광어", 5], "starfish": ["불가사리", 0], "chub": ["피라미", 1], "crucian": ["붕어", 1], "loach": ["미꾸라지", 1], "carp": ["잉어", 3], "catfish": ["메기", 3], "mandarin": ["쏘가리", 4], "goldfish": ["금붕어", 5], "filefish": ["쥐치", 2], "puffer": ["복어", 3], "redbream": ["참돔", 4], "oplegnathus": ["돌돔", 4], "hairtail": ["갈치", 3], "mullet": ["숭어", 1], "dodari": ["도다리", 2], "stingray": ["노랑가오리", 3], "moray": ["곰치", 3], "tuna": ["참치", 5], "sunfish": ["개복치", 5], "octopus": ["문어", 3], "squid": ["오징어", 3], "webfoot": ["주꾸미", 2], "seahorse": ["해마", 4], "bluecrab": ["꽃게", 2], "snowcrab": ["대게", 4], "prawn": ["대하", 2], "spinylobster": ["닭새우", 4], "jellyfish": ["해파리", 1], "urchin": ["성게", 1], "catshark": ["두툽상어", 3], "blueshark": ["청새리상어", 4], "hammerhead": ["귀상어", 5], "whaleshark": ["고래상어", 5], "clownfish": ["흰동가리", 3], "bluetang": ["블루탱", 3], "emperorangel": ["황제엔젤피시", 4], "butterfly": ["나비고기", 2], "mandarinfish": ["만다린피시", 4], "lionfish": ["쏠배감펭", 4], "parrotfish": ["앵무고기", 3], "boxfish": ["거북복", 3], "medaka": ["송사리", 1], "minnow": ["버들치", 1], "kkeokji": ["꺽지", 2], "sweetfish": ["은어", 3], "masu": ["산천어", 3], "snakehead": ["가물치", 4], "eel": ["뱀장어", 4], "crayfish": ["가재", 2], "freshshrimp": ["새뱅이", 1], "turtle": ["남생이", 5], "koi": ["비단잉어", 4], "guppy": ["구피", 3], "betta": ["베타", 4], "arowana": ["아로와나", 5], "seal": ["물개", 6], "dolphin": ["돌고래", 6], "orca": ["아기 범고래", 6], "seaotter": ["해달", 6], "otter": ["수달", 6], "anchovy": ["멸치", 1], "bekasquid": ["꼴뚜기", 1], "hermitcrab": ["소라게", 1], "seacucumber": ["해삼", 1], "sandlance": ["까나리", 1], "shorecrab": ["칠게", 1], "bitterling": ["납자루", 1], "topmouth": ["참붕어", 1], "gizzardshad": ["전어", 2], "yellowcroaker": ["참조기", 2], "saury": ["꽁치", 2], "herring": ["청어", 2], "flatfish": ["참가자미", 2], "wrasse": ["용치놀래기", 2], "sillago": ["보리멸", 2], "damsel": ["자리돔", 2], "darkchub": ["갈겨니", 2], "sandgudgeon": ["모래무지", 2], "monkfish": ["아귀", 3], "scorpionfish": ["쏨뱅이", 3], "spanishmack": ["삼치", 3], "croaker": ["민어", 3], "cuttlefish": ["갑오징어", 3], "conger": ["붕장어", 3], "gurnard": ["성대", 3], "yellowtang": ["노랑탱", 3], "bagrid": ["동자개", 3], "skygager": ["강준치", 3], "amberjack": ["부시리", 4], "yellowtail": ["방어", 4], "kobudai": ["혹돔", 4], "bigfinsquid": ["무늬오징어", 4], "hairycrab": ["털게", 4], "sevenband": ["능성어", 4], "lobster": ["바닷가재", 4], "moorishidol": ["깃대돔", 4], "triggerfish": ["피카소트리거피시", 4], "leopardshark": ["표범상어", 4], "lenok": ["열목어", 4], "stickleback": ["가시고기", 4], "giantgrouper": ["대왕바리", 5], "marlin": ["청새치", 6], "swordfish": ["황새치", 5], "sailfish": ["돛새치", 5], "kingcrab": ["킹크랩", 5], "giantoctopus": ["대왕문어", 5], "dumbo": ["덤보문어", 5], "vampiresquid": ["흡혈오징어", 5], "opah": ["붉평치", 5], "tigershark": ["뱀상어", 5], "greatwhite": ["백상아리", 5], "thresher": ["환도상어", 5], "footballfish": ["초롱아귀", 5], "napoleon": ["나폴레옹피시", 5], "chimaera": ["은상어", 5], "giantmoray": ["대왕곰치", 5], "sturgeon": ["철갑상어", 5], "giantcatfish": ["메콩대왕메기", 5], "mutae": ["무태장어", 5], "goldkoi": ["황금 비단잉어", 5], "humpback": ["아기 혹등고래", 6], "bluewhale": ["아기 대왕고래", 6], "spermwhale": ["아기 향유고래", 6], "beluga": ["벨루가", 6], "narwhal": ["일각고래", 6], "sealion": ["바다사자", 6], "walrus": ["바다코끼리", 6], "dugong": ["듀공", 6], "manatee": ["매너티", 6], "leatherback": ["장수거북", 6], "greenturtle": ["푸른바다거북", 6], "giantsquid": ["대왕오징어", 6], "oarfish": ["산갈치", 6], "coelacanth": ["실러캔스", 6], "mantaray": ["쥐가오리", 6], "leafyseadragon": ["나뭇잎해룡", 6], "goldmandarin": ["황쏘가리", 6], "eoreumchi": ["어름치", 6], "arapaima": ["피라루쿠", 6], "mihojonggae": ["미호종개", 6], "rainbowwhale": ["무지개고래", 7], "auroraray": ["오로라 가오리", 7], "rainbowflyer": ["칠색 날치", 7], "prismjelly": ["프리즘 해파리", 7], "rainbowseahorse": ["무지개 해마", 7], "chaeunryong": ["채운룡", 7], "chilbokoi": ["칠보 잉어", 7], "rainbowtrout": ["무지개다리 송어", 7], "rainbowveil": ["무지개 꼬리 금붕어", 7], "rainbowsturgeon": ["무지개 철갑상어", 7], "seal_r": ["인절미 물개", 6], "dolphin_r": ["딸기우유 돌고래", 6], "orca_r": ["민트초코 범고래", 6], "seaotter_r": ["솜사탕 해달", 6], "otter_r": ["우유식빵 수달", 6], "marlin_r": ["버터구이 청새치", 6], "humpback_r": ["블루베리 혹등고래", 6], "bluewhale_r": ["바나나우유 대왕고래", 6], "spermwhale_r": ["백설기 향유고래", 6], "beluga_r": ["구운 마시멜로 벨루가", 6], "narwhal_r": ["마카롱 일각고래", 6], "sealion_r": ["치즈볼 바다사자", 6], "walrus_r": ["팥빙수 바다코끼리", 6], "dugong_r": ["녹차라떼 듀공", 6], "manatee_r": ["단호박 매너티", 6], "leatherback_r": ["곶감 장수거북", 6], "greenturtle_r": ["딸기모찌 푸른바다거북", 6], "giantsquid_r": ["먹물파스타 대왕오징어", 6], "oarfish_r": ["금박 산갈치", 6], "coelacanth_r": ["호박엿 실러캔스", 6], "mantaray_r": ["블루하와이 쥐가오리", 6], "leafyseadragon_r": ["단풍튀김 해룡", 6], "goldmandarin_r": ["흑임자 쏘가리", 6], "eoreumchi_r": ["수박화채 어름치", 6], "arapaima_r": ["떡볶이 피라루쿠", 6], "mihojonggae_r": ["초고추장 미호종개", 6]};
-const GN={rods:['','대나무','산호초','월광 은빛','폭풍의 삼지창','용왕의 여의주','떡상기원 불빠따','럭키비키 무지개'],packs:['기본 가방','🦈 아기 상어 가방','👼 아기 천사 날개 가방'],floats:['기본 찌','🦈 상어 지느러미찌','💡 꼬마 등대찌','🏰 용궁 산호성 찌'],reels:['기본 릴','🐚 소라 껍데기 릴','🐋 황금 고래 릴']};
+const GN={rods:['','대나무','산호초','월광 은빛','폭풍의 삼지창','용왕의 여의주','떡상기원 불빠따','럭키비키 무지개'],packs:['기본 가방','🦈 아기 상어 가방','👼 아기 천사 날개 가방'],floats:['기본 찌','🦈 상어 지느러미찌','💡 꼬마 등대찌','🏰 용궁 산호성 찌'],reels:['기본 릴','🐚 소라 껍데기 릴','🐋 황금 고래 릴'],traps:['','','대나무 바구니 통발','산호 그물 통발','달빛 은사 통발','용궁 자개 통발','여의주 황금 통발']};
 // 목록용 짧은 장비 요약
 function gearShort(G){if(!G)return'-';const eq=(a,v)=>a.map(x=>x===v?`<b>${x}</b>`:x).join(',');const p=[];
  p.push(`🎣${G.rods.length?eq(G.rods,G.rod):'-'}`);if(G.packs.length)p.push(`🎒${eq(G.packs,G.pack)}`);if(G.floats.length)p.push(`🎯${eq(G.floats,G.float)}`);if(G.reels.length)p.push(`🧵${eq(G.reels,G.reel)}`);
- if(G.tankUp)p.push(`🐠+${G.tankUp*10}`);if(G.freeLot)p.push(`🎫${G.freeLot}`);return p.join(' ');}
+ if(G.tankUp)p.push(`🐠+${G.tankUp*10}`);if(G.freeLot)p.push(`🎫${G.freeLot}`);if(G.traps&&G.traps.length)p.push(`🧺${G.traps.join(',')}`);if(G.bt7||G.btR)p.push(`🔮${G.bt7|0} 🍡${G.btR|0}`);if(G.tbr||G.tbp)p.push(`🍯${G.tbr|0} 💎${G.tbp|0}`);return p.join(' ');}
 // 보기 화면용 자세한 장비
 function gearFull(g){g=g||{};const L=k=>(Array.isArray(g[k])?g[k]:[]).map(x=>x|0).filter(x=>x>0).sort((a,b)=>a-b);const row=(t,k,names,eqv,base)=>{const a=L(k);const items=(base?[0,...a]:a).map(x=>`${x===eqv?'✅ ':''}${x&&k==='rods'?'★'+x+' ':''}${names[x]||x}`);return`<tr><td>${t}</td><td style="white-space:normal">${items.length?items.join(' · '):'(없음)'}</td></tr>`;};
  return`<table><tr><th style="width:90px">장비</th><th>가진 것 (✅ = 지금 끼운 것)</th></tr>${row('🎣 낚싯대','rods',GN.rods,g.rod|0)}${row('🎒 가방','packs',GN.packs,g.pack|0,true)}${row('🎯 찌','floats',GN.floats,g.float|0,true)}${row('🧵 릴','reels',GN.reels,g.reel|0,true)}
+ <tr><td>🧺 통발</td><td style="white-space:normal">${L('traps').map(x=>GN.traps[x]||x).join(' · ')||'(없음)'}${g.trap&&g.trap.lv?` · 지금 쳐 둔 통발: ${GN.traps[g.trap.lv]||g.trap.lv}`:''}</td></tr>
+ <tr><td>🪱 낚시 미끼</td><td>🔮 프리즘 구슬 ${g.bt7|0}개 · 🍡 용궁 떡집 경단 ${g.btR|0}개</td></tr><tr><td>🧺 통발 미끼</td><td>🍯 용궁 꿀떡 주머니 ${g.tbr|0}개 · 💎 칠색 진주 이슬 ${g.tbp|0}개</td></tr>
  <tr><td>🐠 수조</td><td>${50+(g.tankUp|0)*10}칸 (+${(g.tankUp|0)*10}칸 · ${g.tankUp|0}단계)</td></tr><tr><td>🎫 복권</td><td>무료 복권 ${g.freeLot|0}장${g.lotPend?' · 긁지 않은 복권 1장':''}${g.stats&&g.stats.lotN?` · 지금까지 ${g.stats.lotN}장`:''}</td></tr></table>`;}
 const nm=id=>NM[id]?`${NM[id][0]} ★${Math.max(1,NM[id][1])}`:id;
 const ikey=(o,i)=>o.id+'|'+(+o.t||(1000+i))+'|'+(+o.s);
@@ -118,8 +132,8 @@ async function restore(ts,mode){if(!confirm(mode==='replace'?`${fmt(ts)} 저장�
  try{const j=await call('admin-restore',{ts,mode:mode||'merge'});msg(`${mode==='replace'?'되돌렸어요':'합쳐 넣었어요'} · 수조 ${j.sum.tank} · 가방 ${j.sum.bag} · 도감 ${j.sum.book}종. 유저가 게임을 켜 두었다면 몇 분 안에 자동으로 반영돼요.`,true);setTimeout(load,800);}catch(e){msg(e.message,false);}}
 function chk(k){return[...document.querySelectorAll(`.chips[data-k=${k}] input:checked`)].map(x=>+x.value);}
 const NAMES={floats:['','🦈 상어 지느러미찌','💡 꼬마 등대찌','🏰 용궁 산호성 찌'],reels:['','🐚 소라 껍데기 릴','🐋 황금 고래 릴']};
-function itTxt(it){it=it||{};const a=[];if(it.money)a.push(`💰 ${(+it.money).toLocaleString()} 몰랑`);if(it.lot)a.push(`🎫 무료 복권 ${it.lot}장`);(it.floats||[]).forEach(x=>a.push(NAMES.floats[x]));(it.reels||[]).forEach(x=>a.push(NAMES.reels[x]));(it.rods||[]).forEach(x=>a.push(`🎣 ★${x} 낚싯대`));if(it.tank)a.push(`🐠 수조 +${it.tank*10}칸`);(it.fish||[]).forEach(f=>a.push(`🐟 ${NM[f.id]?NM[f.id][0]:f.id} ${f.s}cm → ${f.to==='tank'?'수조':'가방'}`));return a.join(' · ')||'(메시지만)';}
-async function sendGift(){const all=$('gAll').checked;const body={all,money:+$('gMoney').value||0,lot:+$('gLot').value||0,tank:+$('gTank').value||0,floats:chk('floats'),reels:chk('reels'),rods:chk('rods'),msg:$('gMsg').value.trim()};const FL=fishList();if(FL.bad.length){msg(`물고기 ${FL.bad.join(', ')}번째 줄: 물고기 종류와 크기(1~2000cm)를 모두 넣어 주세요`,false);$('gOut').innerHTML=`<p class="err" style="font-weight:700">물고기 ${FL.bad.join(', ')}번째 줄을 확인해 주세요 (종류와 크기 모두 필요)</p>`;return;}body.fish=FL.out;
+function itTxt(it){it=it||{};const a=[];if(it.money)a.push(`💰 ${(+it.money).toLocaleString()} 몰랑`);if(it.lot)a.push(`🎫 무료 복권 ${it.lot}장`);(it.floats||[]).forEach(x=>a.push(NAMES.floats[x]));(it.reels||[]).forEach(x=>a.push(NAMES.reels[x]));(it.rods||[]).forEach(x=>a.push(`🎣 ★${x} 낚싯대`));(it.traps||[]).forEach(x=>a.push(`🧺 ${GN.traps[x]||x}`));if(it.bt7)a.push(`🔮 프리즘 구슬 ${it.bt7}개`);if(it.btR)a.push(`🍡 용궁 떡집 경단 ${it.btR}개`);if(it.tbr)a.push(`🍯 용궁 꿀떡 주머니 ${it.tbr}개`);if(it.tbp)a.push(`💎 칠색 진주 이슬 ${it.tbp}개`);if(it.tank)a.push(`🐠 수조 +${it.tank*10}칸`);(it.fish||[]).forEach(f=>a.push(`🐟 ${NM[f.id]?NM[f.id][0]:f.id} ${f.s}cm → ${f.to==='tank'?'수조':'가방'}`));return a.join(' · ')||'(메시지만)';}
+async function sendGift(){const all=$('gAll').checked;const body={all,money:+$('gMoney').value||0,lot:+$('gLot').value||0,tank:+$('gTank').value||0,floats:chk('floats'),reels:chk('reels'),rods:chk('rods'),traps:chk('traps'),bt7:+$('gBt7').value||0,btR:+$('gBtR').value||0,tbr:+$('gTbr').value||0,tbp:+$('gTbp').value||0,msg:$('gMsg').value.trim()};const FL=fishList();if(FL.bad.length){msg(`물고기 ${FL.bad.join(', ')}번째 줄: 물고기 종류와 크기(1~2000cm)를 모두 넣어 주세요`,false);$('gOut').innerHTML=`<p class="err" style="font-weight:700">물고기 ${FL.bad.join(', ')}번째 줄을 확인해 주세요 (종류와 크기 모두 필요)</p>`;return;}body.fish=FL.out;
  if(!all&&!$('u').value.trim()){msg('보상을 받을 유저 아이디를 위에 넣어 주세요',false);return;}
  const who=all?'⚠ 모든 유저':`‘${$('u').value.trim()}’`;if(!confirm(`${who}에게 보낼까요?\n\n${itTxt(body)}${body.msg?'\n메시지: '+body.msg:''}`))return;
  if(all&&!confirm('정말 모든 유저에게 보낼까요? 되돌리기 어려워요.'))return;
@@ -137,6 +151,20 @@ function addFishRow(){if($('gFish').children.length>=30){alert('한 번에 30마
 function fishList(){const out=[],bad=[];[...$('gFish').children].forEach((r,i)=>{const id=r.querySelector('.fsp').value,s=+r.querySelector('.fsz').value,to=r.querySelector('.fto').value;if(!id&&!s)return;if(!id||!(s>=1&&s<=2000))bad.push(i+1);else out.push({id,s:Math.round(s*10)/10,to});});return{out,bad};}
 $('gFishAdd').onclick=addFishRow;addFishRow();
 $('gSend').onclick=sendGift;$('gHist').onclick=giftHist;
+/* 🔐 관리자 키 → 맞으면 관리자 화면 */
+let ULIST=[];
+async function gate(e){e&&e.preventDefault();const key=$('gk').value;if(!key){$('gErr').textContent='관리자 키를 입력해 주세요';return;}$('gGo').disabled=true;$('gErr').textContent='';
+ try{const r=await fetch('/api/acct/admin-users',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({admin:key})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||('오류 '+r.status));
+  $('k').value=key;$('gk').value='';$('gate').remove();$('main').hidden=false;ULIST=j.list||[];uShow();}catch(err){$('gErr').textContent=err.message;$('gGo').disabled=false;$('gk').select();}}
+$('gateF').onsubmit=gate;
+function uShow(){const q=$('uQ').value.trim().toLowerCase(),srt=$('uSort').value;let L=ULIST.slice();if(q)L=L.filter(x=>x.id.includes(q)||(x.nick||'').toLowerCase().includes(q));
+ if(srt==='new')L.reverse();else if(srt==='seen')L.sort((a,b)=>(b.seen||0)-(a.seen||0));
+ const d=ts=>ts?new Date(ts).toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-';
+ $('uSum').textContent=`· 전체 ${ULIST.length}명${q?` · 찾은 ${L.length}명`:''}`;
+ $('uOut').innerHTML='<table class="ulist"><tr><th style="text-align:right">순서</th><th>가입한 날</th><th>아이디</th><th>닉네임</th><th>마지막 접속</th></tr>'+(L.length?L.map(x=>`<tr><td class="no">${x.no}번째</td><td>${d(x.created)}</td><td><a data-u="${hEsc(x.id)}">${hEsc(x.id)}</a></td><td>${x.nick?hEsc(x.nick):'<span class="est">(아직 기록 없음)</span>'}</td><td>${d(x.seen)}${x.est?' <span class="est">(추정)</span>':''}</td></tr>`).join(''):'<tr><td colspan="5">맞는 유저가 없어요</td></tr>')+'</table>'+(ULIST.some(x=>x.est)?'<p class="note" style="margin-top:6px">(추정) = 이번 업데이트 전부터 접속하지 않은 계정이에요. 마지막 정기 저장·로그인 기록으로 계산했어요. 다음 접속부터는 정확히 기록돼요.</p>':'');
+ $('uOut').querySelectorAll('[data-u]').forEach(a=>a.onclick=()=>{$('u').value=a.dataset.u;load();$('u').scrollIntoView({behavior:'smooth',block:'center'});});}
+async function uLoad(){try{const j=await call('admin-users',{});ULIST=j.list||[];uShow();}catch(e){$('uOut').innerHTML=`<p class="err">${hEsc(e.message)}</p>`;}}
+$('uQ').oninput=uShow;$('uSort').onchange=uShow;$('uLoad').onclick=uLoad;
 $('go').onclick=load;$('u').addEventListener('keydown',e=>{if(e.key==='Enter')load();});
 /* 🏆 명예의 전당 이름 정리 */
 const hEsc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
